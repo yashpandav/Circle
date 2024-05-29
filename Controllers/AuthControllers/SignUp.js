@@ -2,6 +2,7 @@ const User = require('../../Models/User');
 const OTP = require('../../Models/OTP');
 const Profile = require('../../Models/Profile');
 const {sendMail} = require('../../Utils/mailSender');
+const {successSignUp} = require('../../Mail/successAccount')
 const bcrypt = require('bcrypt');
 const randomColor = require('randomcolor');
 
@@ -71,7 +72,7 @@ exports.signUp = async (req ,res) => {
         await sendMail(
             finalUser.email,
             "Account Created Successfully",
-            `Hello ${finalUser.firstName} ${finalUser.lastName} , Your account has been created successfully`
+            successSignUp(finalUser.firstName , finalUser.lastName)
         ).then(() => {
             console.log("SignUP mail Success");
         }).catch((err) => {
