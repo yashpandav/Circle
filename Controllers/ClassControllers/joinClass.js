@@ -39,20 +39,12 @@ exports.joinClass = async (req, res) => {
         }
 
         if(joinAs === "Teacher"){
-            // TODO: Admin Authentication
             findClass.teacher.push(user.id);
             user.joinedClassAsAteacher.push(findClass.id);
         }else if(joinAs === "Student"){
             findClass.student.push(user.id);
             user.joinedClassAsStudent.push(findClass.id);
         }
-
-        // if (findClass.student.includes(req.user.id) || findClass.admin.toString() === req.user.id) {
-        //     return res.status(401).json({
-        //         success: false,
-        //         message: "You are already enrolled in this class"
-        //     });
-        // }
 
         findClass = await findClass.save();
         user = await user.save();

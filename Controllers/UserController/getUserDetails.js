@@ -14,10 +14,6 @@ exports.getProfile = async (req , res) => {
                     .populate("createdClasses")
                     .populate("joinedClassAsAteacher")
                     .populate("joinedClassAsStudent")
-                    .populate("assignment")
-                    .populate("submittedAss")
-                    .populate("comment")
-                    .populate("post")
                     .populate("todo")
                     .populate("reviewList");
         if(user){
