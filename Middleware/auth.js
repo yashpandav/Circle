@@ -65,7 +65,7 @@ exports.isStudnet = async (req , res , next) => {
         else{
             return res.status(403).json({
                 success: false,
-                message: "User is not associated with any class",
+                message: "User is not associated with student class",
                 data: null
             });
         }
@@ -82,16 +82,14 @@ exports.isTeacher = async (req , res , next) => {
     try{
         const teacherClass = await Class.findOne({teacher: req.user.id});
         const adminClass = await Class.findOne({admin: req.user.id});
-        if(req.joinedClassAsAteacher.includes(teacherClass.id) || req.createdClasses.includes(adminClass?.id)){
+        if(teacherClass && req.joinedClassAsAteacher.includes(teacherClass.id) || adminClass || req.createdClasses.includes(adminClass?.id)){
             console.log("TEACHER: " + req.joinedClassAsAteacher)
             next();
         }
-
         else{
             return res.status(403).json({
                 success: false,
-                message: "User is not associated with any class",
-                data: null
+                message: "User is not associated with Teacher class",
             });
         }
     }catch(err){

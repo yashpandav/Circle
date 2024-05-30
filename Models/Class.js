@@ -54,6 +54,18 @@ const ClassSchema = new mongoose.Schema({
 			ref: "Assignment",
 		},
     ],
+    submittedAss : [
+        {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Assignment",
+        }
+    ],
+	finishedAss : [
+		{
+			type : mongoose.Schema.Types.ObjectId,
+            ref : "Assignment",
+		}
+	],
     addedPost : [
         {
             type : mongoose.Schema.Types.ObjectId,

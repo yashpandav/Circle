@@ -43,3 +43,5 @@ const classRoute = require('./Routes/ClassRoutes');
 app.use('/class' , classRoute);
 const userProfileRoute = require('./Routes/UserRoutes');
 app.use('/user' , userProfileRoute);
+const assignmentRoutes = require('./Routes/AssignmentRoutes');
+app.use('/assignment' , assignmentRoutes);

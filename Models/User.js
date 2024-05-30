@@ -60,30 +60,36 @@ const UserSchema = new mongoose.Schema({
     resetPasswordExpires : {
         type: Date,
     },
-    assignment : [
-        {
-            type : mongoose.Schema.Types.ObjectId,
-            ref : "Assignment"
-        }
-    ],
-    submittedAss : [
-        {
-            type :  mongoose.Schema.Types.ObjectId,
-            ref : "Assignment"
-        }
-    ],
-    comment : [
-        {
-            type : mongoose.Schema.Types.ObjectId,
-            ref : "Comment"
-        }
-    ],
-    post : [
-        {
-            type : mongoose.Schema.Types.ObjectId,
-            ref : "Post"
-        }
-    ],
+    // createdAss : [
+    //     {
+    //         type : mongoose.Schema.Types.ObjectId,
+    //         ref : "Assignment"
+    //     }
+    // ],
+    // totalAss : [
+    //     {
+    //         type : mongoose.Schema.Types.ObjectId,
+    //         ref : "Assignment"
+    //     }
+    // ],
+    // submittedAss : [
+    //     {
+    //         type :  mongoose.Schema.Types.ObjectId,
+    //         ref : "Assignment"
+    //     }
+    // ],
+    // comment : [
+    //     {
+    //         type : mongoose.Schema.Types.ObjectId,
+    //         ref : "Comment"
+    //     }
+    // ],
+    // post : [
+    //     {
+    //         type : mongoose.Schema.Types.ObjectId,
+    //         ref : "Post"
+    //     }
+    // ],
     todo : {
         type : mongoose.Schema.Types.ObjectId,
         ref : "TODO"

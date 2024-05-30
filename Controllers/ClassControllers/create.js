@@ -53,12 +53,18 @@ exports.createClass = async (req , res) => {
             entryUrl : `http://localhost:4000/class/${randomstring.generate(15).toLowerCase()}`
         });
 
-        const endUser = await User.findByIdAndUpdate(req.user.id , {
+        await Class.findByIdAndUpdate(newClass.id , {
             $push : {
-                createdClasses : newClass.id    
+                teacher : req.user.id
             }
-        } , {new : true});
-        console.log("Final User => " , endUser);
+        }) 
+        
+        await User.findByIdAndUpdate(req.user.id, {
+            $addToSet: {
+                createdClasses: newClass.id,
+                joinedClassAsAteacher: newClass.id
+            }
+        });
 
         await sendMail(
             req.user.email,
@@ -70,7 +76,6 @@ exports.createClass = async (req , res) => {
                 success : true,
                 message : "Class Added",
                 newClass,
-                endUser 
             })
         }).catch((err) => {
             return res.status(500).json({
@@ -81,6 +86,7 @@ exports.createClass = async (req , res) => {
         });
 
     }catch(err){
+        console.log(err)
         return res.status(400).json({
             success : false,
             message : err,

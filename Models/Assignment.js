@@ -1,16 +1,16 @@
 const mongoose = require("mongoose");
 
 const AssignmentSchema = new mongoose.Schema({
-	assName: { 
+	name: { 
         type: String 
     },
-	assDescription: { 
+	description: { 
         type: String 
     },
-	assFile: {
+	file: {
         type : String
     },
-	assCategory: {
+	category: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "Category",
 	},
@@ -27,27 +27,28 @@ const AssignmentSchema = new mongoose.Schema({
     ],
 	uploadDate: {
 		type: Date,
+		default : Date.now()
 	},
 	dueDate: {
 		type: Date,
+		default : Date.now() * 3 * 24 * 60 * 60 * 1000
 	},
 	submitedStudent: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
-			required: true,
 			ref: "User",
 		},
 	],
 	pendingStudent: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
-			required: true,
 			ref: "User",
 		},
 	],
     status: {
         type: String,
-        enum: ["Draft", "Published"]
+        enum: ["Draft", "Published"],
+		default : "Published",
     },
     acceptAfterDue : {
         type : Boolean,
