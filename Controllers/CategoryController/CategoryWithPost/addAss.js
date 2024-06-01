@@ -1,7 +1,7 @@
 const Category = require('../../../Models/Category');
 const Assignment = require('../../../Models/Assignment');
 
-exports.addPostIntoCategory = async (req , res) => {
+exports.addAssIntoCategory = async (req , res) => {
     try{
         const name = req.body.name;
         const assId = req.body.assId;
