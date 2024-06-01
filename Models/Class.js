@@ -60,6 +60,12 @@ const ClassSchema = new mongoose.Schema({
             ref : "Category"
         }
     ],
+    addedPost : [
+        {
+            type : mongoose.Schema.Types.ObjectId,
+            ref : "Post"
+        }
+    ]
     // submittedAss : [
     //     {
 	// 		type: mongoose.Schema.Types.ObjectId,
@@ -72,12 +78,6 @@ const ClassSchema = new mongoose.Schema({
     //         ref : "Assignment",
 	// 	}
 	// ],
-    addedPost : [
-        {
-            type : mongoose.Schema.Types.ObjectId,
-            ref : "Post"
-        }
-    ]
     }
 );
 

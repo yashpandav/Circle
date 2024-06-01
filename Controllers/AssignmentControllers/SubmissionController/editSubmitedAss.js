@@ -4,7 +4,7 @@ const SubmitAssignment = require('../../../Models/SubmitAssignment');
 const {uploadImage} = require('../../../Utils/imageUpload');
 require('doenv').config();
 
-exports.submitAss = async (req, res) => {
+exports.editSubmimtedAss = async (req, res) => {
     try {
         const assId = req.body.assId;
         const data = req.body.data;

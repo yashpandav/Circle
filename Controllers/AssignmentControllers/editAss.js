@@ -6,8 +6,10 @@ require('dotenv').config();
 
 exports.editAss = async (req , res) => {
     try{
+
+        const assId = req.params.assId; 
+
         const{
-            assId , 
             name ,
             description ,
             category ,
@@ -23,7 +25,7 @@ exports.editAss = async (req , res) => {
             })
         }
 
-        const findAss = await Assignment.findById(assId);
+        let findAss = await Assignment.findById(assId);
         if(!findAss){
             return res.status(401).json({
                 success : false,
@@ -46,22 +48,22 @@ exports.editAss = async (req , res) => {
         }
 
         if(category){
-            const currCategory = await Category.findOne({ category});
+            let currCategory = await Category.findOne({ category});
             if(!currCategory){
                 return res.status(404).json({
                     success : false,
                     message : "Category Not Found"
                 });
             }
-            const prevCategory = await Category.findById(findAss.category);
+            let prevCategory = await Category.findById(findAss.category);
             prevCategory.assignment.pull(assId);
             currCategory.assignment.push(assId);
             prevCategory.save();
             currCategory.save();
-            findAss = currCategory.id;
+            findAss.category = currCategory.id;
         }
         else{
-            findAss = findAss.category;
+            findAss.category = findAss.category;
         }
 
         if(file){
@@ -69,10 +71,10 @@ exports.editAss = async (req , res) => {
             file = image.secure_url;
         }
 
-        findAss = name || findAss.name;
-        findAss = description || findAss.description;
-        findAss = dueDate || findAss.dueDate;
-        findAss = file || findAss.file;
+        findAss.name = name || findAss.name;
+        findAss.description = description || findAss.description;
+        findAss.dueDate = dueDate || findAss.dueDate;
+        findAss.file = file || findAss.file;
         await findAss.save();
 
         return res.status(200).json({

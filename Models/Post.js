@@ -17,6 +17,10 @@ const PostSchema = new mongoose.Schema({
 		required: true,
 		ref: "User",
 	},
+	category: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Category",
+	},
     comment : [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -25,10 +29,12 @@ const PostSchema = new mongoose.Schema({
     ],
 	uploadDate: {
 		type: Date,
+        default : Date.now()
 	},
     status: {
         type: String,
         enum: ["Draft", "Published"],
+        default : "Published",
     },
     }
 );

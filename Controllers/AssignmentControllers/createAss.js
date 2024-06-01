@@ -27,15 +27,17 @@ exports.createAss = async (req , res) => {
 
         let file = req.files?.file;
 
-        if(!currClassId || !name || !file || !description){
+        if(!currClassId || !name || !description){
             return res.status(401).json({
                 success : false,
                 message : "All Fields are Required"
             })
         }
 
-        const fileUrl = await uploadImage(file , process.env.FOLDER_NAME);
-        file = fileUrl.secure_url;
+        if(file){
+            const fileUrl = await uploadImage(file , process.env.FOLDER_NAME);
+            file = fileUrl.secure_url;
+        }
 
         const teacher = req.user.id;
         console.log("TEACHER => " , teacher);
@@ -44,7 +46,7 @@ exports.createAss = async (req , res) => {
         const newAss = new Assignment({
             name,
             description,
-            file,
+            file : file || '',
             teacher,
             category : category || null,
             dueDate,
@@ -75,7 +77,7 @@ exports.createAss = async (req , res) => {
                 if(currCategory){
                     await Category.findByIdAndUpdate(currCategory.id, {
                         $push : {
-                            addedAssignment : newAss.id
+                            assignment : newAss.id
                         }
                     })
 

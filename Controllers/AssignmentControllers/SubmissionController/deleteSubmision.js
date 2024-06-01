@@ -2,7 +2,7 @@ const User = require('../../../Models/User');
 const Assignment = require('../../../Models/Assignment');
 const SubmitAssignment = require('../../../Models/SubmitAssignment');
 
-exports.submitAss = async (req, res) => {
+exports.deleteSubmimtedAss = async (req, res) => {
     try {
         const assId = req.body.assId;
         const submitedID = req.body.submittedID;
