@@ -12,7 +12,7 @@ exports.getPostDetails = async (req, res) => {
         }
 
         const currPost = await Post.findById(postId)
-            .populate("teacher")
+            ?.populate("teacher")
             .populate("category")
             .populate("comment");
 
