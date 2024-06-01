@@ -11,10 +11,6 @@ const SumitAssignmentSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : "User"
     },
-    // assignment: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Assignment"
-    // },
     submitDate : {
         type : Date,
         default : Date.now()

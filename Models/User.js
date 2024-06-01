@@ -60,6 +60,14 @@ const UserSchema = new mongoose.Schema({
     resetPasswordExpires : {
         type: Date,
     },
+    todo : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "TODO"
+    },
+    reviewList :{
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "Review"
+    }
     // createdAss : [
     //     {
     //         type : mongoose.Schema.Types.ObjectId,
@@ -90,14 +98,6 @@ const UserSchema = new mongoose.Schema({
     //         ref : "Post"
     //     }
     // ],
-    todo : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : "TODO"
-    },
-    reviewList :{
-        type : mongoose.Schema.Types.ObjectId,
-        ref : "Review"
-    }
 })
 
 module.exports = mongoose.model("User", UserSchema);

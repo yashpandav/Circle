@@ -1,13 +1,24 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const ToDoSchema = new mongoose.Schema({
-	assignment :[
+    assigned: [
         {
-			type: mongoose.Schema.Types.ObjectId,
-			required: true,
-			ref: "Assignment",
-		},
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Assignment',
+        }
+    ],
+    missing: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Assignment',
+        }
+    ],
+    completed: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Assignment',
+        }
     ],
 });
 
-module.exports = mongoose.model("TODO", ToDoSchema);
+module.exports = mongoose.model('ToDo', ToDoSchema);
