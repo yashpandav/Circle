@@ -8,8 +8,9 @@ exports.submitAss = async (req, res) => {
     try {
         const assId = req.body.assId;
         const data = req.body.data;
-        const overwrite = true; //req.body.overwrite
         let file = req?.files?.file;
+        const submitedID = req?.body?.submittedID;
+        const overwrite = true; //req.body.overwrite
 
         if (!file && !data) {
             return res.status(401).json({
@@ -48,7 +49,6 @@ exports.submitAss = async (req, res) => {
             });
         }
 
-        const submitedID = req?.body?.submittedID;
         let currSubmitted = await SubmitAssignment.findById(submitedID);
 
         if(!overwrite && currSubmitted){
