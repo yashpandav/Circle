@@ -33,11 +33,11 @@ const AssignmentSchema = new mongoose.Schema({
 		type: Date,
 		default : Date.now() * 3 * 24 * 60 * 60 * 1000
 	},
-	submitedStudent: [
+	submission : [
 		{
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "User",
-		},
+            ref: "SumitAssignment",
+		}
 	],
 	pendingStudent: [
 		{

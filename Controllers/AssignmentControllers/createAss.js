@@ -38,6 +38,8 @@ exports.createAss = async (req , res) => {
 
         const teacher = req.user.id;
         console.log("TEACHER => " , teacher);
+
+        //* ADDED ASSIGNMENT
         const newAss = new Assignment({
             name,
             description,
@@ -51,12 +53,14 @@ exports.createAss = async (req , res) => {
         await newAss.save();
 
         if(newAss.status === 'Published'){
+            //* ADDED ASSIGNMENT INTO THE CLASS
             await Class.findByIdAndUpdate(currClassId , {
                 $push : {
                     addedAssignment : newAss.id
                 }
             })
 
+            //* ADDED PENDING STUDENT FOR ASSIGNMENT
             const students = await User.find({ joinedClassAsStudent: currClassId }, 'id');
             console.log("STUDENTS => " , students)
             const studentIds = students.map(student => student.id);

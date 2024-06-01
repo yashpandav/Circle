@@ -65,7 +65,7 @@ exports.isStudnet = async (req , res , next) => {
         else{
             return res.status(403).json({
                 success: false,
-                message: "User is not associated with student class",
+                message: "User is not associated with any class",
                 data: null
             });
         }
@@ -86,10 +86,11 @@ exports.isTeacher = async (req , res , next) => {
             console.log("TEACHER: " + req.joinedClassAsAteacher)
             next();
         }
+
         else{
             return res.status(403).json({
                 success: false,
-                message: "User is not associated with Teacher class",
+                message: "User is not associated with any class",
             });
         }
     }catch(err){
