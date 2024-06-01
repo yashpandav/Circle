@@ -1,8 +1,8 @@
 const router = require('express').Router();
 
-const { auth , isStudnet} = require('../Middleware/auth');
+const { auth } = require('../Middleware/auth');
 
 const { updateToDo } = require('../Controllers/ToDoControllers/addAss');
-router.post('/todos' , auth , updateToDo);
+router.post('/todos:classId' , auth , updateToDo);
 
 module.exports = router;
