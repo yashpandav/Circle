@@ -10,6 +10,12 @@ const CategorySchema = new mongoose.Schema({
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Assignment",
 		},
+	],
+	post : [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+            ref: "Post",
+		}
 	]
 });
 

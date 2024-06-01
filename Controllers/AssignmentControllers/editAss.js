@@ -1,5 +1,6 @@
 const Assignment = require('../../Models/Assignment');
 const User = require('../../Models/User');
+const Category = require('../../Models/Category');
 const {uploadImage} = require('../../Utils/imageUpload');
 require('dotenv').config();
 
@@ -44,6 +45,25 @@ exports.editAss = async (req , res) => {
             })
         }
 
+        if(category){
+            const currCategory = await Category.findOne({ category});
+            if(!currCategory){
+                return res.status(404).json({
+                    success : false,
+                    message : "Category Not Found"
+                });
+            }
+            const prevCategory = await Category.findById(findAss.category);
+            prevCategory.assignment.pull(assId);
+            currCategory.assignment.push(assId);
+            prevCategory.save();
+            currCategory.save();
+            findAss = currCategory.id;
+        }
+        else{
+            findAss = findAss.category;
+        }
+
         if(file){
             const image = await uploadImage(file , process.env.FOLDER_NAME);
             file = image.secure_url;
@@ -51,10 +71,8 @@ exports.editAss = async (req , res) => {
 
         findAss = name || findAss.name;
         findAss = description || findAss.description;
-        findAss = category || findAss.category;
         findAss = dueDate || findAss.dueDate;
         findAss = file || findAss.file;
-
         await findAss.save();
 
         return res.status(200).json({

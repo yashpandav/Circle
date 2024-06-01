@@ -54,6 +54,12 @@ const ClassSchema = new mongoose.Schema({
 			ref: "Assignment",
 		},
     ],
+    addedCategory : [
+        {
+            type : mongoose.Schema.Types.ObjectId,
+            ref : "Category"
+        }
+    ],
     // submittedAss : [
     //     {
 	// 		type: mongoose.Schema.Types.ObjectId,

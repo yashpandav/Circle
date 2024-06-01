@@ -2,6 +2,7 @@ const Assignment = require('../../Models/Assignment');
 const {uploadImage} = require('../../Utils/imageUpload');
 const User = require('../../Models/User');
 const Class = require('../../Models/Class');
+const Category = require('../../Models/Category');
 require('dotenv').config();
 
 exports.createAss = async (req , res) => {
@@ -44,8 +45,8 @@ exports.createAss = async (req , res) => {
             name,
             description,
             file,
-            category : category || null,
             teacher,
+            category : category || null,
             dueDate,
             status,
             acceptAfterDue
@@ -69,6 +70,21 @@ exports.createAss = async (req , res) => {
                 $push: { pendingStudent: studentIds }
             });
 
+            if(category){
+                const currCategory = await Category.findOne({ category});
+                if(currCategory){
+                    await Category.findByIdAndUpdate(currCategory.id, {
+                        $push : {
+                            addedAssignment : newAss.id
+                        }
+                    })
+
+                    await Assignment.findByIdAndUpdate(newAss.id, {
+                        $push: { category: currCategory.id }
+                    });
+                }
+            }
+            await newAss.save();
             return res.status(200).json({
                 success : true,
                 message : "Assignment Created Successfully",
