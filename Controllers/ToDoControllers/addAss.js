@@ -3,10 +3,9 @@ const Assignment = require('../../Models/Assignment');
 const User = require('../../Models/User');
 const Class = require('../../Models/Class');
 const cron = require('cron');
-const SubmitAssignment = require('../../Models/SubmitAssignment');
 
 async function fetchClassAssignments(classId, userId) {
-    const currClass = await Class.findById(classId).populate("addedAssignment").exec();
+    const currClass = await Class.findById(classId)?.populate("addedAssignment").exec();
     if (!currClass || !currClass.addedAssignment) return null;
 
     const assigned = [];
@@ -15,7 +14,7 @@ async function fetchClassAssignments(classId, userId) {
 
     await Promise.all(currClass.addedAssignment.map(
         async (assignment) => {
-            const currAssignment = await Assignment.findById(assignment.id).populate("submission");
+            const currAssignment = await Assignment.findById(assignment.id)?.populate("submission").exec();
             const submission = currAssignment.submission.find(sub => sub.student.equals(userId));
 
             if (!submission && new Date(currAssignment.dueDate) > new Date()) {
@@ -25,7 +24,8 @@ async function fetchClassAssignments(classId, userId) {
             } else if (submission) {
                 completed.push(currAssignment.id);
             }
-    }));
+        }
+    ));
     return { classId, assigned, missing, completed };
 }
 
@@ -42,7 +42,7 @@ async function updateToDo(req, res) {
             });
         }
 
-        const user = await User.findById(userId)?.populate('todo');
+        let user = await User.findById(userId)?.populate('todo').exec();
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -66,6 +66,8 @@ async function updateToDo(req, res) {
         }
 
         await toDo.save();
+        user.todo = toDo.id;
+        await user.save();
 
         return res.status(200).json({
             success: true,
@@ -81,6 +83,25 @@ async function updateToDo(req, res) {
     }
 }
 
-cron.schedule('0 0 * * *', updateToDo);
 
-module.exports = { updateToDo };s
+//* IN MIDNIGHT WE MAY NOT HAVE CURRENT USER
+cron.schedule('0 0 * * *', async () => {
+    try {
+        const users = await User.find({}).exec();
+        for (const user of users) {
+            const req = { user: { id: user.id }, 
+                            joinedClassAsStudent: user?.joinedClassAsStudent 
+                        };
+            const res = {
+                status: (code) => ({
+                    json: (data) => console.log(`Status: ${code}, Data: ${JSON.stringify(data)}`)
+                })
+            };
+            await updateToDo(req, res);
+        }
+    } catch (err) {
+        console.error('Error updating ToDo lists in cron job:', err);
+    }
+});
+
+module.exports = { updateToDo };

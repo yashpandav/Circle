@@ -16,10 +16,10 @@ async function fetchAssignmentReview(classId, user) {
 
     const reviewData = await Review.findById(user.reviewList).exec();
     const reviewdAss = reviewData ? reviewData.reviewdAss : [];
-    const notReviedAss = reviewData ? reviewData.notReviedAss : thisTeacherAssignments.map(ass => ass._id);
+    const notReviedAss = reviewData ? reviewData.notReviedAss : thisTeacherAssignments.map(ass => ass.id);
 
-    const reviewedAssignments = thisTeacherAssignments.filter(assignment => reviewdAss.includes(assignment._id));
-    const pendingAssignments = thisTeacherAssignments.filter(assignment => notReviedAss.includes(assignment._id));
+    const reviewedAssignments = thisTeacherAssignments.filter(assignment => reviewdAss.includes(assignment.id));
+    const pendingAssignments = thisTeacherAssignments.filter(assignment => notReviedAss.includes(assignment.id));
 
     return { classId, reviewedAssignments, pendingAssignments };
 }
@@ -37,7 +37,7 @@ exports.pendingReview = async (req, res) => {
             });
         }
 
-        const user = await User.findById(userId).populate("reviewList").exec();
+        let user = await User.findById(userId).populate("reviewList").exec();
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -61,7 +61,8 @@ exports.pendingReview = async (req, res) => {
             revied.byClass = reviewData.filter(data => data != null);
         }
         await revied.save();
-        
+        user.reviewList = revied.id;
+        user.save();
         return res.status(200).json({
             success: true,
             message: "Review data fetched successfully",
