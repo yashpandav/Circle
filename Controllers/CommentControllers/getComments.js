@@ -1,6 +1,5 @@
 const Post = require('../../Models/Post');
 const Assignment = require('../../Models/Assignment');
-const Comment = require('../../Models/Comment');
 
 exports.getAllComment = async (req, res) => {
     try {
@@ -27,8 +26,8 @@ exports.getAllComment = async (req, res) => {
         }
 
         const response = await tempModel[commentOn].findById(id)
-                            ?.populate('comments')
-                            .exec();
+                        ?.populate('comment')
+                        .exec();
 
         if (!response) {
             return res.status(404).json({
@@ -47,6 +46,7 @@ exports.getAllComment = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Error during getting all comments",
+            error: err.message
         });
     }
 };

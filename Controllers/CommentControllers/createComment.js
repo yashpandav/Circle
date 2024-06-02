@@ -50,7 +50,7 @@ exports.createComment = async (req, res) => {
         return res.status(201).json({
             success: true,
             message: "Comment added",
-            createdComment
+            data : createdComment
         });
 
     } catch (err) {
@@ -58,24 +58,7 @@ exports.createComment = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Something went wrong while creating the comment",
+            error: err.message
         });
     }
 };
-
-        // if(commentOn === "Post"){
-        //     const findPost = await Post.findById(id);
-        //     if(!findPost){
-        //         return res.status(401).json({
-        //             success: false,
-        //             message: "Post not found"
-        //         })
-        //     }
-        // }else if(commentOn === "Assignment"){
-        //     const findAss = await Assignment.findById(id);
-        //     if(!findAss){
-        //         return res.status(401).json({
-        //             success: false,
-        //             message: "Assignment not found"
-        //         })
-        //     }
-        // }

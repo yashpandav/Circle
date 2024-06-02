@@ -1,16 +1,16 @@
 const Category = require('../../../Models/Category');
-const Assignment = require('../../../Models/Assignment');
-const Class = require('../../../Models/Class');
+const Post = require('../../../Models/Post');
+const Class = require('../../../Models/Class'); 
 
-exports.deleteAssFromCategory = async (req, res) => {
+exports.deletePostFromCategory = async (req, res) => {
     try {
-        const assId = req.params.assId
+        const postId = req.params.postId;
         const { categoryId, classId } = req.body;
 
-        if (!categoryId || !assId || !classId) {
+        if (!categoryId || !postId || !classId) {
             return res.status(400).json({
                 success: false,
-                message: "Category ID , assId ,classId are required"
+                message: "Category ID, postId, classId are required"
             });
         }
 
@@ -22,19 +22,19 @@ exports.deleteAssFromCategory = async (req, res) => {
             });
         }
 
-        const findAss = await Assignment.findById(assId);
-        if (!findAss) {
+        const findPost = await Post.findById(postId);
+        if (!findPost) {
             return res.status(404).json({
                 success: false,
-                message: "Assignment not found"
+                message: "Post not found"
             });
         }
 
-        const isAuthorized = findClass.admin.toString() === req.user.id || findAss.teacher.toString() === req.user.id;
+        const isAuthorized = findClass.admin.toString() === req.user.id || findPost.teacher.toString() === req.user.id;
         if (!isAuthorized) {
             return res.status(403).json({
                 success: false,
-                message: "You are not authorized to delete this assignment from the category"
+                message: "You are not authorized to delete this post from the category"
             });
         }
 
@@ -46,27 +46,26 @@ exports.deleteAssFromCategory = async (req, res) => {
             });
         }
 
-
-        //* Remove assignment from category
+        //* Remove post from category
         await Category.findByIdAndUpdate(categoryId, {
-            $pull: { assignment: assId }
+            $pull: { post: postId }
         });
 
-        //* Remove category from assignment
-        await Assignment.findByIdAndUpdate(assId, {
+        //* Remove category from post
+        await Post.findByIdAndUpdate(postId, {
             $pull: { category: categoryId }
         });
 
         return res.status(200).json({
             success: true,
-            message: "Assignment deleted from category successfully"
+            message: "Post deleted from category successfully"
         });
 
     } catch (err) {
         console.error(err);
         return res.status(500).json({
             success: false,
-            message: "Error while deleting assignment from category",
+            message: "Error while deleting post from category",
             error: err.message
         });
     }

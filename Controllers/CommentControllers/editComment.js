@@ -1,6 +1,4 @@
 const Comment = require('../../Models/Comment');
-const Post = require('../../Models/Post');
-const Assignment = require('../../Models/Assignment');
 
 exports.editComment = async (req, res) => {
     try {
@@ -13,10 +11,7 @@ exports.editComment = async (req, res) => {
             });
         }
 
-        const { 
-            name,
-            commentBody,
-        } = req.body;
+        const { name, commentBody } = req.body;
 
         let findComment = await Comment.findById(commentId);
 
@@ -27,10 +22,11 @@ exports.editComment = async (req, res) => {
             });
         }
 
-        if (findComment.user.toString() !== req.user.id) {
+        const isAuthorized = findComment.user.toString() === req.user.id;
+        if (!isAuthorized) {
             return res.status(403).json({
                 success: false,
-                message: "You are not allowed to edit this comment"
+                message: "You are not authorized to edit this comment"
             });
         }
 
@@ -41,8 +37,8 @@ exports.editComment = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: "Comment Edited",
-            findComment
+            message: "Comment edited",
+            data : findComment
         });
 
     } catch (err) {
@@ -50,6 +46,7 @@ exports.editComment = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Something went wrong while editing the comment",
+            error: err.message
         });
     }
 };

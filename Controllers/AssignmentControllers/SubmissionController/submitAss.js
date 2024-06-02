@@ -1,82 +1,73 @@
 const User = require('../../../Models/User');
 const Assignment = require('../../../Models/Assignment');
 const SubmitAssignment = require('../../../Models/SubmitAssignment');
-const {uploadImage} = require('../../../Utils/imageUpload');
-require('doenv').config();
+const { uploadImage } = require('../../../Utils/imageUpload');
+require('dotenv').config();
 
 exports.submitAss = async (req, res) => {
     try {
-        const assId = req.body.assId;
-        const data = req.body.data;
-        let file = req?.files?.file;
-        const submitedID = req?.body?.submittedID;
-        const overwrite = true; //req.body.overwrite
+        const { assId, data, submittedID } = req.body;
+        let file = req.files?.file;
 
         if (!file && !data) {
-            return res.status(401).json({
+            return res.status(400).json({
                 success: false,
-                message: "File Or Data required"
+                message: "File or Data required"
             });
         }
 
         if (!assId) {
-            return res.status(401).json({
+            return res.status(400).json({
                 success: false,
-                message: "Assignment Id is required"
+                message: "Assignment ID is required"
             });
         }
 
         const user = await User.findById(req.user.id);
         if (!user) {
-            return res.status(401).json({
+            return res.status(404).json({
                 success: false,
-                message: "User Not Found"
+                message: "User not found"
             });
         }
 
         const assDetails = await Assignment.findById(assId);
         if (!assDetails) {
-            return res.status(401).json({
+            return res.status(404).json({
                 success: false,
-                message: "Assignment Not Found"
+                message: "Assignment not found"
             });
         }
 
-        if(Date.now() > assDetails.dueDate && assDetails.acceptAfterDue === false) {
-            return res.status(401).json({
+        if (Date.now() > new Date(assDetails.dueDate) && !assDetails.acceptAfterDue) {
+            return res.status(400).json({
                 success: false,
-                message: "Assignment Due Date Over"
+                message: "Assignment due date over"
             });
         }
 
-        let currSubmitted = await SubmitAssignment.findById(submitedID);
+        let currSubmitted = await SubmitAssignment.findById(submittedID);
 
-        if(!overwrite && currSubmitted){
-            return res.status(401).json({
-                success: false,
-                message: "Assignment Already Submitted"
-            });
-        }
-
-        //* IF ASSIGNMENT IS ALREDAY SUBMITTED
-        if (currSubmitted && overwrite) {
-            // TODO : Add conirmation message that are you sure want to overwrite previous submission
-            await SubmitAssignment.findByIdAndDelete(submitedID);
-            // await SubmitAssignment.findOneAndDelete({ assignment: assId, student: req.user.id });
+        //* IF ASSIGNMENT IS ALREADY SUBMITTED
+        if (currSubmitted) {
+            // TODO: Add confirmation message that asks if the user is sure about overwriting the previous submission
+            //? IF USER SAYS YES THEN CONTINUE
+            await SubmitAssignment.findByIdAndDelete(submittedID);
             await Assignment.findByIdAndUpdate(assId, {
-                $pull: { submission: submitedID }
+                $pull: { submission: submittedID }
             });
         }
 
         if (file) {
-            const image = await uploadImage(file , process.env.FOLDER_NAME);
+            const image = await uploadImage(file, process.env.FOLDER_NAME);
             file = image.secure_url;
         }
+
         const newSubmission = new SubmitAssignment({
             data,
             file,
             student: req.user.id,
-            // assignment: assId
+            assignment: assId
         });
 
         await newSubmission.save();
@@ -88,16 +79,18 @@ exports.submitAss = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: "Assignment Submitted Successfully",
-            assDetails,
-            newSubmission
+            message: "Assignment submitted successfully",
+            data: {
+                assignment: assDetails,
+                submission: newSubmission
+            }
         });
 
     } catch (err) {
-        console.log(err);
+        console.error(err);
         return res.status(500).json({
             success: false,
-            message: "Error While Submitting Assignment"
+            message: "Error while submitting assignment"
         });
     }
 }

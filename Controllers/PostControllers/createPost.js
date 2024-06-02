@@ -25,9 +25,7 @@ exports.createPost = async (req, res) => {
         }
 
         const teacher = req.user.id;
-        console.log("TEACHER => ", teacher);
 
-        //* ADDED POST
         const newPost = new Post({
             title,
             postBody,
@@ -36,11 +34,10 @@ exports.createPost = async (req, res) => {
             category: category || null,
             status,
         });
+
         await newPost.save();
 
         if (newPost.status === "Published") {
-            //* ADDED POST INTO THE CLASS
-
             newPost.uploadDate = uploadDate;
 
             await Class.findByIdAndUpdate(currClassId, {
@@ -50,7 +47,7 @@ exports.createPost = async (req, res) => {
             });
 
             if (category) {
-                const currCategory = await Category.findOne({ category });
+                const currCategory = await Category.findOne({ name: category });
                 if (currCategory) {
                     await Category.findByIdAndUpdate(currCategory.id, {
                         $push: {
@@ -67,17 +64,17 @@ exports.createPost = async (req, res) => {
             return res.status(200).json({
                 success: true,
                 message: "Post Created Successfully",
-                newAss,
+                data : newPost,
             });
         } else {
             return res.status(200).json({
                 success: true,
                 message: "Post Drafted Successfully",
-                newAss,
+                data : newPost,
             });
         }
     } catch (err) {
-        console.log(err);
+        console.error(err);
         return res.status(400).json({
             success: false,
             message: "Something went wrong while posting",

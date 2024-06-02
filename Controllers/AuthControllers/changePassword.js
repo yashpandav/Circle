@@ -1,63 +1,66 @@
 const User = require('../../Models/User');
 const bcrypt = require('bcrypt');
 
-exports.changePassword = async (req , res) => {
-    try{
-        console.log("User " , req.user)
-        if(!req.user){
+exports.changePassword = async (req, res) => {
+    try {
+        if (!req.user) {
             return res.status(401).json({
-                success : false, 
-                message : "LogIn required"
-            })
+                success: false,
+                message: "Login required"
+            });
         }
-		const userDetails = await User.findById(req.user.id);
+
         const { oldPassword, newPassword, confirmNewPassword } = req.body;
 
-        if (newPassword !== confirmNewPassword) {
-			return res.status(400).json({
-				success: false,
-				message: "PLEASE RE-ENTER YOUR NEW PASSWORD",
-			});
-		}
-
-        const isPasswordMatch = await bcrypt.compare(
-			oldPassword,
-			userDetails.password
-		);
-
-		if (!isPasswordMatch) {
-			return res.status(401).json({ 
-                success : false, 
-                message: "INCORRECT PASSWORD" 
+        if (!oldPassword || !newPassword || !confirmNewPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "Please provide old password, new password, and confirm new password"
             });
-		}
+        }
 
-        if(oldPassword === newPassword){
-			return res.status(400).json({
-				success : false,
-				message : "PASSWORD SHOULD BE DIFFER FROM OLDER ONE",
-			});
-		}
-        
-		const hasedPass = await bcrypt.hash(newPassword, 10);
-        const updatedUser = await User.findByIdAndUpdate( req.user.id,
+        if (newPassword !== confirmNewPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "New password and confirm password do not match"
+            });
+        }
+
+        if (oldPassword === newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "New password should be different from the old one"
+            });
+        }
+
+        const userDetails = await User.findById(req.user.id);
+
+        const isPasswordMatch = await bcrypt.compare(oldPassword, userDetails.password);
+        if (!isPasswordMatch) {
+            return res.status(401).json({
+                success: false,
+                message: "Incorrect old password"
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        const updatedUser = await User.findByIdAndUpdate(req.user.id, 
             {
-                password: hasedPass 
-            },
-            {
-                new : true
-            }
-        )
-        return res.status(200).json({ 
-            success : true, 
-            updatedUser,
-            message : "PASSWORD UPDATED SUCCESSFULLY"
+                password: hashedPassword 
+            }, { new: true });
+
+        return res.status(200).json({
+            success: true,
+            message: "Password updated successfully",
+            date :updatedUser
         });
-    }catch(err){
-		return res.status(500).json({
-			success: false,
-			message: "ERROR WHILE CHANGING PASSWORD ",
-			error: err.message,
-		});
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: "Error while changing password",
+            error: err.message
+        });
     }
-}
+};

@@ -5,10 +5,17 @@ const Post = require('../../Models/Post');
 
 exports.deleteCategory = async (req, res) => {
     try {
-        const id = req.params.id;
-        const category = await Category.findById(id);
-        const classId = req.body.classId;
+        const { id } = req.params;
+        const { classId } = req.body;
 
+        if (!id || !classId) {
+            return res.status(400).json({
+                success: false,
+                message: "Category ID and Class ID are required"
+            });
+        }
+
+        const category = await Category.findById(id);
         if (!category) {
             return res.status(404).json({
                 success: false,
@@ -16,19 +23,26 @@ exports.deleteCategory = async (req, res) => {
             });
         }
 
+        const findClass = await Class.findById(classId);
+        if (!findClass) {
+            return res.status(404).json({
+                success: false,
+                message: "Class not found"
+            });
+        }
+
+        const isAuthorized = findClass.admin.toString() === req.user.id;
+        if (!isAuthorized) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not authorized to delete this category"
+            });
+        }
+
         //* Remove the category from the class
         await Class.findByIdAndUpdate(classId, {
             $pull: { addedCategory: id }
         });
-
-        // await Class.updateMany(
-        //     {
-        //         addedCategory : id,
-        //     },
-        //     {
-        //         $pull: { addedCategory: id }
-        //     }
-        // )
 
         //* Remove the category from assignments
         await Assignment.updateMany(
@@ -50,8 +64,8 @@ exports.deleteCategory = async (req, res) => {
             message: "Category deleted successfully"
         });
     } catch (err) {
-        console.log(err);
-        res.status(500).json({
+        console.error(err);
+        return res.status(500).json({
             success: false,
             message: "Something went wrong while deleting the category"
         });

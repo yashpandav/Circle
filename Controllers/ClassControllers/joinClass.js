@@ -4,14 +4,12 @@ const { sendMail } = require('../../Utils/mailSender');
 
 exports.joinClass = async (req, res) => {
     try {
-        const entryCode = req.body?.entryCode;
-        const entryUrl = req.body?.entryUrl;
-        const joinAs = req.body.joinAs;
+        const { entryCode, entryUrl, joinAs } = req.body;
 
         if (!entryCode && !entryUrl) {
-            return res.status(401).json({
+            return res.status(400).json({
                 success: false,
-                message: "Fields are required"
+                message: "Entry code or URL is required"
             });
         }
 
@@ -22,60 +20,52 @@ exports.joinClass = async (req, res) => {
             });
         }
 
-        let findClass = await Class.findOne({ entryCode: entryCode }) || await Class.findOne({ entryUrl: entryUrl });
-        console.log(findClass);
+        let findClass = await Class.findOne({ entryCode }) || await Class.findOne({ entryUrl });
+
         if (!findClass) {
-            return res.status(401).json({
+            return res.status(404).json({
                 success: false,
                 message: "Class Not Found"
             });
         }
-        let user = await User.findById(req.user.id);
 
-        if(user.createdClasses.includes(findClass.id) || user.joinedClassAsAteacher.includes(findClass.id) || user.joinedClassAsStudent.includes(findClass.id)){
-            return res.status(401).json({
+        const user = await User.findById(req.user.id);
+
+        if (user.createdClasses.includes(findClass.id) || user.joinedClassAsAteacher.includes(findClass.id) || user.joinedClassAsStudent.includes(findClass.id)) {
+            return res.status(400).json({
                 success: false,
                 message: "You are already enrolled in this class"
             });
         }
 
-        if(joinAs === "Teacher"){
+        if (joinAs === "Teacher") {
             findClass.teacher.push(user.id);
             user.joinedClassAsAteacher.push(findClass.id);
-        }else if(joinAs === "Student"){
+        } else if (joinAs === "Student") {
             findClass.student.push(user.id);
             user.joinedClassAsStudent.push(findClass.id);
         }
 
-        findClass = await findClass.save();
-        user = await user.save();
+        await Promise.all([findClass.save(), user.save()]);
 
         await sendMail(
             user.email,
             "Class Joined",
             `You have successfully joined ${findClass.name}`
-        ).then(() => {
-            console.log("Joined Class => ", findClass);
-            console.log("Joined User => ", user);
-            return res.status(200).json({
-                success: true,
-                message: "Class Joined",
-                findClass,
-                user
-            })
-        }).catch((err) => {
-            return res.status(500).json({
-                success: false,
-                message: err.message,
-                data: "Error while sending class mail"
-            });
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Class Joined Successfully",
+            findClass,
+            user
         });
-    } catch(err){
-        console.log(err)
+    } catch (err) {
+        console.error(err);
         return res.status(500).json({
             success: false,
-            message: err,
-            data: "Error while joining class"
-        })
+            message: "Error while joining class",
+            error: err.message
+        });
     }
-}
+};

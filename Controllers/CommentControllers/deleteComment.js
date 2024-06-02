@@ -42,15 +42,16 @@ exports.deleteComment = async (req, res) => {
             });
         }
 
-        if (comment.user.toString() !== req.user.id) {
+        const isAuthorized = comment.user.toString() === req.user.id;
+        if (!isAuthorized) {
             return res.status(403).json({
                 success: false,
-                message: "You are not allowed to delete this comment",
+                message: "You are not authorized to delete this comment"
             });
         }
 
         await Comment.findByIdAndDelete(commentId);
-        commentOnWhich.comment.pull(commentId);
+        commentOnWhich.comments.pull(commentId);
         await commentOnWhich.save();
 
         return res.status(200).json({
@@ -63,6 +64,7 @@ exports.deleteComment = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Something went wrong while deleting the comment",
+            error: err.message
         });
     }
 };

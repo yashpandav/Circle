@@ -1,95 +1,100 @@
 const User = require('../../Models/User');
 const OTP = require('../../Models/OTP');
 const Profile = require('../../Models/Profile');
-const {sendMail} = require('../../Utils/mailSender');
-const {successSignUp} = require('../../Mail/successAccount')
+const { sendMail } = require('../../Utils/mailSender');
+const { successSignUp } = require('../../Mail/successAccount');
 const bcrypt = require('bcrypt');
 const randomColor = require('randomcolor');
 
-exports.signUp = async (req ,res) => {
-    try{
-        const{
+exports.signUp = async (req, res) => {
+    try {
+        const {
             firstName,
-			lastName,
-			email,
-			password,
-			confirmPassword,
-			otp,
+            lastName,
+            email,
+            password,
+            confirmPassword,
+            otp,
         } = req.body;
 
-        if ( !firstName || !lastName || !email || !password || !confirmPassword || !otp ) {
-			return res.status(403).send({
-				success: false,
-				message: "All Fields are required",
-			});
-        }
-
-        if(password !== confirmPassword){
-            return res.status(403).send({
-				success: false,
-				message: "Password didn't match",
-			});
-        }
-
-        const findUser = await User.findOne({email : email});
-
-        if(findUser){
+        if (!firstName || !lastName || !email || !password || !confirmPassword || !otp) {
             return res.status(400).json({
-				success: false,
-				message: "USER ALREADY EXISTS",
-			});
+                success: false,
+                message: "All fields are required",
+            });
         }
 
-        const findOTP = await OTP.findOne({email : email}).sort({createdAt : -1}).limit(1);
-
-        if(findOTP.otp !== otp){
-            return res.status(400).send({
-				success: false,
-				message: "OTP didn't Matched",
-			});
+        //* Check if passwords match
+        if (password !== confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "Passwords do not match",
+            });
         }
 
-        const hasedPaas = await bcrypt.hash(password , 10);
-        const profileURL = `https://ui-avatars.com/api/?name=${firstName}+${lastName}&background=${randomColor().replace('#' , '')}&color=${randomColor().replace('#' , '')}&bold=true`;
+        //* Check if user already exists
+        const findUser = await User.findOne({ email });
+        if (findUser) {
+            return res.status(400).json({
+                success: false,
+                message: "User already exists",
+            });
+        }
 
-        const additional = new Profile({
+        //* Check OTP
+        const latestOTP = await OTP.findOne({ email }).sort({ createdAt: -1 }).limit(1);
+        if (!latestOTP || latestOTP.otp !== otp) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid or expired OTP",
+            });
+        }
+
+        //* Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        //* Generate profile URL
+        const profileURL = `https://*ui-avatars.com/api/?name=${firstName}+${lastName}&background=${randomColor().replace('#', '')}&color=${randomColor().replace('#', '')}&bold=true`;
+
+        //* Create profile
+        const profile = new Profile({
             gender: null,
-			dateOfBirth: null,
-			about: null,
-			contactNumber: null,
+            dateOfBirth: null,
+            about: null,
+            contactNumber: null,
         });
+        const savedProfile = await profile.save();
 
-        let finalUser = new User({
+        //* Create user
+        const newUser = new User({
             firstName,
-			lastName,
-			email,
-            password : hasedPaas,
-            image : profileURL,
-            additionalDetails : additional,
-        })
-        finalUser = await finalUser.save();
-        
+            lastName,
+            email,
+            password: hashedPassword,
+            image: profileURL,
+            additionalDetails: savedProfile._id,
+        });
+        const savedUser = await newUser.save();
+
+        //* Send success email
         await sendMail(
-            finalUser.email,
+            savedUser.email,
             "Account Created Successfully",
-            successSignUp(finalUser.firstName , finalUser.lastName)
-        ).then(() => {
-            console.log("SignUP mail Success");
-        }).catch((err) => {
-            console.log("SignUP mail Error" , err.message);
-        })
+            successSignUp(savedUser.firstName, savedUser.lastName)
+        );
 
         return res.status(200).json({
-			success: true,
-			finalUser,
-			message: "SIGN UP COMPLETED",
-		});
+            success: true,
+            message: "Sign-up completed successfully",
+            data: savedUser,
+        });
 
-    }catch(err){
-        return res.status(400).json({
+    } catch (err) {
+        console.error("Error during sign-up:", err);
+        return res.status(500).json({
             success: false,
-            err : err.message,
-            msg : "Error while sign up"
-        })
+            message: "Error during sign-up",
+            error: err.message,
+        });
     }
-}
+};
