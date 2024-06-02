@@ -33,6 +33,7 @@ exports.editAss = async (req , res) => {
             })
         }
 
+        //* AUTHORIZING TEACHER
         if(findAss.teacher !== req.user.id){
             return res.status(401).json({
                 success : false,

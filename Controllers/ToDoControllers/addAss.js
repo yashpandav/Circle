@@ -32,21 +32,22 @@ async function fetchClassAssignments(classId, userId) {
 async function updateToDo(req, res) {
     try {
         const userId = req.user.id;
-        const joinedClasses = req.joinedClassAsStudent;
-        const claId = req.params.classId;
-
-        if (!joinedClasses || joinedClasses.length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: "No classes joined by the student"
-            });
-        }
 
         let user = await User.findById(userId)?.populate('todo').exec();
         if (!user) {
             return res.status(404).json({
                 success: false,
                 message: "User not found"
+            });
+        }
+
+        const joinedClasses = user.joinedClassAsStudent;
+        const claId = req.params.classId;
+
+        if (!joinedClasses || joinedClasses.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "No classes joined by the student"
             });
         }
 
@@ -89,8 +90,7 @@ cron.schedule('0 0 * * *', async () => {
     try {
         const users = await User.find({}).exec();
         for (const user of users) {
-            const req = { user: { id: user.id }, 
-                            joinedClassAsStudent: user?.joinedClassAsStudent 
+            const req = { user: { id: user.id  , email : user.email  }, 
                         };
             const res = {
                 status: (code) => ({

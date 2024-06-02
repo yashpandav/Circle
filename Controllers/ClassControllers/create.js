@@ -49,7 +49,7 @@ exports.createClass = async (req , res) => {
             classTheme : color,
             thumbnail : uploadResponse?.secure_url || "",
             admin : req.user.id,
-            entryCode : randomstring.generate(5),
+            entryCode : randomstring.generate(8),
             entryUrl : `http://localhost:4000/class/${randomstring.generate(15).toLowerCase()}`
         });
 

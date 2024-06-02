@@ -31,7 +31,8 @@ exports.joinClass = async (req, res) => {
             });
         }
         let user = await User.findById(req.user.id);
-        if(req.createdClasses.includes(findClass.id) ||req.joinedClassAsAteacher.includes(findClass.id) || req.joinedClassAsStudent.includes(findClass.id)){
+
+        if(user.createdClasses.includes(findClass.id) || user.joinedClassAsAteacher.includes(findClass.id) || user.joinedClassAsStudent.includes(findClass.id)){
             return res.status(401).json({
                 success: false,
                 message: "You are already enrolled in this class"

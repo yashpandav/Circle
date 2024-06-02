@@ -16,6 +16,16 @@ exports.deleteAss = async (req, res) => {
             });
         }
 
+        //* AUTHORIZING TEACHER || ADMIN
+        const currClass = await Class.findById(classId);
+        let assignment = await Assignment.findById(assId);
+        if(currClass.admin.toString() !== req.user.id || assignment.teacher.toString() !== req.user.id) {
+            return res.status(403).json({
+                success : false,
+                message: "You are not authorized to delete this assignment",
+            });
+        }
+
         //* Remove the assignment from the class
         await Class.findByIdAndUpdate(classId, {
             $pull: { addedAssignment: assId },
@@ -27,7 +37,7 @@ exports.deleteAss = async (req, res) => {
         });
 
         //* Delete the assignment and its submissions
-        const assignment = await Assignment.findByIdAndDelete(assId);
+        assignment = await Assignment.findByIdAndDelete(assId);
         if (assignment && assignment.submission && assignment.submission.length > 0) {
             await Promise.all(assignment.submission.map(submittedId => {
                 return submittedAss.findByIdAndDelete(submittedId);

@@ -21,6 +21,7 @@ exports.leftClass = async (req , res) => {
                 message: "User not found"
             })
         }
+
         if(userDetails.createdClasses.includes(classId)){
             return res.status(403).json({
                 success: false,

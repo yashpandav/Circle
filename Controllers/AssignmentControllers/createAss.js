@@ -34,6 +34,22 @@ exports.createAss = async (req , res) => {
             })
         }
 
+        let currClass = await Class.findById(currClassId);
+        if(!currClass){
+            return res.status(401).json({
+                success : false,
+                message : "Class Not Found"
+            })
+        }
+
+        //* AUTHORIZING TEACHER
+        if(!currClass.teacher.includes(req.user.id)){
+            return res.status(401).json({
+                success : false,
+                message : "You are not authorized to add assignment in this class"
+            })
+        }
+
         if(file){
             const fileUrl = await uploadImage(file , process.env.FOLDER_NAME);
             file = fileUrl.secure_url;

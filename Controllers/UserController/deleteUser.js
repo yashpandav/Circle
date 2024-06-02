@@ -18,17 +18,17 @@ exports.deleteUser = async (req, res) => {
 
         await Profile.findByIdAndDelete(user.additionalDetails);
 
-        await ToDo.deleteMany({ id: user.todo });
+        await ToDo.findByIdAndDelete({ id: user.todo });
 
-        await Review.deleteMany({ id: user.reviewList });
+        await Review.findByIdAndDelete({ id: user.reviewList });
 
         const allClasses = await Class.find();
         await Promise.all(allClasses.map(async (classes) => {
             if(classes.admin === user.id){
                 classes.admin = null;
             }
-            classes.teacher.pull(user._id);
-            classes.student.pull(user._id);
+            classes.teacher.pull(user.id);
+            classes.student.pull(user.id);
             await classes.save();
         }));
 

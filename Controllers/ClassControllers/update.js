@@ -27,6 +27,7 @@ exports.updateClass = async (req, res) => {
             })
         }
 
+        //* AUTHORIZING ADMIN
         if(findClass.admin.toString() !== req.user.id){
             return res.status(401).json({
                 success : false,
