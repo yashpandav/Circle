@@ -1,8 +1,8 @@
 const router = require('express').Router();
 
-const { auth } = require('../Middleware/auth');
+const { auth , isStudent } = require('../Middleware/auth');
 
 const { updateToDo } = require('../Controllers/ToDoControllers/addAss');
-router.post('/todos:classId' , auth , updateToDo);
+router.post('/todos:classId', auth, isStudent, updateToDo);
 
 module.exports = router;

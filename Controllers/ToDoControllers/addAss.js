@@ -33,7 +33,7 @@ async function updateToDo(req, res) {
     try {
         const userId = req.user.id;
         const joinedClasses = req.joinedClassAsStudent;
-        const classId = req.params.claId;
+        const claId = req.params.classId;
 
         if (!joinedClasses || joinedClasses.length === 0) {
             return res.status(400).json({
@@ -42,7 +42,7 @@ async function updateToDo(req, res) {
             });
         }
 
-        const user = await User.findById(userId).populate('todo');
+        const user = await User.findById(userId)?.populate('todo');
         if (!user) {
             return res.status(404).json({
                 success: false,
