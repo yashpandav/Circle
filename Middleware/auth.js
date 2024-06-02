@@ -40,7 +40,6 @@ exports.auth = async (req, res, next) => {
         });
     }
 };
-
 // exports.isStudent = async (req, res, next) => {
 //     try {
 //         const studentClass = await Class.findOne({ student: req.user.id });
