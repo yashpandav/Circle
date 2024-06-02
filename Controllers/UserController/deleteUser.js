@@ -15,20 +15,24 @@ exports.deleteUser = async (req, res) => {
                 message: "USER NOT FOUND",
             });
         }
+        await Profile.findByIdAndDelete(user?.additionalDetails);
 
-        await Profile.findByIdAndDelete(user.additionalDetails);
+        await ToDo.findByIdAndDelete(user?.todo);
 
-        await ToDo.findByIdAndDelete({ id: user.todo });
+        await Review.findByIdAndDelete(user?.reviewList);
 
-        await Review.findByIdAndDelete({ id: user.reviewList });
+        const allClasses = await Class.find({});
 
-        const allClasses = await Class.find();
         await Promise.all(allClasses.map(async (classes) => {
-            if(classes.admin === user.id){
+            if(classes.admin.toString() === user.id){
                 classes.admin = null;
             }
-            classes.teacher.pull(user.id);
-            classes.student.pull(user.id);
+            if (classes.teacher.includes(user.id)) {
+                classes.teacher.pull(user.id);
+            }
+            if (classes.student.includes(user.id)) {
+                classes.student.pull(user.id);
+            }
             await classes.save();
         }));
 

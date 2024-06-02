@@ -1,28 +1,43 @@
 const User = require('../../Models/User');
 const Review = require('../../Models/review');
 
-exports.removeFromReviewd = async (req, res) => {
+exports.removeFromReviewed = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
-        const assId = req.body.addId;
+        const userId = req.user.id;
+        const assId = req.body.assId;
 
+        if (!userId) {
+            return res.status(400).json({
+                success: false,
+                message: "User ID is required"
+            });
+        }
+
+        if (!assId) {
+            return res.status(400).json({
+                success: false,
+                message: "Assignment ID is required"
+            });
+        }
+
+        const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({
                 success: false,
-                message: "USER NOT FOUND"
+                message: "User not found"
             });
         }
 
         let reviewList = await Review.findById(user.reviewList);
-
         if (!reviewList) {
             return res.status(404).json({
                 success: false,
-                message: "REVIEW LIST NOT FOUND"
+                message: "Review list not found"
             });
         }
 
         let found = false;
+
         reviewList.byClass.forEach(classReview => {
             if (classReview.reviewdAss.includes(assId)) {
                 classReview.notReviedAss.push(assId);
@@ -34,7 +49,7 @@ exports.removeFromReviewd = async (req, res) => {
         if (!found) {
             return res.status(404).json({
                 success: false,
-                message: "ASSIGNMENT NOT FOUND IN DONE REVIEWS"
+                message: "Assignment not found in reviewed list"
             });
         }
 
@@ -42,15 +57,15 @@ exports.removeFromReviewd = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: "Removed from reviewed",
-            reviewList
+            message: "Removed from reviewed successfully",
+            data: reviewList
         });
 
     } catch (err) {
-        console.log(err);
+        console.error(err);
         return res.status(500).json({
             success: false,
             message: "Something went wrong while removing from reviewed"
         });
     }
-}
+};

@@ -3,31 +3,38 @@ const Review = require('../../Models/review');
 
 exports.addIntoReviewd = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
+        const userId = req.user.id;
         const assId = req.body.addId;
 
+        if (!assId) {
+            return res.status(400).json({
+                success: false,
+                message: "Assignment ID is required"
+            });
+        }
+
+        const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({
                 success: false,
-                message: "USER NOT FOUND"
+                message: "User not found"
             });
         }
 
         let reviewList = await Review.findById(user.reviewList);
-
         if (!reviewList) {
             return res.status(404).json({
                 success: false,
-                message: "REVIEW LIST NOT FOUND",
-                reviewList
+                message: "Review list not found"
             });
         }
 
         let found = false;
         reviewList.byClass.forEach(classReview => {
-            if (classReview.notReviedAss.includes(assId)) {
+            const index = classReview.notReviedAss.indexOf(assId);
+            if (index !== -1) {
                 classReview.reviewdAss.push(assId);
-                classReview.notReviedAss.pull(assId);
+                classReview.notReviedAss.splice(index, 1);
                 found = true;
             }
         });
@@ -35,7 +42,7 @@ exports.addIntoReviewd = async (req, res) => {
         if (!found) {
             return res.status(404).json({
                 success: false,
-                message: "ASSIGNMENT NOT FOUND IN PENDING REVIEWS"
+                message: "Assignment not found in pending reviews"
             });
         }
 
@@ -43,14 +50,15 @@ exports.addIntoReviewd = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: "Added into reviewed"
+            message: "Added into reviewed",
+            date : reviewList
         });
 
     } catch (err) {
-        console.log(err);
+        console.error(err);
         return res.status(500).json({
             success: false,
             message: "Something went wrong while adding into reviewed"
         });
     }
-}
+};

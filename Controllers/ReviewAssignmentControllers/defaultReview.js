@@ -4,7 +4,7 @@ const Review = require('../../Models/review');
 const Assignment = require('../../Models/Assignment');
 
 async function fetchAssignmentReview(classId, user) {
-    const currClass = await Class.findById(classId).populate("addedAssignment").exec();
+    const currClass = await Class.findById(classId).populate("addedAssignment");
     if (!currClass) {
         return null;
     }
@@ -14,21 +14,32 @@ async function fetchAssignmentReview(classId, user) {
         return null;
     }
 
-    const reviewData = await Review.findById(user.reviewList).exec();
-    const reviewdAss = reviewData ? reviewData.reviewdAss : [];
-    const notReviedAss = reviewData ? reviewData.notReviedAss : thisTeacherAssignments.map(ass => ass.id);
+    const reviewData = await Review.findById(user.reviewList);
+    const reviewedAssignments = reviewData ? reviewData.reviewdAss : [];
+    const notReviewedAssignments = reviewData ? reviewData.notReviedAss : thisTeacherAssignments.map(ass => ass.id);
 
-    const reviewedAssignments = thisTeacherAssignments.filter(assignment => reviewdAss.includes(assignment.id));
-    const pendingAssignments = thisTeacherAssignments.filter(assignment => notReviedAss.includes(assignment.id));
+    //* seperate pending and reviewed assignments
+    const reviewed = thisTeacherAssignments.filter(assignment => reviewedAssignments.includes(assignment.id));
+    const pending = thisTeacherAssignments.filter(assignment => notReviewedAssignments.includes(assignment.id));
 
-    return { classId, reviewedAssignments, pendingAssignments };
+    return { classId, reviewed, pending };
 }
+
 
 exports.pendingReview = async (req, res) => {
     try {
         const userId = req.user.id;
+
+        const user = await User.findById(userId).populate("reviewList");
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
         const classId = req.params.classId;
-        const joinedClasses = req.joinedClassAsTeacher;
+        const joinedClasses = user.joinedClassAsAteacher;
 
         if (!joinedClasses || joinedClasses.length === 0) {
             return res.status(400).json({
@@ -37,39 +48,31 @@ exports.pendingReview = async (req, res) => {
             });
         }
 
-        let user = await User.findById(userId).populate("reviewList").exec();
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "User not found"
-            });
-        }
-
         const classIds = classId ? [classId] : joinedClasses;
 
-        const reviewData = await Promise.all(classIds.map(
-            classId => fetchAssignmentReview(classId, user)
-        ));
+        const reviewData = await Promise.all(classIds.map(classId => fetchAssignmentReview(classId, user)));
 
-        let revied = await Review.findById(user.reviewList);
-        if (!revied) {
-            revied = new Review({
+        let reviewList = await Review.findById(user.reviewList);
+        if (!reviewList) {
+            reviewList = new Review({
                 user: userId,
-                byClass : reviewData.filter(data => data !== null)
+                byClass: reviewData.filter(data => data !== null)
             });
-        }else{
-            revied.byClass = reviewData.filter(data => data != null);
+        } else {
+            reviewList.byClass = reviewData.filter(data => data !== null);
         }
-        await revied.save();
-        user.reviewList = revied.id;
-        user.save();
+
+        await reviewList.save();
+        user.reviewList = reviewList.id;
+        await user.save();
+
         return res.status(200).json({
             success: true,
             message: "Review data fetched successfully",
-            data: revied
+            data: reviewList
         });
     } catch (err) {
-        console.log(err);
+        console.error(err);
         return res.status(500).json({
             success: false,
             message: "Something went wrong while fetching review data"

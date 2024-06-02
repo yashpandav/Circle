@@ -2,30 +2,31 @@ const ToDo = require('../../Models/ToDo');
 const Assignment = require('../../Models/Assignment');
 const User = require('../../Models/User');
 const Class = require('../../Models/Class');
-const cron = require('cron');
+const cron = require('cron')
 
 async function fetchClassAssignments(classId, userId) {
-    const currClass = await Class.findById(classId)?.populate("addedAssignment").exec();
+    const currClass = await Class.findById(classId).populate("addedAssignment").exec();
     if (!currClass || !currClass.addedAssignment) return null;
 
     const assigned = [];
     const missing = [];
     const completed = [];
 
-    await Promise.all(currClass.addedAssignment.map(
-        async (assignment) => {
-            const currAssignment = await Assignment.findById(assignment.id)?.populate("submission").exec();
-            const submission = currAssignment.submission.find(sub => sub.student.equals(userId));
+    await Promise.all(currClass.addedAssignment.map(async (assignment) => {
+        const currAssignment = await Assignment.findById(assignment.id).populate("submission").exec();
+        if (!currAssignment) return;
 
-            if (!submission && new Date(currAssignment.dueDate) > new Date()) {
-                assigned.push(currAssignment.id);
-            } else if (!submission && new Date(currAssignment.dueDate) < new Date()) {
-                missing.push(currAssignment.id);
-            } else if (submission) {
-                completed.push(currAssignment.id);
-            }
+        const submission = currAssignment.submission.find(sub => sub.student.equals(userId));
+
+        if (!submission && new Date(currAssignment.dueDate) > new Date()) {
+            assigned.push(currAssignment.id);
+        } else if (!submission && new Date(currAssignment.dueDate) < new Date()) {
+            missing.push(currAssignment.id);
+        } else if (submission) {
+            completed.push(currAssignment.id);
         }
-    ));
+    }));
+
     return { classId, assigned, missing, completed };
 }
 
@@ -33,7 +34,7 @@ async function updateToDo(req, res) {
     try {
         const userId = req.user.id;
 
-        let user = await User.findById(userId)?.populate('todo').exec();
+        let user = await User.findById(userId).populate('todo').exec();
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -54,7 +55,7 @@ async function updateToDo(req, res) {
         const classIds = claId ? [claId] : joinedClasses;
 
         const allAssignments = await Promise.all(classIds.map(classId => fetchClassAssignments(classId, userId)));
-        const assignmentsByClass = allAssignments.filter(Boolean); // Remove null values
+        const assignmentsByClass = allAssignments.filter(Boolean); // Removes null values
 
         let toDo = await ToDo.findById(user.todo);
         if (!toDo) {
@@ -73,7 +74,7 @@ async function updateToDo(req, res) {
         return res.status(200).json({
             success: true,
             message: "ToDo list updated successfully",
-            toDo
+            data : toDo
         });
     } catch (err) {
         console.log(err);
@@ -84,14 +85,17 @@ async function updateToDo(req, res) {
     }
 }
 
-
-//* IN MIDNIGHT WE MAY NOT HAVE CURRENT USER
 cron.schedule('0 0 * * *', async () => {
     try {
+        //* NOTE: SINCE WE MAY NOT HAVE REQ.USER IN MIDNIGHT , NEED TO GET ALL USER
         const users = await User.find({}).exec();
         for (const user of users) {
-            const req = { user: { id: user.id  , email : user.email  }, 
-                        };
+            const req = {
+                user: {
+                    id: user.id,
+                    email: user.email
+                }
+            };
             const res = {
                 status: (code) => ({
                     json: (data) => console.log(`Status: ${code}, Data: ${JSON.stringify(data)}`)

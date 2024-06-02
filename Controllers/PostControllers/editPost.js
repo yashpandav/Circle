@@ -7,13 +7,7 @@ require('dotenv').config();
 exports.editPost = async (req, res) => {
     try {
         const postId = req.params.postId;
-
-        const {
-            title,
-            postBody,
-            category,
-        } = req.body;
-
+        const { title, postBody, category } = req.body;
         let postFile = req.files?.postFile;
 
         if (!postId) {
@@ -23,7 +17,7 @@ exports.editPost = async (req, res) => {
             });
         }
 
-        let findPost = await Post.findById(postId);
+        const findPost = await Post.findById(postId);
         if (!findPost) {
             return res.status(404).json({
                 success: false,
@@ -40,17 +34,19 @@ exports.editPost = async (req, res) => {
         }
 
         if (category) {
-            let currCategory = await Category.findOne({ category });
+            const currCategory = await Category.findOne({ category });
             if (!currCategory) {
                 return res.status(404).json({
                     success: false,
                     message: "Category not found",
                 });
             }
-            let prevCategory = await Category.findById(findPost.category);
-            prevCategory.post.pull(postId);
+            const prevCategory = await Category.findById(findPost.category);
+            if (prevCategory) {
+                prevCategory.post.pull(postId);
+                await prevCategory.save();
+            }
             currCategory.post.push(postId);
-            await prevCategory.save();
             await currCategory.save();
             findPost.category = currCategory.id;
         }
@@ -68,7 +64,7 @@ exports.editPost = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: "Post edited successfully",
-            findPost,
+            data : findPost,
         });
     } catch (err) {
         console.error(err);
