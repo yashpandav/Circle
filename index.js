@@ -5,6 +5,7 @@ const {dbConnect} = require('./Config/databaseConnection');
 const {cloudinaryConnect} = require('./Config/cloudinaryConnection');
 const cookieParser = require('cookie-parser');
 const fileUpload = require('express-fileupload');
+const {auth} = require('./Middleware/auth');
 require('dotenv').config();
 
 //* DATABASE & CLOUDINARY CONNECTION
@@ -36,12 +37,40 @@ app.get('/' , (req , res) => {
     console.log("HOME PAGE");
 })
 
-//* ROUTER IMPORT
+//* AUTH ROUTER IMPORTs
 const userRoute = require('./Routes/UserAuthRoutes'); 
 app.use('/auth/user' , userRoute);
+
+//* CLASS ROUTER IMPORTs
 const classRoute = require('./Routes/ClassRoutes');
 app.use('/class' , classRoute);
+
+//* USER ROUTER IMPORTs
 const userProfileRoute = require('./Routes/UserRoutes');
 app.use('/user' , userProfileRoute);
+
+//* ASSIGNMENT ROUTER IMPORTs
 const assignmentRoutes = require('./Routes/AssignmentRoutes');
 app.use('/assignment' , assignmentRoutes);
+
+//* REVIEWS LIST ROUTER IMPORTs
+const {pendingReview} = require('./Controllers/ReviewAssignmentControllers/defaultReview');
+app.post('/reviews/:classId' , auth , pendingReview);
+const reviewlistRoutes = require('./Routes/ReviewRoutes');
+app.use('/reviews' , reviewlistRoutes);
+
+//* COMMENT ROUTER IMPORTs
+const commentRoutes = require('./Routes/CommentRoutes');
+app.use('/comment' , commentRoutes);
+
+//* POST ROUTER IMPORTs
+const postRoutes = require('./Routes/PostRoutes');
+app.use('/post' , postRoutes);
+
+//* TODOS ROUTER IMPORTs
+const { updateToDo } = require('./Controllers/ToDoControllers/addAss');
+app.post('/todos:classId', auth , updateToDo);
+
+//* CATEGORY ROUTES IMPORTs
+const categoryRoutes = require('./Routes/CategoryRoutes');
+app.use('/category' , categoryRoutes);

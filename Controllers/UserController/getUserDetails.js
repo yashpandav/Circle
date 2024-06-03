@@ -19,7 +19,7 @@ exports.getProfile = async (req , res) => {
         if(user){
             return res.status(200).json({
                 success: true,
-                user
+                data : user
             });
         }
         return res.status(401).json({

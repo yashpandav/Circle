@@ -7,7 +7,7 @@ require('dotenv').config();
 exports.editAss = async (req , res) => {
     try{
 
-        const assId = req.params.assId; 
+        const assId = req.params.id; 
 
         const{
             name ,

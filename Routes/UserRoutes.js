@@ -8,6 +8,9 @@ const {deleteUser} = require('../Controllers/UserController/deleteUser');
 router.delete('/deleteuser' , auth , deleteUser)
 
 const {getProfile} = require('../Controllers/UserController/getUserDetails');
-router.get('/getdetails', auth , getProfile);
+router.get('/getuser', auth , getProfile);
+
+const {updateProfile} = require('../Controllers/UserController/profileUpdate');
+router.put('/update/:id', auth , updateProfile);
 
 module.exports = router;

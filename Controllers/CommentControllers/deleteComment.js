@@ -4,7 +4,7 @@ const Assignment = require('../../Models/Assignment');
 
 exports.deleteComment = async (req, res) => {
     try {
-        const commentId = req.params.commentId;
+        const commentId = req.params.id;
         const { commentOn, id } = req.body;
 
         if (!commentId || !id || !commentOn) {

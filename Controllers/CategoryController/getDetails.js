@@ -4,7 +4,7 @@ const Post = require('../../Models/Post');
 
 exports.getDetails = async (req, res) => {
     try {
-        const categoryId = req.params.categoryId;
+        const categoryId = req.params.id;
 
         if (!categoryId) {
             return res.status(400).json({

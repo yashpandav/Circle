@@ -2,7 +2,7 @@ const Comment = require('../../Models/Comment');
 
 exports.editComment = async (req, res) => {
     try {
-        const commentId = req.params.commentId;
+        const commentId = req.params.id;
 
         if (!commentId) {
             return res.status(400).json({

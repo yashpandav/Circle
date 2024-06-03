@@ -6,7 +6,7 @@ const Comment = require("../../Models/Comment");
 
 exports.deletePost = async (req, res) => {
     try {
-        const postId = req.params.postId;
+        const postId = req.params.id;
         const classId = req.body.classId;
 
         if (!postId || !classId) {

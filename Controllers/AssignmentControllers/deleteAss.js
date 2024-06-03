@@ -7,7 +7,7 @@ const submittedAss = require('../../Models/SubmitAssignment');
 
 exports.deleteAss = async (req, res) => {
     try {
-        const assId = req.params.assId;
+        const assId = req.params.id;
         const classId = req.body.classId;
 
         if (!assId || !classId) {

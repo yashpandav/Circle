@@ -6,7 +6,8 @@ require('dotenv').config();
 
 exports.submitAss = async (req, res) => {
     try {
-        const { assId, data, submittedID } = req.body;
+        const assId = req.params.id;
+        const { data, submittedID } = req.body;
         let file = req.files?.file;
 
         if (!file && !data) {

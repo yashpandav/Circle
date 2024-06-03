@@ -6,7 +6,7 @@ require('dotenv').config();
 
 exports.editPost = async (req, res) => {
     try {
-        const postId = req.params.postId;
+        const postId = req.params.id;
         const { title, postBody, category } = req.body;
         let postFile = req.files?.postFile;
 

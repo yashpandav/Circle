@@ -15,6 +15,7 @@ exports.deleteUser = async (req, res) => {
                 message: "USER NOT FOUND",
             });
         }
+
         await Profile.findByIdAndDelete(user?.additionalDetails);
 
         await ToDo.findByIdAndDelete(user?.todo);

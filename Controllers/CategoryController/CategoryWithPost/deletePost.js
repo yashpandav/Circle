@@ -4,7 +4,7 @@ const Class = require('../../../Models/Class');
 
 exports.deletePostFromCategory = async (req, res) => {
     try {
-        const postId = req.params.postId;
+        const postId = req.params.id;
         const { categoryId, classId } = req.body;
 
         if (!categoryId || !postId || !classId) {

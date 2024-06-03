@@ -4,7 +4,7 @@ const Class = require('../../../Models/Class');
 
 exports.deleteAssFromCategory = async (req, res) => {
     try {
-        const assId = req.params.assId
+        const assId = req.params.id;
         const { categoryId, classId } = req.body;
 
         if (!categoryId || !assId || !classId) {

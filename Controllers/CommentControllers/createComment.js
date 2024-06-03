@@ -9,7 +9,7 @@ exports.createComment = async (req, res) => {
             commentBody,
             commentOn,
             id
-        } = req.body;
+        } = req?.body;
 
         if (!name || !commentBody) {
             return res.status(400).json({

@@ -2,7 +2,7 @@ const Post = require('../../Models/Post');
 
 exports.getPostDetails = async (req, res) => {
     try {
-        const postId = req.params.postId;
+        const postId = req.params.id;
 
         if (!postId) {
             return res.status(400).json({

@@ -4,7 +4,7 @@ const Assignment = require('../../Models/Assignment');
 exports.getAllComment = async (req, res) => {
     try {
         const { commentOn } = req.body;
-        const { id } = req.params;
+        const id = req.params.id;
 
         if (!commentOn) {
             return res.status(400).json({

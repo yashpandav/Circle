@@ -9,14 +9,14 @@ const {updateClass} = require('../Controllers/ClassControllers/update');
 router.put('/update/:id' , auth , updateClass);
 
 const {getClass} = require('../Controllers/ClassControllers/getClass');
-router.get('/getClass/:id', getClass);
+router.get('/getdetails/:id', getClass);
 
 const {joinClass} = require('../Controllers/ClassControllers/joinClass');
-router.post('/joinClass' ,auth, joinClass);
+router.post('/join' ,auth, joinClass);
 
 const {deleteClass} = require('../Controllers/ClassControllers/deleteClass');
-router.delete('/deleteClass', auth , deleteClass);
+router.delete('/delete/:id', auth , deleteClass);
 
 const {leftClass} = require('../Controllers/ClassControllers/leftClass');
-router.post('/leftClass' , auth, leftClass);
+router.post('/left' , auth, leftClass);
 module.exports = router;

@@ -2,11 +2,11 @@ const User = require('../../../Models/User');
 const Assignment = require('../../../Models/Assignment');
 const SubmitAssignment = require('../../../Models/SubmitAssignment');
 const {uploadImage} = require('../../../Utils/imageUpload');
-require('doenv').config();
+require('dotenv').config();
 
 exports.editSubmimtedAss = async (req, res) => {
     try {
-        const assId = req.body.assId;
+        const assId = req.params.id;
         const data = req.body.data;
         let file = req?.files?.file;
         const submitedID = req.body.submittedID;

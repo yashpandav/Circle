@@ -3,7 +3,7 @@ const User = require('../../Models/User');
 
 exports.deleteClass = async (req, res) => {
     try {
-        const { classId } = req.body;
+        const classId = req.params.id;
 
         if (!classId) {
             return res.status(401).json({
