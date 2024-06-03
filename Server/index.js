@@ -21,7 +21,7 @@ app.use(fileUpload({
 }));
 
 //* MAIL ROUTES
-const {sendMail} = require('./Utils/mailSender'); 
+const {sendMail} = require('./Utils/mailSender') 
 app.use('/sendMail' , sendMail);
 
 //* PORT AND LISTEN

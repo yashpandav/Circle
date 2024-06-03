@@ -1,6 +1,6 @@
 const router = require('express').Router();
 
-const { auth } = require('./Middleware/auth');
+const { auth } = require('../Middleware/auth');
 
 const { createCategory } = require('../Controllers/CategoryController/create');
 router.post('/create', auth, createCategory);
@@ -23,7 +23,7 @@ router.delete('/assignment/delete/:id', deleteAssFromCategory);
 const {addPostIntoCategory} = require('../Controllers/CategoryController/CategoryWithPost/addPost');
 router.post('/post/add', addPostIntoCategory);
 
-const {deleteAssFromCategory} = require('../Controllers/CategoryController/CategoryWithPost/deletePost');
-router.post('/post/delete/:id', deleteAssFromCategory);
+const {deletePostFromCategory} = require('../Controllers/CategoryController/CategoryWithPost/deletePost');
+router.post('/post/delete/:id', deletePostFromCategory);
 
 module.exports = router;

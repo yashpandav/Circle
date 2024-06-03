@@ -2,7 +2,7 @@ const ToDo = require('../../Models/ToDo');
 const Assignment = require('../../Models/Assignment');
 const User = require('../../Models/User');
 const Class = require('../../Models/Class');
-const cron = require('cron')
+const cron = require('node-cron');
 
 async function fetchClassAssignments(classId, userId) {
     const currClass = await Class.findById(classId).populate("addedAssignment").exec();
