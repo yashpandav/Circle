@@ -3,7 +3,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-    background-color: #f8f9fa;
+    background-color: transparent;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     position: fixed;
     width: 100%;
@@ -48,7 +48,7 @@ a {
     font-size: 1.4vw;
 }
 
-.is-current a , a:hover {
+.is-current a {
     color: #218279;
 }
 

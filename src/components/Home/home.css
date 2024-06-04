@@ -1,0 +1,20 @@
+.main-home{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
+#left-home{
+    width: 40%;
+}
+
+#right-home{
+    width: 50%;
+}
+
+#home-img{
+    width: 110%;
+}
+
