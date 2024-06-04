@@ -45,11 +45,11 @@ const Navbar = () => {
                     </li>
                 </Scrollspy>
                 <div className='btns'>
-                    <button className='btn'>
-                    Log In
-                    </button>
-                    <button className='btn'>
-                    SignUp
+                    <Button variant='outlined' style={{color : "#11706d" , border : "green"}}>
+                        Login
+                    </Button>
+                    <button id='signup-btn'>
+                        SignUp
                     </button>
                 </div>
             </nav>

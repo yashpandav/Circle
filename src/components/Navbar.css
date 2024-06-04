@@ -3,14 +3,15 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-    background-color: transparent;
+    background-color: #ffffffcc;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     position: fixed;
     width: 100%;
     height: 7vh;
     top: 0;
+    backdrop-filter: blur(10px);
+    z-index: 1000;
 }
-
 #logo {
     display: flex;
     align-items: center;
@@ -61,12 +62,12 @@ nav a::after {
     margin-top: 5px;
     right: 0;
     background-color: rgb(24, 126, 109);
-    transition: all 0.3s ease;
+    transition: width 0.3s ease;
 }
 
 nav a:hover::after {
     width: 100%;
-    right: 0;
+    left: 0;
 }
 
 h2 {
@@ -74,6 +75,7 @@ h2 {
     font-size: 1.5em;
     text-decoration: none;
     color: #333;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .btns {
@@ -83,9 +85,9 @@ h2 {
     margin-left: 10px;
 }
 
-button {
-    background-color: #2ec4b6;
-    color: white;
+#signup-btn {
+    background-color: #84d1c93e;
+    color: #11706d;
     border: none;
     padding: 10px 20px;
     cursor: pointer;
@@ -93,8 +95,4 @@ button {
     border-radius: 5px;
     max-width: fit-content;
     font-size: 1.14vw;
-}
-
-button:hover {
-    background-color: #00a896;
 }

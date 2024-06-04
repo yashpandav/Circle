@@ -6,15 +6,90 @@
     flex-direction: row;
 }
 
-#left-home{
+#left-home {
     width: 40%;
+    padding: 20px;
 }
-
 #right-home{
     width: 50%;
 }
 
 #home-img{
-    width: 110%;
+    width: 100%;
 }
 
+#home-left-text h1 {
+    background: linear-gradient(90deg, #3a0ca3, #f72585, #6247aa);
+    background-size: 200% 200%;
+    animation: left-text-gradient 3s ease infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 2.6vw;
+}
+
+@keyframes left-text-gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+
+#home-left-text p {
+    background : linear-gradient(80deg , #004e64 , #004e64);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 1.2em;
+    line-height: 1.6;
+}
+
+#home-left-btn {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#home-left-btn button {
+    border: 2px solid #00bfa6; /* Changed border color */
+    border-radius: 10px;
+    padding: 10px 20px;
+    color: #00bfa6; /* Changed text color */
+    background-color: transparent;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+#home-left-btn button:hover {
+    background-color: #00bfa6; /* Changed hover background color */
+    color: white;
+}
+
+#home-left-btn #create-class-home-btn {
+    border: 2px solid #00a896;
+    border-radius: 10px;
+    padding: 10px 20px;
+    color: #00a896;
+    background-color: transparent;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+#home-left-btn #create-class-home-btn:hover {
+    background-color: #00a896;
+    color: white;
+}
+
+#home-left-btn #straightLin {
+    height: 30px;
+    width: 2px;
+    background-color: #00a896;
+}
