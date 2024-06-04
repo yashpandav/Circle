@@ -4,3 +4,31 @@ body {
     background-color: #f9f9f9;
     color: #333;
 }
+
+/* src/App.css */
+nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: white;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav li {
+    margin: 0 15px;
+}
+
+.is-current a {
+    font-weight: bold;
+    color: red;
+}
+
+section {
+    padding-top: 50px;
+}
