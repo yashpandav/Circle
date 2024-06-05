@@ -18,7 +18,7 @@ const Navbar = () => {
             </div>
             <nav>
                 <Scrollspy
-                    items={['home', 'whywe', 'tutorial', 'explore']}
+                    items={['home', 'about', 'tutorial', 'explore']}
                     currentClassName="is-current"
                     offset={-50}
                     componentTag={'ul'}
@@ -29,8 +29,8 @@ const Navbar = () => {
                         </ScrollLink>
                     </li>
                     <li>
-                        <ScrollLink to="whywe" smooth={true} duration={500} offset={-50}>
-                            Why We
+                        <ScrollLink to="about" smooth={true} duration={500} offset={-50}>
+                            About
                         </ScrollLink>
                     </li>
                     <li>
@@ -45,7 +45,7 @@ const Navbar = () => {
                     </li>
                 </Scrollspy>
                 <div className='btns'>
-                    <Button variant='outlined' style={{color : "#11706d" , border : "green"}}>
+                    <Button variant='outlined' style={{color : "#11706d" , border : "green" , fontSize : "1.14vw"}}>
                         Login
                     </Button>
                     <button id='signup-btn'>

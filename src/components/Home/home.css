@@ -7,15 +7,18 @@
 }
 
 #left-home {
-    width: 40%;
-    padding: 20px;
+    width: 47%;
 }
 #right-home{
-    width: 50%;
+    width: 53%;
 }
 
 #home-img{
     width: 100%;
+}
+
+#home-left-text {
+    padding-left: 3vw;
 }
 
 #home-left-text h1 {
@@ -24,7 +27,8 @@
     animation: left-text-gradient 3s ease infinite;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-size: 2.6vw;
+    font-size: 2.7vw;  
+    font-family: "PT Sans Caption", sans-serif;
 }
 
 @keyframes left-text-gradient {
@@ -45,51 +49,47 @@
     background-size: 200% 200%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-size: 1.2em;
-    line-height: 1.6;
+    font-size: 1.35vw;
+    font-family: "Josefin Sans", sans-serif;
+    line-height: 1.4;
+    margin-top: 2vw;
+    text-align:start;
 }
 
 #home-left-btn {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 2vw;
+    font-size: 1.25vw;
 }
 
-#home-left-btn button {
-    border: 2px solid #00bfa6; /* Changed border color */
+#home-left-btn #join-class-home-btn {
     border-radius: 10px;
-    padding: 10px 20px;
-    color: #00bfa6; /* Changed text color */
+    color: #fb5607;
     background-color: transparent;
-    font-size: 1.2em;
+    font-size: 1.6vw;
     cursor: pointer;
-    transition: all 0.3s;
-}
-
-#home-left-btn button:hover {
-    background-color: #00bfa6; /* Changed hover background color */
-    color: white;
+    transition: all 250ms;  
+    margin-left: 40px;
 }
 
 #home-left-btn #create-class-home-btn {
-    border: 2px solid #00a896;
     border-radius: 10px;
-    padding: 10px 20px;
-    color: #00a896;
+    color: #4aa019;
     background-color: transparent;
-    font-size: 1.2em;
+    font-size: 1.6vw;
     cursor: pointer;
-    transition: all 0.3s;
+    margin-right : 40px;
+    transition: all 250ms;
 }
 
-#home-left-btn #create-class-home-btn:hover {
-    background-color: #00a896;
-    color: white;
+#home-left-btn #join-class-home-btn:hover , #create-class-home-btn:hover{    
+    transform: translateY(-3px);
 }
 
 #home-left-btn #straightLin {
-    height: 30px;
-    width: 2px;
+    height: 2.5vw;
+    width: 0.196vw;
     background-color: #00a896;
 }

@@ -19,9 +19,9 @@ export default function Home() {
                     </p>
                 </div>
                 <div id='home-left-btn'>
-                    <button type="button" className="btn btn-primary">
+                    <div id='join-class-home-btn'>
                         Join Class
-                    </button>
+                    </div>
                     <div id='straightLin'></div>
                     <div id='create-class-home-btn'>
                         Create Class
