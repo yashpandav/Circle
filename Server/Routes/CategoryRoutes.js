@@ -9,7 +9,7 @@ const { deleteCategory } = require('../Controllers/CategoryController/deleteCate
 router.delete('/delete', auth, deleteCategory);
 
 const { editCategory } = require('../Controllers/CategoryController/editCategory');
-router.put('/delete', auth, editCategory);
+router.put('/edit', auth, editCategory);
 
 const { getDetails } = require('../Controllers/CategoryController/getDetails');
 router.get('/details/:id', getDetails);
