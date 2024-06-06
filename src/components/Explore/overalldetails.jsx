@@ -4,7 +4,7 @@ import CountUp from 'react-countup';
 import './overalldetails.css'
 
 export default function OverAllDetails() {
-    const [totalClass, setTotalClass] = useState();
+    const [totalClass, setTotalClass] = useState(0);
     const [totalTeacher, setTotalTeacher] = useState(0);
     const [totalStudent, setTotalStudent] = useState(0);
 
@@ -39,7 +39,6 @@ export default function OverAllDetails() {
                     duration={2.75}
                     enableScrollSpy={true}
                     className='counter'
-                    offset={-50}
                 ></CountUp>
                 <h4>𝒞𝓁𝒶𝓈𝓈𝑒𝓈 𝒞𝓇𝑒𝒶𝓉𝑒𝒹
                 </h4>
@@ -50,7 +49,6 @@ export default function OverAllDetails() {
                     duration={2.75}
                     enableScrollSpy={true}
                     className='counter'
-                    offset={-50}
                 ></CountUp>
                 <h4>𝒯𝑒𝒶𝒸𝒽𝑒𝓇 𝒥𝑜𝒾𝓃𝑒𝒹
                 </h4>
@@ -61,7 +59,6 @@ export default function OverAllDetails() {
                     duration={2.75}
                     enableScrollSpy={true}
                     className='counter'
-                    offset={-50}
                 ></CountUp>
                 <h4>𝒮𝓉𝓊𝒹𝑒𝓃𝓉 𝒥𝑜𝒾𝓃𝑒𝒹
                 </h4>
