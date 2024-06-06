@@ -19,4 +19,8 @@ router.delete('/delete/:id', auth , deleteClass);
 
 const {leftClass} = require('../Controllers/ClassControllers/leftClass');
 router.post('/left' , auth, leftClass);
+
+const {getAllClass} = require('../Controllers/ClassControllers/getAllClass');
+router.get('/allclass' , getAllClass);
+
 module.exports = router;

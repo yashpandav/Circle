@@ -1,4 +1,4 @@
-const BASE_URL = process.env.BASE_URL;
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 //* AUTH API URL
 export const AUTH_API_URL = {
@@ -17,15 +17,14 @@ export const PROFILE_API_URL = {
     UPDATE_USER_API: BASE_URL + "/user/updateProfile",
 };
 
-
-//* CLASS API URL
 export const CLASS_API_URL = {
-    CREATE_CLASS_API: BASE_URL + "/class/create",
-    JOIN_CLASS_API: BASE_URL + "/class/join",
-    GET_CLASS_API: BASE_URL + "/class/getdetails",
-    DELETE_CLASS_API: BASE_URL + "/class/delete",
-    UPDATE_CLASS_API: BASE_URL + "/class/update",
-    LEFT_CLASS_API: BASE_URL + "/class/left",
+    CREATE_CLASS_API: `${BASE_URL}/class/create`,
+    JOIN_CLASS_API: `${BASE_URL}/class/join`,
+    GET_CLASS_API: `${BASE_URL}/class/getdetails`,
+    GET_ALL_CLASS_API: `${BASE_URL}/class/allclass`,
+    DELETE_CLASS_API: `${BASE_URL}/class/delete`,
+    UPDATE_CLASS_API: `${BASE_URL}/class/update`,
+    LEFT_CLASS_API: `${BASE_URL}/class/left`,
 };
 
 //* ASSIGNMENT API URL
