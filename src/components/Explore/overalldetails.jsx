@@ -1,10 +1,8 @@
-// src/components/temp.jsx
 import React, { useEffect, useState } from 'react';
-import { fetchAllClasses } from '../Api/apiCaller/classapicaller';
+import { fetchAllClasses } from '../../Api/apiCaller/classapicaller';
 
-const GetClass = () => {
+export default function OverAllDetails () {
     const [classes, setClasses] = useState([]);
-
     useEffect(() => {
         const getClasses = async () => {
             try {
@@ -24,5 +22,3 @@ const GetClass = () => {
         </div>
     );
 };
-
-export default GetClass;

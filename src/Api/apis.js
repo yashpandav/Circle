@@ -1,4 +1,4 @@
-const BASE_URL = process.env.BASE_URL;
+const BASE_URL = 'http://localhost:4000';
 
 //* AUTH API URL
 export const AUTH_API_URL = {
