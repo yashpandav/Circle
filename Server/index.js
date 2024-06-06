@@ -22,7 +22,7 @@ app.use(fileUpload({
 
 //* CORS
 const cors = require("cors");
-const allowedOrigins = JSON.parse(process.env.allowedOrigins);
+const allowedOrigins = JSON.parse(process.env.ALLOWD_ORIGIN);
 // console.log("CORS allowed origins: " + allowedOrigins)
 app.use(
     cors({

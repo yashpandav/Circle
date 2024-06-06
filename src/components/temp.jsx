@@ -1,6 +1,6 @@
 // src/components/temp.jsx
 import React, { useEffect, useState } from 'react';
-import { fetchAllClasses } from '../Api/classApi'
+import { fetchAllClasses } from '../Api/apiCaller/classapicaller';
 
 const GetClass = () => {
     const [classes, setClasses] = useState([]);
@@ -14,7 +14,6 @@ const GetClass = () => {
                 console.error("Error fetching classes", error);
             }
         };
-
         getClasses();
     }, []);
 
