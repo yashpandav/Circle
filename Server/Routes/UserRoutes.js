@@ -16,4 +16,7 @@ router.get('/created', auth , cretedByUser);
 
 const {joinedByUser} = require('../Controllers/UserController/joinedByUser')
 router.get('/joined', auth , joinedByUser);
+
+const {totalUser} = require('../Controllers/UserController/totaluser');
+router.get('/totaluser' , totalUser);
 module.exports = router;

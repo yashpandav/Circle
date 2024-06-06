@@ -15,8 +15,8 @@ export const PROFILE_API_URL = {
     GET_USER_CREATED_API: `${BASE_URL}/user/created`,
     DELETE_USER_API: `${BASE_URL}/user/deleteuser`,
     UPDATE_USER_API: `${BASE_URL}/user/updateProfile`,
+    TOTAL_USER_API: `${BASE_URL}/user/totaluser`,
 };
-
 
 export const CLASS_API_URL = {
     CREATE_CLASS_API: `${BASE_URL}/class/create`,
