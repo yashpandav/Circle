@@ -1,4 +1,4 @@
-.main-home{
+.main-home {
     width: 100%;
     display: flex;
     justify-content: center;
@@ -8,17 +8,19 @@
 
 #left-home {
     width: 47%;
+    padding-top: 4rem;
 }
-#right-home{
+
+#right-home {
     width: 53%;
 }
 
-#home-img{
+#home-img {
     width: 100%;
 }
 
 #home-left-text {
-    padding-left: 3vw;
+    padding-left: 3em;
 }
 
 #home-left-text h1 {
@@ -27,7 +29,7 @@
     animation: left-text-gradient 3s ease infinite;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-size: 2.7vw;  
+    font-size: 2.3em;
     font-family: "PT Sans Caption", sans-serif;
 }
 
@@ -35,61 +37,110 @@
     0% {
         background-position: 0% 50%;
     }
+
     50% {
         background-position: 100% 50%;
     }
+
     100% {
         background-position: 0% 50%;
     }
 }
 
-
 #home-left-text p {
-    background : linear-gradient(80deg , #004e64 , #004e64);
+    background: linear-gradient(80deg, #004e64, #004e64);
     background-size: 200% 200%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-size: 1.35vw;
+    font-size: 1.1em;
     font-family: "Josefin Sans", sans-serif;
     line-height: 1.4;
-    margin-top: 2vw;
-    text-align:start;
+    margin-top: 2em;
+    text-align: start;
 }
 
 #home-left-btn {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    margin-top: 2vw;
-    font-size: 1.25vw;
+    margin-top: 2em;
+    font-size: 0.8em;
 }
 
 #home-left-btn #join-class-home-btn {
     border-radius: 10px;
     color: #fb5607;
     background-color: transparent;
-    font-size: 1.6vw;
+    font-size: 1.6em;
     cursor: pointer;
-    transition: all 250ms;  
-    margin-left: 40px;
+    transition: all 250ms;
+    margin-left: 2.5em;
 }
 
 #home-left-btn #create-class-home-btn {
     border-radius: 10px;
     color: #4aa019;
     background-color: transparent;
-    font-size: 1.6vw;
+    font-size: 1.6em;
     cursor: pointer;
-    margin-right : 40px;
+    margin-right: 2.5em;
     transition: all 250ms;
 }
 
-#home-left-btn #join-class-home-btn:hover , #create-class-home-btn:hover{    
-    transform: translateY(-3px);
+#home-left-btn #join-class-home-btn:hover,
+#create-class-home-btn:hover {
+    transform: translateY(-0.3em);
 }
 
 #home-left-btn #straightLin {
-    height: 2.5vw;
-    width: 0.196vw;
+    height: 2.5em;
+    width: 0.196em;
     background-color: #00a896;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .main-home {
+        flex-direction: column;
+    }
+
+    #left-home {
+        width: 100%;
+        padding-top: 3rem;
+    }
+
+    #right-home {
+        width: 100%;
+    }
+
+    #home-left-text {
+        padding-left: 0em;
+    }
+
+    #home-left-text h1 {
+        padding-left: 0.4em;
+    }
+
+
+    #home-left-text p {
+        line-height: 1.3;
+        text-align: center;
+    }
+
+    #home-left-btn {
+        flex-direction: column;
+        margin-top: 1.5em;
+    }
+
+    #home-left-btn #join-class-home-btn,
+    #home-left-btn #create-class-home-btn {
+        margin: 0;
+        margin-top: 1em;
+    }
+
+    #home-left-btn #straightLin {
+        width: 3em;
+        height: 0.196em;
+        margin-top: 1rem;
+    }
 }

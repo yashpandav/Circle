@@ -21,6 +21,7 @@
     "react-router-dom": "^6.23.1",
     "react-scripts": "5.0.1",
     "react-scroll": "^1.9.0",
+    "react-scroll-parallax": "^3.4.5",
     "react-scrollspy": "^3.4.3",
     "react-type-animation": "^3.2.0",
     "react-ui-scrollspy": "^2.3.0",

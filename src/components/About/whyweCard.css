@@ -60,7 +60,7 @@
     transition: all 0.5s ease;
 }
 
-.why-we-icon:hover{
+.why-we-icon:hover {
     transform: rotate(360deg);
 }
 
@@ -86,9 +86,26 @@
 }
 
 .why-we-card:nth-child(2) .why-we-icon {
-    color: rgb(141, 153, 126); 
+    color: rgb(141, 153, 126);
 }
 
 .why-we-card:nth-child(3) .why-we-icon {
-    color: rgb(204, 91, 91); 
+    color: rgb(204, 91, 91);
+}
+
+@media (max-width: 768px) {
+    #why-we-cards {
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .why-we-card {
+        margin: auto;
+    }
+    
+    .why-we-card:hover::before {
+        opacity: 1;
+        transform: rotate(45deg) translate(48.4%, 48.4%);
+    }
+    
 }

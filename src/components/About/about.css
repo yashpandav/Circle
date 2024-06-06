@@ -51,16 +51,30 @@
 }
 
 /* Responsive */
+@media (max-width: 1200px) {
+    #about-us {
+        padding: 50px 10px;
+    }
+}
+
 @media (max-width: 768px) {
     #about-us h2 {
         font-size: 2em;
+        padding: 0px;
     }
 
     #about-us p {
         font-size: 1em;
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     #about-us h4 {
         font-size: 1.5em;
+    }
+
+    #about-us {
+        padding: 10px;
     }
 }
