@@ -31,7 +31,7 @@ export default function Home() {
 
             <div id="right-home">
                 <img
-                    src={require("../../Data/Images/5836.png")}
+                    src={require("../../../Data/Images/5836.png")}
                     alt="homeImg"
                     id="home-img"
                 ></img>

@@ -8,7 +8,7 @@ const Footer = () => {
     <div className="footer">
       <div className="footer-container">
         <div className="footer-section">
-          <img id='footer-logo' src={require('../../Data/Images/logo.png')} alt='img-logo'></img>
+          <img id='footer-logo' alt='img-logo' src={require('../../../Data/Images/logo.png')}></img>
         </div>
         <div className="footer-section">
           <h6>PRODUCT</h6>

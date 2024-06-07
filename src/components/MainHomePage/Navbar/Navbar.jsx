@@ -10,7 +10,7 @@ const Navbar = () => {
         <div className='main-navbar'>
             <div id="logo">
                 <Link to="/home">
-                    <img src={require('../../Data/Images/logo.png')} alt='imgLogo' id='logo-img'></img>
+                    <img src={require('../../../Data/Images/logo.png')} alt='imgLogo' id='logo-img'></img>
                 </Link>
                 <Link to="/home">
                     <h2>Circle</h2>

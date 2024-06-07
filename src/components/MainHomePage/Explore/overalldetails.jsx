@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchAllClasses } from '../../Api/apiCaller/classapicaller';
+import { fetchAllClasses } from '../../../Api/apiCaller/classapicaller';
 import CountUp from 'react-countup';
 import './overalldetails.css'
 
