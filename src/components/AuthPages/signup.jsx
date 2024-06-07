@@ -1,5 +1,6 @@
 import React from "react";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { TextField, Button, IconButton, InputAdornment } from "@mui/material";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
@@ -10,6 +11,14 @@ import Divider from "@mui/material/Divider";
 import "./signup.css";
 
 export default function SignUp() {
+
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState: { errors },
+    } = useForm();
+
     const [showPassword, setShowPassword] = useState(false);
     const [showFinalPassword, setShowFinalPassword] = useState(false);
 
@@ -19,6 +28,10 @@ export default function SignUp() {
 
     const handleClickShowFinalPassword = () => {
         setShowFinalPassword(!showFinalPassword);
+    };
+
+    const onSubmitHandler = (data) => {
+        console.log(data);
     };
 
     return (
@@ -32,102 +45,154 @@ export default function SignUp() {
                 <div className="form-container">
                     <h1>New Account?</h1>
                     <pre>Sign Up</pre>
-                    <form id="signup-form">
+                    <form id="signup-form" onSubmit={handleSubmit(onSubmitHandler)}>
                         <div className="form-group">
                             <PersonOutlineOutlinedIcon
                                 sx={{ color: "action.active", mr: 1.5, mt: 2 }}
                             />
-                            <TextField
-                                type="text"
-                                label="Username"
-                                variant="standard"
-                                required
-                                fullWidth
-                            />
+                            <div className="input-fileds">
+                                <TextField
+                                    type="text"
+                                    label="First Name"
+                                    variant="standard"
+                                    required={true}
+                                    fullWidth
+                                    {
+                                        ...register('firstName', {
+                                            required: "First Name is Required",
+                                            message: "First Name is Required"
+                                        })
+                                    }
+                                />
+                                {errors.firstName && <p className="error-msg">{errors.firstName.message}</p>}
+                            </div>
                         </div>
                         <div className="form-group">
                             <PersonOutlineOutlinedIcon
                                 sx={{ color: "action.active", mr: 1.5, mt: 2 }}
                             />
-                            <TextField
-                                type="text"
-                                label="Last Name"
-                                variant="standard"
-                                required
-                                fullWidth
-                            />
+                            <div className="input-fileds">
+                                <TextField
+                                    type="text"
+                                    label="Last Name"
+                                    variant="standard"
+                                    required
+                                    fullWidth
+                                    {
+                                        ...register('lastName', {
+                                            required: "Last Name is Required",
+                                            message: "Last Name is Required"
+                                        })
+                                    }
+                                />
+                                {errors.lastName && <p className="error-msg">{errors.lastName.message}</p>}
+                            </div>
                         </div>
                         <div className="form-group">
                             <EmailOutlinedIcon
                                 sx={{ color: "action.active", mr: 1.5, mt: 2 }}
                             />
-                            <TextField
-                                type="email"
-                                label="Mail"
-                                variant="standard"
-                                required
-                                fullWidth
-                            />
+                            <div className="input-fileds">
+                                <TextField
+                                    type="email"
+                                    label="E-Mail"
+                                    variant="standard"
+                                    required
+                                    fullWidth
+                                    {
+                                        ...register('email', {
+                                            required: "E-Mail is Required",
+                                            pattern: {
+                                                value: /^[\w\-\.]+@([\w-]+\.)+[\w-]{2,}$/gmu,
+                                                message: "Invalid email address"
+                                            }
+                                        })
+                                    }
+                                />
+                                {errors.email && <p className="error-msg">{errors.email.message}</p>}
+                            </div>
                         </div>
                         <div className="form-group">
                             <LockOutlinedIcon
                                 sx={{ color: "action.active", mr: 1.5, mt: 2 }}
                             />
-                            <TextField
-                                type={showPassword ? "text" : "password"}
-                                label="Password"
-                                variant="standard"
-                                required
-                                fullWidth
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                aria-label="toggle password visibility"
-                                                onClick={handleClickShowPassword}
-                                                edge="end"
-                                            >
-                                                {showPassword ? (
-                                                    <VisibilityOutlinedIcon />
-                                                ) : (
-                                                    <VisibilityOffOutlinedIcon />
-                                                )}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
+                            <div className="input-fileds">
+                                <TextField
+                                    type={showPassword ? "text" : "password"}
+                                    label="Password"
+                                    variant="standard"
+                                    required
+                                    fullWidth
+                                    {
+                                        ...register('password', {
+                                            required: "Password is Required",
+                                            pattern: {
+                                                value: /^(?=.*[0-9])(?=.*[a-zA-Z])[a-zA-Z0-9]{5,}$/,
+                                                message: "Password must be at least 5 characters long, include a number"
+                                            }
+                                        })
+                                    }
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                    edge="end"
+                                                >
+                                                    {showPassword ? (
+                                                        <VisibilityOutlinedIcon />
+                                                    ) : (
+                                                        <VisibilityOffOutlinedIcon />
+                                                    )}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                                {errors.password && <p className="error-msg">{errors.password.message}</p>}
+                            </div>
                         </div>
                         <div className="form-group">
                             <LockOutlinedIcon
                                 sx={{ color: "action.active", mr: 1.5, mt: 2 }}
                             />
-                            <TextField
-                                type={showFinalPassword ? "text" : "password"}
-                                label="Confirm Password"
-                                variant="standard"
-                                required
-                                fullWidth
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                aria-label="toggle final password visibility"
-                                                onClick={handleClickShowFinalPassword}
-                                                edge="end"
-                                            >
-                                                {showFinalPassword ? (
-                                                    <VisibilityOutlinedIcon />
-                                                ) : (
-                                                    <VisibilityOffOutlinedIcon />
-                                                )}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
+                            <div className="input-fileds">
+                                <TextField
+                                    type={showFinalPassword ? "text" : "password"}
+                                    label="Confirm Password"
+                                    variant="standard"
+                                    required
+                                    fullWidth
+                                    {
+                                        ...register('confirmPassword', {
+                                            required: "Confirm Password is Required",
+                                            validate: value =>
+                                                value === watch('password') || "Passwords do not match"
+                                        })
+                                    }
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle final password visibility"
+                                                    onClick={handleClickShowFinalPassword}
+                                                    edge="end"
+                                                >
+                                                    {showFinalPassword ? (
+                                                        <VisibilityOutlinedIcon />
+                                                    ) : (
+                                                        <VisibilityOffOutlinedIcon />
+                                                    )}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                                {errors.confirmPassword && <p className="error-msg">{errors.confirmPassword.message}</p>}
+                            </div>
                         </div>
-                        <Button variant="contained" id="registerbutton">
+                        <Button type="submit" variant="contained" id="registerbutton">
                             Register
                         </Button>
                     </form>

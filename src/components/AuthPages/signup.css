@@ -147,3 +147,18 @@
         transform: scale(1);
     }
 }
+
+.input-fileds {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.error-msg {
+    width: 150%;
+    color: red;
+    position: absolute;
+    z-index: 1;
+    top:65%;
+    font-style: italic;
+}
