@@ -1,14 +1,13 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
-import { TextField, Button, IconButton, InputAdornment } from '@mui/material';
-import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
-import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import GoogleIcon from '@mui/icons-material/Google';
-import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
-import Divider from '@mui/material/Divider';
-import './signup.css'
+import React from "react";
+import { useState } from "react";
+import { TextField, Button, IconButton, InputAdornment } from "@mui/material";
+import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
+import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
+import Divider from "@mui/material/Divider";
+import "./signup.css";
 
 export default function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
@@ -23,29 +22,59 @@ export default function SignUp() {
     };
 
     return (
-        <div id='body'>
-            <img src={require('../../Data/Images/5oob9hmb.png')} alt='signup-teacher-img' id='signup-teacher-img'></img>
-            <div className='main-signup-form'>
-                <div className='form-container'>
+        <div id="body">
+            <img
+                src={require("../../Data/Images/5oob9hmb.png")}
+                alt="signup-teacher-img"
+                id="signup-teacher-img"
+            ></img>
+            <div className="main-signup-form">
+                <div className="form-container">
                     <h1>New Account?</h1>
                     <pre>Sign Up</pre>
-                    <form id='signup-form'>
-                        <div className='form-group'>
-                            <PersonOutlineOutlinedIcon sx={{ color: 'action.active', mr: 1.5, mt: 2 }} />
-                            <TextField type='text' label="Username" variant="standard" required fullWidth />
-                        </div>
-                        <div className='form-group'>
-                            <PersonOutlineOutlinedIcon sx={{ color: 'action.active', mr: 1.5, mt: 2 }} />
-                            <TextField type='text' label="Last Name" variant="standard" required fullWidth />
-                        </div>
-                        <div className='form-group'>
-                            <EmailOutlinedIcon sx={{ color: 'action.active', mr: 1.5, mt: 2 }} />
-                            <TextField type='email' label="Mail" variant="standard" required fullWidth />
-                        </div>
-                        <div className='form-group'>
-                            <LockOutlinedIcon sx={{ color: 'action.active', mr: 1.5, mt: 2 }} />
+                    <form id="signup-form">
+                        <div className="form-group">
+                            <PersonOutlineOutlinedIcon
+                                sx={{ color: "action.active", mr: 1.5, mt: 2 }}
+                            />
                             <TextField
-                                type={showPassword ? 'text' : 'password'}
+                                type="text"
+                                label="Username"
+                                variant="standard"
+                                required
+                                fullWidth
+                            />
+                        </div>
+                        <div className="form-group">
+                            <PersonOutlineOutlinedIcon
+                                sx={{ color: "action.active", mr: 1.5, mt: 2 }}
+                            />
+                            <TextField
+                                type="text"
+                                label="Last Name"
+                                variant="standard"
+                                required
+                                fullWidth
+                            />
+                        </div>
+                        <div className="form-group">
+                            <EmailOutlinedIcon
+                                sx={{ color: "action.active", mr: 1.5, mt: 2 }}
+                            />
+                            <TextField
+                                type="email"
+                                label="Mail"
+                                variant="standard"
+                                required
+                                fullWidth
+                            />
+                        </div>
+                        <div className="form-group">
+                            <LockOutlinedIcon
+                                sx={{ color: "action.active", mr: 1.5, mt: 2 }}
+                            />
+                            <TextField
+                                type={showPassword ? "text" : "password"}
                                 label="Password"
                                 variant="standard"
                                 required
@@ -58,17 +87,23 @@ export default function SignUp() {
                                                 onClick={handleClickShowPassword}
                                                 edge="end"
                                             >
-                                                {showPassword ? <VisibilityOutlinedIcon /> : <VisibilityOffOutlinedIcon />}
+                                                {showPassword ? (
+                                                    <VisibilityOutlinedIcon />
+                                                ) : (
+                                                    <VisibilityOffOutlinedIcon />
+                                                )}
                                             </IconButton>
                                         </InputAdornment>
                                     ),
                                 }}
                             />
                         </div>
-                        <div className='form-group'>
-                            <LockOutlinedIcon sx={{ color: 'action.active', mr: 1.5, mt: 2 }} />
+                        <div className="form-group">
+                            <LockOutlinedIcon
+                                sx={{ color: "action.active", mr: 1.5, mt: 2 }}
+                            />
                             <TextField
-                                type={showFinalPassword ? 'text' : 'password'}
+                                type={showFinalPassword ? "text" : "password"}
                                 label="Confirm Password"
                                 variant="standard"
                                 required
@@ -81,32 +116,53 @@ export default function SignUp() {
                                                 onClick={handleClickShowFinalPassword}
                                                 edge="end"
                                             >
-                                                {showFinalPassword ? <VisibilityOutlinedIcon /> : <VisibilityOffOutlinedIcon />}
+                                                {showFinalPassword ? (
+                                                    <VisibilityOutlinedIcon />
+                                                ) : (
+                                                    <VisibilityOffOutlinedIcon />
+                                                )}
                                             </IconButton>
                                         </InputAdornment>
                                     ),
                                 }}
                             />
                         </div>
-                        <Button variant="contained" className='register-btn'>
+                        <Button variant="contained" id="registerbutton">
                             Register
                         </Button>
                     </form>
                     <Divider>or</Divider>
-                    <Button variant="contained" className='register-btn'>
-                        Register
-                    </Button>
+                    <Button variant="contained">Register with Google</Button>
                 </div>
-                <svg width="67px" height="578px" viewBox="0 0 67 578" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                    <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-                        <path d="M11.3847656,-5.68434189e-14 C-7.44726562,36.7213542 5.14322917,126.757812 49.15625,270.109375 C70.9827986,341.199016 54.8877465,443.829224 0.87109375,578 L67,578 L67,-5.68434189e-14 L11.3847656,-5.68434189e-14 Z" id="Path" fill="#F9BC35"></path>
+                <svg
+                    width="67px"
+                    height="578px"
+                    viewBox="0 0 67 578"
+                    version="1.1"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <g
+                        id="Page-1"
+                        stroke="none"
+                        strokeWidth="1"
+                        fill="none"
+                        fillRule="evenodd"
+                    >
+                        <path
+                            d="M11.3847656,-5.68434189e-14 C-7.44726562,36.7213542 5.14322917,126.757812 49.15625,270.109375 C70.9827986,341.199016 54.8877465,443.829224 0.87109375,578 L67,578 L67,-5.68434189e-14 L11.3847656,-5.68434189e-14 Z"
+                            id="Path"
+                            stroke="#4db6ac"
+                            fill="#4db6ac"
+                        ></path>
                     </g>
                 </svg>
-                <div className="column" id="secondary">
+                <div id="secondary">
                     <div className="sec-content">
-                        <h2>Welcome Back!</h2>
-                        <h3>Lorem ipsum dolor sit amet, consectetur adipiscing elit</h3>
-                        <button type="button" className="btn btn-primary">Login</button>
+                        <h2>Welcome To Circle</h2>
+                        <pre>Already have an account?</pre>
+                        <Button variant='text' id='login-btn'>
+                            Login
+                        </Button>
                     </div>
                 </div>
             </div>
