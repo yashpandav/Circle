@@ -4,7 +4,7 @@ import { Link as ScrollLink } from 'react-scroll';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
 import { Button } from '@mui/material';
-
+import SignUp from '../../AuthPages/signup'
 const Navbar = () => {
     return (
         <div className='main-navbar'>
@@ -48,9 +48,11 @@ const Navbar = () => {
                     <Button variant='outlined' style={{ color: "#11706d", border: "green", fontSize: "1.14vw" }}>
                         Login
                     </Button>
-                    <button id='signup-btn'>
-                        SignUp
-                    </button>
+                    <Link to='/signup' element={<SignUp></SignUp>}>
+                        <button id='signup-btn'>
+                            SignUp
+                        </button>
+                    </Link>
                 </div>
             </nav>
         </div>

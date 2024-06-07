@@ -159,6 +159,7 @@
     color: red;
     position: absolute;
     z-index: 1;
-    top:65%;
+    top:70%;
     font-style: italic;
+    font-size: smaller;
 }

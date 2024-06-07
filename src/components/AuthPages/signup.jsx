@@ -128,7 +128,7 @@ export default function SignUp() {
                                             required: "Password is Required",
                                             pattern: {
                                                 value: /^(?=.*[0-9])(?=.*[a-zA-Z])[a-zA-Z0-9]{5,}$/,
-                                                message: "Password must be at least 5 characters long, include a number"
+                                                message: "Password must be at least 5 characters long including a number"
                                             }
                                         })
                                     }
