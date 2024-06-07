@@ -4,7 +4,7 @@ const OTP = require('../../Models/OTP');
 
 exports.genrateOtp = async (req, res) => {
     try {
-        const { email } = req.body;
+        const email = req.body.email;
 
         if (!email) {
             return res.status(400).json({

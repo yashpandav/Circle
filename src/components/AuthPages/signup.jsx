@@ -8,16 +8,20 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import Divider from "@mui/material/Divider";
+import { useNavigate } from "react-router-dom";
+import {sendOTP} from '../../Api/apiCaller/authapicaller';
+
 import "./signup.css";
 
 export default function SignUp() {
-
     const {
         register,
         handleSubmit,
         watch,
         formState: { errors },
     } = useForm();
+
+    const navigate = useNavigate();
 
     const [showPassword, setShowPassword] = useState(false);
     const [showFinalPassword, setShowFinalPassword] = useState(false);
@@ -32,6 +36,10 @@ export default function SignUp() {
 
     const onSubmitHandler = (data) => {
         console.log(data);
+        const ans =  sendOTP(data.email, navigate);
+        if(!ans){
+            console.log("USER IS ALREADY REGISTERED");
+        }
     };
 
     return (
