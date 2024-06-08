@@ -24,7 +24,7 @@ export const sendOTP = async (email, navigate) => {
         // console.log("Response status:", response.status);
         // console.log("Response data:", response.data);
         console.log("OTP SENT SUCCESSFULLY");
-        navigate('/');
+        navigate('/auth/otp');
     } catch (err) {
         console.log("ERROR DURING SENDING OTP API => ", err.response ? err.response.data : err.message);
         return false;

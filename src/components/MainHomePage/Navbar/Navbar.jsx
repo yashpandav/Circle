@@ -48,7 +48,7 @@ const Navbar = () => {
                     <Button variant='outlined' style={{ color: "#11706d", border: "green", fontSize: "1.14vw" }}>
                         Login
                     </Button>
-                    <Link to='/signup' element={<SignUp></SignUp>}>
+                    <Link to='/auth/signup' element={<SignUp></SignUp>}>
                         <button id='signup-btn'>
                             SignUp
                         </button>
