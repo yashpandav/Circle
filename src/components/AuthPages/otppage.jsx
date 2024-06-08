@@ -2,9 +2,10 @@ import React from "react";
 import OTPInput from "react-otp-input";
 import { Button } from "@mui/material";
 import { useSelector, useDispatch } from 'react-redux';
-import { useState , useEffect} from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {signUp} from '../../Api/apiCaller/authapicaller.js';
+import { signUp } from '../../Api/apiCaller/authapicaller.js';
+import toast from "react-hot-toast";
 import "./otppage.css";
 
 export default function OtpPage() {
@@ -14,14 +15,12 @@ export default function OtpPage() {
     const { setUser } = useSelector((state) => state.auth);
     const navigate = useNavigate();
 
-    console.log("SET user IN OTPPAGE" , setUser);
-
     useEffect(() => {
-        if(!setUser){
+        if (!setUser) {
             navigate("/auth/signup");
         }
-    } , []);
-    
+    }, []);
+
     const {
         firstName,
         lastName,
@@ -32,28 +31,29 @@ export default function OtpPage() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log("SET user IN OTPPAGE" , setUser);
-        console.log(`${firstName} ${lastName} ${email} ${password} ${confirmPassword} ${otp}`);
-        dispatch(signUp({
-            firstName,
-            lastName,
-            email,
-            password,
-            confirmPassword,
-            otp,}
+        // console.log("SET user IN OTPPAGE", setUser);
+        // console.log(`${firstName} ${lastName} ${email} ${password} ${confirmPassword} ${otp}`);
+        try {
+            const response = dispatch(signUp({
+                firstName,
+                lastName,
+                email,
+                password,
+                confirmPassword,
+                otp,
+                navigate
+            }
             )
-        ).unwrap()
-        .then(() => {
-            console.log("USER CREATED");
-            navigate('/');
-        })
-        .catch((error) => {
-            console.error('Error sending SIGN UP API:', error);
-        });
-        ;
+            ).unwrap();
+            // console.log("RESPONSE  ", response);
+        } catch (err) {
+            console.log("failed to create a user", err);
+            toast.error("Something went wrong while creating user", {
+                position: 'top-right'
+            });
+        }
     }
 
-    
     return (
         <div className="otp-container">
             <div>

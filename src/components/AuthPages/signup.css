@@ -1,3 +1,10 @@
+.alertMsg{
+    position: absolute;
+    top: 0%;
+    width: 20%;
+}
+
+
 #body {
     background-color: #e0f7fa;
     display: flex;

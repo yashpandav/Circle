@@ -1,5 +1,4 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { TextField, Button, IconButton, InputAdornment } from "@mui/material";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
@@ -9,9 +8,10 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import Divider from "@mui/material/Divider";
 import { useNavigate } from "react-router-dom";
-import { sendOTP } from '../../Api/apiCaller/authapicaller';
-import { useSelector, useDispatch } from 'react-redux';
-import { setUser } from '../../Slices/authSlice';
+import { sendOTP } from "../../Api/apiCaller/authapicaller";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../Slices/authSlice";
+import toast from "react-hot-toast";
 import "./signup.css";
 
 export default function SignUp() {
@@ -37,17 +37,18 @@ export default function SignUp() {
 
     const dispatch = useDispatch();
 
-    const onSubmitHandler = (data) => {
+    const onSubmitHandler = async (data) => {
         console.log(data);
         dispatch(setUser(data));
-        dispatch(sendOTP(data.email))
-            .unwrap()
-            .then(() => {
-                navigate('/auth/otp');
-            })
-            .catch((err) => {
-                console.error('Error sending OTP:', err);
-            });
+        const email = data.email;
+        try {
+            const result = await dispatch(sendOTP({ email, navigate })).unwrap();
+            console.log("RESULT", result);
+
+        } catch (err) {
+            console.error("Failed to send OTP:", err);
+            toast.error("Failed to send OTP");
+        }
     };
 
     return (
@@ -71,14 +72,11 @@ export default function SignUp() {
                                     type="text"
                                     label="First Name"
                                     variant="standard"
-                                    required={true}
+                                    required
                                     fullWidth
-                                    {
-                                    ...register('firstName', {
+                                    {...register("firstName", {
                                         required: "First Name is Required",
-                                        message: "First Name is Required"
-                                    })
-                                    }
+                                    })}
                                 />
                                 {errors.firstName && <p className="error-msg">{errors.firstName.message}</p>}
                             </div>
@@ -94,12 +92,9 @@ export default function SignUp() {
                                     variant="standard"
                                     required
                                     fullWidth
-                                    {
-                                    ...register('lastName', {
+                                    {...register("lastName", {
                                         required: "Last Name is Required",
-                                        message: "Last Name is Required"
-                                    })
-                                    }
+                                    })}
                                 />
                                 {errors.lastName && <p className="error-msg">{errors.lastName.message}</p>}
                             </div>
@@ -115,15 +110,13 @@ export default function SignUp() {
                                     variant="standard"
                                     required
                                     fullWidth
-                                    {
-                                    ...register('email', {
+                                    {...register("email", {
                                         required: "E-Mail is Required",
                                         pattern: {
                                             value: /^[\w\-\.]+@([\w-]+\.)+[\w-]{2,}$/gmu,
-                                            message: "Invalid email address"
-                                        }
-                                    })
-                                    }
+                                            message: "Invalid email address",
+                                        },
+                                    })}
                                 />
                                 {errors.email && <p className="error-msg">{errors.email.message}</p>}
                             </div>
@@ -139,15 +132,13 @@ export default function SignUp() {
                                     variant="standard"
                                     required
                                     fullWidth
-                                    {
-                                    ...register('password', {
+                                    {...register("password", {
                                         required: "Password is Required",
                                         pattern: {
                                             value: /^(?=.*[0-9])(?=.*[a-zA-Z])[a-zA-Z0-9]{5,}$/,
-                                            message: "Password must be at least 5 characters long including a number"
-                                        }
-                                    })
-                                    }
+                                            message: "Password must be at least 5 characters long including a number",
+                                        },
+                                    })}
                                     InputProps={{
                                         endAdornment: (
                                             <InputAdornment position="end">
@@ -180,13 +171,11 @@ export default function SignUp() {
                                     variant="standard"
                                     required
                                     fullWidth
-                                    {
-                                    ...register('confirmPassword', {
+                                    {...register("confirmPassword", {
                                         required: "Confirm Password is Required",
                                         validate: value =>
-                                            value === watch('password') || "Passwords do not match"
-                                    })
-                                    }
+                                            value === watch("password") || "Passwords do not match",
+                                    })}
                                     InputProps={{
                                         endAdornment: (
                                             <InputAdornment position="end">
@@ -241,7 +230,7 @@ export default function SignUp() {
                     <div className="sec-content">
                         <h2>Welcome To Circle</h2>
                         <pre>Already have an account?</pre>
-                        <Button variant='text' id='login-btn'>
+                        <Button variant="text" id="login-btn">
                             Login
                         </Button>
                     </div>

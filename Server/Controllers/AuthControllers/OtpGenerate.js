@@ -16,7 +16,7 @@ exports.genrateOtp = async (req, res) => {
         const findUser = await User.findOne({ email });
 
         if (findUser) {
-            return res.status(400).json({
+            return res.status(409).json({
                 success: false,
                 message: "User already registered"
             });

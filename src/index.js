@@ -6,7 +6,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import rootReducer from './Reducer';
 import { thunk } from 'redux-thunk';
-
+import { Toaster } from 'react-hot-toast';
 const store = configureStore({
     reducer: rootReducer,
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
@@ -15,8 +15,9 @@ const store = configureStore({
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <Provider store = {store}>
-        <BrowserRouter>
-            <App />
-        </BrowserRouter>
+            <BrowserRouter>
+                <App />
+                <Toaster/>
+            </BrowserRouter>
     </Provider>
 );
