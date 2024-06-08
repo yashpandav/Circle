@@ -10,7 +10,8 @@ import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined
 import Divider from "@mui/material/Divider";
 import { useNavigate } from "react-router-dom";
 import {sendOTP} from '../../Api/apiCaller/authapicaller';
-
+import { useSelector,useDispatch } from 'react-redux';
+import {setUser} from '../../Slices/authSlice';
 import "./signup.css";
 
 export default function SignUp() {
@@ -34,13 +35,17 @@ export default function SignUp() {
         setShowFinalPassword(!showFinalPassword);
     };
 
+    const dispatch = useDispatch();
+
     const onSubmitHandler = (data) => {
         console.log(data);
-        const ans =  sendOTP(data.email, navigate);
+        dispatch(setUser(data));
+        const ans = sendOTP(data.email, navigate);
         if(!ans){
             console.log("USER IS ALREADY REGISTERED");
         }
     };
+
 
     return (
         <div id="body">

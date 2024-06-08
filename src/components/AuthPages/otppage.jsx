@@ -1,11 +1,47 @@
 import React from "react";
 import OTPInput from "react-otp-input";
 import { Button } from "@mui/material";
-import { useState } from "react";
+import { useSelector, useDispatch } from 'react-redux';
+import { useState , useEffect} from "react";
+import { useNavigate } from "react-router-dom";
+import {signUp} from '../../Api/apiCaller/authapicaller.js';
 import "./otppage.css";
 
 export default function OtpPage() {
     const [otp, setOtp] = useState("");
+
+    const dispatch = useDispatch();
+    const { setUser } = useSelector((state) => state.auth);
+    const navigate = useNavigate();
+
+    console.log("SET user IN OTPPAGE" , setUser);
+
+    useEffect(() => {
+        if(!setUser){
+            navigate("/auth/signup");
+        }
+    } , []);
+    
+    const {
+        firstName,
+        lastName,
+        email,
+        password,
+        confirmPassword
+    } = setUser;
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log("SET user IN OTPPAGE" , setUser);
+        dispatch(signUp(firstName,
+            lastName,
+            email,
+            password,
+            confirmPassword,
+            otp,
+            navigate)  
+        );
+    }
 
     return (
         <div className="otp-container">
@@ -13,7 +49,7 @@ export default function OtpPage() {
                 <h1>Verify Email</h1>
                 <p>A verification code has been sent to you. Enter the code below</p>
             </div>
-            <form id="otp-form">
+            <form id="otp-form" onSubmit={handleSubmit}>
                 <OTPInput
                     value={otp}
                     onChange={(otp) => setOtp(otp)}
@@ -39,10 +75,10 @@ export default function OtpPage() {
                 variant="contained"
                 type="submit"
                 id="otp-btn"
-                onClick={() => console.log(otp)}
+                onClick={handleSubmit}
             >
                 Verify OTP
             </Button>
         </div>
-    );
+    )
 }

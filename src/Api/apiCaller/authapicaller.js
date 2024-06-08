@@ -1,6 +1,5 @@
 import { apiConnector } from '../apiconfig.js';
 import { AUTH_API_URL } from '../apis.js';
-import axios from 'axios';
 
 const {
     SEND_OTP_API,
@@ -30,3 +29,35 @@ export const sendOTP = async (email, navigate) => {
         return false;
     }
 };
+
+
+export const signUp = async (firstName,
+    lastName,
+    email,
+    password,
+    confirmPassword,
+    otp,
+    navigate) => {
+    try {
+        console.log("Sending SIGNUP request" , SIGNUP_API);
+
+        const response = await apiConnector('POST', SIGNUP_API, {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            password: password,
+            confirmPassword: confirmPassword,
+            otp: otp,
+        });
+
+        if(!response || !response.data || !response.data.success) {
+            throw new Error('Failed to send signup api');
+        }
+        console.log("ACCOUNT CREATED");
+        console.log("RESPONSE", response);
+        navigate('/');
+    } catch (err) {
+        console.log("ERROR DURING SENDING SIGNUP API => ", err.response ? err.response.data : err.message);
+        return false;
+    }
+}
