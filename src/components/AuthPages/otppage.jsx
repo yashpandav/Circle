@@ -33,16 +33,27 @@ export default function OtpPage() {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log("SET user IN OTPPAGE" , setUser);
-        dispatch(signUp(firstName,
+        console.log(`${firstName} ${lastName} ${email} ${password} ${confirmPassword} ${otp}`);
+        dispatch(signUp({
+            firstName,
             lastName,
             email,
             password,
             confirmPassword,
-            otp,
-            navigate)  
-        );
+            otp,}
+            )
+        ).unwrap()
+        .then(() => {
+            console.log("USER CREATED");
+            navigate('/');
+        })
+        .catch((error) => {
+            console.error('Error sending SIGN UP API:', error);
+        });
+        ;
     }
 
+    
     return (
         <div className="otp-container">
             <div>

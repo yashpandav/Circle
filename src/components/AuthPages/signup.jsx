@@ -9,9 +9,9 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import Divider from "@mui/material/Divider";
 import { useNavigate } from "react-router-dom";
-import {sendOTP} from '../../Api/apiCaller/authapicaller';
-import { useSelector,useDispatch } from 'react-redux';
-import {setUser} from '../../Slices/authSlice';
+import { sendOTP } from '../../Api/apiCaller/authapicaller';
+import { useSelector, useDispatch } from 'react-redux';
+import { setUser } from '../../Slices/authSlice';
 import "./signup.css";
 
 export default function SignUp() {
@@ -40,12 +40,15 @@ export default function SignUp() {
     const onSubmitHandler = (data) => {
         console.log(data);
         dispatch(setUser(data));
-        const ans = sendOTP(data.email, navigate);
-        if(!ans){
-            console.log("USER IS ALREADY REGISTERED");
-        }
+        dispatch(sendOTP(data.email))
+            .unwrap()
+            .then(() => {
+                navigate('/auth/otp');
+            })
+            .catch((err) => {
+                console.error('Error sending OTP:', err);
+            });
     };
-
 
     return (
         <div id="body">
@@ -71,10 +74,10 @@ export default function SignUp() {
                                     required={true}
                                     fullWidth
                                     {
-                                        ...register('firstName', {
-                                            required: "First Name is Required",
-                                            message: "First Name is Required"
-                                        })
+                                    ...register('firstName', {
+                                        required: "First Name is Required",
+                                        message: "First Name is Required"
+                                    })
                                     }
                                 />
                                 {errors.firstName && <p className="error-msg">{errors.firstName.message}</p>}
@@ -92,10 +95,10 @@ export default function SignUp() {
                                     required
                                     fullWidth
                                     {
-                                        ...register('lastName', {
-                                            required: "Last Name is Required",
-                                            message: "Last Name is Required"
-                                        })
+                                    ...register('lastName', {
+                                        required: "Last Name is Required",
+                                        message: "Last Name is Required"
+                                    })
                                     }
                                 />
                                 {errors.lastName && <p className="error-msg">{errors.lastName.message}</p>}
@@ -113,13 +116,13 @@ export default function SignUp() {
                                     required
                                     fullWidth
                                     {
-                                        ...register('email', {
-                                            required: "E-Mail is Required",
-                                            pattern: {
-                                                value: /^[\w\-\.]+@([\w-]+\.)+[\w-]{2,}$/gmu,
-                                                message: "Invalid email address"
-                                            }
-                                        })
+                                    ...register('email', {
+                                        required: "E-Mail is Required",
+                                        pattern: {
+                                            value: /^[\w\-\.]+@([\w-]+\.)+[\w-]{2,}$/gmu,
+                                            message: "Invalid email address"
+                                        }
+                                    })
                                     }
                                 />
                                 {errors.email && <p className="error-msg">{errors.email.message}</p>}
@@ -137,13 +140,13 @@ export default function SignUp() {
                                     required
                                     fullWidth
                                     {
-                                        ...register('password', {
-                                            required: "Password is Required",
-                                            pattern: {
-                                                value: /^(?=.*[0-9])(?=.*[a-zA-Z])[a-zA-Z0-9]{5,}$/,
-                                                message: "Password must be at least 5 characters long including a number"
-                                            }
-                                        })
+                                    ...register('password', {
+                                        required: "Password is Required",
+                                        pattern: {
+                                            value: /^(?=.*[0-9])(?=.*[a-zA-Z])[a-zA-Z0-9]{5,}$/,
+                                            message: "Password must be at least 5 characters long including a number"
+                                        }
+                                    })
                                     }
                                     InputProps={{
                                         endAdornment: (
@@ -178,11 +181,11 @@ export default function SignUp() {
                                     required
                                     fullWidth
                                     {
-                                        ...register('confirmPassword', {
-                                            required: "Confirm Password is Required",
-                                            validate: value =>
-                                                value === watch('password') || "Passwords do not match"
-                                        })
+                                    ...register('confirmPassword', {
+                                        required: "Confirm Password is Required",
+                                        validate: value =>
+                                            value === watch('password') || "Passwords do not match"
+                                    })
                                     }
                                     InputProps={{
                                         endAdornment: (
