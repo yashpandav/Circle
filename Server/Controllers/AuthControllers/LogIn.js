@@ -18,7 +18,7 @@ exports.LogIn = async (req, res) => {
         let findUser = await User.findOne({ email });
 
         if (!findUser) {
-            return res.status(404).json({
+            return res.status(400).json({
                 success: false,
                 message: "User Not Found"
             });
@@ -26,7 +26,7 @@ exports.LogIn = async (req, res) => {
 
         const isPasswordCorrect = await bcrypt.compare(password, findUser.password);
         if (!isPasswordCorrect) {
-            return res.status(401).json({
+            return res.status(403).json({
                 success: false,
                 message: "Incorrect Password"
             });
@@ -54,7 +54,7 @@ exports.LogIn = async (req, res) => {
         res.cookie("token", token, options).status(200).json({
             success: true,
             token,
-            findUser,
+            data : findUser,
             message: "Logged In Successfully",
         });
 

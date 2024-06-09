@@ -39,15 +39,15 @@ export default function SignUp() {
     const dispatch = useDispatch();
 
     const onSubmitHandler = async (data) => {
-        console.log(data);
+        // console.log(data);
         dispatch(setUser(data));
         const email = data.email;
         try {
             const result = await dispatch(sendOTP({ email, navigate })).unwrap();
-            console.log("RESULT", result);
+            // console.log("RESULT", result);
 
         } catch (err) {
-            console.error("Failed to send OTP:", err);
+            // console.error("Failed to send OTP:", err);
             toast.error("Failed to send OTP");
         }
     };

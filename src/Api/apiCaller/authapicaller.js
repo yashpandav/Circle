@@ -1,8 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { apiConnector } from '../apiconfig';
 import { AUTH_API_URL } from '../apis';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
-const { SEND_OTP_API, SIGNUP_API } = AUTH_API_URL;
+import { setUser } from '../../Slices/authSlice';
+const { SEND_OTP_API, SIGNUP_API, LOGIN_API } = AUTH_API_URL;
 
 export const sendOTP = createAsyncThunk(
     'sendOTP',
@@ -21,8 +24,8 @@ export const sendOTP = createAsyncThunk(
             // if(err.response.status === 409){
             //     <Alert severity="error">Email already exists</Alert>
             // }
-            toast.error("USER ALREADY EXISTS" , {
-                position : 'top-right'
+            toast.error("USER ALREADY EXISTS", {
+                position: 'top-right'
             });
             return err.response ? err.response : err.message;
         }
@@ -44,7 +47,7 @@ export const signUp = createAsyncThunk(
             });
             // console.log(response);
             // console.log(response.status);
-            navigate('/');
+            navigate('/auth/login');
             toast.success("User Successfully Registered")
             return response;
         } catch (err) {
@@ -54,3 +57,30 @@ export const signUp = createAsyncThunk(
         }
     }
 );
+
+export const logIn = createAsyncThunk(
+    'login',
+    async ({ email, password, navigate , dispatch}) => {
+        try {
+            // console.log("email " , email  , "password " , password);
+            const response = await apiConnector('POST', LOGIN_API, {
+                email,
+                password
+            });
+                console.log(response.data.data);
+                dispatch(setUser(response.data.data));
+            // const dispatch = useDispatch();
+            // const { setUser } = useSelector((state) => state.auth);
+            // dispatch(setUser(response.data.data));
+            // console.log(setUser);
+            // console.log(response.data.data);
+            toast.success('LogIn Success');
+            return response;
+        } catch (err) {
+            console.log(err);
+            // console.log(err.response);
+            toast.error("Wrong Password");
+            return err.response ? err.response : err.message;
+        }
+    }
+)

@@ -7,7 +7,10 @@ const authSlice = createSlice({
     },
     reducers: {
         setUser(state , value){
+            console.log("VALUE IN SLICE   " , value.payload);
             state.setUser = value.payload;
+            console.log(state.setUser);
+            console.log(state.setUser._id)
         }
     }
 })

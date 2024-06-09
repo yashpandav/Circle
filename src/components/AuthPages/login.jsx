@@ -9,19 +9,39 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import './login.css'
+import { logIn } from '../../Api/apiCaller/authapicaller.js';
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function Login() {
-
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm();
+
     const [showPassword, setShowPassword] = useState(false);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
+
+    function loginSubmitHandler(data) {
+        // console.log(data);
+        const email = data.email;
+        const password = data.password;
+        try {
+            const response = dispatch(logIn({email , password , navigate , dispatch}))
+            // console.log(response);
+        } catch (err) {
+            // console.log("Failed to log in" , err);
+            toast.error("Failed to log in");
+        }
+
+    }
 
     return (
         <div id="body">
@@ -34,10 +54,10 @@ export default function Login() {
                 <div className="form-container" id="login-container">
                     <h1>Already have an account? </h1>
                     <pre>Log In</pre>
-                    <form id='login-form'>
+                    <form id='login-form' onSubmit={handleSubmit(loginSubmitHandler)}>
                         <div className="form-group">
                             <EmailOutlinedIcon
-                                sx={{color: 'action.active' , mr : 1.5 , mt : 2}}
+                                sx={{ color: 'action.active', mr: 1.5, mt: 2 }}
                             />
                             <div className="input-fileds">
                                 <TextField
