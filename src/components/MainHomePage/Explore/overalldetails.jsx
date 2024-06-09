@@ -12,8 +12,8 @@ export default function OverAllDetails() {
         const getTotalClass = async () => {
             try {
                 const data = await fetchAllClasses();
-                setTotalClass(data.data.length);
-                console.log(data.data)
+                setTotalClass(data?.data?.length);
+                // console.log(data.data)
 
                 data.data.map((data) => {
                     setTotalTeacher((prev) => prev + data.teacher.length);
@@ -27,9 +27,9 @@ export default function OverAllDetails() {
         getTotalClass();
     }, []);
 
-    console.log(totalClass);
-    console.log(totalTeacher);
-    console.log(totalStudent);
+    // console.log(totalClass);
+    // console.log(totalTeacher);
+    // console.log(totalStudent);
 
     return (
         <div className='main-overall'>

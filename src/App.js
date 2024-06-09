@@ -5,7 +5,8 @@ import Signup from './components/AuthPages/signup';
 import Login from './components/AuthPages/login';
 import OtpPage from './components/AuthPages/otppage'
 import './App.css';
-  
+
+
 const App = () => {
   return (
     <Routes>

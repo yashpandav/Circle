@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { setUser } from '../../Slices/authSlice';
+import {setLoggedIn} from '../../Slices/authSlice';
 const { SEND_OTP_API, SIGNUP_API, LOGIN_API } = AUTH_API_URL;
 
 export const sendOTP = createAsyncThunk(
@@ -67,13 +68,15 @@ export const logIn = createAsyncThunk(
                 email,
                 password
             });
-                console.log(response.data.data);
+                // console.log(response.data.data);
                 dispatch(setUser(response.data.data));
+                dispatch(setLoggedIn(true));
             // const dispatch = useDispatch();
             // const { setUser } = useSelector((state) => state.auth);
             // dispatch(setUser(response.data.data));
             // console.log(setUser);
             // console.log(response.data.data);
+            navigate('/');
             toast.success('LogIn Success');
             return response;
         } catch (err) {
