@@ -21,7 +21,7 @@ export const sendOTP = createAsyncThunk(
             // if(err.response.status === 409){
             //     <Alert severity="error">Email already exists</Alert>
             // }
-            toast.error("EMAIL ALREADY EXISTS" , {
+            toast.error("USER ALREADY EXISTS" , {
                 position : 'top-right'
             });
             return err.response ? err.response : err.message;

@@ -1,0 +1,37 @@
+#login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+#login-container{
+    margin-top: 1.3rem;
+}
+
+#loginbtn{
+    width: 75%;
+    font-size: 1em;
+    margin: auto;
+    margin-block: 1.2rem;
+    border: none;
+    color: #fff;
+    border-radius: 150px;
+    background-size: 300% 100%;
+    background-image: linear-gradient(to right, #218380, #339989, #09bc8a, #17bebb);
+    transition: all 0.4s ease-in-out;
+}
+
+#loginbtn:hover {
+    background-position: 100% 0;
+}
+
+.form-group:last-child{
+    display: flex;
+    justify-content: flex-end;
+}
+
+#forgotpass{
+    font-size: large;
+    text-decoration: none;
+    color:#457b9d;
+    text-align: right;
+}

@@ -1,9 +1,10 @@
 import React from 'react';
-import './App.css';
+import { Routes, Route } from 'react-router-dom';
 import MainHomePage from './components/MainHomePage/MainHomePage';
 import Signup from './components/AuthPages/signup';
-import { Routes, Route } from 'react-router-dom';
+import Login from './components/AuthPages/login';
 import OtpPage from './components/AuthPages/otppage'
+import './App.css';
   
 const App = () => {
   return (
@@ -12,7 +13,7 @@ const App = () => {
       <Route path="/home" element={<MainHomePage />}></Route>
       <Route path="/auth/signup" element={<Signup />}></Route>
       <Route path='/auth/otp' element={<OtpPage />}></Route>
-      {/* <Route path="/login" element={<Login/>}></Route> */}
+      <Route path='/auth/login' element={<Login />}></Route>
     </Routes>
   );    
 };

@@ -40,7 +40,7 @@ nav li {
     transition: all 0.3s;
 }
 
-a {
+li a , #logo a{
     text-decoration: none;
     color: #004346;
     font-weight: bold;
@@ -66,7 +66,7 @@ nav a::after {
     transition: width 0.3s ease;
 }
 
-nav a:hover::after {
+li a:hover::after {
     width: 100%;
     left: 0;
 }
@@ -92,7 +92,6 @@ h2 {
     border: none;
     padding: 10px 20px;
     cursor: pointer;
-    transition: background-color 0.3s;
     border-radius: 5px;
     max-width: fit-content;
     font-size: 1.14vw;

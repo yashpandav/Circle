@@ -12,6 +12,7 @@ import { sendOTP } from "../../Api/apiCaller/authapicaller";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../Slices/authSlice";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 import "./signup.css";
 
 export default function SignUp() {
@@ -230,9 +231,11 @@ export default function SignUp() {
                     <div className="sec-content">
                         <h2>Welcome To Circle</h2>
                         <pre>Already have an account?</pre>
-                        <Button variant="text" id="login-btn">
-                            Login
-                        </Button>
+                        <Link to='/auth/login'>
+                            <Button variant="text" id="login-btn">
+                                Login
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </div>
