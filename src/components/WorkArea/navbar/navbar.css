@@ -1,0 +1,56 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #ffffffcc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    width: 100%;
+    height: 7vh;
+    top: 0;
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+}
+
+#logo {
+    display: flex;
+    align-items: center;
+}
+
+#temp-nav {
+    display: flex;
+    align-items: center;
+}
+
+#temp-ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    position: relative; 
+    padding: 0;
+}
+
+#iconli {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+}
+
+#add-icon {
+    font-size: 2rem;
+    color: rgb(0, 0, 0);
+    padding-left: 25px;
+    cursor: pointer;
+}
+
+#temp-nav li {
+    margin: 0 15px;
+}
+
+#user-info-li {
+    display: flex;
+    align-items: center;
+}

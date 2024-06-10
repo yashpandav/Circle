@@ -7,59 +7,49 @@ import SignUp from "../../AuthPages/signup";
 import { useSelector } from "react-redux";
 import UserInfo from "./Helper/userInfo";
 import "./Navbar.css";
+import LoGo from "../../Helper/logo";
 
 const Navbar = () => {
-
     const { setUser, setLoggedIn } = useSelector((state) => state.auth);
     console.log("USER", setUser);
     console.log("LOGGEDIN", setLoggedIn);
 
     return (
-        <div className="main-navbar">
-            <div id="logo">
-                <Link to="/home">
-                    <img
-                        src={require("../../../Data/Images/logo.png")}
-                        alt="imgLogo"
-                        id="logo-img"
-                    ></img>
-                </Link>
-                <Link to="/home">
-                    <h2>Circle</h2>
-                </Link>
-            </div>
-            <nav>
+        <div className="main-navbar" id="main-navbar">
+            <LoGo id="logo"></LoGo>
+            <nav id="nav">
                 <Scrollspy
                     items={["home", "about", "explore"]}
                     currentClassName="is-current"
                     offset={-50}
                     componentTag={"ul"}
+                    id="scrollspy"
                 >
-                    <li>
-                        <ScrollLink to="home" smooth={true} duration={500} offset={-50}>
+                    <li id="li">
+                        <ScrollLink to="home" smooth={true} duration={500} offset={-50} id="home-link">
                             Home
                         </ScrollLink>
                     </li>
-                    <li>
-                        <ScrollLink to="about" smooth={true} duration={500} offset={-50}>
+                    <li id="li">
+                        <ScrollLink to="about" smooth={true} duration={500} offset={-50} id="about-link">
                             About
                         </ScrollLink>
                     </li>
-                    <li>
-                        <ScrollLink to="explore" smooth={true} duration={500} offset={-50}>
+                    <li id="li">
+                        <ScrollLink to="explore" smooth={true} duration={500} offset={-50} id="explore-link">
                             Explore
                         </ScrollLink>
                     </li>
-                    <li>
-                        <Link to="class">WorkArea</Link>
+                    <li id="li">
+                        <Link to="/workarea" id="workarea-link">WorkArea</Link>
                     </li>
                 </Scrollspy>
                 {
                     setUser ? (
-                        <UserInfo></UserInfo>
+                        <UserInfo id="user-info"></UserInfo>
                     ) : (
-                        <div className="btns">
-                            <Link to="auth/login">
+                        <div className="btns" id="btns">
+                            <Link to="auth/login" id="login-link">
                                 <Button
                                     variant="outlined"
                                     style={{ color: "#11706d", border: "green", fontSize: "1.14vw" }}
@@ -67,7 +57,7 @@ const Navbar = () => {
                                     Login
                                 </Button>
                             </Link>
-                            <Link to="/auth/signup" element={<SignUp></SignUp>}>
+                            <Link to="/auth/signup" element={<SignUp></SignUp>} id="signup-link">
                                 <button id="signup-btn">SignUp</button>
                             </Link>
                         </div>
