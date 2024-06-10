@@ -96,17 +96,3 @@ h2 {
     max-width: fit-content;
     font-size: 1.14vw;
 }
-
-#user{
-    position: relative;
-    display: flex;
-    align-items: center;
-    margin-right: 40px;
-}
-
-#user-img {
-    border-radius: 50%;
-    height: 80%;
-    width: 80%;
-    cursor: pointer;
-}

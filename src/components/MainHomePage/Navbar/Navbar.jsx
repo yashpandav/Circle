@@ -2,24 +2,17 @@ import React from "react";
 import Scrollspy from "react-scrollspy";
 import { Link as ScrollLink } from "react-scroll";
 import { Link } from "react-router-dom";
-import "./Navbar.css";
 import { Button } from "@mui/material";
 import SignUp from "../../AuthPages/signup";
 import { useSelector } from "react-redux";
-import { useState } from "react";
+import UserInfo from "./Helper/userInfo";
+import "./Navbar.css";
 
 const Navbar = () => {
 
     const { setUser, setLoggedIn } = useSelector((state) => state.auth);
     console.log("USER", setUser);
     console.log("LOGGEDIN", setLoggedIn);
-
-    const [showDialog , setDialog] = useState(false);
-
-    function dialogHandler() {
-        console.log(showDialog);
-        setDialog(!showDialog);
-    }
 
     return (
         <div className="main-navbar">
@@ -63,18 +56,7 @@ const Navbar = () => {
                 </Scrollspy>
                 {
                     setUser ? (
-                        <div id="user" onMouseLeave={() => {setDialog(false)}}>
-                            <img src={setUser.image} alt='user-img' id='user-img' onClick={dialogHandler}>
-                            </img>
-                            {
-                                showDialog ? (
-                                    <div id = 'user-dialog'>
-                                        <h1>USER DIALOG</h1>
-                                    </div>
-                                ) : <></>
-                            }
-
-                        </div>
+                        <UserInfo setUser = {setUser}></UserInfo>
                     ) : (
                         <div className="btns">
                             <Link to="auth/login">

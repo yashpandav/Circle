@@ -1,7 +1,7 @@
 import React from 'react';
-import './explore.css';
-import OverAllDetails from './overalldetails.jsx';
+import OverAllDetails from './Helper/overalldetails';
 import { Button } from '@mui/material';
+import './explore.css';
 
 const TiltedArrowSVG = () => (
     <svg

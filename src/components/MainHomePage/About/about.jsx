@@ -1,6 +1,6 @@
-import WhyWeSection from "./whyweCard";
-import "./about.css";
 import React from "react";
+import WhyWeSection from "./Helper/whyweCard";
+import "./about.css";
 export default function About() {
     return (
         <div id="about-us">
