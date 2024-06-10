@@ -3,13 +3,27 @@ import ClassIcon from '@mui/icons-material/Class';
 import GradingIcon from '@mui/icons-material/Grading';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { useState } from "react";
+import { useSelector , useDispatch } from "react-redux";
+import {logOut} from '../../../../Api/apiCaller/authapicaller';
+import { useNavigate } from "react-router-dom";
 import './userInfo.css';
 
-export default function UserInfo({ setUser }) {
+export default function UserInfo() {
     const [showDialog, setDialog] = useState(false);
+
+    const dispatch = useDispatch();
+    const { setUser, setLoggedIn } = useSelector((state) => state.auth);
+    const navigate = useNavigate();
 
     function dialogHandler() {
         setDialog(!showDialog);
+    }
+
+    function logoutHandler(){
+        if(window.confirm("Are you sure you want to log out ?")){
+            console.log("SENDING API")
+            const response = dispatch(logOut({dispatch , navigate})).unwrap();
+        }
     }
 
     return (
@@ -42,7 +56,7 @@ export default function UserInfo({ setUser }) {
                         <div id='last-div'>
                             <p>WorkArea</p>
                             <p>Dashboard</p>
-                            <p>LogOut</p>
+                            <p onClick={logoutHandler}>LogOut</p>
                         </div>
                     </div>
                 )

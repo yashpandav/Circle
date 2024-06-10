@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { setUser } from '../../Slices/authSlice';
 import {setLoggedIn} from '../../Slices/authSlice';
-const { SEND_OTP_API, SIGNUP_API, LOGIN_API } = AUTH_API_URL;
+const { SEND_OTP_API, SIGNUP_API, LOGIN_API , LOGOUT_API } = AUTH_API_URL;
 
 export const sendOTP = createAsyncThunk(
     'sendOTP',
@@ -87,3 +87,23 @@ export const logIn = createAsyncThunk(
         }
     }
 )
+
+export const logOut = createAsyncThunk(
+    'LogOut' , 
+    async({dispatch , navigate}) => {
+        try{
+            console.log("LogOut Function");
+            const response = await apiConnector('POST' , LOGOUT_API);
+            dispatch(setLoggedIn(false))
+            dispatch(setUser(null));
+            navigate('/');
+            toast.success('LogOut Success');
+            return response;
+        }
+        catch (err) {
+            console.log(err);
+            toast.error("Failed to log out");
+            return err.response? err.response : err.message;
+        }
+    }
+);

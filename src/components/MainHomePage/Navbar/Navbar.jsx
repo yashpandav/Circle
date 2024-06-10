@@ -56,7 +56,7 @@ const Navbar = () => {
                 </Scrollspy>
                 {
                     setUser ? (
-                        <UserInfo setUser = {setUser}></UserInfo>
+                        <UserInfo></UserInfo>
                     ) : (
                         <div className="btns">
                             <Link to="auth/login">

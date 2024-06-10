@@ -34,7 +34,7 @@ export default function Login() {
         const email = data.email;
         const password = data.password;
         try {
-            const response = dispatch(logIn({email , password , navigate , dispatch}))
+            const response = dispatch(logIn({email , password , navigate , dispatch})).unwrap();
             // console.log(response);
         } catch (err) {
             // console.log("Failed to log in" , err);
