@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Divider } from "@mui/material";
-import CreateClassDialog from "./createClassDialog";
+import CreateClassDialog from './createClassDialog';
 import './dialog.css';
 
 const Dialog = () => {
@@ -11,7 +11,7 @@ const Dialog = () => {
             <h3 className='dialog-option'>Join Circle</h3>
             <Divider />
             <h3 className='dialog-option' onClick={() => setDialog(true)}>Create Circle</h3>
-            {dialog && <CreateClassDialog setDialog={setDialog} />}
+            {dialog && <CreateClassDialog setDialog={setDialog} /> }
         </div>
     );
 };
