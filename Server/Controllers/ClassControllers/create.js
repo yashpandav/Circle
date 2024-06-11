@@ -8,7 +8,7 @@ const { sendMail } = require('../../Utils/mailSender');
 const bannerURL = require('../../Data/banerUrl');
 exports.createClass = async (req, res) => {
     try {
-        const { name, description, subject, roomNo } = req?.body;
+        const { name, description, subject } = req?.body;
         const banner = req?.files?.banner;
 
         if (!name || !description) {
@@ -40,7 +40,6 @@ exports.createClass = async (req, res) => {
             name,
             description,
             subject: subject || "",
-            roomNo: roomNo || "",
             classTheme: color,
             thumbnail: uploadResponse?.secure_url || bannerURL[(Math.floor(Math.random() * bannerURL.length))],
             admin: req.user.id,

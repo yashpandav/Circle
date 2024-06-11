@@ -71,6 +71,30 @@ const NewClassFormDialog = ({ open, handleClose }) => {
                         error={!!errors.subject}
                         helperText={errors.subject ? "Subject is required" : ""}
                     />
+                    <div className="side-by-side">
+                        <TextField
+                            {...register("color")}
+                            margin="dense"
+                            id="color"
+                            label="Color"
+                            fullWidth
+                            type="color"
+                            variant="outlined"
+                            error={!!errors.color}
+                            helperText={errors.color ? "Please choose a color" : ""}
+                        />
+                        <TextField
+                            {...register("file")}
+                            margin="dense"
+                            id="file"
+                            label="File"
+                            type="file"
+                            fullWidth
+                            variant="outlined"
+                            error={!!errors.file}
+                            helperText={errors.file ? "Please upload a file" : ""}
+                        />
+                    </div>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} className="custom-dialog-button">
