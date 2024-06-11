@@ -3,6 +3,7 @@ import { apiConnector } from '../apiconfig';
 import { AUTH_API_URL } from '../apis';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
+import Cookies from 'js-cookie'; // Import js-cookie
 import toast from 'react-hot-toast';
 import { setUser } from '../../Slices/authSlice';
 import {setLoggedIn} from '../../Slices/authSlice';
@@ -77,6 +78,7 @@ export const logIn = createAsyncThunk(
             // console.log(setUser);
             // console.log(response.data.data);
             navigate('/');
+            Cookies.set('token', response.data.data.token, { expires: 7 }); // Expires in 7 days
             toast.success('LogIn Success');
             return response;
         } catch (err) {

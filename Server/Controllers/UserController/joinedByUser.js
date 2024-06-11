@@ -5,7 +5,7 @@ exports.joinedByUser = async (req , res) => {
     try{
         const id = req.user.id;
         if(!id){
-            return res.status(400).json({
+            return res.status(409).json({
                 success: false,
                 message: "User ID is required"
             })
@@ -21,7 +21,8 @@ exports.joinedByUser = async (req , res) => {
 
         return res.status(200).json({
             success: true,
-            data: user
+            data: user,
+            message: "Class joined by this user"
         })
 
     }catch(err){
