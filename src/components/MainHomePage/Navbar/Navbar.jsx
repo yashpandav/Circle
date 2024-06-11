@@ -6,8 +6,8 @@ import { Button } from "@mui/material";
 import SignUp from "../../AuthPages/signup";
 import { useSelector } from "react-redux";
 import UserInfo from "./Helper/userInfo";
-import "./Navbar.css";
 import LoGo from "../../Helper/logo";
+import "./Navbar.css";
 
 const Navbar = () => {
     const { setUser, setLoggedIn } = useSelector((state) => state.auth);

@@ -1,0 +1,10 @@
+.workArea {
+    margin-top: 7vh;
+    display: flex;
+}
+
+.right-main {
+    flex-grow: 1;
+    padding: 20px;
+    margin-left: 200px;
+}

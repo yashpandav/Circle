@@ -1,0 +1,35 @@
+#left-main {
+    width: 200px;
+    background-color: #343a40;
+    color: #ffffff;
+    padding: 20px;
+    position: fixed;
+    height: 100vh;
+}
+
+.left-links {
+    margin: 10px 0;
+}
+
+.left-links a {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.left-links a:hover {
+    background-color: #495057;
+}
+
+.left-links a svg {
+    margin-right: 10px;
+}
+
+.left-links p {
+    margin: 0;
+    font-size: 16px;
+}
