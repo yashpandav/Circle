@@ -5,8 +5,7 @@ const randomColor = require('randomcolor');
 const convert = require('color-convert');
 const randomstring = require('randomstring');
 const { sendMail } = require('../../Utils/mailSender');
-require('dotenv').config();
-
+const bannerURL = require('../../Data/banerUrl');
 exports.createClass = async (req, res) => {
     try {
         const { name, description, subject, roomNo } = req?.body;
@@ -43,7 +42,7 @@ exports.createClass = async (req, res) => {
             subject: subject || "",
             roomNo: roomNo || "",
             classTheme: color,
-            thumbnail: uploadResponse?.secure_url || "",
+            thumbnail: uploadResponse?.secure_url || bannerURL[(Math.floor(Math.random() * bannerURL.length))],
             admin: req.user.id,
             entryCode: randomstring.generate(8),
             entryUrl: `${process.env.BASE_URL}/class/${randomstring.generate(15).toLowerCase()}`

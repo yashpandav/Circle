@@ -78,7 +78,7 @@ export const logIn = createAsyncThunk(
             // console.log(setUser);
             // console.log(response.data.data);
             navigate('/');
-            Cookies.set('token', response.data.data.token, { expires: 7 }); // Expires in 7 days
+            Cookies.set('token', response.data.data.token, { expires: 7 });
             toast.success('LogIn Success');
             return response;
         } catch (err) {

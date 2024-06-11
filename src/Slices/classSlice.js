@@ -4,13 +4,22 @@ import { createSlice } from "@reduxjs/toolkit";
 const classSlice = createSlice({
     name: 'class',
     initialState: {
-        joinedClasses: null,
+        joinedClassesAsTeacher: null,
+        joinedClassesAsStudent: null,
         createdClasses: null,
         isLoading: false,
     },
     reducers: {
-        setJoinedClass(state, action) {
-            state.joinedClasses = action.payload;
+        setJoinedClassTeacher(state, action) {
+            state.joinedClassesAsTeacher = action.payload;
+            state.isLoading = false; 
+        },
+        setJoinedClassStudent(state, action) {
+            state.joinedClassesAsStudent = action.payload;
+            state.isLoading = false; 
+        },
+        setCreatedClass(state, action) {
+            state.createdClasses = action.payload;
             state.isLoading = false; 
         },
         setLoading(state, action) {
@@ -19,5 +28,5 @@ const classSlice = createSlice({
     }
 });
 
-export const { setJoinedClass, setLoading } = classSlice.actions;
+export const { setJoinedClassTeacher , setJoinedClassStudent , setCreatedClass , setLoading } = classSlice.actions;
 export default classSlice.reducer;

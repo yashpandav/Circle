@@ -2,15 +2,17 @@ import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { joinedClass } from '../../../../Api/apiCaller/userapicaller';
 import LoaderComponent from "../../../loader";
-import './home.css'
+import { Classes } from "./Helper/classBox";
+import './home.css';
 
 export default function HomeCircle() {
   const dispatch = useDispatch();
-  const joinedClasses = useSelector((state) => state.classes.joinedClasses);
+  const joinedClassAsTeacher = useSelector((state) => state.classes.joinedClassesAsTeacher);
+  const joinedClassAsStudent = useSelector((state) => state.classes.joinedClassesAsStudent);
   const isLoading = useSelector((state) => state.classes.isLoading);
 
   useEffect(() => {
-    const fetchJoinedClass = async () => {
+    const fetchJoinedClass = () => {
       try {
         dispatch(joinedClass(dispatch));
       } catch (err) {
@@ -23,10 +25,19 @@ export default function HomeCircle() {
   if (isLoading) {
     return <LoaderComponent />;
   }
+  console.log(joinedClassAsStudent);
 
   return (
-    <div>
+    <div className="container">
       <h2>Home Component</h2>
+      <div className="class-boxes">
+        {joinedClassAsTeacher?.map((item, index) => (
+          <Classes item={item} index={index}></Classes>
+        ))}
+        {joinedClassAsStudent?.map((item, index) => (
+          <Classes item={item} index={index}></Classes>
+        ))}
+      </div>
     </div>
   );
 }
