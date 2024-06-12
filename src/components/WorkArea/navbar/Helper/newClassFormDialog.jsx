@@ -47,24 +47,26 @@ const NewClassFormDialog = ({ open, handleClose }) => {
                         {...register("name", { required: true })}
                         margin="dense"
                         id="name"
-                        label="Class Name"
+                        label="Circle Name"
                         type="text"
+                        required={true}
                         fullWidth
                         variant="outlined"
                         error={!!errors.name}
-                        helperText={errors.name ? "Class Name is required" : ""}
+                        helperText={errors.name ? "Circle Name is required" : ""}
                     />
                     <TextField
                         {...register("description", { required: true })}
                         margin="dense"
                         id="description"
-                        label="Class Description"
+                        label="Circle Description"
                         type="text"
                         fullWidth
+                        required={true}
                         variant="outlined"
                         error={!!errors.description}
                         helperText={
-                            errors.description ? "Class Description is required" : ""
+                            errors.description ? "Circle Description is required" : ""
                         }
                     />
                     <TextField
@@ -81,7 +83,7 @@ const NewClassFormDialog = ({ open, handleClose }) => {
                             {...register("color")}
                             margin="dense"
                             id="color"
-                            label="Color"
+                            label="Circle Theme"
                             fullWidth
                             type="color"
                             variant="outlined"
