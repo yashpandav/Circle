@@ -7,6 +7,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
+import { createClass } from "../../../../Api/apiCaller/classapicaller";
 import "./newClassFormDialog.css";
 
 const NewClassFormDialog = ({ open, handleClose }) => {
@@ -16,8 +17,14 @@ const NewClassFormDialog = ({ open, handleClose }) => {
         formState: { errors },
     } = useForm();
 
-    const onSubmit = (data) => {
+    const onSubmit = async (data) => {
         console.log(data);
+        try{
+            await createClass({data});
+        }catch(err){
+            console.log(err);
+            console.log("SOMETHING WENT WRONG WHILE SENDING API FUNCTION");
+        }
         handleClose();
     };
 
@@ -37,39 +44,37 @@ const NewClassFormDialog = ({ open, handleClose }) => {
                         Please fill out the following details to create a new class.
                     </DialogContentText>
                     <TextField
-                        {...register("className", { required: true })}
+                        {...register("name", { required: true })}
                         margin="dense"
-                        id="className"
+                        id="name"
                         label="Class Name"
                         type="text"
                         fullWidth
                         variant="outlined"
-                        error={!!errors.className}
-                        helperText={errors.className ? "Class Name is required" : ""}
+                        error={!!errors.name}
+                        helperText={errors.name ? "Class Name is required" : ""}
                     />
                     <TextField
-                        {...register("classDescription", { required: true })}
+                        {...register("description", { required: true })}
                         margin="dense"
-                        id="classDescription"
+                        id="description"
                         label="Class Description"
                         type="text"
                         fullWidth
                         variant="outlined"
-                        error={!!errors.classDescription}
+                        error={!!errors.description}
                         helperText={
-                            errors.classDescription ? "Class Description is required" : ""
+                            errors.description ? "Class Description is required" : ""
                         }
                     />
                     <TextField
-                        {...register("subject", { required: true })}
+                        {...register("subject")}
                         margin="dense"
                         id="subject"
                         label="Subject"
                         type="text"
                         fullWidth
                         variant="outlined"
-                        error={!!errors.subject}
-                        helperText={errors.subject ? "Subject is required" : ""}
                     />
                     <div className="side-by-side">
                         <TextField
@@ -80,19 +85,15 @@ const NewClassFormDialog = ({ open, handleClose }) => {
                             fullWidth
                             type="color"
                             variant="outlined"
-                            error={!!errors.color}
-                            helperText={errors.color ? "Please choose a color" : ""}
                         />
                         <TextField
-                            {...register("file")}
+                            {...register("banner")}
                             margin="dense"
-                            id="file"
-                            label="File"
+                            id="banner"
+                            label="Banner"
                             type="file"
                             fullWidth
                             variant="outlined"
-                            error={!!errors.file}
-                            helperText={errors.file ? "Please upload a file" : ""}
                         />
                     </div>
                 </DialogContent>

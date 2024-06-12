@@ -28,11 +28,11 @@ exports.createClass = async (req, res) => {
 
         //* Generate class theme color
         let color = req.body.color;
-        if (color) {
+        if (color === '#000000') {
+            color = randomColor();
+        } else {
             let rgb = convert.keyword.rgb(`${color}`);
             color = '#' + convert.rgb.hex(rgb);
-        } else {
-            color = randomColor();
         }
 
         //* Create new class
@@ -66,7 +66,7 @@ exports.createClass = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: "Class Added",
-            data : newClass,
+            data: newClass,
         });
     } catch (err) {
         console.error(err);

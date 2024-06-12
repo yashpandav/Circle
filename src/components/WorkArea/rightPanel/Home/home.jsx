@@ -32,10 +32,10 @@ export default function HomeCircle() {
       <h2>Home Component</h2>
       <div className="class-boxes">
         {joinedClassAsTeacher?.map((item, index) => (
-          <Classes item={item} index={index}></Classes>
+          <Classes item={item} key={index}></Classes>
         ))}
         {joinedClassAsStudent?.map((item, index) => (
-          <Classes item={item} index={index}></Classes>
+          <Classes item={item} key={index}></Classes>
         ))}
       </div>
     </div>

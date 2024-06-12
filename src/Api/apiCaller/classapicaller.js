@@ -2,7 +2,7 @@ import {CLASS_API_URL} from '../apis';
 import {apiConnector} from '../apiconfig';
 
 const {
-    // CREATE_CLASS_API,
+    CREATE_CLASS_API,
     // JOIN_CLASS_API,
     // GET_CLASS_API,
     GET_ALL_CLASS_API,
@@ -31,3 +31,13 @@ export const fetchAllClasses = async () => {
         throw err;
     }
 };
+
+export const createClass = async ({data}) => {
+    try{
+        const response = await apiConnector('POST' , CREATE_CLASS_API , data);
+        console.log(response);
+    }catch(err){
+        console.log("SOMETHING WENT WRONG WHILE CALLING CREATE CLASS API " ,err);
+        return err.response ? err.response : err.message;
+    }
+}
