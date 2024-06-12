@@ -84,7 +84,10 @@ export const logIn = createAsyncThunk(
         } catch (err) {
             console.log(err);
             // console.log(err.response);
-            toast.error("Wrong Password");
+            if(err.response.status === 400){
+                toast.error("Invalid Email , User Not Found");
+            }
+            else toast.error("Wrong Password");
             return err.response ? err.response : err.message;
         }
     }

@@ -28,8 +28,7 @@ export default function HomeCircle() {
   console.log(joinedClassAsStudent);
 
   return (
-    <div className="container">
-      <h2>Home Component</h2>
+    <div className="container"> 
       <div className="class-boxes">
         {joinedClassAsTeacher?.map((item, index) => (
           <Classes item={item} key={index}></Classes>

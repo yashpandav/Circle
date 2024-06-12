@@ -36,7 +36,7 @@ exports.createClass = async (req, res) => {
         }
 
         //* Create new class
-        const newClass = await Class.create({
+        let newClass = await Class.create({
             name,
             description,
             subject: subject || "",
@@ -46,9 +46,10 @@ exports.createClass = async (req, res) => {
             entryCode: randomstring.generate(8),
             entryUrl: `${process.env.BASE_URL}/class/${randomstring.generate(15).toLowerCase()}`
         });
+        newClass = await Class.findById(newClass.id).populate('admin');
 
         //* Update user's created and joined classes
-        await User.findByIdAndUpdate(req.user.id, {
+        const user = await User.findByIdAndUpdate(req.user.id, {
             $addToSet: {
                 createdClasses: newClass.id,
                 joinedClassAsAteacher: newClass.id
@@ -66,8 +67,8 @@ exports.createClass = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: "Class Added",
-            data: newClass,
-        });
+            data: newClass
+        }); 
     } catch (err) {
         console.error(err);
         return res.status(500).json({

@@ -19,7 +19,6 @@ export const joinedClass = createAsyncThunk(
         try {
             dispatch(setLoading(true));
             const response = await apiConnector('GET', GET_USER_JOINED_API);
-
             dispatch(setJoinedClassTeacher(response.data.data.joinedClassAsAteacher));
             dispatch(setJoinedClassStudent(response.data.data.joinedClassAsStudent));
             return response.data;

@@ -1,35 +1,120 @@
 #left-main {
-    width: 200px;
-    background-color: #343a40;
-    color: #ffffff;
+    width: 220px;
+    background-color: #f0f4f8;
+    color: #333333;
     padding: 20px;
     position: fixed;
     height: 100vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.menu-icon {
+    position: absolute;
+    top: 30px;
+    right: 20px;
+    cursor: pointer;
 }
 
 .left-links {
-    margin: 10px 0;
+    margin-block: 0.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.left-links a {
+.left-links a,
+.left-link-main {
     text-decoration: none;
     display: flex;
     align-items: center;
-    color: #ffffff;
-    padding: 10px;
+    color: #333333;
+    padding: 12px;
     border-radius: 5px;
-    transition: background-color 0.3s;
-}
-
-.left-links a:hover {
-    background-color: #495057;
-}
-
-.left-links a svg {
-    margin-right: 10px;
-}
-
-.left-links p {
-    margin: 0;
+    transition: all 0.3s ease;
     font-size: 16px;
+    position: relative;
+}
+
+.left-links:hover,
+.left-link-main:hover {
+    background-color: #e2e6ea;
+}
+
+.left-links a::before,
+.left-link-main::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 5px;
+    background-color: #007bff;
+    transform: scaleY(0);
+    transition: all 0.3s ease;
+}
+
+.left-links a:hover::before,
+.left-link-main:hover::before {
+    transform: scaleY(1);
+}
+
+.left-links a:hover,
+.left-link-main:hover {
+    color: #007bff;
+}
+
+.left-links svg,
+.left-link-main svg {
+    margin-right: 10px;
+    transition: transform 0.3s ease;
+    color: #007bff;
+}
+
+.left-links a:hover svg,
+.left-link-main:hover svg {
+    transform: scale(1.1);
+}
+
+.left-links p,
+.left-link-main p {
+    margin: 0;
+}
+
+.sub-menu {
+    padding-left: 20px;
+    margin-top: 5px;
+    display: flex;
+}
+
+.sub-menu a {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    color: #333333;
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    position: relative;
+}
+
+.sub-menu a:hover {
+    background-color: #e2e6ea;
+    color: #007bff;
+}
+
+.sub-menu a svg {
+    margin-right: 8px;
+    transition: all 0.3s ease;
+    color: #007bff;
+}
+
+.sub-menu a:hover svg {
+    transform: scale(1.1);
+}
+
+.menu-open {
+    transform: translateX(-20px); 
 }

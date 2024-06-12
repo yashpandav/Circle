@@ -35,7 +35,7 @@ export const fetchAllClasses = async () => {
 export const createClass = async ({data}) => {
     try{
         const response = await apiConnector('POST' , CREATE_CLASS_API , data);
-        console.log(response);
+        console.log("API RESPONSE " , response);
     }catch(err){
         console.log("SOMETHING WENT WRONG WHILE CALLING CREATE CLASS API " ,err);
         return err.response ? err.response : err.message;

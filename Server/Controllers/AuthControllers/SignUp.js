@@ -56,7 +56,7 @@ exports.signUp = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         //* Generate profile URL
-        const profileURL = `https://*ui-avatars.com/api/?name=${firstName}+${lastName}&background=${randomColor().replace('#', '')}&color=${randomColor().replace('#', '')}&bold=true`;
+        const profileURL = `https://ui-avatars.com/api/?name=${firstName}+${lastName}&background=${randomColor().replace('#', '')}&color=${randomColor().replace('#', '')}&bold=true`;
 
         //* Create profile
         const profile = new Profile({

@@ -1,0 +1,148 @@
+.class {
+    border-radius: 10px;
+    min-width: 300px;
+    max-width: 300px;
+    height: 320px;
+    margin-top: 2.4rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    background-color: #fff;
+}
+
+.class:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+.header-class {
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    color: white;
+    height: 36%;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.header-class h2 {
+    margin: 0;
+    color: white;
+    z-index: 1;
+    font-size: 1.5em;
+    font-weight: 600;
+}
+
+.header-class p {
+    margin: 0.3rem 0 0.5rem;
+    z-index: 1;
+    font-size: 0.9em;
+    line-height: 1.2em;
+}
+
+.header-class::before,
+.header-class::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    height: 50px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
+    z-index: 0;
+}
+
+.header-class::after {
+    top: auto;
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
+}
+
+.plain-div {
+    height: 30%;
+}
+
+.admin-info {
+    position: absolute;
+    right: 0.3rem;
+    top: 35%;
+    color: white;
+    z-index: 1;
+    font-size: 1.1em;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+img.admin-img {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    border: 2px solid white;
+}
+
+.footer-class {
+    height: 20%;
+    background: #f1f1f1;
+    text-align: center;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.student-teacher {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0.5rem;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.student-teacher:hover {
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.footer-class p {
+    margin: 0.3rem 0;
+    color: #333;
+    font-size: 0.9em;
+}
+
+.footer-class .icons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    padding: 0.5rem 1rem;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.footer-class .icons:hover {
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.footer-class .icons svg {
+    color: #333;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.footer-class .icons svg:hover {
+    color: #007BFF;
+}
