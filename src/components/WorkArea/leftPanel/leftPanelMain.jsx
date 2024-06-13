@@ -9,6 +9,8 @@ import TaskIcon from "@mui/icons-material/Task";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { MdOutlineTopic } from "react-icons/md";
+import { MdTask } from "react-icons/md";
 import "./leftPanelMain.css";
 
 export default function LeftMain() {
@@ -30,12 +32,7 @@ export default function LeftMain() {
     };
 
     return (
-        <div
-            id="left-main"
-            style={{
-                transform: menuOpen ? "translateX(0)" : "translateX(-60%)",
-            }}
-        >
+        <div id="left-main" className={menuOpen ? "menu-open" : "menu-closed"}>
             <span className="menu-icon-container" onClick={toggleMenu}>
                 <ArrowRightIcon
                     style={{
@@ -48,11 +45,8 @@ export default function LeftMain() {
                 <Link
                     to="/workarea/home"
                     onClick={() => handleLinkClick("/workarea/home")}
-                    style={{
-                        flexDirection: menuOpen ? "row" : "column",
-                        justifyContent: menuOpen ? "flex-start" : "center",
-                    }}
-                    className={activeLink === "/workarea/home" ? "active" : ""}
+                    className={`left-link ${menuOpen ? "menu-open" : "menu-closed"} ${activeLink === "/workarea/home" ? "active" : ""
+                        }`}
                 >
                     <HomeIcon />
                     {menuOpen && <p>Home</p>}
@@ -62,123 +56,93 @@ export default function LeftMain() {
                 <Link
                     to="/workarea/calendar"
                     onClick={() => handleLinkClick("/workarea/calendar")}
-                    className={activeLink === "/workarea/calendar" ? "active" : ""}
-                    style={{
-                        flexDirection: menuOpen ? "row" : "column",
-                        justifyContent: menuOpen ? "flex-start" : "center",
-                    }}
+                    className={`left-link ${menuOpen ? "menu-open" : "menu-closed"} ${activeLink === "/workarea/calendar" ? "active" : ""
+                        }`}
                 >
                     <CalendarTodayIcon />
                     {menuOpen && <p>Calendar</p>}
                 </Link>
             </div>
-            {
-                menuOpen && (
-                    <div className="left-links" onClick={() => toggleSubMenu("teaching")}>
-                        <div
-                            className={`left-link-main`}
+            {menuOpen && (
+                <div className="left-links" onClick={() => toggleSubMenu("teaching")}>
+                    <div
+                        className={`left-link-main ${menuOpen ? "menu-open" : "menu-closed"
+                            }`}
+                    >
+                        <CastForEducationIcon />
+                        {menuOpen && <p>Teaching</p>}
+                        <ArrowDropDownIcon
                             style={{
-                                flexDirection: menuOpen ? "row" : "column",
-                                justifyContent: menuOpen ? "flex-start" : "center",
+                                transform:
+                                    visibleSubMenu === "teaching" ? "rotate(180deg)" : "",
+                                transition: "transform 0.3s ease-in-out",
                             }}
-                        >
-                            <CastForEducationIcon />
-                            {menuOpen && <p>Teaching</p>}
-                            <ArrowDropDownIcon
-                                style={{
-                                    transform: visibleSubMenu === "teaching" ? "rotate(180deg)" : "",
-                                    transition: "transform 0.3s ease-in-out",
-                                }}
-                            />
-                        </div>
+                        />
                     </div>
-                )
-            }
-            {
-                !menuOpen && (
-                    <div className="sub-menu">
-                        <Link
-                            to="/workarea/review"
-                            onClick={() => handleLinkClick("/workarea/review")}
-                            className={activeLink === "/workarea/review" ? "active" : ""}
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "flex-end",
-                                alignItems: "flex-end",
-                            }}
-                        >
-                            <TopicIcon />
-                        </Link>
-                    </div>
-                )
-            }{visibleSubMenu === "teaching" && menuOpen && (
+                </div>
+            )}
+            {!menuOpen && (
                 <div className="sub-menu">
                     <Link
                         to="/workarea/review"
                         onClick={() => handleLinkClick("/workarea/review")}
-                        className={activeLink === "/workarea/review" ? "active" : ""}
-                        style={{
-                            flexDirection: "row",
-                            justifyContent: "flex-start",
-                            alignItems: "center",
-                        }}
+                        className={`left-link sub-menu-closed ${activeLink === "/workarea/review" ? "active" : ""
+                            }`}
+                    >
+                        <MdOutlineTopic className="icon-closed" />
+                    </Link>
+                </div>
+            )}
+            {visibleSubMenu === "teaching" && menuOpen && (
+                <div className="sub-menu">
+                    <Link
+                        to="/workarea/review"
+                        onClick={() => handleLinkClick("/workarea/review")}
+                        className={`left-link ${activeLink === "/workarea/review" ? "active" : ""
+                            }`}
                     >
                         <TopicIcon />
                         <p>To Review</p>
                     </Link>
                 </div>
             )}
-            {
-                menuOpen && (
-                    <div className="left-links" onClick={() => toggleSubMenu("enrolled")}>
-                        <div
-                            className={`left-link-main`}
+            {menuOpen && (
+                <div className="left-links" onClick={() => toggleSubMenu("enrolled")}>
+                    <div
+                        className={`left-link-main ${menuOpen ? "menu-open" : "menu-closed"
+                            }`}
+                    >
+                        <SchoolIcon />
+                        {menuOpen && <p>Enrolled</p>}
+                        <ArrowDropDownIcon
                             style={{
-                                flexDirection: menuOpen ? "row" : "column",
-                                justifyContent: menuOpen ? "flex-start" : "center",
+                                transform:
+                                    visibleSubMenu === "enrolled" ? "rotate(180deg)" : "",
+                                transition: "transform 0.3s ease-in-out",
                             }}
-                        >
-                            <SchoolIcon />
-                            {menuOpen && <p>Enrolled</p>}
-                            <ArrowDropDownIcon
-                                style={{
-                                    transform: visibleSubMenu === "enrolled" ? "rotate(180deg)" : "",
-                                    transition: "transform 0.3s ease-in-out",
-                                }}
-                            />
-                        </div>
+                        />
                     </div>
-                )
-            }
-
-            {
-                !menuOpen && (
-                    <div className="sub-menu">
-                        <Link
-                            to="/workarea/todo"
-                            onClick={() => handleLinkClick("/workarea/todo")}
-                            className={activeLink === "/workarea/todo" ? "active" : ""}
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "flex-end",
-                            }}
-                        >
-                            <TaskIcon />
-                        </Link>
-                    </div>
-                )
-            }
+                </div>
+            )}
+            {!menuOpen && (
+                <div className="sub-menu">
+                    <Link
+                        to="/workarea/todo"
+                        onClick={() => handleLinkClick("/workarea/todo")}
+                        className={`left-link sub-menu-closed { ${activeLink === "/workarea/todo" ? "active" : ""
+                            }`}
+                    >
+                        <MdTask className="icon-closed" />
+                    </Link>
+                </div>
+            )}
             {visibleSubMenu === "enrolled" && menuOpen && (
                 <div className="sub-menu">
                     <Link
                         to="/workarea/todo"
                         onClick={() => handleLinkClick("/workarea/todo")}
-                        className={activeLink === "/workarea/todo" ? "active" : ""}
-                        style={{
-                            flexDirection: "row",
-                            justifyContent: "flex-start",
-                            alignItems: "center",
-                        }}
+                        className={`left-link ${activeLink === "/workarea/todo" ? "active" : ""
+                            }`}
                     >
                         <TaskIcon />
                         <p>To do</p>
@@ -189,13 +153,15 @@ export default function LeftMain() {
                 <Link
                     to="/workarea/settings"
                     onClick={() => handleLinkClick("/workarea/settings")}
-                    className={activeLink === "/workarea/settings" ? "active" : ""}
-                    style={{
-                        flexDirection: menuOpen ? "row" : "column",
-                        justifyContent: menuOpen ? "flex-start" : "center",
-                    }}
+                    className={`left-link ${menuOpen ? "menu-open" : "menu-closed"} ${activeLink === "/workarea/settings" ? "active" : ""
+                        }`}
                 >
-                    <SettingsIcon />
+                    <SettingsIcon
+                        className="settings-icon"
+                        style={{
+                            marginRight: menuOpen ? "" : "6.4px",
+                        }}
+                    />
                     {menuOpen && <p>Settings</p>}
                 </Link>
             </div>
