@@ -1,7 +1,6 @@
 #left-main {
-    width: 220px;
-    background-color: #f0f4f8;
-    color: #333333;
+    width: 190px;
+    background-color: #ffffff;
     padding: 20px;
     position: fixed;
     height: 100vh;
@@ -11,11 +10,30 @@
     transition: all 0.3s ease;
 }
 
-.menu-icon {
-    position: absolute;
-    top: 30px;
-    right: 20px;
+.menu-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #edf2f4;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     cursor: pointer;
+    position: absolute;
+    top: 25px;
+    left: 91%;
+    transition: all 0.3s ease;
+}
+
+.menu-icon-container:hover {
+    background-color: #f8fefe;
+}
+
+.menu-icon-container svg {
+    font-size: 2rem;
+    color: #005f73;
+    transition: all 0.3s ease;
 }
 
 .left-links {
@@ -28,18 +46,18 @@
 .left-link-main {
     text-decoration: none;
     display: flex;
-    align-items: center;
-    color: #333333;
+    align-items: flex-end;
+    color: #2f6690;
     padding: 12px;
-    border-radius: 5px;
-    transition: all 0.3s ease;
+    border-radius: 10px;
     font-size: 16px;
     position: relative;
+    transition: all 0.3s ease;
 }
 
 .left-links:hover,
 .left-link-main:hover {
-    background-color: #e2e6ea;
+    background-color: #eaf9ff;
 }
 
 .left-links a::before,
@@ -50,7 +68,7 @@
     top: 0;
     height: 100%;
     width: 5px;
-    background-color: #007bff;
+    background-color: #81c3d7;
     transform: scaleY(0);
     transition: all 0.3s ease;
 }
@@ -62,14 +80,14 @@
 
 .left-links a:hover,
 .left-link-main:hover {
-    color: #007bff;
+    color: #fca311;
 }
 
 .left-links svg,
 .left-link-main svg {
     margin-right: 10px;
-    transition: transform 0.3s ease;
-    color: #007bff;
+    transition: all 0.3s ease;
+    color: #0f4c5c;
 }
 
 .left-links a:hover svg,
@@ -84,37 +102,49 @@
 
 .sub-menu {
     padding-left: 20px;
-    margin-top: 5px;
     display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.3s ease;
+}
+
+.sub-menu svg {
+    margin-left: 12px;
+    margin-right: 8px;
 }
 
 .sub-menu a {
     text-decoration: none;
     display: flex;
     align-items: center;
-    color: #333333;
-    padding: 8px 12px;
-    border-radius: 5px;
-    transition: all 0.3s ease;
+    color: #2f6690;
+    padding: 4px;
+    border-radius: 10px;
     font-size: 14px;
-    position: relative;
+    transition: all 0.3s ease;
 }
 
 .sub-menu a:hover {
-    background-color: #e2e6ea;
-    color: #007bff;
+    background-color: #eaf9ff;
+    padding-left: 5px;
+    color: #fca311;
 }
 
-.sub-menu a svg {
-    margin-right: 8px;
-    transition: all 0.3s ease;
-    color: #007bff;
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.sub-menu a:hover svg {
-    transform: scale(1.1);
+.active {
+    color: #fca311 !important;
+    background-color: #eaf9ff;
 }
 
-.menu-open {
-    transform: translateX(-20px); 
+.active svg {
+    color: #fb8500;
 }
