@@ -10,6 +10,7 @@ export default function HomeCircle() {
   const joinedClassAsTeacher = useSelector((state) => state.classes.joinedClassesAsTeacher);
   const joinedClassAsStudent = useSelector((state) => state.classes.joinedClassesAsStudent);
   const isLoading = useSelector((state) => state.classes.isLoading);
+  const toggle = useSelector((state) => state.toggle.toggle);
 
   useEffect(() => {
     const fetchJoinedClass = () => {
@@ -29,7 +30,7 @@ export default function HomeCircle() {
 
   return (
     <div className="container"> 
-      <div className="class-boxes">
+      <div className={`class-boxes`}>
         {joinedClassAsTeacher?.map((item, index) => (
           <Classes item={item} key={index}></Classes>
         ))}

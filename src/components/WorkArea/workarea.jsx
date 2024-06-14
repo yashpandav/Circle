@@ -2,22 +2,19 @@ import React, { useState } from 'react';
 import LeftMain from './leftPanel/leftPanelMain';
 import Navbar from './navbar/navbar';
 import { Outlet } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import './workarea.css';
 
 export default function WorkArea() {
 
-    const [toggled , setToggle] = useState(false);
-
-    function togleHandler(){
-        setToggle(!toggled);
-    }
+    const toggle = useSelector((state) => state.toggle.toggle)
 
     return (
         <>
             <Navbar />
             <div className="workArea">
-                <LeftMain togleHandler = {togleHandler}/>
-                <div className ={ `right-main ${toggled ? 'toggle' : ''}`}>
+                <LeftMain/>
+                <div className ={ `right-main ${toggle ? 'box-togle' : 'not-toggle'}`}>
                     <Outlet />
                 </div>
             </div>

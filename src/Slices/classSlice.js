@@ -1,4 +1,3 @@
-// classSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const classSlice = createSlice({

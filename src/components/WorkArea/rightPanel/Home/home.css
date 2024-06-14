@@ -1,7 +1,6 @@
 .class-boxes {
-    margin-left: 4rem;
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-start;
-    gap : 2.3vw;
+    justify-content: space-evenly;
+    column-gap: 2vw;
 }

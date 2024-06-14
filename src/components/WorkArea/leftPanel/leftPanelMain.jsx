@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect , useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
@@ -11,30 +11,37 @@ import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { MdOutlineTopic } from "react-icons/md";
 import { MdTask } from "react-icons/md";
+import { useSelector , useDispatch } from "react-redux";
 import "./leftPanelMain.css";
+import { setToggle } from "../../../Slices/toggleSlice";
 
-export default function LeftMain({ togleHandler }) {
+export default function LeftMain() {
     const [visibleSubMenu1, setVisibleSubMenu1] = useState(false);
     const [visibleSubMenu2, setVisibleSubMenu2] = useState(false);
-    const [menuOpen, setMenuOpen] = useState(true);
     const location = useLocation();
     const [activeLink, setActiveLink] = useState(location.pathname);
 
+    const toggle = useSelector((state) => state.toggle.toggle);
+    const dispatch = useDispatch();
+
     const toggleMenu = () => {
-        setMenuOpen(!menuOpen);
-        togleHandler();
+        dispatch(setToggle(!toggle));
     };
+
+    useEffect(() => {
+        setActiveLink(location.pathname);
+    }, [location.pathname]);
 
     const handleLinkClick = (path) => {
         setActiveLink(path);
     };
 
     return (
-        <div id="left-main" className={menuOpen ? "menu-open" : "menu-closed"}>
+        <div id="left-main" className={toggle ? "menu-open" : "menu-closed"}>
             <span className="menu-icon-container" onClick={toggleMenu}>
                 <ArrowRightIcon
                     style={{
-                        transform: menuOpen ? "rotate(180deg)" : "",
+                        transform: toggle ? "rotate(180deg)" : "",
                         transition: "transform 0.3s ease-in-out",
                     }}
                 />
@@ -43,32 +50,32 @@ export default function LeftMain({ togleHandler }) {
                 <Link
                     to="/workarea/home"
                     onClick={() => handleLinkClick("/workarea/home")}
-                    className={`left-link ${menuOpen ? "menu-open" : "menu-closed"} ${activeLink === "/workarea/home" ? "active" : ""
+                    className={`left-link ${toggle ? "menu-open" : "menu-closed"} ${activeLink === "/workarea/home" ? "active" : ""
                         }`}
                 >
                     <HomeIcon />
-                    {menuOpen && <p>Home</p>}
+                    {toggle && <p>Home</p>}
                 </Link>
             </div>
             <div className="left-links">
                 <Link
                     to="/workarea/calendar"
                     onClick={() => handleLinkClick("/workarea/calendar")}
-                    className={`left-link ${menuOpen ? "menu-open" : "menu-closed"} ${activeLink === "/workarea/calendar" ? "active" : ""
+                    className={`left-link ${toggle ? "menu-open" : "menu-closed"} ${activeLink === "/workarea/calendar" ? "active" : ""
                         }`}
                 >
                     <CalendarTodayIcon />
-                    {menuOpen && <p>Calendar</p>}
+                    {toggle && <p>Calendar</p>}
                 </Link>
             </div>
-            {menuOpen && (
+            {toggle && (
                 <div className="left-links" onClick={() => setVisibleSubMenu1(!visibleSubMenu1)}>
                     <div
-                        className={`left-link-main ${menuOpen ? "menu-open" : "menu-closed"
+                        className={`left-link-main ${toggle ? "menu-open" : "menu-closed"
                             }`}
                     >
                         <CastForEducationIcon />
-                        {menuOpen && <p>Teaching</p>}
+                        {toggle && <p>Teaching</p>}
                         <ArrowDropDownIcon
                             style={{
                                 transform:
@@ -79,7 +86,7 @@ export default function LeftMain({ togleHandler }) {
                     </div>
                 </div>
             )}
-            {!menuOpen && (
+            {!toggle && (
                 <div className="sub-menu">
                     <Link
                         to="/workarea/review"
@@ -91,7 +98,7 @@ export default function LeftMain({ togleHandler }) {
                     </Link>
                 </div>
             )}
-            {visibleSubMenu1 && menuOpen && (
+            {visibleSubMenu1 && toggle && (
                 <div className="sub-menu">
                     <Link
                         to="/workarea/review"
@@ -104,14 +111,14 @@ export default function LeftMain({ togleHandler }) {
                     </Link>
                 </div>
             )}
-            {menuOpen && (
+            {toggle && (
                 <div className="left-links" onClick={() => setVisibleSubMenu2(!visibleSubMenu2)}>
                     <div
-                        className={`left-link-main ${menuOpen ? "menu-open" : "menu-closed"
+                        className={`left-link-main ${toggle ? "menu-open" : "menu-closed"
                             }`}
                     >
                         <SchoolIcon />
-                        {menuOpen && <p>Enrolled</p>}
+                        {toggle && <p>Enrolled</p>}
                         <ArrowDropDownIcon
                             style={{
                                 transform:
@@ -122,7 +129,7 @@ export default function LeftMain({ togleHandler }) {
                     </div>
                 </div>
             )}
-            {!menuOpen && (
+            {!toggle && (
                 <div className="sub-menu">
                     <Link
                         to="/workarea/todo"
@@ -134,7 +141,7 @@ export default function LeftMain({ togleHandler }) {
                     </Link>
                 </div>
             )}
-            {visibleSubMenu2 && menuOpen && (
+            {visibleSubMenu2 && toggle && (
                 <div className="sub-menu">
                     <Link
                         to="/workarea/todo" 
@@ -151,16 +158,16 @@ export default function LeftMain({ togleHandler }) {
                 <Link
                     to="/workarea/settings"
                     onClick={() => handleLinkClick("/workarea/settings")}
-                    className={`left-link ${menuOpen ? "menu-open" : "menu-closed"} ${activeLink === "/workarea/settings" ? "active" : ""
+                    className={`left-link ${toggle ? "menu-open" : "menu-closed"} ${activeLink === "/workarea/settings" ? "active" : ""
                         }`}
                 >
                     <SettingsIcon
                         className="settings-icon"
                         style={{
-                            marginRight: menuOpen ? "" : "6.4px",
+                            marginRight: toggle ? "" : "6.4px",
                         }}
                     />
-                    {menuOpen && <p>Settings</p>}
+                    {toggle && <p>Settings</p>}
                 </Link>
             </div>
         </div>
