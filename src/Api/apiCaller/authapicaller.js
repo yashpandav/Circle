@@ -3,11 +3,11 @@ import { apiConnector } from '../apiconfig';
 import { AUTH_API_URL } from '../apis';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
-import Cookies from 'js-cookie'; // Import js-cookie
+import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 import { setUser } from '../../Slices/authSlice';
-import {setLoggedIn} from '../../Slices/authSlice';
-const { SEND_OTP_API, SIGNUP_API, LOGIN_API , LOGOUT_API } = AUTH_API_URL;
+import { setLoggedIn } from '../../Slices/authSlice';
+const { SEND_OTP_API, SIGNUP_API, LOGIN_API, LOGOUT_API } = AUTH_API_URL;
 
 export const sendOTP = createAsyncThunk(
     'sendOTP',
@@ -62,29 +62,29 @@ export const signUp = createAsyncThunk(
 
 export const logIn = createAsyncThunk(
     'login',
-    async ({ email, password, navigate , dispatch}) => {
+    async ({ email, password, navigate, dispatch }) => {
         try {
             // console.log("email " , email  , "password " , password);
             const response = await apiConnector('POST', LOGIN_API, {
                 email,
                 password
             });
-                // console.log(response.data.data);
-                dispatch(setUser(response.data.data));
-                dispatch(setLoggedIn(true));
+            // console.log(response.data.data);
+            dispatch(setUser(response.data.data));
+            dispatch(setLoggedIn(true));
             // const dispatch = useDispatch();
             // const { setUser } = useSelector((state) => state.auth);
             // dispatch(setUser(response.data.data));
             // console.log(setUser);
             // console.log(response.data.data);
-            navigate('/');
+            navigate('/workarea/home');
             Cookies.set('token', response.data.data.token, { expires: 7 });
             toast.success('LogIn Success');
             return response;
-        } catch (err) {
+        } catch (err) { 
             console.log(err);
             // console.log(err.response);
-            if(err.response.status === 400){
+            if (err.response.status === 400) {
                 toast.error("Invalid Email , User Not Found");
             }
             else toast.error("Wrong Password");
@@ -94,21 +94,21 @@ export const logIn = createAsyncThunk(
 )
 
 export const logOut = createAsyncThunk(
-    'LogOut' , 
-    async({dispatch , navigate}) => {
-        try{
-            console.log("LogOut Function");
-            const response = await apiConnector('POST' , LOGOUT_API);
-            dispatch(setLoggedIn(false))
+    'logOut',
+    async ({ dispatch, navigate }) => {
+        try {
+            console.log('LogOut Function');
+            const response = await apiConnector('POST', LOGOUT_API);
+            dispatch(setLoggedIn(false));
             dispatch(setUser(null));
             navigate('/');
+            Cookies.remove('token');
             toast.success('LogOut Success');
             return response;
-        }
-        catch (err) {
+        } catch (err) {
             console.log(err);
-            toast.error("Failed to log out");
-            return err.response? err.response : err.message;
+            toast.error('Failed to log out');
+            return err.response ? err.response : err.message;
         }
     }
 );

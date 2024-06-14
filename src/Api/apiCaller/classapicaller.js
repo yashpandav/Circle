@@ -1,5 +1,5 @@
-import {CLASS_API_URL} from '../apis';
-import {apiConnector} from '../apiconfig';
+import { CLASS_API_URL } from '../apis';
+import { apiConnector } from '../apiconfig';
 
 const {
     CREATE_CLASS_API,
@@ -14,13 +14,13 @@ const {
 export const fetchAllClasses = async () => {
     try {
         // console.log('Fetching all classes' , GET_ALL_CLASS_API);
-        const response = await apiConnector('GET' , GET_ALL_CLASS_API);
-        if(!response){
+        const response = await apiConnector('GET', GET_ALL_CLASS_API);
+        if (!response) {
             // console.log(response);
             throw new Error('API FETCHED BUT SOMETHING WENT WRONG WITH A RESPONSE');
         }
 
-        if(!response.data.success){
+        if (!response.data.success) {
             throw new Error("RESPONSE failed , FALSE")
         }
 
@@ -32,12 +32,19 @@ export const fetchAllClasses = async () => {
     }
 };
 
-export const createClass = async ({data}) => {
-    try{
-        const response = await apiConnector('POST' , CREATE_CLASS_API , data);
-        console.log("API RESPONSE " , response);
-    }catch(err){
-        console.log("SOMETHING WENT WRONG WHILE CALLING CREATE CLASS API " ,err);
+export const createClass = async ({ data }) => {
+    try {
+        let {banner} = data;
+        data = {
+            ...data ,
+            banner: banner[0]
+        }
+        const response = await apiConnector('POST', CREATE_CLASS_API, data, {
+                "Content-Type": "multipart/form-data",
+            });
+        console.log("API RESPONSE ", response);
+    } catch (err) {
+        console.log("SOMETHING WENT WRONG WHILE CALLING CREATE CLASS API ", err);
         return err.response ? err.response : err.message;
     }
 }

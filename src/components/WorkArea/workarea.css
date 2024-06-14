@@ -1,10 +1,18 @@
 .workArea {
     margin-top: 7vh;
     display: flex;
+    justify-content: flex-start;
 }
 
 .right-main {
     flex-grow: 1;
     padding: 20px;
-    margin-left: 200px;
+    margin-left: 190px; 
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.toggle{
+    padding-top: 20px ;
+    margin-left: 50px;
 }

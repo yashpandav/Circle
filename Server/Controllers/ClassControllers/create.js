@@ -10,7 +10,7 @@ exports.createClass = async (req, res) => {
     try {
         const { name, description, subject } = req?.body;
         const banner = req?.files?.banner;
-
+        console.log("BANNER , " , banner)
         if (!name || !description) {
             return res.status(400).json({
                 success: false,

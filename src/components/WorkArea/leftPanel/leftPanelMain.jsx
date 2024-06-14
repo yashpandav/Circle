@@ -13,7 +13,7 @@ import { MdOutlineTopic } from "react-icons/md";
 import { MdTask } from "react-icons/md";
 import "./leftPanelMain.css";
 
-export default function LeftMain() {
+export default function LeftMain({togleHandler}) {
     const [visibleSubMenu, setVisibleSubMenu] = useState(null);
     const [menuOpen, setMenuOpen] = useState(true);
     const location = useLocation();
@@ -25,6 +25,7 @@ export default function LeftMain() {
 
     const toggleMenu = () => {
         setMenuOpen(!menuOpen);
+        togleHandler();
     };
 
     const handleLinkClick = (path) => {

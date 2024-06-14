@@ -16,7 +16,7 @@ export default function OverAllDetails() {
                 // console.log(data.data)
 
                 data.data.map((data) => {
-                    setTotalTeacher((prev) => prev + data.teacher.length);
+                    setTotalTeacher((prev) => prev + data.teacher.length + 1);
                     setTotalStudent((prev) => prev + data.student.length);
                 })
 
