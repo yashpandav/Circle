@@ -1,17 +1,20 @@
 import React, { useState } from "react";
 import { Divider } from "@mui/material";
-import CreateClassDialog from './createClassDialog';
+import CreateClassDialog from './CreateClass/createClassDialog';
+import JoinClassDialog from "./JoinClass/joinClassDialog";
 import './dialog.css';
 
 const Dialog = () => {
-    const [dialog, setDialog] = useState(false);
+    const [createDialog, setCreateDialog] = useState(false);
+    const [joinDialog, setJoinDialog] = useState(false);
 
     return (
         <div id='dialog-box'>
-            <h3 className='dialog-option'>Join Circle</h3>
+            <h3 className='dialog-option' onClick={() => setJoinDialog(true)}>Join Circle</h3>
+            {joinDialog && <JoinClassDialog setJoinDialog = {setJoinDialog} />}
             <Divider />
-            <h3 className='dialog-option' onClick={() => setDialog(true)}>Create Circle</h3>
-            {dialog && <CreateClassDialog setDialog={setDialog} /> }
+            <h3 className='dialog-option' onClick={() => setCreateDialog(true)}>Create Circle</h3>
+            {createDialog && <CreateClassDialog setCreateDialog={setCreateDialog} />}
         </div>
     );
 };

@@ -1,9 +1,9 @@
 import { CLASS_API_URL } from '../apis';
 import { apiConnector } from '../apiconfig';
-
+import toast from 'react-hot-toast';
 const {
     CREATE_CLASS_API,
-    // JOIN_CLASS_API,
+    JOIN_CLASS_API,
     // GET_CLASS_API,
     GET_ALL_CLASS_API,
     // DELETE_CLASS_API,
@@ -43,8 +43,29 @@ export const createClass = async ({ data }) => {
                 "Content-Type": "multipart/form-data",
             });
         console.log("API RESPONSE ", response);
+        toast.success('Successfully created new Circle')
     } catch (err) {
         console.log("SOMETHING WENT WRONG WHILE CALLING CREATE CLASS API ", err);
         return err.response ? err.response : err.message;
+    }
+}
+
+export const joinClass = async (data) => {
+    try{
+        console.log(data);
+        const response = await apiConnector('POST' , JOIN_CLASS_API , data);
+        console.log("API RESPONSE ", response);
+        toast.success('Successfully Joined Circle');
+    }catch(err){
+        if(err.response.status === 404){
+            toast.error('Circle Not Found');
+            return;
+        }
+        if(err.response.status === 400){
+            toast.error('You are already enrolled in this Circle');
+            return;
+        }
+        console.log("SOMETHING WENT WRONG WHILE CALLING JOIN CLASS API ", err);
+        return err.response? err.response : err.message;
     }
 }

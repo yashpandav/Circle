@@ -10,14 +10,14 @@ import { useTheme } from '@mui/material/styles';
 import NewClassFormDialog from './newClassFormDialog';
 import './createClassDialog.css';
 
-const CreateClassDialog = ({ setDialog }) => {
+const CreateClassDialog = ({ setCreateDialog }) => {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
     const [createClass, setCreateClass] = useState(false);
 
     const handleClose = () => {
-        setDialog(false);
+        setCreateDialog(false);
     };
 
     const handleAgree = () => {
@@ -25,7 +25,7 @@ const CreateClassDialog = ({ setDialog }) => {
     };
 
     const closeFinal = () => {
-        setDialog(false);
+        setCreateDialog(false);
         setCreateClass(false);
     }
 

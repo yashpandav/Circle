@@ -13,15 +13,12 @@ import { MdOutlineTopic } from "react-icons/md";
 import { MdTask } from "react-icons/md";
 import "./leftPanelMain.css";
 
-export default function LeftMain({togleHandler}) {
-    const [visibleSubMenu, setVisibleSubMenu] = useState(null);
+export default function LeftMain({ togleHandler }) {
+    const [visibleSubMenu1, setVisibleSubMenu1] = useState(false);
+    const [visibleSubMenu2, setVisibleSubMenu2] = useState(false);
     const [menuOpen, setMenuOpen] = useState(true);
     const location = useLocation();
     const [activeLink, setActiveLink] = useState(location.pathname);
-
-    const toggleSubMenu = (menu) => {
-        setVisibleSubMenu(visibleSubMenu === menu ? null : menu);
-    };
 
     const toggleMenu = () => {
         setMenuOpen(!menuOpen);
@@ -65,7 +62,7 @@ export default function LeftMain({togleHandler}) {
                 </Link>
             </div>
             {menuOpen && (
-                <div className="left-links" onClick={() => toggleSubMenu("teaching")}>
+                <div className="left-links" onClick={() => setVisibleSubMenu1(!visibleSubMenu1)}>
                     <div
                         className={`left-link-main ${menuOpen ? "menu-open" : "menu-closed"
                             }`}
@@ -75,7 +72,7 @@ export default function LeftMain({togleHandler}) {
                         <ArrowDropDownIcon
                             style={{
                                 transform:
-                                    visibleSubMenu === "teaching" ? "rotate(180deg)" : "",
+                                    visibleSubMenu1 ? "rotate(180deg)" : "",
                                 transition: "transform 0.3s ease-in-out",
                             }}
                         />
@@ -94,7 +91,7 @@ export default function LeftMain({togleHandler}) {
                     </Link>
                 </div>
             )}
-            {visibleSubMenu === "teaching" && menuOpen && (
+            {visibleSubMenu1 && menuOpen && (
                 <div className="sub-menu">
                     <Link
                         to="/workarea/review"
@@ -108,7 +105,7 @@ export default function LeftMain({togleHandler}) {
                 </div>
             )}
             {menuOpen && (
-                <div className="left-links" onClick={() => toggleSubMenu("enrolled")}>
+                <div className="left-links" onClick={() => setVisibleSubMenu2(!visibleSubMenu2)}>
                     <div
                         className={`left-link-main ${menuOpen ? "menu-open" : "menu-closed"
                             }`}
@@ -118,7 +115,7 @@ export default function LeftMain({togleHandler}) {
                         <ArrowDropDownIcon
                             style={{
                                 transform:
-                                    visibleSubMenu === "enrolled" ? "rotate(180deg)" : "",
+                                    visibleSubMenu2 ? "rotate(180deg)" : "",
                                 transition: "transform 0.3s ease-in-out",
                             }}
                         />
@@ -137,10 +134,10 @@ export default function LeftMain({togleHandler}) {
                     </Link>
                 </div>
             )}
-            {visibleSubMenu === "enrolled" && menuOpen && (
+            {visibleSubMenu2 && menuOpen && (
                 <div className="sub-menu">
                     <Link
-                        to="/workarea/todo"
+                        to="/workarea/todo" 
                         onClick={() => handleLinkClick("/workarea/todo")}
                         className={`left-link ${activeLink === "/workarea/todo" ? "active" : ""
                             }`}

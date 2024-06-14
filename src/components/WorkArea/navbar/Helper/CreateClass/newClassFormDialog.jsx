@@ -7,7 +7,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
-import { createClass } from "../../../../Api/apiCaller/classapicaller";
+import { createClass } from "../../../../../Api/apiCaller/classapicaller";
 import "./newClassFormDialog.css";
 
 const NewClassFormDialog = ({ open, handleClose }) => {

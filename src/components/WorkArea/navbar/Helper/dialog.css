@@ -16,7 +16,6 @@
         opacity: 0;
         transform: translateY(-10px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -28,9 +27,10 @@
     font-size: 1.1em;
     cursor: pointer;
     color: #218279;
-    transition: color 0.3s;
+    transition: all 0.3s;
 }
 
 .dialog-option:hover {
-    color: #1a5d55;
+    color: #ff9800; 
+    transform: scale(1.02);
 }
