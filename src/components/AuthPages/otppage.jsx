@@ -59,6 +59,8 @@ export default function OtpPage() {
             });
         }
     }
+
+    //* ACCOUNT CREATION LOADER
     const loading = useSelector((state) => state.loading.loading);
     if(loading){
         return <CreatingLoader/>;

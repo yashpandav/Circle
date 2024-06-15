@@ -9,11 +9,13 @@ import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined
 import Divider from "@mui/material/Divider";
 import { useNavigate } from "react-router-dom";
 import { sendOTP } from "../../Api/apiCaller/authapicaller";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../Slices/authSlice";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import "./signup.css";
+import { SendingOTPLoader } from "../Helper/Loaders/loader";
+import { setLoading } from "../../Slices/loadingSlice";
 
 export default function SignUp() {
     const {
@@ -38,19 +40,29 @@ export default function SignUp() {
 
     const dispatch = useDispatch();
 
+    const loading = useSelector((state) => state.loading.loading);
+
     const onSubmitHandler = async (data) => {
         // console.log(data);
+        dispatch(setLoading(true));
         dispatch(setUser(data));
         const email = data.email;
         try {
             const result = await dispatch(sendOTP({ email, navigate })).unwrap();
             // console.log("RESULT", result);
-
-        } catch (err) {
+        } catch (err) { 
             // console.error("Failed to send OTP:", err);
             toast.error("Failed to send OTP");
         }
+        dispatch(setLoading(false));
     };
+
+    //* SENDING OTP LOADER
+    if(loading){
+        return (
+            <SendingOTPLoader></SendingOTPLoader>
+        )
+    }
 
     return (
         <div id="body">

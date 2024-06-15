@@ -69,6 +69,7 @@
     display: block;
     margin: 20px auto;
 }
+
 .loading {
     display: inline-block;
     position: relative;
@@ -93,6 +94,10 @@
     right: -3px;
     box-sizing: border-box;
     animation: animloader 1s linear infinite;
+}
+
+.sendipOtp-loader{
+    margin-top: 200px;
 }
 
 @keyframes animloader {
