@@ -8,6 +8,8 @@ import { signUp } from '../../Api/apiCaller/authapicaller.js';
 import toast from "react-hot-toast";
 import { setUser } from "../../Slices/authSlice.js";
 import "./otppage.css";
+import { setLoading } from "../../Slices/loadingSlice.js";
+import { CreatingLoader } from "../Helper/Loaders/loader.jsx";
 
 export default function OtpPage() {
     const [otp, setOtp] = useState("");
@@ -36,6 +38,7 @@ export default function OtpPage() {
         // console.log("SET user IN OTPPAGE", setUser);
         // console.log(`${firstName} ${lastName} ${email} ${password} ${confirmPassword} ${otp}`);
         try {
+            dispatch(setLoading(true));
             const response = dispatch(signUp({
                 firstName,
                 lastName,
@@ -47,6 +50,7 @@ export default function OtpPage() {
             }
             )
             ).unwrap();
+            dispatch(setLoading(true));
             // console.log("RESPONSE  ", response);
         } catch (err) {
             console.log("failed to create a user", err);
@@ -55,7 +59,11 @@ export default function OtpPage() {
             });
         }
     }
-
+    const loading = useSelector((state) => state.loading.loading);
+    if(loading){
+        return <CreatingLoader/>;
+    }
+    
     return (
         <div className="otp-container">
             <div>
