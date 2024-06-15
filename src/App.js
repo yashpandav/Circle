@@ -12,14 +12,14 @@ import { useSelector } from 'react-redux';
 import './App.css';
 
 const App = () => {
-  const { setLoggedIn } = useSelector((state) => state.auth);
+  const { login } = useSelector((state) => state.auth);
 
   return (
     <Routes>
       <Route path="/" element={<MainHomePage />} />
       <Route path="/home" element={<MainHomePage />} />
-      <Route path="/auth/signup" element={setLoggedIn ? <Navigate to="/workarea" /> : <Signup />} />
-      <Route path="/auth/login" element={setLoggedIn ? <Navigate to="/workarea" /> : <Login />} />
+      <Route path="/auth/signup" element={login ? <Navigate to="/workarea" /> : <Signup />} />
+      <Route path="/auth/login" element={login ? <Navigate to="/workarea" /> : <Login />} />
       <Route path="/auth/otp" element={<OtpPage />} />
       <Route path="/workarea" element={<WorkArea />}>
         <Route path='home' element={<HomeCircle />} />

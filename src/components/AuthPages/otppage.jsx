@@ -6,17 +6,19 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { signUp } from '../../Api/apiCaller/authapicaller.js';
 import toast from "react-hot-toast";
+import { setUser } from "../../Slices/authSlice.js";
 import "./otppage.css";
 
 export default function OtpPage() {
     const [otp, setOtp] = useState("");
 
     const dispatch = useDispatch();
-    const { setUser } = useSelector((state) => state.auth);
     const navigate = useNavigate();
 
+    const user = useSelector((state) => state.auth.user);
+
     useEffect(() => {
-        if (!setUser) {
+        if (!user) {
             navigate("/auth/signup");
         }
     }, []);
@@ -27,7 +29,7 @@ export default function OtpPage() {
         email,
         password,
         confirmPassword
-    } = setUser;
+    } = user;
 
     const handleSubmit = (e) => {
         e.preventDefault();

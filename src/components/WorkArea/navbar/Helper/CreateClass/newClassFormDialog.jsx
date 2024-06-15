@@ -31,7 +31,7 @@ const NewClassFormDialog = ({ open, handleClose }) => {
     return (
         <MuiDialog
             open={open}
-            onClose={handleClose}
+            onClose={() => { }}
             aria-labelledby="form-dialog-title"
             className="custom-dialog"
         >

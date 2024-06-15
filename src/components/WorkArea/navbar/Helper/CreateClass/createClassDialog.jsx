@@ -16,25 +16,25 @@ const CreateClassDialog = ({ setCreateDialog }) => {
 
     const [createClass, setCreateClass] = useState(false);
 
-    const handleClose = () => {
-        setCreateDialog(false);
-    };
-
     const handleAgree = () => {
         setCreateClass(true);
+    };
+
+    const handleClose = () => {
+        setCreateDialog(false);
     };
 
     const closeFinal = () => {
         setCreateDialog(false);
         setCreateClass(false);
-    }
+    };
 
     return (
         <>
             <MuiDialog
                 fullScreen={fullScreen}
                 open={true}
-                onClose={handleClose}
+                onClose={() => { }}
                 aria-labelledby="responsive-dialog-title"
                 className="custom-dialog"
             >

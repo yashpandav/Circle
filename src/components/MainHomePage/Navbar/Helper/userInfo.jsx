@@ -4,6 +4,7 @@ import GradingIcon from '@mui/icons-material/Grading';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { useSelector, useDispatch } from "react-redux";
 import { logOut } from '../../../../Api/apiCaller/authapicaller';
+
 import { useNavigate } from "react-router-dom";
 import './userInfo.css';
 
@@ -11,7 +12,7 @@ export default function UserInfo() {
     const [showDialog, setDialog] = useState(false);
 
     const dispatch = useDispatch();
-    const { setUser, setLoggedIn } = useSelector((state) => state.auth);
+    const user = useSelector((state) => state.auth.user);
     const navigate = useNavigate();
 
     function dialogHandler() {
@@ -31,14 +32,14 @@ export default function UserInfo() {
 
     return (
         <div id="user" onMouseLeave={() => { setDialog(false) }}>
-            <img src={setUser.image} alt='user-img' id='user-img' onClick={dialogHandler} />
+            <img src={user.image} alt='user-img' id='user-img' onClick={dialogHandler} />
             {showDialog && (
                 <div id='user-dialog'>
                     <div id="img-dialog">
-                        <img src={setUser.image} alt='user-img' id='dialog-user-img' />
+                        <img src={user.image} alt='user-img' id='dialog-user-img' />
                         <div id='name-email'>
-                            <h3>{setUser.firstName} {setUser.lastName}</h3>
-                            <pre>{setUser.email}</pre>
+                            <h3>{user.firstName} {user.lastName}</h3>
+                            <pre>{user.email}</pre>
                         </div>
                     </div>
                     <div id='user-info'>

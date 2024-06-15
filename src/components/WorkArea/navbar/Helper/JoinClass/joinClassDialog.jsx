@@ -9,15 +9,15 @@ import { useTheme } from '@mui/material/styles';
 import { TextField, Box, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { joinClass } from '../../../../../Api/apiCaller/classapicaller';
-import './joinClassDialog.css';
 import toast from 'react-hot-toast';
+import './joinClassDialog.css';
 
 const JoinClassDialog = ({ setJoinDialog }) => {
 
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-    const { setUser } = useSelector((state) => state.auth);
+    const user = useSelector((state) => state.auth.user);
     const [role, setRole] = useState(undefined);
     const [classCode, setClassCode] = useState(null);
 
@@ -95,7 +95,7 @@ const JoinClassDialog = ({ setJoinDialog }) => {
                     </FormControl>
                     <p className="dialog-text bold-text">To sign in with a class code</p>
                     <p className="dialog-text">
-                        Use an authorized account... currently <span className="email-highlight">{setUser.email}</span>
+                        Use an authorized account... currently <span className="email-highlight">{user.email}</span>
                     </p>
                     <p className="dialog-text">Use a circle code with 5-7 letters or numbers, and no spaces or symbols.</p>
                     <p className="dialog-text">If you have trouble joining the class, contact Circle's admin or teacher.</p>

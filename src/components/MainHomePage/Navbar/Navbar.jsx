@@ -10,9 +10,8 @@ import LoGo from "../../Helper/logo";
 import "./Navbar.css";
 
 const Navbar = () => {
-    const { setUser, setLoggedIn } = useSelector((state) => state.auth);
-    console.log("USER", setUser);
-    console.log("LOGGEDIN", setLoggedIn);
+    const { user } = useSelector((state) => state.auth);
+    console.log("USER", user);
 
     return (
         <div className="main-navbar" id="main-navbar">
@@ -45,7 +44,7 @@ const Navbar = () => {
                     </li>
                 </Scrollspy>
                 {
-                    setUser ? (
+                    user ? (
                         <UserInfo id="user-info"></UserInfo>
                     ) : (
                         <div className="btns" id="btns">
