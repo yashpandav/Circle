@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { joinedClass } from '../../../../Api/apiCaller/userapicaller';
-import LoaderComponent from '../../../Helper/Loaders/bookLoader';
-import { setLoading } from "../../../../Slices/loadingSlice";
+import { LoaderComponent, CreatingLoader } from '../../../Helper/Loaders/loader';
 import { Classes } from "./Helper/classBox";
 import './home.css';
 
@@ -23,10 +22,7 @@ export default function HomeCircle() {
     fetchJoinedClass();
   }, [dispatch]);
 
-  if (loading) {
-    return <LoaderComponent />;
-  }
-  // console.log(joinedClassAsStudent);
+    return <CreatingLoader />;
 
   return (
     <div className="container"> 
