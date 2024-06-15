@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { joinedClass } from '../../../../Api/apiCaller/userapicaller';
 import LoaderComponent from '../../../Helper/Loaders/bookLoader';
+import { setLoading } from "../../../../Slices/loadingSlice";
 import { Classes } from "./Helper/classBox";
 import './home.css';
 
@@ -9,6 +10,7 @@ export default function HomeCircle() {
   const dispatch = useDispatch();
   const joinedClassAsTeacher = useSelector((state) => state.classes.joinedClassesAsTeacher);
   const joinedClassAsStudent = useSelector((state) => state.classes.joinedClassesAsStudent);
+  const {loading} = useSelector((state) => state.loading);
 
   useEffect(() => {
     const fetchJoinedClass = () => {
@@ -21,10 +23,10 @@ export default function HomeCircle() {
     fetchJoinedClass();
   }, [dispatch]);
 
-  // if (isLoading) {
-  //   return <LoaderComponent />;
-  // }
-  console.log(joinedClassAsStudent);
+  if (loading) {
+    return <LoaderComponent />;
+  }
+  // console.log(joinedClassAsStudent);
 
   return (
     <div className="container"> 
