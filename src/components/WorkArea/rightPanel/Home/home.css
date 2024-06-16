@@ -1,6 +1,17 @@
 .class-boxes {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-evenly;
-    column-gap: 2vw;
+    justify-content: flex-start;
+    transition: all 0.3s ease;
+    padding-top: calc(12px + 2.5rem);
+    padding-right: 10px;
+    gap: 40px;
+}
+
+.panel-open{
+    margin: 0px 0px 0px 260px;
+}
+
+.panel-close{
+    margin: 0px 0px 0px 124px;
 }

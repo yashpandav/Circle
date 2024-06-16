@@ -5,16 +5,28 @@
 
 .right-main {
     flex-grow: 1;
-    padding: 20px;
-    padding-left: 20px;
-    margin-left: 190px; 
     background-color: #f8f9fa;
 }
 
-.box-togle{
-    margin-left: 18vw;
+.toast-custom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1d73ac;
+    padding: 2px 8px;
+    color: #fff;
+    border-radius: 4px; 
 }
 
-.not-toggle{
-    margin-left: 6.4vw;
+.toast-custom.show {
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }

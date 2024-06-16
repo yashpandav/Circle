@@ -2,7 +2,6 @@ import React from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Divider } from "@mui/material";
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import BallotIcon from '@mui/icons-material/Ballot';
 import "./classBox.css";
 
 export const Classes = ({ item, index }) => {
