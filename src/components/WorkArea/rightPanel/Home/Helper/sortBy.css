@@ -1,10 +1,18 @@
-#sort-main-container {
+.sort-main-container {
     display: flex;
     align-items: center;
     padding-top: 40px;
-    padding-left: 300px;
     justify-content: space-between;
     padding-right: 20px;
+    transition: all 0.5s ease;
+}
+
+.sort-toggled{
+    padding-left: 300px;
+}
+
+.sort-untoggle{
+    padding-left: 140px
 }
 
 #sort-details h2 {
@@ -34,9 +42,18 @@
 }
 
 .divider {
-    width: calc(100% - 320px);
     height: 2px;
-    margin-left: 300px;
     margin-right: 20px;
     background: linear-gradient(to right, #3d7aa6, #0988e3);
+    transition: all 0.5s ease;
+}
+
+.divider-toggled{
+    width: calc(100% - 320px);
+    margin-left: 300px;
+}
+
+.divider-untoggle{
+    width: calc(100% - 160px);
+    margin-left: 140px;
 }

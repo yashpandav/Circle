@@ -35,6 +35,25 @@
     z-index: 1;
     font-size: 1.5em;
     font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.overflowed-text:hover h2{
+    overflow: visible;
+    text-overflow: clip;
+    animation: marquee 10s linear infinite;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0%);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
 }
 
 .header-class p {

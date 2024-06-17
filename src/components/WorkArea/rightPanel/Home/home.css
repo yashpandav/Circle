@@ -2,15 +2,15 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
-    transition: all 0.3s ease;
     padding-top: calc(2.5rem);
     padding-right: 10px;
     column-gap: 33px;
     row-gap: 40px;
+    transition: all 0.5s ease;
 }
 
 .panel-open {
-    margin: 0px 0px 0px calc(260px + 1rem);
+    margin: 0px 0px 0px 276px;
 }
 
 .panel-close {

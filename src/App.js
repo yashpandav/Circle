@@ -39,13 +39,14 @@ const App = () => {
     <Routes>
       <Route path="/" element={<MainHomePage />} />
       <Route path="/home" element={<MainHomePage />} />
-      <Route path="/auth/signup" element={login ? <Navigate to="/workarea" /> : <Signup />} />
-      <Route path="/auth/login" element={login ? <Navigate to="/workarea" /> : <Login />} />
+      <Route path="/auth/signup" element={login ? <Navigate to="/workarea/home" /> : <Signup />} />
+      <Route path="/auth/login" element={login ? <Navigate to="/workarea/home" /> : <Login />} />
       <Route path="/auth/otp" element={<OtpPage />} />
       <Route path="/workarea" element={<WorkArea />}>
-        <Route path='home' element={<HomeCircle />} />
-        <Route path='review' element={<Review/>} />
-        <Route path='todo' element={<Todo />} />
+        <Route path="" element={<Navigate to="home" />} />
+        <Route path="home" element={<HomeCircle />} />
+        <Route path="review" element={<Review />} />
+        <Route path="todo" element={<Todo />} />
       </Route>
       <Route path="*" element={<MainHomePage />} />
     </Routes>

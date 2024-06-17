@@ -6,8 +6,14 @@ import "./classBox.css";
 
 export const Classes = ({ item, index }) => {
     const { admin } = item;
+    
+    let name = item.name;
+    if (name.length > 20) {
+        name = name.slice(0, 20);
+    }
+
     return (
-        <div className="class" key={index}>
+        <div className={`${name.length > 19 ? 'overflowed-text' : ''} class`} key={index}>
             <div
                 className="header-class"
                 style={{
