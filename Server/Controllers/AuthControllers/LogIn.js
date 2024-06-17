@@ -44,7 +44,7 @@ exports.LogIn = async (req, res) => {
         );
 
         findUser.token = token;
-        await findUser.save(); // Save the user with the new token
+        await findUser.save(); //* Save the user with the new token
 
         const options = {
             expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),

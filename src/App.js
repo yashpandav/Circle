@@ -1,5 +1,5 @@
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import MainHomePage from './components/MainHomePage/MainHomePage';
 import Signup from './components/AuthPages/signup';
 import Login from './components/AuthPages/login';
@@ -8,11 +8,32 @@ import WorkArea from './components/WorkArea/workarea';
 import HomeCircle from './components/WorkArea/rightPanel/Home/home';
 import Review from './components/WorkArea/rightPanel/ReviewList/review';
 import Todo from './components/WorkArea/rightPanel/ToDo/todo';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import Cookies from 'js-cookie';
+import { validateLogin } from './Api/apiCaller/authapicaller';
 import './App.css';
 
 const App = () => {
-  const { login } = useSelector((state) => state.auth);
+
+  const { login }= useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  function relogin () {
+    const token = Cookies.get('token');
+    console.log("TOKEN IN APP  " , token);
+
+    if(token && !login){
+      //* CALL API FOR AUTO LOGIN
+      const response = dispatch(validateLogin({dispatch , navigate}));
+    }
+  }
+
+  useState( 
+
+    relogin()
+
+    ,[login] );
 
   return (
     <Routes>

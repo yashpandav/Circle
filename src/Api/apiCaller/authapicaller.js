@@ -7,7 +7,8 @@ import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 import { setUser } from '../../Slices/authSlice';
 import { setLoggedIn } from '../../Slices/authSlice';
-const { SEND_OTP_API, SIGNUP_API, LOGIN_API, LOGOUT_API } = AUTH_API_URL;
+import { setToken } from '../../Slices/authSlice';
+const { SEND_OTP_API, SIGNUP_API, LOGIN_API, LOGOUT_API , VALIDATE_API } = AUTH_API_URL;
 
 export const sendOTP = createAsyncThunk(
     'sendOTP',
@@ -72,13 +73,14 @@ export const logIn = createAsyncThunk(
             // console.log(response.data.data);
             dispatch(setUser(response.data.data));
             dispatch(setLoggedIn(true));
+            dispatch(setToken(response.data.data.token));
             // const dispatch = useDispatch();
             // const { setUser } = useSelector((state) => state.auth);
             // dispatch(setUser(response.data.data));
             // console.log(setUser);
             // console.log(response.data.data);
-            navigate('/workarea/home');
-            Cookies.set('token', response.data.data.token, { expires: 7 });
+            navigate('/');
+            Cookies.set('token', response.data.data.token, { expires: 2 });
             toast.success('LogIn Success');
             return response;
         } catch (err) { 
@@ -112,3 +114,26 @@ export const logOut = createAsyncThunk(
         }
     }
 );
+
+
+export const validateLogin = createAsyncThunk(
+    'validateLogin',
+    async ({dispatch , navigate}) => {
+        try {
+            console.log('Validate Login Function');
+            const response = await apiConnector('POST', VALIDATE_API);
+            console.log(response);
+            dispatch(setUser(response.data.data));
+            dispatch(setLoggedIn(true));
+            dispatch(setToken(response.data.data.token));
+            Cookies.set('token' , response.data.data.token , {
+                expires : '2'
+            });
+            navigate('/');
+            toast.success('Login Success')
+            return response;
+        } catch (err) {
+            return err.response? err.response : err.message;
+        }
+    }
+)

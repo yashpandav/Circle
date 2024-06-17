@@ -6,7 +6,8 @@ export const AUTH_API_URL = {
     SIGNUP_API: `${BASE_URL}/auth/user/signup`,
     LOGIN_API: `${BASE_URL}/auth/user/login`,
     CHANGE_PASSWORD_API: `${BASE_URL}/auth/user/changepassword`,
-    LOGOUT_API : `${BASE_URL}/auth/user/logout`
+    LOGOUT_API : `${BASE_URL}/auth/user/logout`,
+    VALIDATE_API : `${BASE_URL}/auth/user/validate`,
 };
 
 //* USER API URL

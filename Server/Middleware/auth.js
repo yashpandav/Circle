@@ -16,6 +16,8 @@ exports.auth = async (req, res, next) => {
 
         const verifyToken = JWT.verify(token, process.env.JWT_SECRET);
 
+        console.log("verifyToken ", verifyToken); 
+
         req.user = verifyToken;
 
         next();
