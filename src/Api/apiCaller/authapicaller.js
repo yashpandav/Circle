@@ -131,7 +131,6 @@ export const validateLogin = createAsyncThunk(
             });
             navigate('/');
             toast.success('Login Success')
-            return response;
         } catch (err) {
             return err.response? err.response : err.message;
         }

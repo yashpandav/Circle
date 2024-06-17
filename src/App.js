@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import MainHomePage from './components/MainHomePage/MainHomePage';
 import Signup from './components/AuthPages/signup';
@@ -19,21 +19,21 @@ const App = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  function relogin () {
-    const token = Cookies.get('token');
-    console.log("TOKEN IN APP  " , token);
 
-    if(token && !login){
-      //* CALL API FOR AUTO LOGIN
-      const response = dispatch(validateLogin({dispatch , navigate}));
-    }
-  }
+  useEffect(() => {
+    const relogin = () => {
+      const token = Cookies.get('token');
+      console.log("TOKEN IN APP: ", token);
 
-  useState( 
+      if (token && !login) {
+        //* CALL API FOR AUTO LOGIN
+        dispatch(validateLogin({ dispatch, navigate }));
+      }
+    };
 
-    relogin()
+    relogin();
+  }, [login]);
 
-    ,[login] );
 
   return (
     <Routes>
