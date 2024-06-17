@@ -1,0 +1,50 @@
+#sortby-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 200px;
+}
+
+.sortby-form-control {
+    min-width: 200px;
+}
+
+.MuiInputLabel-outlined {
+    color: #555;
+    transition: color 0.3s ease;
+}
+
+.MuiInputLabel-outlined.Mui-focused {
+    color: #fb8500;
+}
+
+.MuiOutlinedInput-root {
+    transition: border-color 0.3s ease;
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: #fb8500;
+}
+
+.MuiMenuItem-root {
+    transition: background-color 0.3s ease;
+}
+
+.MuiMenuItem-root:hover {
+    background-color: rgba(69, 137, 133, 0.1);
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.MuiSelect-select {
+    animation: fadeInDown 0.5s ease;
+}

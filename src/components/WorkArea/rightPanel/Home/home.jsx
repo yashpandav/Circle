@@ -3,10 +3,12 @@ import { useSelector, useDispatch } from "react-redux";
 import { joinedClass } from "../../../../Api/apiCaller/userapicaller";
 import { LoaderComponent } from "../../../Helper/Loaders/loader";
 import { Classes } from "./Helper/classBox";
+import SortBy from "./Helper/sortBy";
 import "./home.css";
 
 export default function HomeCircle() {
   const dispatch = useDispatch();
+
   const joinedClassAsTeacher = useSelector(
     (state) => state.classes.joinedClassesAsTeacher
   );
@@ -25,7 +27,7 @@ export default function HomeCircle() {
       }
     };
     fetchJoinedClass();
-  }, [dispatch]);
+  }, []);
 
   if (loading) {
     return <LoaderComponent />;
@@ -33,13 +35,16 @@ export default function HomeCircle() {
 
   return (
     <div className="container">
+
+      <SortBy></SortBy>
+
       <div className={`class-boxes ${toggle ? "panel-open" : "panel-close"}`}>
-        {joinedClassAsTeacher?.map((item, index) => (
-          <Classes item={item} key={index}></Classes>
-        ))}
-        {joinedClassAsStudent?.map((item, index) => (
-          <Classes item={item} key={index}></Classes>
-        ))}
+          {joinedClassAsTeacher?.map((item, index) => (
+            <Classes item={item} key={index}></Classes>
+          ))}
+          {joinedClassAsStudent?.map((item, index) => (
+            <Classes item={item} key={index}></Classes>
+          ))}
       </div>
     </div>
   );

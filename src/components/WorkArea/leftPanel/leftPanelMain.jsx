@@ -1,17 +1,15 @@
-import React, {useEffect , useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import HomeIcon from "@mui/icons-material/Home";
+import HomeIcon from '@mui/icons-material/Home';
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import SchoolIcon from "@mui/icons-material/School";
 import CastForEducationIcon from "@mui/icons-material/CastForEducation";
-import TopicIcon from "@mui/icons-material/Topic";
-import TaskIcon from "@mui/icons-material/Task";
-import SettingsIcon from "@mui/icons-material/Settings";
+import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined';
+import TaskOutlinedIcon from '@mui/icons-material/TaskOutlined';
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { MdOutlineTopic } from "react-icons/md";
-import { MdTask } from "react-icons/md";
-import { useSelector , useDispatch } from "react-redux";
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import { useSelector, useDispatch } from "react-redux";
 import "./leftPanelMain.css";
 import { setToggle } from "../../../Slices/toggleSlice";
 
@@ -94,7 +92,7 @@ export default function LeftMain() {
                         className={`left-link sub-menu-closed ${activeLink === "/workarea/review" ? "active" : ""
                             }`}
                     >
-                        <MdOutlineTopic className="icon-closed" />
+                        <RateReviewOutlinedIcon className="icon-closed" />
                     </Link>
                 </div>
             )}
@@ -106,7 +104,7 @@ export default function LeftMain() {
                         className={`left-link ${activeLink === "/workarea/review" ? "active" : ""
                             }`}
                     >
-                        <TopicIcon />
+                        <RateReviewOutlinedIcon />
                         <p>To Review</p>
                     </Link>
                 </div>
@@ -137,19 +135,19 @@ export default function LeftMain() {
                         className={`left-link sub-menu-closed { ${activeLink === "/workarea/todo" ? "active" : ""
                             }`}
                     >
-                        <MdTask className="icon-closed" />
+                        <TaskOutlinedIcon className="icon-closed" />
                     </Link>
                 </div>
             )}
             {visibleSubMenu2 && toggle && (
                 <div className="sub-menu">
                     <Link
-                        to="/workarea/todo" 
+                        to="/workarea/todo"
                         onClick={() => handleLinkClick("/workarea/todo")}
                         className={`left-link ${activeLink === "/workarea/todo" ? "active" : ""
                             }`}
                     >
-                        <TaskIcon />
+                        <TaskOutlinedIcon />
                         <p>To do</p>
                     </Link>
                 </div>
@@ -161,10 +159,10 @@ export default function LeftMain() {
                     className={`left-link ${toggle ? "menu-open" : "menu-closed"} ${activeLink === "/workarea/settings" ? "active" : ""
                         }`}
                 >
-                    <SettingsIcon
+                    <SettingsOutlinedIcon
                         className="settings-icon"
                         style={{
-                            marginRight: toggle ? "" : "6.4px",
+                            marginRight: toggle ? "" : "8px",
                         }}
                     />
                     {toggle && <p>Settings</p>}

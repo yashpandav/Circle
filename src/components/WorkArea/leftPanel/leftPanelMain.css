@@ -174,10 +174,6 @@
     color: #005f73;
 }
 
-.icon-closed:first-child {
-    margin-bottom: 4px;
-}
-
 .sub-menu:hover .icon-closed {
     color: #005f73;
     transform: scale(1.1);
@@ -189,5 +185,5 @@
 }
 
 .settings-icon {
-    font-size: 26px;
+    font-size: 24.5px;
 }

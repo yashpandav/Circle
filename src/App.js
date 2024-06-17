@@ -23,7 +23,7 @@ const App = () => {
   useEffect(() => {
     const relogin = () => {
       const token = Cookies.get('token');
-      console.log("TOKEN IN APP: ", token);
+      // console.log("TOKEN IN APP: ", token);
 
       if (token && !login) {
         //* CALL API FOR AUTO LOGIN
