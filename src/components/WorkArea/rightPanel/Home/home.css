@@ -3,15 +3,16 @@
     flex-wrap: wrap;
     justify-content: flex-start;
     transition: all 0.3s ease;
-    padding-top: calc(12px + 2.5rem);
+    padding-top: calc(2.5rem);
     padding-right: 10px;
-    gap: 40px;
+    column-gap: 33px;
+    row-gap: 40px;
 }
 
-.panel-open{
-    margin: 0px 0px 0px 260px;
+.panel-open {
+    margin: 0px 0px 0px calc(260px + 1rem);
 }
 
-.panel-close{
+.panel-close {
     margin: 0px 0px 0px 124px;
 }

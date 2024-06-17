@@ -26,6 +26,13 @@ exports.joinedByUser = async (req, res) => {
                     path: 'admin',
                     select: 'firstName lastName image'
                 }
+            })
+            .populate({
+                path: 'createdClasses',
+                populate: {
+                    path: 'admin',
+                    select: 'firstName lastName image'
+                }
             });
 
         if (!user) {
