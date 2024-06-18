@@ -8,6 +8,7 @@
     color: #05668d;
     animation: fadeIn 1s ease-in-out;
     font-family: 'Quicksand', sans-serif;
+    transform: translateY(-20px);
 }
 
 @keyframes fadeIn {
@@ -20,7 +21,7 @@
 }
 
 #main-no-circle img {
-    width: 35%;
+    width: 340px;
     height: auto;
     animation: bounce 2s infinite;
 }

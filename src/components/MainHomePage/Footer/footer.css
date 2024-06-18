@@ -1,65 +1,125 @@
 .footer {
-    color: #333;
-    padding: 30px 0;    
-    border-top: 1px solid #e0e0e0;
-    box-shadow: 0 4px 10px rgba(22, 122, 180, 0.515);
+    font-family: 'Quicksand', sans-serif;
+    background-color: #2c3e50;
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
 }
 
 .footer-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
     max-width: 1200px;
     margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
 }
 
-#footer-logo {
-    width: 80px;
-    margin-left: 50px;
-}
-    
 .footer-section {
     flex: 1;
-    min-width: 150px;
-    margin: 10px 0;
 }
 
-.footer-section h6  {
-    margin-bottom: 10px;
-    color: #000;
+.footer-section img{
+    margin-top: 20px;
+}
+
+.footer-section h6 {
     font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    color: #f39c12;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
-
-.footer-section:nth-child(1){
-    margin-top: 55px;
-}   
 
 .footer-section a {
     display: block;
-    color: #555;
-    margin-bottom: 5px;
+    color: #ecf0f1;
     text-decoration: none;
-    font-size: 14px;
-    transition: color 0.3s ease-in-out;
+    margin-bottom: 10px;
+    transition: all 0.3s;
 }
 
 .footer-section a:hover {
-    color: #007bff;
+    color: #f0a936;
+}
+
+#footer-logo {
+    max-width: 150px;
 }
 
 .social-icons {
     display: flex;
-    gap: 10px;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
 }
 
 .social-icons a {
-    color: #333;
+    color: #ecf0f1;
     font-size: 24px;
+    transition: color 0.3s;
+}
+
+.social-icons a:hover {
+    color: #f1b85c;
 }
 
 .footer-text {
-    text-align: center;
-    margin-top: 20px;
+    margin-top: 50px;
     font-size: 14px;
-    color: #666;
+    color: #bdc3c7;
 }
+
+.footer-text b {
+    color: #f39c12;
+}
+/* 
+.footer::before,
+.footer::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url('data:image/svg+xml,<svg width="1200" height="1200" xmlns="http://www.w3.org/2000/svg"><circle cx="150" cy="150" r="75" fill="%23f39c12" opacity="0.2"/></svg>');
+    z-index: 0;
+}
+
+.footer::before {
+    top: 0;
+    left: 0;
+    animation: moveBackgroundTop 20s linear infinite;
+}
+
+.footer::after {
+    bottom: 0;
+    right: 0;
+    animation: moveBackgroundBottom 20s linear infinite;
+}
+
+@keyframes moveBackgroundTop {
+    0% {
+        transform: translate(-10%, 0%);
+    }
+    50% {
+        transform: translate(40%, 40%);
+    }
+    100% {
+        transform: translate(100%, 0%);
+    }
+}
+
+@keyframes moveBackgroundBottom {
+    0% {
+        transform: translate(0%, -10%);
+    }
+    50% {
+        transform: translate(-40%, -40%);
+    }
+    100% {
+        transform: translate(0%, 100%);
+    }
+} */
