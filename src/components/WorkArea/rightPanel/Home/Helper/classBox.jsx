@@ -1,7 +1,8 @@
 import React from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Divider } from "@mui/material";
-import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined';
+import TaskOutlinedIcon from '@mui/icons-material/TaskOutlined';
 import "./classBox.css";
 
 export const Classes = ({ item, index }) => {
@@ -45,7 +46,7 @@ export const Classes = ({ item, index }) => {
                     <p>Total Teachers: {item.teacher.length}</p>
                 </div>
                 <div className="icons">
-                    <FolderOpenIcon />
+                    <RateReviewOutlinedIcon />
                 </div>
             </div>
         </div>
