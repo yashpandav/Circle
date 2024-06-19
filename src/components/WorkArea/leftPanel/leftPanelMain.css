@@ -41,6 +41,7 @@
 }
 
 #main-left-link {
+    min-height: fit-content;
     overflow-y: auto;
     scrollbar-width: none;
 }
@@ -130,10 +131,6 @@
 }
 
 .allCircles {
-    max-height: 190px;
-    min-height: fit-content;
-    overflow-y: auto;
-    scrollbar-width: none;
 }
 
 

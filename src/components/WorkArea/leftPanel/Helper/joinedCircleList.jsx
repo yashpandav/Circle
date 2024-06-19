@@ -5,13 +5,22 @@ import './joinedCircleList.css';
 export function Common({ item, index }) {
     let name = item.name;
     const shortName = name.charAt(0).toUpperCase();
+    let displayName = name;
+
+    if (name.length > 6) {
+        displayName = name.slice(0, 6) + '...';
+    }
 
     return (
-        <div className='joined-circles' key={index}>
-            <div className="circle-imgs">
+        <div className='joined-circles' key={index} style={{
+            '--classTheme-shadow': `0 4px 8px ${item.classTheme}`
+        }}>
+            <div className="circle-imgs" style={{
+                backgroundColor: item.classTheme === '#FFFFFF' ? '#007BFF' : item.classTheme
+            }}>
                 <h4>{shortName}</h4>
             </div>
-            <p>{item.circleName}</p>
+            <p>{displayName}</p>
         </div>
     );
 }

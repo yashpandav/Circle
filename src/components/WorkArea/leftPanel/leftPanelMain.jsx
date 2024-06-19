@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import HomeIcon from '@mui/icons-material/Home';
+import HomeIcon from "@mui/icons-material/Home";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import SchoolIcon from "@mui/icons-material/School";
 import CastForEducationIcon from "@mui/icons-material/CastForEducation";
-import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined';
-import TaskOutlinedIcon from '@mui/icons-material/TaskOutlined';
+import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
+import TaskOutlinedIcon from "@mui/icons-material/TaskOutlined";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import { useSelector, useDispatch } from "react-redux";
 import { setToggle } from "../../../Slices/toggleSlice";
 import { JoinedCircleListStudent } from "./Helper/joinedCircleList";
@@ -46,7 +46,7 @@ export default function LeftMain() {
                     }}
                 />
             </span>
-            <div id='main-left-link'>
+            <div id="main-left-link">
                 <div className="left-links" style={{ marginTop: "2rem" }}>
                     <Link
                         to="/workarea/home"
@@ -70,7 +70,10 @@ export default function LeftMain() {
                     </Link>
                 </div>
                 {toggle && (
-                    <div className="left-links" onClick={() => setVisibleSubMenu1(!visibleSubMenu1)}>
+                    <div
+                        className="left-links"
+                        onClick={() => setVisibleSubMenu1(!visibleSubMenu1)}
+                    >
                         <div
                             className={`left-link-main ${toggle ? "menu-open" : "menu-closed"
                                 }`}
@@ -79,8 +82,7 @@ export default function LeftMain() {
                             {toggle && <p>Teaching</p>}
                             <ArrowDropDownIcon
                                 style={{
-                                    transform:
-                                        visibleSubMenu1 ? "rotate(180deg)" : "",
+                                    transform: visibleSubMenu1 ? "rotate(180deg)" : "",
                                     transition: "transform 0.3s ease-in-out",
                                 }}
                             />
@@ -100,23 +102,28 @@ export default function LeftMain() {
                     </div>
                 )}
                 {visibleSubMenu1 && toggle && (
-                    <div className="sub-menu">
-                        <Link
-                            to="/workarea/review"
-                            onClick={() => handleLinkClick("/workarea/review")}
-                            className={`left-link ${activeLink === "/workarea/review" ? "active" : ""
-                                }`}
-                        >
-                            <RateReviewOutlinedIcon />
-                            <p>To Review</p>
-                        </Link>
-                        <span className='allCircles'>
+                    <>
+                        <div className="sub-menu">
+                            <Link
+                                to="/workarea/review"
+                                onClick={() => handleLinkClick("/workarea/review")}
+                                className={`left-link ${activeLink === "/workarea/review" ? "active" : ""
+                                    }`}
+                            >
+                                <RateReviewOutlinedIcon />
+                                <p>To Review</p>
+                            </Link>
+                        </div>
+                        <span className="allCircles">
                             <JoinedCircleListTeacher />
                         </span>
-                    </div>
+                    </>
                 )}
                 {toggle && (
-                    <div className="left-links" onClick={() => setVisibleSubMenu2(!visibleSubMenu2)}>
+                    <div
+                        className="left-links"
+                        onClick={() => setVisibleSubMenu2(!visibleSubMenu2)}
+                    >
                         <div
                             className={`left-link-main ${toggle ? "menu-open" : "menu-closed"
                                 }`}
@@ -125,8 +132,7 @@ export default function LeftMain() {
                             {toggle && <p>Enrolled</p>}
                             <ArrowDropDownIcon
                                 style={{
-                                    transform:
-                                        visibleSubMenu2 ? "rotate(180deg)" : "",
+                                    transform: visibleSubMenu2 ? "rotate(180deg)" : "",
                                     transition: "transform 0.3s ease-in-out",
                                 }}
                             />
@@ -138,7 +144,7 @@ export default function LeftMain() {
                         <Link
                             to="/workarea/todo"
                             onClick={() => handleLinkClick("/workarea/todo")}
-                            className={`left-link sub-menu-closed { ${activeLink === "/workarea/todo" ? "active" : ""
+                            className={`left-link sub-menu-closed ${activeLink === "/workarea/todo" ? "active" : ""
                                 }`}
                         >
                             <TaskOutlinedIcon className="icon-closed" />
@@ -146,20 +152,22 @@ export default function LeftMain() {
                     </div>
                 )}
                 {visibleSubMenu2 && toggle && (
-                    <div className="sub-menu">
-                        <Link
-                            to="/workarea/todo"
-                            onClick={() => handleLinkClick("/workarea/todo")}
-                            className={`left-link ${activeLink === "/workarea/todo" ? "active" : ""
-                                }`}
-                        >
-                            <TaskOutlinedIcon />
-                            <p>To do</p>
-                        </Link>
-                        <span className='allCircles'>
+                    <>
+                        <div className="sub-menu">
+                            <Link
+                                to="/workarea/todo"
+                                onClick={() => handleLinkClick("/workarea/todo")}
+                                className={`left-link ${activeLink === "/workarea/todo" ? "active" : ""
+                                    }`}
+                            >
+                                <TaskOutlinedIcon />
+                                <p>To do</p>
+                            </Link>
+                        </div>
+                        <div className="allCircles">
                             <JoinedCircleListStudent />
-                        </span>
-                    </div>
+                        </div>
+                    </>
                 )}
                 <div className="left-links">
                     <Link
