@@ -40,6 +40,11 @@
     transition: all 0.3s ease;
 }
 
+#main-left-link {
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
 .left-links {
     margin-block: 0.25rem;
     cursor: pointer;
@@ -124,6 +129,14 @@
     animation: fadeIn 0.3s ease;
 }
 
+.allCircles {
+    max-height: 190px;
+    min-height: fit-content;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+
 .sub-menu svg {
     margin-left: 12px;
     margin-right: 8px;
@@ -151,7 +164,6 @@
         opacity: 0;
         transform: translateY(-10px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);

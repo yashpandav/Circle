@@ -3,10 +3,13 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Divider } from "@mui/material";
 import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined';
 import TaskOutlinedIcon from '@mui/icons-material/TaskOutlined';
+import { useSelector } from "react-redux";
 import "./classBox.css";
 
 export const Classes = ({ item, index }) => {
     const { admin } = item;
+
+    const { user } = useSelector((state) => state.auth);
     
     let name = item.name;
     if (name.length > 20) {
@@ -46,7 +49,9 @@ export const Classes = ({ item, index }) => {
                     <p>Total Teachers: {item.teacher.length}</p>
                 </div>
                 <div className="icons">
-                    <RateReviewOutlinedIcon />
+                    {
+                        user._id === admin._id ? <RateReviewOutlinedIcon/> : <TaskOutlinedIcon/>
+                    }
                 </div>
             </div>
         </div>

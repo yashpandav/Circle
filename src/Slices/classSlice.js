@@ -17,9 +17,6 @@ const classSlice = createSlice({
         setCreatedClass(state, action) {
             state.createdClasses = action.payload;
         },
-        setLoading(state, action) {
-            state.isLoading = action.payload;
-        }
     }
 });
 

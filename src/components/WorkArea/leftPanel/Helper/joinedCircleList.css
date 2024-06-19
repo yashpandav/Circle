@@ -1,0 +1,41 @@
+.joined-circle-list {
+    margin: 1rem 0;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.joined-circles {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #f9f9f9;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.joined-circles:hover {
+    background-color: #e0e0e0;
+}
+
+.circle-imgs {
+    width: 40px;
+    height: 40px;
+    background-color: #007BFF;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.joined-circles p {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+}

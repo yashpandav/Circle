@@ -8,14 +8,12 @@
     flex-direction: column;
     position: relative;
     border: 1px solid #ddd;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     background-color: #fff;
 }
 
 .class:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+    filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.3));
 }
 
 .header-class {
@@ -40,7 +38,7 @@
     text-overflow: ellipsis;
 }
 
-.overflowed-text:hover h2{
+.overflowed-text:hover h2 {
     overflow: visible;
     text-overflow: clip;
     animation: marquee 10s linear infinite;

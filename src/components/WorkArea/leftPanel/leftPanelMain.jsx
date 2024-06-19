@@ -10,8 +10,10 @@ import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import { useSelector, useDispatch } from "react-redux";
-import "./leftPanelMain.css";
 import { setToggle } from "../../../Slices/toggleSlice";
+import { JoinedCircleListStudent } from "./Helper/joinedCircleList";
+import { JoinedCircleListTeacher } from "./Helper/joinedCircleList";
+import "./leftPanelMain.css";
 
 export default function LeftMain() {
     const [visibleSubMenu1, setVisibleSubMenu1] = useState(false);
@@ -44,129 +46,137 @@ export default function LeftMain() {
                     }}
                 />
             </span>
-            <div className="left-links" style={{ marginTop: "2rem" }}>
-                <Link
-                    to="/workarea/home"
-                    onClick={() => handleLinkClick("/workarea/home")}
-                    className={`left-link ${toggle ? "menu-open" : "menu-closed"} ${activeLink === "/workarea/home" ? "active" : ""
-                        }`}
-                >
-                    <HomeIcon />
-                    {toggle && <p>Home</p>}
-                </Link>
-            </div>
-            <div className="left-links">
-                <Link
-                    to="/workarea/calendar"
-                    onClick={() => handleLinkClick("/workarea/calendar")}
-                    className={`left-link ${toggle ? "menu-open" : "menu-closed"} ${activeLink === "/workarea/calendar" ? "active" : ""
-                        }`}
-                >
-                    <CalendarTodayIcon />
-                    {toggle && <p>Calendar</p>}
-                </Link>
-            </div>
-            {toggle && (
-                <div className="left-links" onClick={() => setVisibleSubMenu1(!visibleSubMenu1)}>
-                    <div
-                        className={`left-link-main ${toggle ? "menu-open" : "menu-closed"
+            <div id='main-left-link'>
+                <div className="left-links" style={{ marginTop: "2rem" }}>
+                    <Link
+                        to="/workarea/home"
+                        onClick={() => handleLinkClick("/workarea/home")}
+                        className={`left-link ${toggle ? "menu-open" : "menu-closed"} ${activeLink === "/workarea/home" ? "active" : ""
                             }`}
                     >
-                        <CastForEducationIcon />
-                        {toggle && <p>Teaching</p>}
-                        <ArrowDropDownIcon
+                        <HomeIcon />
+                        {toggle && <p>Home</p>}
+                    </Link>
+                </div>
+                <div className="left-links">
+                    <Link
+                        to="/workarea/calendar"
+                        onClick={() => handleLinkClick("/workarea/calendar")}
+                        className={`left-link ${toggle ? "menu-open" : "menu-closed"} ${activeLink === "/workarea/calendar" ? "active" : ""
+                            }`}
+                    >
+                        <CalendarTodayIcon />
+                        {toggle && <p>Calendar</p>}
+                    </Link>
+                </div>
+                {toggle && (
+                    <div className="left-links" onClick={() => setVisibleSubMenu1(!visibleSubMenu1)}>
+                        <div
+                            className={`left-link-main ${toggle ? "menu-open" : "menu-closed"
+                                }`}
+                        >
+                            <CastForEducationIcon />
+                            {toggle && <p>Teaching</p>}
+                            <ArrowDropDownIcon
+                                style={{
+                                    transform:
+                                        visibleSubMenu1 ? "rotate(180deg)" : "",
+                                    transition: "transform 0.3s ease-in-out",
+                                }}
+                            />
+                        </div>
+                    </div>
+                )}
+                {!toggle && (
+                    <div className="sub-menu">
+                        <Link
+                            to="/workarea/review"
+                            onClick={() => handleLinkClick("/workarea/review")}
+                            className={`left-link sub-menu-closed ${activeLink === "/workarea/review" ? "active" : ""
+                                }`}
+                        >
+                            <RateReviewOutlinedIcon className="icon-closed" />
+                        </Link>
+                    </div>
+                )}
+                {visibleSubMenu1 && toggle && (
+                    <div className="sub-menu">
+                        <Link
+                            to="/workarea/review"
+                            onClick={() => handleLinkClick("/workarea/review")}
+                            className={`left-link ${activeLink === "/workarea/review" ? "active" : ""
+                                }`}
+                        >
+                            <RateReviewOutlinedIcon />
+                            <p>To Review</p>
+                        </Link>
+                        <span className='allCircles'>
+                            <JoinedCircleListTeacher />
+                        </span>
+                    </div>
+                )}
+                {toggle && (
+                    <div className="left-links" onClick={() => setVisibleSubMenu2(!visibleSubMenu2)}>
+                        <div
+                            className={`left-link-main ${toggle ? "menu-open" : "menu-closed"
+                                }`}
+                        >
+                            <SchoolIcon />
+                            {toggle && <p>Enrolled</p>}
+                            <ArrowDropDownIcon
+                                style={{
+                                    transform:
+                                        visibleSubMenu2 ? "rotate(180deg)" : "",
+                                    transition: "transform 0.3s ease-in-out",
+                                }}
+                            />
+                        </div>
+                    </div>
+                )}
+                {!toggle && (
+                    <div className="sub-menu">
+                        <Link
+                            to="/workarea/todo"
+                            onClick={() => handleLinkClick("/workarea/todo")}
+                            className={`left-link sub-menu-closed { ${activeLink === "/workarea/todo" ? "active" : ""
+                                }`}
+                        >
+                            <TaskOutlinedIcon className="icon-closed" />
+                        </Link>
+                    </div>
+                )}
+                {visibleSubMenu2 && toggle && (
+                    <div className="sub-menu">
+                        <Link
+                            to="/workarea/todo"
+                            onClick={() => handleLinkClick("/workarea/todo")}
+                            className={`left-link ${activeLink === "/workarea/todo" ? "active" : ""
+                                }`}
+                        >
+                            <TaskOutlinedIcon />
+                            <p>To do</p>
+                        </Link>
+                        <span className='allCircles'>
+                            <JoinedCircleListStudent />
+                        </span>
+                    </div>
+                )}
+                <div className="left-links">
+                    <Link
+                        to="/workarea/settings"
+                        onClick={() => handleLinkClick("/workarea/settings")}
+                        className={`left-link ${toggle ? "menu-open" : "menu-closed"} ${activeLink === "/workarea/settings" ? "active" : ""
+                            }`}
+                    >
+                        <SettingsOutlinedIcon
+                            className="settings-icon"
                             style={{
-                                transform:
-                                    visibleSubMenu1 ? "rotate(180deg)" : "",
-                                transition: "transform 0.3s ease-in-out",
+                                marginRight: toggle ? "" : "8px",
                             }}
                         />
-                    </div>
-                </div>
-            )}
-            {!toggle && (
-                <div className="sub-menu">
-                    <Link
-                        to="/workarea/review"
-                        onClick={() => handleLinkClick("/workarea/review")}
-                        className={`left-link sub-menu-closed ${activeLink === "/workarea/review" ? "active" : ""
-                            }`}
-                    >
-                        <RateReviewOutlinedIcon className="icon-closed" />
+                        {toggle && <p>Settings</p>}
                     </Link>
                 </div>
-            )}
-            {visibleSubMenu1 && toggle && (
-                <div className="sub-menu">
-                    <Link
-                        to="/workarea/review"
-                        onClick={() => handleLinkClick("/workarea/review")}
-                        className={`left-link ${activeLink === "/workarea/review" ? "active" : ""
-                            }`}
-                    >
-                        <RateReviewOutlinedIcon />
-                        <p>To Review</p>
-                    </Link>
-                </div>
-            )}
-            {toggle && (
-                <div className="left-links" onClick={() => setVisibleSubMenu2(!visibleSubMenu2)}>
-                    <div
-                        className={`left-link-main ${toggle ? "menu-open" : "menu-closed"
-                            }`}
-                    >
-                        <SchoolIcon />
-                        {toggle && <p>Enrolled</p>}
-                        <ArrowDropDownIcon
-                            style={{
-                                transform:
-                                    visibleSubMenu2 ? "rotate(180deg)" : "",
-                                transition: "transform 0.3s ease-in-out",
-                            }}
-                        />
-                    </div>
-                </div>
-            )}
-            {!toggle && (
-                <div className="sub-menu">
-                    <Link
-                        to="/workarea/todo"
-                        onClick={() => handleLinkClick("/workarea/todo")}
-                        className={`left-link sub-menu-closed { ${activeLink === "/workarea/todo" ? "active" : ""
-                            }`}
-                    >
-                        <TaskOutlinedIcon className="icon-closed" />
-                    </Link>
-                </div>
-            )}
-            {visibleSubMenu2 && toggle && (
-                <div className="sub-menu">
-                    <Link
-                        to="/workarea/todo"
-                        onClick={() => handleLinkClick("/workarea/todo")}
-                        className={`left-link ${activeLink === "/workarea/todo" ? "active" : ""
-                            }`}
-                    >
-                        <TaskOutlinedIcon />
-                        <p>To do</p>
-                    </Link>
-                </div>
-            )}
-            <div className="left-links">
-                <Link
-                    to="/workarea/settings"
-                    onClick={() => handleLinkClick("/workarea/settings")}
-                    className={`left-link ${toggle ? "menu-open" : "menu-closed"} ${activeLink === "/workarea/settings" ? "active" : ""
-                        }`}
-                >
-                    <SettingsOutlinedIcon
-                        className="settings-icon"
-                        style={{
-                            marginRight: toggle ? "" : "8px",
-                        }}
-                    />
-                    {toggle && <p>Settings</p>}
-                </Link>
             </div>
         </div>
     );
