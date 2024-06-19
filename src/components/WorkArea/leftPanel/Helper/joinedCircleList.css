@@ -1,9 +1,10 @@
 .joined-circle-list {
-    max-height: 190px;
+    max-height: 200px;
     min-height: fit-content;
     overflow-y: auto;
     scrollbar-width: none;
     padding-left: 20px;
+    padding-bottom: 10px;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
