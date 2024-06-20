@@ -11,6 +11,7 @@ import Todo from './components/WorkArea/rightPanel/ToDo/todo';
 import { useDispatch, useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
 import { validateLogin } from './Api/apiCaller/authapicaller';
+import MainCurrCircle from './components/WorkArea/rightPanel/CurrCircle/mainPage';
 import './App.css';
 
 const App = () => {
@@ -45,6 +46,7 @@ const App = () => {
       <Route path="/workarea" element={<WorkArea />}>
         <Route path="" element={<Navigate to="home" />} />
         <Route path="home" element={<HomeCircle />} />
+        <Route path="circle/:id" element={<MainCurrCircle/>} />
         <Route path="review" element={<Review />} />
         <Route path="todo" element={<Todo />} />
       </Route>

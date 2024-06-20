@@ -17,6 +17,7 @@ export default function HomeCircle() {
     (state) => state.classes.joinedClassesAsStudent
   ) || [];
   const createdClasses = useSelector((state) => state.classes.createdClasses) || [];
+
   const { loading } = useSelector((state) => state.loading);
   const { toggle } = useSelector((state) => state.toggle);
 

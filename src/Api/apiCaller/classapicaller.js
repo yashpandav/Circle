@@ -1,13 +1,14 @@
 import { CLASS_API_URL } from '../apis';
 import { apiConnector } from '../apiconfig';
 import toast from 'react-hot-toast';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 const {
     CREATE_CLASS_API,
     JOIN_CLASS_API,
-    // GET_CLASS_API,
+    GET_CLASS_API,
     GET_ALL_CLASS_API,
     // DELETE_CLASS_API,
-    // UPDATE_CLASS_API,
+    // UPDATE_CLASS_API,s
     // LEFT_CLASS_API,
 } = CLASS_API_URL;
 
@@ -69,3 +70,19 @@ export const joinClass = async (data) => {
         return err.response? err.response : err.message;
     }
 }
+
+export const getClass = createAsyncThunk(
+    'getClass',
+    async({id , dispatch , navigate}) => {
+        try{
+            console.log('Fetching Class');
+            const response = await apiConnector('GET', GET_CLASS_API, null , null , {id});
+            console.log("API RESPONSE ", response);
+            navigate(`/workarea/circle/${response.data.data._id}`);
+            return response.data;
+        }catch(err){
+            console.log("SOMETHING WENT WRONG WHILE CALLING GET CLASS API ", err);
+            return err.response? err.response : err.message;
+        }
+    }
+)
