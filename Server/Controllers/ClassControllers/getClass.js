@@ -7,8 +7,6 @@ exports.getClass = async (req, res) => {
     try {
         const id = req.params.id;
 
-        console.log("ID " , id);
-
         if (!id) {
             return res.status(400).json({
                 success: false,

@@ -1,0 +1,28 @@
+.main-curr-circle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#class-navbar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 30%;
+    padding-top: 2.5rem;
+    background-color: rgba(43, 113, 151, 0.79);
+}
+
+.nav-item {
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 10px 20px;
+    border-bottom: 2px solid transparent;
+    transition:all 0.3s ease;
+}
+
+.nav-item:hover {
+    border-bottom: 2px solid white;
+}

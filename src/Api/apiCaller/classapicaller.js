@@ -2,6 +2,7 @@ import { CLASS_API_URL } from '../apis';
 import { apiConnector } from '../apiconfig';
 import toast from 'react-hot-toast';
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { setCurrClass } from '../../Slices/classSlice';
 const {
     CREATE_CLASS_API,
     JOIN_CLASS_API,
@@ -75,9 +76,10 @@ export const getClass = createAsyncThunk(
     'getClass',
     async({id , dispatch , navigate}) => {
         try{
-            console.log('Fetching Class');
-            const response = await apiConnector('GET', GET_CLASS_API, null , null , {id});
-            console.log("API RESPONSE ", response);
+            // console.log('Fetching Class');
+            const response = await apiConnector('GET', `${GET_CLASS_API}/${id}`);
+            dispatch(setCurrClass(response.data.data));
+            // console.log("API RESPONSE ", response);
             navigate(`/workarea/circle/${response.data.data._id}`);
             return response.data;
         }catch(err){
