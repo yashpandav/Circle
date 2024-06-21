@@ -14,7 +14,7 @@ const Navbar = () => {
     }
 
     return (
-        <div className="navbar">
+        <div className="navbar2">
             <LoGo id="logo" />
             <nav id='temp-nav'>
                 <ul id='temp-ul'>

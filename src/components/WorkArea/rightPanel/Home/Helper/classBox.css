@@ -8,17 +8,16 @@
     flex-direction: column;
     position: relative;
     cursor: pointer;
-    border: 1px solid #ddd;
-    transition: all 0.3s ease;
     background-color: #fff;
+    transition: all 0.3s ease;
 }
 
 .class:last-child{
-    margin-bottom: 2.5rem;
+    margin-bottom: 2.5rem;  
 }
 
 .class:hover {
-    filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.3));
+    filter: drop-shadow(2px 4px 6px rgba(0, 15, 15, 0.358));
 }
 
 .header-class {
@@ -91,7 +90,7 @@
 .admin-info {
     position: absolute;
     right: 0.3rem;
-    top: 35%;
+    top: 36%;
     color: white;
     z-index: 1;
     font-size: 1.1em;
@@ -103,9 +102,9 @@
 
 img.admin-img {
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    border: 2px solid white;
+    width: 46px;
+    height: 46px;
+    filter: drop-shadow(1px 2px 3px rgba(0, 15, 15, 0.358));
 }
 
 .footer-class {
@@ -128,12 +127,7 @@ img.admin-img {
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-bottom: 0.5rem;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.student-teacher:hover {
-    background-color: #f9f9f9;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
 }
 
 .footer-class p {
@@ -150,12 +144,7 @@ img.admin-img {
     background: #fff;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.footer-class .icons:hover {
-    background-color: #f9f9f9;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
 }
 
 .footer-class .icons svg {

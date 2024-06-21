@@ -5,9 +5,9 @@ import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined';
 import TaskOutlinedIcon from '@mui/icons-material/TaskOutlined';
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import "./classBox.css";
 import { setCurrClass } from "../../../../../Slices/classSlice";
 import { getClass } from "../../../../../Api/apiCaller/classapicaller";
+import "./classBox.css";
 
 export const Classes = ({ item, index }) => {
     const { admin } = item;

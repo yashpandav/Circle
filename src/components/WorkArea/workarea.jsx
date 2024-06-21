@@ -43,11 +43,11 @@ export default function WorkArea() {
         <>
             <Navbar />
             <div className="workArea">
-                <LeftMain />
-                <div className={`right-main ${toggle ? 'box-toggle' : 'not-toggle'}`}>
-                    <Outlet />
+                    <LeftMain />
+                    <div className={`right-main ${toggle ? '' :'box-toggle'}`}>
+                        <Outlet />
+                    </div>
                 </div>
-            </div>
         </>
     );
 }

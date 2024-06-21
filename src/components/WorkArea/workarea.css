@@ -5,7 +5,13 @@
 
 .right-main {
     flex-grow: 1;
+    margin-left: 276px;
     background-color: #f8f9fa;
+    transition: all 0.5s ease;
+}
+
+.box-toggle{
+    margin-left: 114px;
 }
 
 .toast-custom {

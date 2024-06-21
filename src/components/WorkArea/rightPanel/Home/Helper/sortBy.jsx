@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import { MenuItem, Select, FormControl, InputLabel } from "@mui/material";
-import './sortBy.css';
 import { useSelector } from "react-redux";
+import './sortBy.css';
 
 export default function SortBy({sortby , setSortBy}) {
-
-    const {toggle} = useSelector((state) => state.toggle);
 
     const handleChange = (event) => {
         setSortBy(event.target.value);
@@ -13,7 +11,7 @@ export default function SortBy({sortby , setSortBy}) {
 
     return (
         <>
-            <div className={`sort-main-container ${toggle ? "sort-toggled" : "sort-untoggle"}`}>
+            <div className='sort-main-container'>
                 <div id='sort-details'>
                     <h2>{sortby}</h2>
                 </div>
@@ -34,7 +32,7 @@ export default function SortBy({sortby , setSortBy}) {
                     </Select>
                 </div>
             </div>
-            <div className={`divider ${toggle ? "divider-toggled" : "divider-untoggle"}`}></div>
+            <div className='divider'></div>
         </>
     );
 }

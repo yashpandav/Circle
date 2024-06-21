@@ -1,18 +1,10 @@
 .sort-main-container {
     display: flex;
     align-items: center;
-    padding-top: 40px;
+    padding-top: 44px;
     justify-content: space-between;
     padding-right: 20px;
     transition: all 0.5s ease;
-}
-
-.sort-toggled{
-    padding-left: 300px;
-}
-
-.sort-untoggle{
-    padding-left: 140px
 }
 
 #sort-details h2 {
@@ -20,6 +12,7 @@
     font-weight: bold;
     background: linear-gradient(to right, #fb8500, #fca311);
     -webkit-background-clip: text;
+    padding-left: 1rem;
     background-clip: text;
     color: transparent;
 }
@@ -27,6 +20,8 @@
 #sortby-container {
     display: flex;
     align-items: center;
+    justify-content: center;
+    padding-right: 1rem;
     gap: 10px;
 }
 
@@ -34,26 +29,10 @@
     width: 80px;
     padding-inline: 8px;
     border-radius: 4px;
-    transition: all 0.3s ease;
-}
-
-#select:focus {
-    background-color: #e0e0e0;
 }
 
 .divider {
     height: 2px;
     margin-right: 20px;
     background: linear-gradient(to right, #3d7aa6, #0988e3);
-    transition: all 0.5s ease;
-}
-
-.divider-toggled{
-    width: calc(100% - 320px);
-    margin-left: 300px;
-}
-
-.divider-untoggle{
-    width: calc(100% - 160px);
-    margin-left: 140px;
 }
