@@ -13,7 +13,7 @@ export function Common({ item, index }) {
 
     return (
         <div className='joined-circles' key={index} style={{
-            '--classTheme-shadow': `0 4px 8px ${item.classTheme}`
+            '--classTheme-shadow': `0 2px 4px ${item.classTheme}`
         }}>
             <div className="circle-imgs" style={{
                 backgroundColor: item.classTheme === '#FFFFFF' ? '#007BFF' : item.classTheme

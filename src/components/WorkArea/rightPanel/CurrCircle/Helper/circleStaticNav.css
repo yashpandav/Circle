@@ -1,0 +1,29 @@
+.circle-navbar {
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    box-shadow: 2px 2px 3px #ffffff, -2px 2px 3px #88e0f6, 2px 2px 3px #88e0f6;
+    padding-inline: 15px;
+    min-width: max-content;
+    gap: 30px;
+}
+
+.navbar-list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    background-color: #ffffff;
+}
+
+.navbar-list .icon{
+    font-size: 25px;
+    color: #0f4c5c;
+}
+
+.navbar-list h3{
+    font-size: 24px;
+    color: #156f85; 
+    border-bottom: 3.5px solid orange;
+}
