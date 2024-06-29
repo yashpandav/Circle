@@ -1,5 +1,8 @@
 .main-curr-circle {
     display: flex;
+    justify-content: center;
+    align-items: center;
     flex-direction: column;
+    width: 90%;
     padding-top: 20px;
 }
