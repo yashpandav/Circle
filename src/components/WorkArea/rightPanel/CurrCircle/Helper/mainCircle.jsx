@@ -1,18 +1,14 @@
 import React from "react";
+import CircleIntroImage from "./circleIntoImage";
 import { useSelector } from "react-redux";
 import './mainCircle.css';
 
 export default function MainCircle() {
-    const currClass = useSelector((state) => state.classes.currClass);
+    const toggle = useSelector((state) => state.toggle.toggle);
 
     return (
-        <div className="main-circle-area">
-            <div 
-                id="curr-circle-informer"
-                style={{ backgroundImage: `url(${currClass.thumbnail})` }}
-            >
-                <h3 id="curr-circle-name">{currClass.name}</h3>
-            </div>
+        <div className={`main-circle-area ${!toggle ? 'main-circle-toggle' : ''}`}>
+            <CircleIntroImage></CircleIntroImage>
         </div>
     );
 }

@@ -4,5 +4,10 @@
     align-items: center;
     flex-direction: column;
     width: 90%;
+    transition: all 0.2s ease;
     padding-top: 20px;
+}
+
+.main-curr-circle-toggle{
+    margin-left: 3rem;
 }
