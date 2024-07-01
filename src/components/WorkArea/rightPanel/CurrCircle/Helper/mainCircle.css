@@ -1,11 +1,8 @@
-
 .main-circle-area {
     width: 100%;
     height: 500px;
     margin-top: 2.3rem;
-    background-color: aqua;
     margin-left: 2.7rem;
-    transition: all 0.2s ease;
 }
 
 .main-circle-toggle{
