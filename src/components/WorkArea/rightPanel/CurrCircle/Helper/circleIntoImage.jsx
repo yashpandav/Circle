@@ -12,12 +12,12 @@ export default function CircleIntroImage() {
     };
 
     return (
-        <div className="main-circle-top-container">
+        <>
             <div
                 className={
                     `circle-intro-image  ${toggleInfoContainer ? 'hide-border' : ''}`
                 }
-                style={{ backgroundImage: `url(${currClass.thumbnail})`}}
+                style={{ backgroundImage: `url(${currClass.thumbnail})` }}
             >
                 {
                     toggleInfoContainer && (
@@ -49,6 +49,7 @@ export default function CircleIntroImage() {
                     </div>
                 )
             }
-        </div>
+        </>
     );
+
 }
