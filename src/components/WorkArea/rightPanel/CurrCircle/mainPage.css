@@ -6,8 +6,9 @@
     width: 90%;
     transition: all 0.2s ease;
     padding-top: 20px;
+    background-color: #f8f9fa;
 }
 
-.main-curr-circle-toggle{
+.main-curr-circle-toggle {
     margin-left: 3rem;
 }

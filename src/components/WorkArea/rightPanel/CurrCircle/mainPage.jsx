@@ -10,7 +10,7 @@ export default function MainCurrCircle() {
     return (
         <div className={`main-curr-circle ${!toggle ? 'main-curr-circle-toggle' : ''}`}>
             <CircleStaticNavbar />
-            <MainCircle/>
+            <MainCircle />
         </div>
     );
 }

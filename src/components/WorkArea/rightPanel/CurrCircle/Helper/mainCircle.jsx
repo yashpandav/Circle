@@ -8,7 +8,7 @@ export default function MainCircle() {
 
     return (
         <div className={`main-circle-area ${!toggle ? 'main-circle-toggle' : ''}`}>
-            <CircleIntroImage></CircleIntroImage>
+            <CircleIntroImage />
         </div>
     );
 }

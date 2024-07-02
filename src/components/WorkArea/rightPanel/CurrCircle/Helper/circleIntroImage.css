@@ -3,10 +3,21 @@
     height: 250px;
     position: relative;
     overflow: hidden;
+    border-radius: 5px;
     background-size: 100% 100%;
     background-position: center;
     background-repeat: no-repeat;
-    border-radius: 10px; 
+}
+
+.temp-circle-info-icon{
+    position: absolute;
+    bottom: 8px;
+    right: 7.5px;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;    
+    animation: fadeIn 0.1s ease-in 0s 1;
+    background-color: #7f8282;
 }
 
 .circle-content {
@@ -14,35 +25,64 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4));
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3) , transparent);
     padding: 15px 20px;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    border: none;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: all 0.3s ease;
 }
 
-.circle-content:hover {
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.4));
+.circle-intro-image.hide-border{
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
 }
 
 .curr-circle-name {
-    font-size: 22px;
     margin: 0;
+    font-size: 22px;
     color: #ffffff;
-    font-weight: bold; 
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    font-family: 'Roboto', sans-serif;
 }
 
 .info-icon {
     color: #ffffff;
+    padding-right: calc(2rem + 4px);
+    font-size: 24px;
     cursor: pointer;
-    margin-right: 10px;
-    transition: all 0.3s ease;
+    transition: color 0.3s ease;
 }
 
-.info-icon:hover {
-    transform: scale(1.1);
+.circle-info-container {
+    width: 100%;
+    background-color: #f8f9fa;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;    
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    padding-inline : 20px;
+    padding-block : 3.5px;
+    display: flex;
+    justify-content: space-between;
+    animation: fadeIn 0.2s ease-in 0s 1;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.info-group {
+    width: 48%; 
+}
+
+.info-header {
+    font-size: 16px;
+    color: #333333;
+    font-weight: bolder;
+    margin-bottom: 10px;
+}
+
+.info-header span {
+    font-weight: normal;
+    color: #666666;
 }

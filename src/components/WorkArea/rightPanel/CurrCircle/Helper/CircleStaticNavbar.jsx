@@ -1,4 +1,3 @@
-
 import React from "react";
 import { GrDomain } from "react-icons/gr";
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
@@ -7,7 +6,6 @@ import { useSelector } from "react-redux";
 import './circleStaticNav.css';
 
 export default function CircleStaticNavbar() {
-
     const currClass = useSelector((state) => state.classes.currClass);
 
     return (
