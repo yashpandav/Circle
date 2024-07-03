@@ -11,6 +11,7 @@ const {
     // DELETE_CLASS_API,
     // UPDATE_CLASS_API,s
     // LEFT_CLASS_API,
+    CHANGE_ENTRY_CODE
 } = CLASS_API_URL;
 
 export const fetchAllClasses = async () => {
@@ -36,14 +37,14 @@ export const fetchAllClasses = async () => {
 
 export const createClass = async ({ data }) => {
     try {
-        let {banner} = data;
+        let { banner } = data;
         data = {
-            ...data ,
+            ...data,
             banner: banner[0]
         }
         const response = await apiConnector('POST', CREATE_CLASS_API, data, {
-                "Content-Type": "multipart/form-data",
-            });
+            "Content-Type": "multipart/form-data",
+        });
         console.log("API RESPONSE ", response);
         toast.success('Successfully created new Circle')
     } catch (err) {
@@ -53,37 +54,51 @@ export const createClass = async ({ data }) => {
 }
 
 export const joinClass = async (data) => {
-    try{
+    try {
         console.log(data);
-        const response = await apiConnector('POST' , JOIN_CLASS_API , data);
+        const response = await apiConnector('POST', JOIN_CLASS_API, data);
         console.log("API RESPONSE ", response);
         toast.success('Successfully Joined Circle');
-    }catch(err){
-        if(err.response.status === 404){
+    } catch (err) {
+        if (err.response.status === 404) {
             toast.error('Circle Not Found');
             return;
         }
-        if(err.response.status === 400){
+        if (err.response.status === 400) {
             toast.error('You are already enrolled in this Circle');
             return;
         }
         console.log("SOMETHING WENT WRONG WHILE CALLING JOIN CLASS API ", err);
-        return err.response? err.response : err.message;
+        return err.response ? err.response : err.message;
     }
 }
 
 export const getClass = createAsyncThunk(
     'getClass',
-    async({id , dispatch , navigate}) => {
-        try{
+    async ({ id, dispatch, navigate }) => {
+        try {
             // console.log('Fetching Class');
             const response = await apiConnector('GET', `${GET_CLASS_API}/${id}`);
             dispatch(setCurrClass(response.data.data));
             // console.log("API RESPONSE ", response);
             navigate(`/workarea/circle/${response.data.data._id}`);
             return response.data;
-        }catch(err){
+        } catch (err) {
             console.log("SOMETHING WENT WRONG WHILE CALLING GET CLASS API ", err);
+            return err.response ? err.response : err.message;
+        }
+    }
+)
+
+export const changeEntryCode = createAsyncThunk(
+    'changeEntryCode',
+    async ({ id , dispatch}) => {
+        try {
+            const response = await apiConnector('POST', `${CHANGE_ENTRY_CODE}/${id}`);
+            dispatch(setCurrClass(response.data.data));
+            return response.data;
+        } catch (err) {
+            console.log("SOMETHING WENT WRONG WHILE CALLING CHANGE ENTRY CODE API ", err);
             return err.response? err.response : err.message;
         }
     }

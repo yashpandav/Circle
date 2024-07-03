@@ -6,6 +6,7 @@ const convert = require('color-convert');
 const randomstring = require('randomstring');
 const { sendMail } = require('../../Utils/mailSender');
 const bannerURL = require('../../Data/banerUrl');
+
 exports.createClass = async (req, res) => {
     try {
         const { name, description, subject } = req?.body;

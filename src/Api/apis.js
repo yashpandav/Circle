@@ -28,6 +28,7 @@ export const CLASS_API_URL = {
     DELETE_CLASS_API: `${BASE_URL}/class/delete`,
     UPDATE_CLASS_API: `${BASE_URL}/class/update`,
     LEFT_CLASS_API: `${BASE_URL}/class/left`,
+    CHANGE_ENTRY_CODE : `${BASE_URL}/class/reset-code`
 };
 
 //* ASSIGNMENT API URL

@@ -23,4 +23,7 @@ router.post('/left' , auth, leftClass);
 const {getAllClass} = require('../Controllers/ClassControllers/getAllClass');
 router.get('/allclass' , getAllClass);
 
+const {resetEntryCode} = require('../Controllers/ClassControllers/resetCode');
+router.post('/reset-code/:id' , auth , resetEntryCode);
+
 module.exports = router;
