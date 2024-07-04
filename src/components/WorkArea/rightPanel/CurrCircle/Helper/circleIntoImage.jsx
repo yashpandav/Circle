@@ -1,10 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import InfoTwoToneIcon from "@mui/icons-material/InfoTwoTone";
 import "./circleIntroImage.css";
 
 export default function CircleIntroImage() {
     const currClass = useSelector((state) => state.classes.currClass);
+    const [adminFirstName , setAdminFirstName] = useState(currClass.admin.firstName);
+    const [adminLastName , setAdminLastName] = useState(currClass.admin.lastName);
+
+    useEffect(
+        () => {
+            setAdminFirstName(currClass.admin.firstName);
+            setAdminLastName(currClass.admin.lastName);
+        },
+        []
+    );
+
     const [toggleInfoContainer, setToggleInfoContainer] = useState(false);
 
     const toggleInfo = () => {
@@ -37,7 +48,7 @@ export default function CircleIntroImage() {
                 toggleInfoContainer && (
                     <div className={`circle-info-container ${toggleInfoContainer ? 'show' : ''}`}>
                         <div className="info-group">
-                            <h3 className="info-header">Created By: <span>{currClass.admin.firstName} {currClass.admin.lastName}</span></h3>
+                            <h3 className="info-header">Created By: <span>{adminFirstName} {adminLastName}</span></h3>
                             <h3 className="info-header">Description: <span>{currClass.description}</span></h3>
                             <h3 className="info-header">Subject: <span>{currClass.subject}</span></h3>
                         </div>
@@ -51,5 +62,4 @@ export default function CircleIntroImage() {
             }
         </>
     );
-
 }
