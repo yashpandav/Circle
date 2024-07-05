@@ -30,6 +30,7 @@
     "otp-generator": "^4.0.1",
     "randomcolor": "^0.6.2",
     "randomstring": "^1.3.0",
-    "router": "^1.3.8"
+    "router": "^1.3.8",
+    "uniqolor": "^1.1.1"
   }
 }

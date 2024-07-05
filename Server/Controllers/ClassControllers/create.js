@@ -6,12 +6,14 @@ const convert = require('color-convert');
 const randomstring = require('randomstring');
 const { sendMail } = require('../../Utils/mailSender');
 const bannerURL = require('../../Data/banerUrl');
+const uniqolor = require('uniqolor');
+
 
 exports.createClass = async (req, res) => {
     try {
         const { name, description, subject } = req?.body;
         const banner = req?.files?.banner;
-        console.log("BANNER , " , banner)
+        console.log("BANNER , ", banner)
         if (!name || !description) {
             return res.status(400).json({
                 success: false,
@@ -30,7 +32,10 @@ exports.createClass = async (req, res) => {
         //* Generate class theme color
         let color = req.body.color;
         if (color === '#000000') {
-            color = randomColor();
+            color = uniqolor.random({
+                luminosity: [10, 255],
+                lightness: [40, 100],
+            }).color;
         } else {
             let rgb = convert.keyword.rgb(`${color}`);
             color = '#' + convert.rgb.hex(rgb);
@@ -69,7 +74,7 @@ exports.createClass = async (req, res) => {
             success: true,
             message: "Class Added",
             data: newClass
-        }); 
+        });
     } catch (err) {
         console.error(err);
         return res.status(500).json({

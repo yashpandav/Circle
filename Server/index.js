@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const fileUpload = require('express-fileupload');
 const { auth } = require('./Middleware/auth');
 require('dotenv').config();
+const uniqolor = require('uniqolor');
 
 //* DATABASE & CLOUDINARY CONNECTION
 dbConnect();
