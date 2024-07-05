@@ -15,7 +15,7 @@ export default function AnnouncementContainer() {
                         color : currClass.classTheme
                     }}>Announce something to your circle...</h6>
                     <p className="announce-description">
-                        Share updates, announcements, or assignments with your circle.
+                        Share updates, announcements, or important information with your circle.
                     </p>
                 </div>
             </div>

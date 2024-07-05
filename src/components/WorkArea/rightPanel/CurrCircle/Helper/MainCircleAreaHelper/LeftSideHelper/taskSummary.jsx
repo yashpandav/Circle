@@ -25,8 +25,12 @@ export default function TaskSummaryComponent() {
 
     return (
         <div className="task-summary-container">
-            <div className="task-summary-header">
-                <pre>Task</pre>
+            <div className="task-summary-header" style={{
+                borderColor: currClass.classTheme
+            }}>
+                <pre style={{
+                    color: currClass.classTheme
+                }}>Task</pre>
             </div>
             <div className="task-list">
                 {assignments.length === 0 ? (

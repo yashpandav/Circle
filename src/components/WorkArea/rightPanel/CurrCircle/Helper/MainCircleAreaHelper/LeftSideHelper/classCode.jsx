@@ -10,7 +10,7 @@ import MenuItem from '@mui/material/MenuItem';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefaultOutlined';
 import { Divider } from "@mui/material";
-import {changeEntryCode} from '../../../../../../../Api/apiCaller/classapicaller.js';
+import { changeEntryCode } from '../../../../../../../Api/apiCaller/classapicaller.js';
 import "./classCode.css";
 
 const CustomTooltip = styled(({ className, ...props }) => (
@@ -62,7 +62,7 @@ export default function ClassCodeComponent() {
     const resetCodeHandler = () => {
         let id = currClass._id;
         handleMenuClose();
-        dispatch(changeEntryCode({id , dispatch}));
+        dispatch(changeEntryCode({ id, dispatch }));
     }
 
     return (
@@ -76,7 +76,9 @@ export default function ClassCodeComponent() {
                     <div className="menu-icon-copy-clicked"></div>
                 )
             }
-            <div className="entry-code">
+            <div className="entry-code" style={{
+                color: currClass.classTheme
+            }}>
                 {currClass.entryCode}
                 <CustomTooltip
                     title="Copied!"
@@ -95,7 +97,7 @@ export default function ClassCodeComponent() {
                 open={Boolean(menuAnchorEl)}
                 onClose={handleMenuClose}
                 style={{
-                    marginTop: '-180px',
+                    marginTop: '20px',
                     marginLeft: '19px',
                     borderRadius: '5px',
                     boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.1)',
