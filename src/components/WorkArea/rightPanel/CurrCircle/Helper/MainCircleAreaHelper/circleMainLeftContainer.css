@@ -1,0 +1,4 @@
+.circle-main-left-container {
+    position: sticky;
+    top: calc(7vh + 40px);
+}

@@ -1,0 +1,35 @@
+.main-announcement-container {
+    margin-bottom: 20px;
+}
+
+.announce-something-container {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    box-shadow: 0 1px 4px #02020227;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.user-img {
+    width: 40px;
+    height: 40px;    
+    border-radius: 50%;
+}
+
+.announce-content {
+    flex: 1;
+    margin-left: 15px;
+}
+
+.announce-heading {
+    font-size: 16px;
+    margin: 0;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.announce-description {
+    font-size: 14px;
+    color: #666666;
+    margin: 5px 0 0;
+}
