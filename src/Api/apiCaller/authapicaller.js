@@ -129,7 +129,6 @@ export const validateLogin = createAsyncThunk(
             Cookies.set('token' , response.data.data.token , {
                 expires : '2'
             });
-            navigate('/');
             toast.success('Login Success')
         } catch (err) {
             return err.response? err.response : err.message;

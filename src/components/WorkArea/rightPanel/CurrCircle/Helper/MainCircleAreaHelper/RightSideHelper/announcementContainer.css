@@ -3,34 +3,56 @@
 }
 
 .announce-something-container {
-    display: flex;
-    align-items: center;
     background-color: #fff;
     box-shadow: 0 1px 4px #02020227;
     padding: 15px;
     border-radius: 8px;
 }
 
+.announcement-header {
+    display: flex;
+    align-items: center;
+}
+
 .user-img {
     width: 40px;
-    height: 40px;    
+    height: 40px;
     border-radius: 50%;
+    margin-right: 15px;
 }
 
 .announce-content {
     flex: 1;
-    margin-left: 15px;
 }
 
 .announce-heading {
     font-size: 16px;
-    color: #276e7e;
     margin: 0;
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #276e7e;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .announce-description {
     font-size: 14px;
     color: #715d66;
     margin: 5px 0 0;
+}
+
+.announcement-writer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 15px;
+}
+
+.announcement-editor {
+    width: 100%;
+}
+
+.announcement-textfield {
+    margin-bottom: 10px;
+}
+
+.announcement-textfield.no-border{
+    border: none;
 }
