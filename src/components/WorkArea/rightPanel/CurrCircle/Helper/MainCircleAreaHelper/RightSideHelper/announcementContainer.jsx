@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { TextField, Button, IconButton } from "@mui/material";
 import { useSelector } from "react-redux";
 import { IoIosSend } from "react-icons/io";
+import { Assignment, PostAdd, Share } from "@mui/icons-material";
 import {
     FormatBold,
     FormatItalic,
     FormatUnderlined,
     CloudUpload,
-    Send,
 } from "@mui/icons-material";
 import "./announcementContainer.css";
 
@@ -37,8 +37,30 @@ const UserAnnouncementHeader = ({ setWriteAssignment }) => {
     );
 };
 
+const ToggleSwitch = ({ isPost, setIsPost }) => {
+    return (
+        <div className="toggle-switch-container">
+            <div
+                className={`toggle-button ${isPost ? "active" : ""}`}
+                onClick={() => setIsPost(true)}
+            >
+                <PostAdd style={{ marginRight: "5px" }} />
+                Post
+            </div>
+            <div
+                className={`toggle-button ${!isPost ? "active" : ""}`}
+                onClick={() => setIsPost(false)}
+            >
+                <Assignment style={{ marginRight: "5px" }} />
+                Assignment
+            </div>
+            <div className={`toggle-slider ${isPost ? "post" : "assignment"}`}></div>
+        </div>
+    );
+};
+
 const AnnouncementWriter = ({
-    writeAssignment,
+    isPost,
     announcement,
     handleAnnouncementChange,
     toggleWriteAssignment,
@@ -46,6 +68,13 @@ const AnnouncementWriter = ({
 }) => {
     return (
         <div className="announcement-writer">
+            <div className="toggle-container">
+                <ToggleSwitch isPost={isPost} setIsPost={toggleWriteAssignment} />
+                <div className="share-button" onClick={handlePost}>
+                    <Share />
+                    Share
+                </div>
+            </div>
             <div className="announcement-editor">
                 <TextField
                     multiline
@@ -57,8 +86,8 @@ const AnnouncementWriter = ({
                     InputProps={{
                         style: {
                             color: "#28231d",
-                            fontSize: '15px',
-                            paddingInline : '10px'
+                            fontSize: "15px",
+                            paddingInline: "10px",
                         },
                         disableUnderline: true,
                     }}
@@ -90,9 +119,7 @@ const AnnouncementWriter = ({
                             variant="contained"
                             color="primary"
                             onClick={handlePost}
-                            endIcon={
-                                <IoIosSend />
-                            }
+                            endIcon={<IoIosSend />}
                         >
                             Post
                         </Button>
@@ -106,6 +133,7 @@ const AnnouncementWriter = ({
 export default function AnnouncementContainer() {
     const [writeAssignment, setWriteAssignment] = useState(false);
     const [announcement, setAnnouncement] = useState("");
+    const [isPost, setIsPost] = useState(true);
 
     const handleAnnouncementChange = (e) => {
         setAnnouncement(e.target.value);
@@ -128,10 +156,10 @@ export default function AnnouncementContainer() {
                 <UserAnnouncementHeader setWriteAssignment={setWriteAssignment} />
                 {writeAssignment && (
                     <AnnouncementWriter
-                        writeAssignment={writeAssignment}
+                        isPost={isPost}
                         announcement={announcement}
                         handleAnnouncementChange={handleAnnouncementChange}
-                        toggleWriteAssignment={toggleWriteAssignment}
+                        toggleWriteAssignment={setIsPost}
                         handlePost={handlePost}
                     />
                 )}

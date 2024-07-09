@@ -9,7 +9,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefaultOutlined';
-import { Divider } from "@mui/material";
+import { Divider, IconButton } from "@mui/material";
 import { changeEntryCode } from '../../../../../../../Api/apiCaller/classapicaller.js';
 import "./classCode.css";
 
@@ -69,13 +69,10 @@ export default function ClassCodeComponent() {
         <div className="main-circle-code-container">
             <div className="entry-code-header">
                 <pre>Entry Code</pre>
-                <MoreVertIcon onClick={handleMenuOpen} className={`${menuAnchorEl ? 'clicked' : ''}`} />
+                <IconButton className={`btn-more ${menuAnchorEl ? 'clicked' : ''}`} onClick={handleMenuOpen} >
+                    <MoreVertIcon />
+                </IconButton>
             </div>
-            {
-                menuAnchorEl && (
-                    <div className="menu-icon-copy-clicked"></div>
-                )
-            }
             <div className="entry-code" style={{
                 color: currClass.classTheme
             }}>
@@ -97,8 +94,8 @@ export default function ClassCodeComponent() {
                 open={Boolean(menuAnchorEl)}
                 onClose={handleMenuClose}
                 style={{
-                    marginTop: '20px',
-                    marginLeft: '19px',
+                    marginTop: '0px',
+                    marginLeft: '29px',
                     borderRadius: '5px',
                     boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.1)',
                 }}

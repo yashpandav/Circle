@@ -12,6 +12,7 @@
 .announcement-header {
     display: flex;
     align-items: center;
+    cursor: pointer;
 }
 
 .user-img {
@@ -47,9 +48,74 @@
     border-top: 2px solid #e0e0e0;
 }
 
+.toggle-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.toggle-switch-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 200px;
+    border: 2px solid #276e7e;
+    border-radius: 25px;
+    overflow: hidden;
+}
+
+.toggle-button {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-button.active {
+    color: #fff;
+}
+
+.toggle-slider {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    background-color: #276e7e;
+    border-radius: 25px;
+    transition: transform 0.3s;
+}
+
+.toggle-slider.post {
+    transform: translateX(0);
+}
+
+.toggle-slider.assignment {
+    transform: translateX(100%);
+}
+
+.share-button {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px 10px;
+    background-color: #276e7e;
+    color: white;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.share-button:hover {
+    background-color: #194e57;
+}
+
 .announcement-editor {
     margin-top: 10px;
-    width: 100%;    
+    width: 100%;
     animation: slideInFromTop 0.5s ease forwards;
 }
 
