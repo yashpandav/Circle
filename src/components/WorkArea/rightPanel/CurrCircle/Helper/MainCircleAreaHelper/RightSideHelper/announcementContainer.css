@@ -46,77 +46,64 @@
     margin-top: 20px;
     margin-inline: 5px;
     border-top: 2px solid #e0e0e0;
+    animation: slideInFromTop 0.5s ease forwards;
+}
+
+@keyframes slideInFromTop {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .toggle-container {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: flex-end;
     width: 100%;
-    margin-bottom: 10px;
+    margin-top: 10px;
 }
 
 .toggle-switch-container {
     display: flex;
+    justify-content: center;
     align-items: center;
-    position: relative;
-    width: 200px;
-    border: 2px solid #276e7e;
-    border-radius: 25px;
-    overflow: hidden;
+    width: max-content;
+    border: 1.3px solid #276e7e;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    background: linear-gradient(to right, #f0f7fa, #ffffff);
 }
 
 .toggle-button {
-    flex: 1;
     text-align: center;
     padding: 10px;
     cursor: pointer;
-    transition: color 0.3s;
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.toggle-button.active {
-    color: #fff;
-}
-
-.toggle-slider {
-    position: absolute;
-    width: 50%;
-    height: 100%;
-    background-color: #276e7e;
-    border-radius: 25px;
-    transition: transform 0.3s;
-}
-
-.toggle-slider.post {
-    transform: translateX(0);
-}
-
-.toggle-slider.assignment {
-    transform: translateX(100%);
-}
-
-.share-button {
-    display: flex;
     align-items: center;
-    cursor: pointer;
-    padding: 5px 10px;
-    background-color: #276e7e;
-    color: white;
-    border-radius: 5px;
-    transition: background-color 0.3s;
+    transition: all 0.3s;   
 }
 
-.share-button:hover {
-    background-color: #194e57;
+.toggle-button:first-child {
+    border-radius: 12px 0 0 12px;
+}
+
+.toggle-button:last-child {
+    border-radius: 0 12px 12px 0;
+}
+
+.toggle-button p {
+    margin: 0;
 }
 
 .announcement-editor {
     margin-top: 10px;
     width: 100%;
-    animation: slideInFromTop 0.5s ease forwards;
 }
 
 .announcement-textfield {
@@ -158,15 +145,4 @@
     outline: none;
     box-shadow: none;
     color: #276e7e;
-}
-
-@keyframes slideInFromTop {
-    0% {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }

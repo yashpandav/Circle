@@ -2,13 +2,8 @@ import React, { useState } from "react";
 import { TextField, Button, IconButton } from "@mui/material";
 import { useSelector } from "react-redux";
 import { IoIosSend } from "react-icons/io";
-import { Assignment, PostAdd, Share } from "@mui/icons-material";
-import {
-    FormatBold,
-    FormatItalic,
-    FormatUnderlined,
-    CloudUpload,
-} from "@mui/icons-material";
+import { Assignment, PostAdd, Cancel } from "@mui/icons-material";
+import { FormatBold, FormatItalic, FormatUnderlined, CloudUpload } from "@mui/icons-material";
 import "./announcementContainer.css";
 
 const UserAnnouncementHeader = ({ setWriteAssignment }) => {
@@ -16,21 +11,14 @@ const UserAnnouncementHeader = ({ setWriteAssignment }) => {
     const currClass = useSelector((state) => state.classes.currClass);
 
     return (
-        <div
-            className="announcement-header"
-            onClick={() => setWriteAssignment(true)}
-        >
+        <div className="announcement-header" onClick={() => setWriteAssignment(true)}>
             <img src={user.image} alt="user-img" className="user-img" />
             <div className="announce-content">
-                <h6
-                    className="announce-heading"
-                    style={{ color: currClass.classTheme }}
-                >
+                <h6 className="announce-heading" style={{ color: currClass.classTheme }}>
                     Announce something to your circle...
                 </h6>
                 <p className="announce-description">
-                    Share updates, announcements, or important information with your
-                    circle.
+                    Share updates, announcements, or important information with your circle.
                 </p>
             </div>
         </div>
@@ -38,23 +26,27 @@ const UserAnnouncementHeader = ({ setWriteAssignment }) => {
 };
 
 const ToggleSwitch = ({ isPost, setIsPost }) => {
+    const currClass = useSelector((state) => state.classes.currClass);
     return (
         <div className="toggle-switch-container">
-            <div
-                className={`toggle-button ${isPost ? "active" : ""}`}
-                onClick={() => setIsPost(true)}
-            >
+            <div className="toggle-button" style={
+                {
+                    fontSize : "14.5px",
+                    color: isPost ? currClass.classTheme : "#276e7e"
+                }
+            } onClick={() => setIsPost(true)}>
                 <PostAdd style={{ marginRight: "5px" }} />
-                Post
+                <p>Post</p>
             </div>
-            <div
-                className={`toggle-button ${!isPost ? "active" : ""}`}
-                onClick={() => setIsPost(false)}
-            >
+            <div className="toggle-button" style={
+                {
+                    fontSize : "14.5px",
+                    color: !isPost ? currClass.classTheme : "#276e7e"
+                }
+            } onClick={() => setIsPost(false)}>
                 <Assignment style={{ marginRight: "5px" }} />
-                Assignment
+                <p>Assignment</p>
             </div>
-            <div className={`toggle-slider ${isPost ? "post" : "assignment"}`}></div>
         </div>
     );
 };
@@ -70,10 +62,6 @@ const AnnouncementWriter = ({
         <div className="announcement-writer">
             <div className="toggle-container">
                 <ToggleSwitch isPost={isPost} setIsPost={toggleWriteAssignment} />
-                <div className="share-button" onClick={handlePost}>
-                    <Share />
-                    Share
-                </div>
             </div>
             <div className="announcement-editor">
                 <TextField
@@ -108,19 +96,10 @@ const AnnouncementWriter = ({
                         </IconButton>
                     </div>
                     <div className="right-side-controllers">
-                        <IconButton
-                            color="secondary"
-                            size="small"
-                            onClick={toggleWriteAssignment}
-                        >
+                        <Button color="secondary" size="small" onClick={toggleWriteAssignment}>
                             Cancel
-                        </IconButton>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handlePost}
-                            endIcon={<IoIosSend />}
-                        >
+                        </Button>
+                        <Button variant="contained" color="primary" onClick={handlePost} endIcon={<IoIosSend />}>
                             Post
                         </Button>
                     </div>
@@ -139,9 +118,9 @@ export default function AnnouncementContainer() {
         setAnnouncement(e.target.value);
     };
 
-    const toggleWriteAssignment = () => {
-        setWriteAssignment(!writeAssignment);
-        setAnnouncement("");
+    const toggleWriteAssignment = (isPost) => {
+        setWriteAssignment(true);
+        setIsPost(isPost);
     };
 
     const handlePost = () => {
