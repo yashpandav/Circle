@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { TextField, Button, IconButton } from "@mui/material";
 import { useSelector } from "react-redux";
 import { IoIosSend } from "react-icons/io";
-import { Assignment, PostAdd, Cancel } from "@mui/icons-material";
+import { Assignment, PostAdd } from "@mui/icons-material";
 import { FormatBold, FormatItalic, FormatUnderlined, CloudUpload } from "@mui/icons-material";
 import "./announcementContainer.css";
 
@@ -29,21 +29,18 @@ const ToggleSwitch = ({ isPost, setIsPost }) => {
     const currClass = useSelector((state) => state.classes.currClass);
     return (
         <div className="toggle-switch-container">
-            <div className="toggle-button" style={
-                {
-                    fontSize : "14.5px",
-                    color: isPost ? currClass.classTheme : "#276e7e"
-                }
-            } onClick={() => setIsPost(true)}>
+            <div className={`toggle-button ${isPost ? "active-opc" : ""}`}  
+                style={{
+                    color : isPost ? currClass.classTheme : '#276e7e'
+                }}
+            onClick={() => setIsPost(true)}>
                 <PostAdd style={{ marginRight: "5px" }} />
                 <p>Post</p>
             </div>
-            <div className="toggle-button" style={
-                {
-                    fontSize : "14.5px",
-                    color: !isPost ? currClass.classTheme : "#276e7e"
-                }
-            } onClick={() => setIsPost(false)}>
+            <div className={`toggle-button ${!isPost ? "active-opc" : ""}`}  
+                style={{
+                    color : !isPost ? currClass.classTheme : '#276e7e'
+                }} onClick={() => setIsPost(false)}>
                 <Assignment style={{ marginRight: "5px" }} />
                 <p>Assignment</p>
             </div>
@@ -57,7 +54,9 @@ const AnnouncementWriter = ({
     handleAnnouncementChange,
     toggleWriteAssignment,
     handlePost,
+    handleClose
 }) => {
+    const currClass = useSelector((state) => state.classes.currClass);
     return (
         <div className="announcement-writer">
             <div className="toggle-container">
@@ -76,6 +75,7 @@ const AnnouncementWriter = ({
                             color: "#28231d",
                             fontSize: "15px",
                             paddingInline: "10px",
+                            caretColor : currClass.classTheme
                         },
                         disableUnderline: true,
                     }}
@@ -96,18 +96,19 @@ const AnnouncementWriter = ({
                         </IconButton>
                     </div>
                     <div className="right-side-controllers">
-                        <Button color="secondary" size="small" onClick={toggleWriteAssignment}>
+                        <button className="button-cancel" onClick={handleClose}>
                             Cancel
-                        </Button>
-                        <Button variant="contained" color="primary" onClick={handlePost} endIcon={<IoIosSend />}>
-                            Post
-                        </Button>
+                        </button>
+                        <button className="button-post" onClick={handlePost}>
+                            Post <IoIosSend />
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     );
 };
+
 
 export default function AnnouncementContainer() {
     const [writeAssignment, setWriteAssignment] = useState(false);
@@ -121,6 +122,10 @@ export default function AnnouncementContainer() {
     const toggleWriteAssignment = (isPost) => {
         setWriteAssignment(true);
         setIsPost(isPost);
+    };
+
+    const handleClose = () => {
+        setWriteAssignment(false);
     };
 
     const handlePost = () => {
@@ -140,6 +145,7 @@ export default function AnnouncementContainer() {
                         handleAnnouncementChange={handleAnnouncementChange}
                         toggleWriteAssignment={setIsPost}
                         handlePost={handlePost}
+                        handleClose = {handleClose}
                     />
                 )}
             </div>
