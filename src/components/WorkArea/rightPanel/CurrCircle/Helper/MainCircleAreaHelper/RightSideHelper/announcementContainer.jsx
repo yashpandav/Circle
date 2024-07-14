@@ -57,6 +57,38 @@ const AnnouncementWriter = ({
     handleClose
 }) => {
     const currClass = useSelector((state) => state.classes.currClass);
+    
+    const [selectedText, setSelectedText] = useState(null);
+    const [selectionStart, setSelectionStart] = useState(null);
+    const [selectionEnd, setSelectionEnd] = useState(null);
+
+    const selectHandler = (event) => {
+        event.preventDefault();
+        const windowsSelectedText = window.getSelection().toString();
+        const start = event.target.selectionStart;
+        const end = event.target.selectionEnd;
+        setSelectedText(windowsSelectedText);
+        setSelectionStart(start);
+        setSelectionEnd(end);
+    }
+
+    const boldHandler = () => {
+        if (selectedText && selectionStart !== null && selectionEnd !== null) {
+            const boldText = `<b>${selectedText}<b>`;
+            
+            const newText =
+                announcement.substring(0, selectionStart) +
+                boldText +
+                announcement.substring(selectionEnd);
+    
+            handleAnnouncementChange({ target: { value: newText } });
+    
+            setSelectedText(null);
+            setSelectionStart(null);
+            setSelectionEnd(null);
+        }
+    };
+
     return (
         <div className="announcement-writer">
             <div className="toggle-container">
@@ -66,6 +98,7 @@ const AnnouncementWriter = ({
                 <TextField
                     multiline
                     autoFocus
+                    onSelect={selectHandler}
                     variant="standard"
                     value={announcement}
                     onChange={handleAnnouncementChange}
@@ -75,14 +108,14 @@ const AnnouncementWriter = ({
                             color: "#28231d",
                             fontSize: "15px",
                             paddingInline: "10px",
-                            caretColor : currClass.classTheme
+                            caretColor: currClass.classTheme
                         },
                         disableUnderline: true,
                     }}
                 />
                 <div className="editor-controls">
                     <div className="left-side-controllers">
-                        <IconButton color="primary" size="small">
+                        <IconButton color="primary" size="small" onClick={boldHandler}>
                             <FormatBold />
                         </IconButton>
                         <IconButton color="primary" size="small">
@@ -108,7 +141,6 @@ const AnnouncementWriter = ({
         </div>
     );
 };
-
 
 export default function AnnouncementContainer() {
     const [writeAssignment, setWriteAssignment] = useState(false);
@@ -145,7 +177,7 @@ export default function AnnouncementContainer() {
                         handleAnnouncementChange={handleAnnouncementChange}
                         toggleWriteAssignment={setIsPost}
                         handlePost={handlePost}
-                        handleClose = {handleClose}
+                        handleClose={handleClose}
                     />
                 )}
             </div>
