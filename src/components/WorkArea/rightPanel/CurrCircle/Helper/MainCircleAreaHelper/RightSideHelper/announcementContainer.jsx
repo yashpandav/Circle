@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { TextField, Button, IconButton } from "@mui/material";
+import React, { useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { IoIosSend } from "react-icons/io";
 import { Assignment, PostAdd } from "@mui/icons-material";
+import { IconButton } from "@mui/material";
 import { FormatBold, FormatItalic, FormatUnderlined, CloudUpload } from "@mui/icons-material";
 import "./announcementContainer.css";
 
@@ -29,18 +29,21 @@ const ToggleSwitch = ({ isPost, setIsPost }) => {
     const currClass = useSelector((state) => state.classes.currClass);
     return (
         <div className="toggle-switch-container">
-            <div className={`toggle-button ${isPost ? "active-opc" : ""}`}  
+            <div className={`toggle-button ${isPost ? "active-opc" : ""}`}
                 style={{
-                    color : isPost ? currClass.classTheme : '#276e7e'
+                    color: isPost ? currClass.classTheme : '#276e7e'
                 }}
-            onClick={() => setIsPost(true)}>
+                onClick={() => setIsPost(true)}
+            >
                 <PostAdd style={{ marginRight: "5px" }} />
                 <p>Post</p>
             </div>
-            <div className={`toggle-button ${!isPost ? "active-opc" : ""}`}  
+            <div className={`toggle-button ${!isPost ? "active-opc" : ""}`}
                 style={{
-                    color : !isPost ? currClass.classTheme : '#276e7e'
-                }} onClick={() => setIsPost(false)}>
+                    color: !isPost ? currClass.classTheme : '#276e7e'
+                }}
+                onClick={() => setIsPost(false)}
+            >
                 <Assignment style={{ marginRight: "5px" }} />
                 <p>Assignment</p>
             </div>
@@ -51,95 +54,109 @@ const ToggleSwitch = ({ isPost, setIsPost }) => {
 const AnnouncementWriter = ({
     isPost,
     announcement,
+    setAnnouncement,
     handleAnnouncementChange,
     toggleWriteAssignment,
     handlePost,
     handleClose
 }) => {
     const currClass = useSelector((state) => state.classes.currClass);
-    
+    const announcementRef = useRef(null);
+
+    const handleInput = () => {
+        handleAnnouncementChange({ target: { value: announcementRef.current.innerHTML } });
+    };
+
     const [selectedText, setSelectedText] = useState(null);
-    const [selectionStart, setSelectionStart] = useState(null);
-    const [selectionEnd, setSelectionEnd] = useState(null);
+    const [selectionRange, setSelectionRange] = useState(null);
 
-    const selectHandler = (event) => {
-        event.preventDefault();
-        const windowsSelectedText = window.getSelection().toString();
-        const start = event.target.selectionStart;
-        const end = event.target.selectionEnd;
-        setSelectedText(windowsSelectedText);
-        setSelectionStart(start);
-        setSelectionEnd(end);
-    }
-
-    const boldHandler = () => {
-        if (selectedText && selectionStart !== null && selectionEnd !== null) {
-            const boldText = `<b>${selectedText}<b>`;
-            
-            const newText =
-                announcement.substring(0, selectionStart) +
-                boldText +
-                announcement.substring(selectionEnd);
-    
-            handleAnnouncementChange({ target: { value: newText } });
-    
-            setSelectedText(null);
-            setSelectionStart(null);
-            setSelectionEnd(null);
+    const selectHandler = () => {
+        const selection = window.getSelection();
+        const selectedText = selection.toString();
+        setSelectedText(selectedText);
+        console.log(selectedText);
+        if (selection.rangeCount > 0) {
+            const range = selection.getRangeAt(0);
+            setSelectionRange(range);
         }
     };
 
-    return (
-        <div className="announcement-writer">
-            <div className="toggle-container">
-                <ToggleSwitch isPost={isPost} setIsPost={toggleWriteAssignment} />
-            </div>
-            <div className="announcement-editor">
-                <TextField
-                    multiline
-                    autoFocus
-                    onSelect={selectHandler}
-                    variant="standard"
-                    value={announcement}
-                    onChange={handleAnnouncementChange}
-                    className="announcement-textfield no-border"
-                    InputProps={{
-                        style: {
-                            color: "#28231d",
-                            fontSize: "15px",
-                            paddingInline: "10px",
-                            caretColor: currClass.classTheme
-                        },
-                        disableUnderline: true,
-                    }}
-                />
-                <div className="editor-controls">
-                    <div className="left-side-controllers">
-                        <IconButton color="primary" size="small" onClick={boldHandler}>
-                            <FormatBold />
-                        </IconButton>
-                        <IconButton color="primary" size="small">
-                            <FormatItalic />
-                        </IconButton>
-                        <IconButton color="primary" size="small">
-                            <FormatUnderlined />
-                        </IconButton>
-                        <IconButton color="primary" size="small">
-                            <CloudUpload />
-                        </IconButton>
-                    </div>
-                    <div className="right-side-controllers">
-                        <button className="button-cancel" onClick={handleClose}>
-                            Cancel
-                        </button>
-                        <button className="button-post" onClick={handlePost}>
-                            Post <IoIosSend />
-                        </button>
-                    </div>
+    const getIndexAndIfSelectedTextFromAnnouncement = () => {
+        if (!selectionRange) return;
+
+        const startContainer = selectionRange.startContainer;
+        const endContainer = selectionRange.endContainer;
+        const startOffset = selectionRange.startOffset;
+        const endOffset = selectionRange.endOffset;
+
+        let startIndex = 0;
+        let endIndex = 0;
+
+        if (startContainer.nodeType === Node.TEXT_NODE && endContainer.nodeType === Node.TEXT_NODE) {
+            startIndex = Array.prototype.indexOf.call(startContainer.parentNode.childNodes, startContainer);
+            endIndex = Array.prototype.indexOf.call(endContainer.parentNode.childNodes, endContainer);
+        }
+        console.log('Start index:', startIndex, 'Start offset:', startOffset);
+        console.log('End index:', endIndex, 'End offset:', endOffset);
+
+        return { startIndex, endIndex };
+    };
+
+
+    const changesIntoAnnouncement = () => {
+        const { startIndex, endIndex } = getIndexAndIfSelectedTextFromAnnouncement();
+        if (startIndex === undefined || endIndex === undefined) return;
+
+        const announcementText = announcement.slice(0, startIndex) +
+            "<b>" + announcement.slice(startIndex, endIndex) + "</b>" +
+            announcement.slice(endIndex);
+
+        handleAnnouncementChange({ target: { value: announcementText } });
+    };
+}
+
+return (
+    <div className="announcement-writer">
+        <div className="toggle-container">
+            <ToggleSwitch isPost={isPost} setIsPost={toggleWriteAssignment} />
+        </div>
+        <div className="announcement-editor">
+            <div
+                ref={announcementRef}
+                contentEditable="true"
+                className="announcement-textfield no-border"
+                onInput={handleInput}
+                dangerouslySetInnerHTML={{ __html: announcement }}
+                onSelect={selectHandler}
+            />
+
+            <div className="editor-controls">
+                <div className="left-side-controllers">
+                    <IconButton color="primary" size="small" onClick={changesIntoAnnouncement}>
+                        <FormatBold />
+                    </IconButton>
+                    <IconButton color="primary" size="small">
+                        <FormatItalic />
+                    </IconButton>
+                    <IconButton color="primary" size="small">
+                        <FormatUnderlined />
+                    </IconButton>
+                    <IconButton color="primary" size="small">
+                        <CloudUpload />
+                    </IconButton>
+                </div>
+                <div className="right-side-controllers">
+                    <button className="button-cancel" onClick={handleClose}>
+                        Cancel
+                    </button>
+                    <button className="button-post" onClick={handlePost}>
+                        Post <IoIosSend />
+                    </button>
                 </div>
             </div>
         </div>
-    );
+    </div>
+);
 };
 
 export default function AnnouncementContainer() {
@@ -149,6 +166,11 @@ export default function AnnouncementContainer() {
 
     const handleAnnouncementChange = (e) => {
         setAnnouncement(e.target.value);
+        let strRev = "";
+        for (let i = announcement.length - 1; i >= 0; i--) {
+            strRev += announcement[i];
+        }
+        setAnnouncement(strRev);
     };
 
     const toggleWriteAssignment = (isPost) => {
@@ -174,6 +196,7 @@ export default function AnnouncementContainer() {
                     <AnnouncementWriter
                         isPost={isPost}
                         announcement={announcement}
+                        setAnnouncement={setAnnouncement}
                         handleAnnouncementChange={handleAnnouncementChange}
                         toggleWriteAssignment={setIsPost}
                         handlePost={handlePost}

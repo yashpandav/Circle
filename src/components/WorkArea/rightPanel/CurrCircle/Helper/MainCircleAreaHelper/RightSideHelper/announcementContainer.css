@@ -218,3 +218,27 @@
 .button-post:hover::before {
     left: 100%;
 }
+/* 
+
+
+
+
+
+
+const boldHandler = () => {
+    if (selectedText && selectionStart !== null && selectionEnd !== null) {
+        const boldText = `<b>${selectedText}<b>`;
+
+        const newText =
+            announcement.substring(0, selectionStart) +
+            boldText +
+            announcement.substring(selectionEnd);
+
+        handleAnnouncementChange({ target: { value: newText } });
+
+        setSelectedText(null);
+        setSelectionStart(null);
+        setSelectionEnd(null);
+    }
+};
+ */
