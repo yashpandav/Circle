@@ -10,7 +10,7 @@ import MenuItem from '@mui/material/MenuItem';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefaultOutlined';
 import { Divider, IconButton } from "@mui/material";
-import { changeEntryCode } from '../../../../../../../Api/apiCaller/classapicaller.js';
+import { changeEntryCode } from '../../../Api/apiCaller/classapicaller.js'
 import "./classCode.css";
 
 const CustomTooltip = styled(({ className, ...props }) => (

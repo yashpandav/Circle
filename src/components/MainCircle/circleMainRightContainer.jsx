@@ -1,5 +1,5 @@
 import React from "react";
-import AnnouncementContainer from './RightSideHelper/announcementContainer';
+import AnnouncementContainer from "./RightSideHelper/announcementContainer";
 import './circleMainRightContainer.css'
 
 export default function CircleMainRightContainer() {

@@ -54,6 +54,7 @@
         opacity: 0;
         transform: translateY(-20px);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0);
@@ -119,6 +120,7 @@
         width: 0;
         right: 0;
     }
+
     100% {
         width: 100%;
         right: 0;
@@ -133,6 +135,15 @@
 .announcement-textfield {
     width: 100%;
     cursor: text;
+}
+
+.announcement-textfield .MuiInputBase-inputMultiline::-webkit-scrollbar {
+    display: none;
+}
+
+.announcement-textfield .MuiInputBase-inputMultiline {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 .editor-controls {
@@ -172,7 +183,8 @@
     color: #276e7e;
 }
 
-.button-cancel, .button-post {
+.button-cancel,
+.button-post {
     padding: 5px 15px;
     font-size: 14px;
     border: none;
@@ -212,33 +224,10 @@
     transition: left 0.3s ease;
 }
 
-.button-post:hover{
+.button-post:hover {
     transform: scale(1.061);
 }
+
 .button-post:hover::before {
     left: 100%;
 }
-/* 
-
-
-
-
-
-
-const boldHandler = () => {
-    if (selectedText && selectionStart !== null && selectionEnd !== null) {
-        const boldText = `<b>${selectedText}<b>`;
-
-        const newText =
-            announcement.substring(0, selectionStart) +
-            boldText +
-            announcement.substring(selectionEnd);
-
-        handleAnnouncementChange({ target: { value: newText } });
-
-        setSelectedText(null);
-        setSelectionStart(null);
-        setSelectionEnd(null);
-    }
-};
- */

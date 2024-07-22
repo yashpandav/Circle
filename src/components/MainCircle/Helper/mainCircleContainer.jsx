@@ -1,6 +1,6 @@
 import React from "react";
-import CircleMainLeftContainer from "./MainCircleAreaHelper/circleMainLeftContainer";
-import CircleMainRightContainer from "./MainCircleAreaHelper/circleMainRightContainer";
+import CircleMainLeftContainer from "../circleMainLeftContainer";
+import CircleMainRightContainer from "../circleMainRightContainer";
 import './mainCircleContainer.css';
 
 export default function MainCircleContainer() {

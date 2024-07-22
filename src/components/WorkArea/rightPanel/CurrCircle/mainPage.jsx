@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import MainCircle from "./Helper/mainCircle";
-import CircleStaticNavbar from "./Helper/CircleStaticNavbar";
+import MainCircle from '../../../MainCircle/Helper/mainCircle'
+import CircleStaticNavbar from "../../../MainCircle/Helper/CircleStaticNavbar";
 import './mainPage.css';
 
 export default function MainCurrCircle() {
