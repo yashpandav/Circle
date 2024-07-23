@@ -39,7 +39,6 @@ const App = () => {
   return (
     <Routes>
       <Route path="/" element={<MainHomePage />} />
-      <Route path="/home" element={<MainHomePage />} />
       <Route path="/auth/signup" element={login ? <Navigate to="/workarea/home" /> : <Signup />} />
       <Route path="/auth/login" element={login ? <Navigate to="/workarea/home" /> : <Login />} />
       <Route path="/auth/otp" element={<OtpPage />} />
