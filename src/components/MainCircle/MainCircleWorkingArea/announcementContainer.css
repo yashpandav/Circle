@@ -183,6 +183,38 @@
     color: #276e7e;
 }
 
+.upload-option-container {
+    display: flex;
+    justify-content: flex-start;
+    gap: 20px;
+    margin-top: 10px;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.upload-option-container .MuiIconButton-root {
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.upload-option-container .MuiIconButton-root:hover {
+    transform: scale(1.2);
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.upload-option-container .MuiSvgIcon-root {
+    font-size: 2.5rem;
+}
+
 .button-cancel,
 .button-post {
     padding: 5px 15px;

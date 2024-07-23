@@ -1,5 +1,5 @@
-import React from "react"
-import { Link } from "react-router-dom"
+import React from "react";
+import { Link } from "react-router-dom";
 
 export default function LoGo() {
     return (
@@ -15,6 +15,5 @@ export default function LoGo() {
                 <h2>Circle</h2>
             </Link>
         </div>
-
     )
 }

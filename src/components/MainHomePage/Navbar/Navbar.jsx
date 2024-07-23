@@ -11,8 +11,6 @@ import "./Navbar.css";
 
 const Navbar = () => {
     const { user } = useSelector((state) => state.auth);
-    console.log("USER", user);
-
     return (
         <div className="main-navbar" id="main-navbar">
             <LoGo id="logo"></LoGo>
@@ -25,17 +23,17 @@ const Navbar = () => {
                     id="scrollspy"
                 >
                     <li id="li">
-                        <ScrollLink to="home" smooth={true} duration={500} offset={-50} id="home-link">
+                        <ScrollLink to="home" smooth={true} duration={500} offset={-45} id="home-link">
                             Home
                         </ScrollLink>
                     </li>
                     <li id="li">
-                        <ScrollLink to="about" smooth={true} duration={500} offset={-50} id="about-link">
+                        <ScrollLink to="about" smooth={true} duration={500} offset={-45} id="about-link">
                             About
                         </ScrollLink>
                     </li>
                     <li id="li">
-                        <ScrollLink to="explore" smooth={true} duration={500} offset={-50} id="explore-link">
+                        <ScrollLink to="explore" smooth={true} duration={500} offset={-45} id="explore-link">
                             Explore
                         </ScrollLink>
                     </li>

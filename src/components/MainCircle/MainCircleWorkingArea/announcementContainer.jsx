@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { TextField, Button, IconButton } from "@mui/material";
+import { TextField, IconButton } from "@mui/material";
 import { useSelector } from "react-redux";
 import { IoIosSend } from "react-icons/io";
 import { Assignment, PostAdd } from "@mui/icons-material";
 import { FormatBold, FormatItalic, FormatUnderlined, CloudUpload } from "@mui/icons-material";
+import UploadIcon from '@mui/icons-material/Upload';import AddLinkIcon from '@mui/icons-material/AddLink';import YouTubeIcon from '@mui/icons-material/YouTube';
 import "./announcementContainer.css";
 
 const UserAnnouncementHeader = ({ setWriteAssignment }) => {
@@ -29,17 +30,17 @@ const ToggleSwitch = ({ isPost, setIsPost }) => {
     const currClass = useSelector((state) => state.classes.currClass);
     return (
         <div className="toggle-switch-container">
-            <div className={`toggle-button ${isPost ? "active-opc" : ""}`}  
+            <div className={`toggle-button ${isPost ? "active-opc" : ""}`}
                 style={{
-                    color : isPost ? currClass.classTheme : '#276e7e'
+                    color: isPost ? currClass.classTheme : '#276e7e'
                 }}
-            onClick={() => setIsPost(true)}>
+                onClick={() => setIsPost(true)}>
                 <PostAdd style={{ marginRight: "5px" }} />
                 <p>Post</p>
             </div>
-            <div className={`toggle-button ${!isPost ? "active-opc" : ""}`}  
+            <div className={`toggle-button ${!isPost ? "active-opc" : ""}`}
                 style={{
-                    color : !isPost ? currClass.classTheme : '#276e7e'
+                    color: !isPost ? currClass.classTheme : '#276e7e'
                 }} onClick={() => setIsPost(false)}>
                 <Assignment style={{ marginRight: "5px" }} />
                 <p>Assignment</p>
@@ -57,7 +58,7 @@ const AnnouncementWriter = ({
     handleClose
 }) => {
     const currClass = useSelector((state) => state.classes.currClass);
-    
+
     // const [selectedText, setSelectedText] = useState(null);
     // const [selectionStart, setSelectionStart] = useState(null);
     // const [selectionEnd, setSelectionEnd] = useState(null);
@@ -75,14 +76,14 @@ const AnnouncementWriter = ({
     // const boldHandler = () => {
     //     if (selectedText && selectionStart !== null && selectionEnd !== null) {
     //         const boldText = `<b>${selectedText}<b>`;
-            
+
     //         const newText =
     //             announcement.substring(0, selectionStart) +
     //             boldText +
     //             announcement.substring(selectionEnd);
-    
+
     //         handleAnnouncementChange({ target: { value: newText } });
-    
+
     //         setSelectedText(null);
     //         setSelectionStart(null);
     //         setSelectionEnd(null);
@@ -90,6 +91,7 @@ const AnnouncementWriter = ({
     // };
 
     //! Need To add Bold and italic properties for selection
+    const [uploadOption, setUploadOption] = useState(false);
 
     return (
         <div className="announcement-writer">
@@ -127,10 +129,33 @@ const AnnouncementWriter = ({
                         <IconButton color="primary" size="small">
                             <FormatUnderlined />
                         </IconButton>
-                        <IconButton color="primary" size="small">
+                        <IconButton color="primary" size="small" onClick={() => setUploadOption(true)}>
                             <CloudUpload />
                         </IconButton>
                     </div>
+
+                    {
+                        uploadOption && (
+                            <div className="upload-option-container">
+                                <IconButton size='large'>
+                                    <UploadIcon style={{
+                                        color : 'purple',
+                                    }}/>
+                                </IconButton> 
+                                <IconButton size='large'>
+                                    <AddLinkIcon style={{
+                                        color : 'green',
+                                    }} />
+                                </IconButton>
+                                <IconButton size='large'>
+                                    <YouTubeIcon style={{
+                                        color : 'red',
+                                    }}/>
+                                </IconButton>
+                            </div>
+                        )
+                    }
+
                     <div className="right-side-controllers">
                         <button className="button-cancel" onClick={handleClose}>
                             Cancel
@@ -144,6 +169,8 @@ const AnnouncementWriter = ({
         </div>
     );
 };
+
+
 
 export default function AnnouncementContainer() {
     const [writeAssignment, setWriteAssignment] = useState(false);
