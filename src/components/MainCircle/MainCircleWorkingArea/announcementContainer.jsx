@@ -1,10 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { TextField, IconButton } from "@mui/material";
 import { useSelector } from "react-redux";
 import { IoIosSend } from "react-icons/io";
-import { Assignment, PostAdd } from "@mui/icons-material";
-import { FormatBold, FormatItalic, FormatUnderlined, CloudUpload } from "@mui/icons-material";
-import UploadIcon from '@mui/icons-material/Upload';import AddLinkIcon from '@mui/icons-material/AddLink';import YouTubeIcon from '@mui/icons-material/YouTube';
+import {
+    Assignment,
+    PostAdd,
+    Delete,
+    FormatBold,
+    FormatItalic,
+    FormatUnderlined,
+    CloudUpload,
+} from "@mui/icons-material";
+import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
+import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import "./announcementContainer.css";
 
 const UserAnnouncementHeader = ({ setWriteAssignment }) => {
@@ -12,14 +20,21 @@ const UserAnnouncementHeader = ({ setWriteAssignment }) => {
     const currClass = useSelector((state) => state.classes.currClass);
 
     return (
-        <div className="announcement-header" onClick={() => setWriteAssignment(true)}>
+        <div
+            className="announcement-header"
+            onClick={() => setWriteAssignment(true)}
+        >
             <img src={user.image} alt="user-img" className="user-img" />
             <div className="announce-content">
-                <h6 className="announce-heading" style={{ color: currClass.classTheme }}>
+                <h6
+                    className="announce-heading"
+                    style={{ color: currClass.classTheme }}
+                >
                     Announce something to your circle...
                 </h6>
                 <p className="announce-description">
-                    Share updates, announcements, or important information with your circle.
+                    Share updates, announcements, or important information with your
+                    circle.
                 </p>
             </div>
         </div>
@@ -30,21 +45,66 @@ const ToggleSwitch = ({ isPost, setIsPost }) => {
     const currClass = useSelector((state) => state.classes.currClass);
     return (
         <div className="toggle-switch-container">
-            <div className={`toggle-button ${isPost ? "active-opc" : ""}`}
+            <div
+                className={`toggle-button ${isPost ? "active-opc" : ""}`}
                 style={{
-                    color: isPost ? currClass.classTheme : '#276e7e'
+                    color: isPost ? currClass.classTheme : "#276e7e",
                 }}
-                onClick={() => setIsPost(true)}>
+                onClick={() => setIsPost(true)}
+            >
                 <PostAdd style={{ marginRight: "5px" }} />
                 <p>Post</p>
             </div>
-            <div className={`toggle-button ${!isPost ? "active-opc" : ""}`}
+            <div
+                className={`toggle-button ${!isPost ? "active-opc" : ""}`}
                 style={{
-                    color: !isPost ? currClass.classTheme : '#276e7e'
-                }} onClick={() => setIsPost(false)}>
+                    color: !isPost ? currClass.classTheme : "#276e7e",
+                }}
+                onClick={() => setIsPost(false)}
+            >
                 <Assignment style={{ marginRight: "5px" }} />
                 <p>Assignment</p>
             </div>
+        </div>
+    );
+};
+
+const FilePreview = ({ file, onDelete }) => {
+    const [showDeleteBtn, setShowDeleteBtn] = useState(true);
+
+    let content;
+    if (file.type.startsWith("image/")) {
+        content = <img src={file.url} alt="Preview" />;
+    } else if (file.type.startsWith("video/")) {
+        content = (
+            <video controls>
+                <source src={file.url} type={file.type} />
+            </video>
+        );
+    } else {
+        content = (
+            <div className="unsupported-files">
+                {
+                    file.type.startsWith("application/pdf") ? (<PictureAsPdfRoundedIcon/>) : (<TextSnippetIcon/>)
+                }
+                <div className="file-preview-name">{file.name}</div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="file-preview-teacher">
+            {content}
+            {showDeleteBtn && (
+                <IconButton
+                    className="delete-prev-btn"
+                    onClick={() => onDelete(file.name)}
+                    color="secondary"
+                    style={{ zIndex: 10 }}
+                >
+                    <Delete style={{ fontSize: '2rem' }} />
+                </IconButton>
+            )}
         </div>
     );
 };
@@ -55,43 +115,41 @@ const AnnouncementWriter = ({
     handleAnnouncementChange,
     toggleWriteAssignment,
     handlePost,
-    handleClose
+    handleClose,
 }) => {
     const currClass = useSelector((state) => state.classes.currClass);
 
-    // const [selectedText, setSelectedText] = useState(null);
-    // const [selectionStart, setSelectionStart] = useState(null);
-    // const [selectionEnd, setSelectionEnd] = useState(null);
+    const [files, setFiles] = useState([]);
 
-    // const selectHandler = (event) => {
-    //     event.preventDefault();
-    //     const windowsSelectedText = window.getSelection().toString();
-    //     const start = event.target.selectionStart;
-    //     const end = event.target.selectionEnd;
-    //     setSelectedText(windowsSelectedText);
-    //     setSelectionStart(start);
-    //     setSelectionEnd(end);
-    // }
+    useEffect(() => {
+        files.forEach((file) => {
+            if (!file.url && file.file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setFiles((prevFiles) =>
+                        prevFiles.map((f) =>
+                            f.name === file.name ? { ...f, url: reader.result } : f
+                        )
+                    );
+                };
+                reader.readAsDataURL(file.file);
+            }
+        });
+    }, [files]);
 
-    // const boldHandler = () => {
-    //     if (selectedText && selectionStart !== null && selectionEnd !== null) {
-    //         const boldText = `<b>${selectedText}<b>`;
+    const handleFileChange = (e) => {
+        const newFiles = Array.from(e.target.files).map((file) => ({
+            file,
+            name: file.name,
+            type: file.type,
+            url: URL.createObjectURL(file),
+        }));
+        setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+    };
 
-    //         const newText =
-    //             announcement.substring(0, selectionStart) +
-    //             boldText +
-    //             announcement.substring(selectionEnd);
-
-    //         handleAnnouncementChange({ target: { value: newText } });
-
-    //         setSelectedText(null);
-    //         setSelectionStart(null);
-    //         setSelectionEnd(null);
-    //     }
-    // };
-
-    //! Need To add Bold and italic properties for selection
-    const [uploadOption, setUploadOption] = useState(false);
+    const handleDeleteFile = (fileName) => {
+        setFiles((prevFiles) => prevFiles.filter((file) => file.name !== fileName));
+    };
 
     return (
         <div className="announcement-writer">
@@ -106,7 +164,8 @@ const AnnouncementWriter = ({
                     multiline
                     autoFocus
                     variant="standard"
-                    // onChange={handleAnnouncementChange}
+                    value={announcement}
+                    onChange={handleAnnouncementChange}
                     className="announcement-textfield no-border"
                     InputProps={{
                         style: {
@@ -118,6 +177,15 @@ const AnnouncementWriter = ({
                         disableUnderline: true,
                     }}
                 />
+                <div className="preview-of-upload-container">
+                    {files.map((file) => (
+                        <FilePreview
+                            key={file.name}
+                            file={file}
+                            onDelete={handleDeleteFile}
+                        />
+                    ))}
+                </div>
                 <div className="editor-controls">
                     <div className="left-side-controllers">
                         <IconButton color="primary" size="small">
@@ -129,33 +197,19 @@ const AnnouncementWriter = ({
                         <IconButton color="primary" size="small">
                             <FormatUnderlined />
                         </IconButton>
-                        <IconButton color="primary" size="small" onClick={() => setUploadOption(true)}>
-                            <CloudUpload />
-                        </IconButton>
+                        <input
+                            type="file"
+                            multiple
+                            onChange={handleFileChange}
+                            style={{ display: "none" }}
+                            id="file-upload"
+                        />
+                        <label htmlFor="file-upload">
+                            <IconButton component="span" color="primary" size="small">
+                                <CloudUpload />
+                            </IconButton>
+                        </label>
                     </div>
-
-                    {
-                        uploadOption && (
-                            <div className="upload-option-container">
-                                <IconButton size='large'>
-                                    <UploadIcon style={{
-                                        color : 'purple',
-                                    }}/>
-                                </IconButton> 
-                                <IconButton size='large'>
-                                    <AddLinkIcon style={{
-                                        color : 'green',
-                                    }} />
-                                </IconButton>
-                                <IconButton size='large'>
-                                    <YouTubeIcon style={{
-                                        color : 'red',
-                                    }}/>
-                                </IconButton>
-                            </div>
-                        )
-                    }
-
                     <div className="right-side-controllers">
                         <button className="button-cancel" onClick={handleClose}>
                             Cancel
@@ -169,8 +223,6 @@ const AnnouncementWriter = ({
         </div>
     );
 };
-
-
 
 export default function AnnouncementContainer() {
     const [writeAssignment, setWriteAssignment] = useState(false);
