@@ -13,7 +13,9 @@ import {
 } from "@mui/icons-material";
 import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
+import CloseIcon from '@mui/icons-material/Close';
 import "./announcementContainer.css";
+import './uploadFile.css';
 
 const UserAnnouncementHeader = ({ setWriteAssignment }) => {
     const user = useSelector((state) => state.auth.user);
@@ -68,47 +70,54 @@ const ToggleSwitch = ({ isPost, setIsPost }) => {
         </div>
     );
 };
-
 const FilePreview = ({ file, onDelete }) => {
-    const [showDeleteBtn, setShowDeleteBtn] = useState(true);
-
     let content;
-    if (file.type.startsWith("image/")) {
-        content = <img src={file.url} alt="Preview" />;
-    } else if (file.type.startsWith("video/")) {
+    if (file.type.startsWith("image/") || file.type.startsWith("video/")) {
         content = (
-            <video controls>
-                <source src={file.url} type={file.type} />
-            </video>
-        );
-    } else {
-        content = (
-            <div className="unsupported-files">
-                {
-                    file.type.startsWith("application/pdf") ? (<PictureAsPdfRoundedIcon/>) : (<TextSnippetIcon/>)
-                }
-                <div className="file-preview-name">{file.name}</div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="file-preview-teacher">
-            {content}
-            {showDeleteBtn && (
+            <div className="file-preview-teacher">
+                {file.type.startsWith("image/") ? (
+                    <img src={file.url} alt="Preview" />
+                ) : (
+                    <video controls>
+                        <source src={file.url} type={file.type} />
+                    </video>
+                )}
                 <IconButton
                     className="delete-prev-btn"
                     onClick={() => onDelete(file.name)}
                     color="secondary"
-                    style={{ zIndex: 10 }}
                 >
-                    <Delete style={{ fontSize: '2rem' }} />
+                    <Delete />
                 </IconButton>
-            )}
-        </div>
-    );
-};
+            </div>
+        );
+    } else {
+        content = (
+            <div className="unsupported-file-container" style={{ width: '80%' }}>
+                <div className="unsupported-files">
+                    <div className="unsupported-file-first-div">
+                        {file.type.startsWith("application/pdf") ? (
+                            <PictureAsPdfRoundedIcon />
+                        ) : (
+                            <TextSnippetIcon />
+                        )}
+                        <div className="vertical-line"></div>
+                    </div>
+                    <div className="file-preview-name" title={file.name}>
+                        {file.name}
+                    </div>
+                    <div className="unsupported-file-last-div">
+                        <div className="unsupported-delete-icon" onClick={() => onDelete(file.name)}>
+                            <CloseIcon />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
+    return content;
+};
 const AnnouncementWriter = ({
     isPost,
     announcement,
