@@ -192,7 +192,7 @@ const AnnouncementWriter = ({
                             key={file.name}
                             file={file}
                             onDelete={handleDeleteFile}
-                        />
+                            />
                     ))}
                 </div>
                 <div className="editor-controls">
