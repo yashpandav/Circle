@@ -1,18 +1,34 @@
 import React from 'react';
-import Home from './MainHomePage/Home/home';
-import About from './MainHomePage/About/about';
-import Explore from './MainHomePage/Explore/explore'
+import { lazy, Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+
+const Home = lazy(() => import('./MainHomePage/Home/home'));
+const About = lazy(() => import('./MainHomePage/About/about'));
+const Explore = lazy(() => import('./MainHomePage/Explore/explore'));
+
 const Sections = () => {
     return (
         <>
             <div id='home'>
-                <Home />
+                <ErrorBoundary fallback={<h1>Something Went Wrong</h1>}>
+                    <Suspense fallback={<h1>Loading...</h1>}>
+                        <Home />
+                    </Suspense>
+                </ErrorBoundary>
             </div>
             <div id='about'>
-                <About />
+                <ErrorBoundary fallback={<h1>Something Went Wrong</h1>}>
+                    <Suspense fallback={<h1>Loading...</h1>}>
+                        <About />
+                    </Suspense>
+                </ErrorBoundary>
             </div>
             <div id='explore'>
-                <Explore />
+                <ErrorBoundary fallback={<h1>Something Went Wrong</h1>}>
+                    <Suspense fallback={<h1>Loading...</h1>}>
+                        <Explore />
+                    </Suspense>
+                </ErrorBoundary>
             </div>
         </>
     );
