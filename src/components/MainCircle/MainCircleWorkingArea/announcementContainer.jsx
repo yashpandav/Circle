@@ -125,10 +125,12 @@ const AnnouncementWriter = ({
     toggleWriteAssignment,
     handlePost,
     handleClose,
+    files,
+    setFiles,
+    handleFileChange,
+    handleDeleteFile
 }) => {
     const currClass = useSelector((state) => state.classes.currClass);
-
-    const [files, setFiles] = useState([]);
 
     useEffect(() => {
         files.forEach((file) => {
@@ -145,20 +147,6 @@ const AnnouncementWriter = ({
             }
         });
     }, [files]);
-
-    const handleFileChange = (e) => {
-        const newFiles = Array.from(e.target.files).map((file) => ({
-            file,
-            name: file.name,
-            type: file.type,
-            url: URL.createObjectURL(file),
-        }));
-        setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    };
-
-    const handleDeleteFile = (fileName) => {
-        setFiles((prevFiles) => prevFiles.filter((file) => file.name !== fileName));
-    };
 
     return (
         <div className="announcement-writer">
@@ -192,7 +180,7 @@ const AnnouncementWriter = ({
                             key={file.name}
                             file={file}
                             onDelete={handleDeleteFile}
-                            />
+                        />
                     ))}
                 </div>
                 <div className="editor-controls">
@@ -235,21 +223,49 @@ const AnnouncementWriter = ({
 
 export default function AnnouncementContainer() {
     const [writeAssignment, setWriteAssignment] = useState(false);
-    const [announcement, setAnnouncement] = useState("");
     const [isPost, setIsPost] = useState(true);
+    const [finalAnnouncement, setFinalAnnouncement] = useState({
+        text: "",
+        files: []
+    });
 
     const handleAnnouncementChange = (e) => {
-        setAnnouncement(e.target.value);
+        setFinalAnnouncement(prev => ({
+            ...prev,
+            text: e.target.value
+        }));
     };
 
     const handleClose = () => {
         setWriteAssignment(false);
+        setFinalAnnouncement({ text: "", files: [] });
     };
 
     const handlePost = () => {
-        console.log("Post Announcement:", announcement);
-        setAnnouncement("");
+        console.log("Post Announcement:", finalAnnouncement);
+        setFinalAnnouncement({ text: "", files: [] });
         setWriteAssignment(false);
+    };
+
+    const handleFileChange = (e) => {
+        const newFiles = Array.from(e.target.files).map((file) => ({
+            file,
+            name: file.name,
+            type: file.type,
+            url: URL.createObjectURL(file),
+        }));
+
+        setFinalAnnouncement(prev => ({
+            ...prev,
+            files: [...prev.files, ...newFiles]
+        }));
+    };
+
+    const handleDeleteFile = (fileName) => {
+        setFinalAnnouncement(prev => ({
+            ...prev,
+            files: prev.files.filter((file) => file.name !== fileName)
+        }));
     };
 
     return (
@@ -259,11 +275,14 @@ export default function AnnouncementContainer() {
                 {writeAssignment && (
                     <AnnouncementWriter
                         isPost={isPost}
-                        announcement={announcement}
+                        announcement={finalAnnouncement.text}
                         handleAnnouncementChange={handleAnnouncementChange}
                         toggleWriteAssignment={setIsPost}
                         handlePost={handlePost}
                         handleClose={handleClose}
+                        files={finalAnnouncement.files}
+                        handleFileChange={handleFileChange}
+                        handleDeleteFile={handleDeleteFile}
                     />
                 )}
             </div>

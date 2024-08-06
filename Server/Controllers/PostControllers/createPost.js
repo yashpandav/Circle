@@ -7,10 +7,10 @@ require("dotenv").config();
 
 exports.createPost = async (req, res) => {
     try {
-        const { currClassId, title, postBody, category, uploadDate, status } =
-            req?.body;
+        const { currClassId, title, postBody, category, uploadDate, status } = req.body;
 
-        let postFile = req.files?.postFile;
+        // Handle multiple files
+        const postFiles = req.files?.postFiles;
 
         if (!currClassId || !title || !postBody) {
             return res.status(401).json({
@@ -19,9 +19,13 @@ exports.createPost = async (req, res) => {
             });
         }
 
-        if (postFile) {
-            const fileUrl = await uploadImage(postFile, process.env.FOLDER_NAME);
-            postFile = fileUrl.secure_url;
+        let fileUrls = [];
+
+        if (postFiles && Array.isArray(postFiles)) {
+            for (const file of postFiles) {
+                const fileUrl = await uploadImage(file, process.env.FOLDER_NAME);
+                fileUrls.push(fileUrl.secure_url);
+            }
         }
 
         const teacher = req.user.id;
@@ -29,7 +33,7 @@ exports.createPost = async (req, res) => {
         const newPost = new Post({
             title,
             postBody,
-            postFile: postFile || "",
+            postFiles: fileUrls || [],
             teacher,
             category: category || null,
             status,
@@ -64,13 +68,13 @@ exports.createPost = async (req, res) => {
             return res.status(200).json({
                 success: true,
                 message: "Post Created Successfully",
-                data : newPost,
+                data: newPost,
             });
         } else {
             return res.status(200).json({
                 success: true,
                 message: "Post Drafted Successfully",
-                data : newPost,
+                data: newPost,
             });
         }
     } catch (err) {
