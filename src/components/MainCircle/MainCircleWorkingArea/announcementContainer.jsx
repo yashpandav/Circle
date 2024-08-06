@@ -10,6 +10,9 @@ import {
     FormatItalic,
     FormatUnderlined,
     CloudUpload,
+    Computer,
+    YouTube,
+    Link
 } from "@mui/icons-material";
 import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
 import TextSnippetIcon from '@mui/icons-material/TextSnippet';
@@ -22,21 +25,14 @@ const UserAnnouncementHeader = ({ setWriteAssignment }) => {
     const currClass = useSelector((state) => state.classes.currClass);
 
     return (
-        <div
-            className="announcement-header"
-            onClick={() => setWriteAssignment(true)}
-        >
+        <div className="announcement-header" onClick={() => setWriteAssignment(true)}>
             <img src={user.image} alt="user-img" className="user-img" />
             <div className="announce-content">
-                <h6
-                    className="announce-heading"
-                    style={{ color: currClass.classTheme }}
-                >
+                <h6 className="announce-heading" style={{ color: currClass.classTheme }}>
                     Announce something to your circle...
                 </h6>
                 <p className="announce-description">
-                    Share updates, announcements, or important information with your
-                    circle.
+                    Share updates, announcements, or important information with your circle.
                 </p>
             </div>
         </div>
@@ -47,80 +43,87 @@ const ToggleSwitch = ({ isPost, setIsPost }) => {
     const currClass = useSelector((state) => state.classes.currClass);
     return (
         <div className="toggle-switch-container">
-            <div
-                className={`toggle-button ${isPost ? "active-opc" : ""}`}
-                style={{
-                    color: isPost ? currClass.classTheme : "#276e7e",
-                }}
-                onClick={() => setIsPost(true)}
-            >
-                <PostAdd style={{ marginRight: "5px" }} />
-                <p>Post</p>
-            </div>
-            <div
-                className={`toggle-button ${!isPost ? "active-opc" : ""}`}
-                style={{
-                    color: !isPost ? currClass.classTheme : "#276e7e",
-                }}
-                onClick={() => setIsPost(false)}
-            >
-                <Assignment style={{ marginRight: "5px" }} />
-                <p>Assignment</p>
-            </div>
+            {['Post', 'Assignment'].map((type) => (
+                <div
+                    key={type}
+                    className={`toggle-button ${isPost === (type === 'Post') ? "active-opc" : ""}`}
+                    style={{ color: isPost === (type === 'Post') ? currClass.classTheme : "#276e7e" }}
+                    onClick={() => setIsPost(type === 'Post')}
+                >
+                    {type === 'Post' ? <PostAdd style={{ marginRight: "5px" }} /> : <Assignment style={{ marginRight: "5px" }} />}
+                    <p>{type}</p>
+                </div>
+            ))}
         </div>
     );
 };
+
 const FilePreview = ({ file, onDelete }) => {
-    let content;
-    if (file.type.startsWith("image/") || file.type.startsWith("video/")) {
-        content = (
-            <div className="file-preview-teacher">
-                {file.type.startsWith("image/") ? (
-                    <img src={file.url} alt="Preview" />
-                ) : (
-                    <video controls>
-                        <source src={file.url} type={file.type} />
-                    </video>
-                )}
-                <IconButton
-                    className="delete-prev-btn"
-                    onClick={() => onDelete(file.name)}
-                    color="secondary"
-                >
-                    <Delete />
-                </IconButton>
-            </div>
-        );
-    } else {
-        content = (
-            <div className="unsupported-file-container" style={{ width: '80%' }}>
+    const isMediaFile = file.type.startsWith("image/") || file.type.startsWith("video/");
+    const isPdf = file.type.startsWith("application/pdf");
+
+    return (
+        <div className={isMediaFile ? "file-preview-teacher" : "unsupported-file-container"} style={!isMediaFile ? { width: '80%' } : {}}>
+            {isMediaFile ? (
+                <>
+                    {file.type.startsWith("image/") ? (
+                        <img src={file.url} alt="Preview" />
+                    ) : (
+                        <video controls>
+                            <source src={file.url} type={file.type} />
+                        </video>
+                    )}
+                    <IconButton className="delete-prev-btn" onClick={() => onDelete(file.name)} color="secondary">
+                        <Delete />
+                    </IconButton>
+                </>
+            ) : (
                 <div className="unsupported-files">
                     <div className="unsupported-file-first-div">
-                        {file.type.startsWith("application/pdf") ? (
-                            <PictureAsPdfRoundedIcon />
-                        ) : (
-                            <TextSnippetIcon />
-                        )}
+                        {isPdf ? <PictureAsPdfRoundedIcon /> : <TextSnippetIcon />}
                         <div className="vertical-line"></div>
                     </div>
-                    <div className="file-preview-name" title={file.name}>
-                        {file.name}
-                    </div>
+                    <div className="file-preview-name" title={file.name}>{file.name}</div>
                     <div className="unsupported-file-last-div">
                         <div className="unsupported-delete-icon" onClick={() => onDelete(file.name)}>
                             <CloseIcon />
                         </div>
                     </div>
                 </div>
-            </div>
-        );
-    }
-
-    return content;
+            )}
+        </div>
+    );
 };
+
+const LinkInput = ({ onSubmit, onCancel }) => {
+    const [linkUrl, setLinkUrl] = useState('');
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSubmit(linkUrl);
+        setLinkUrl('');
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="link-input-form">
+            <input
+                type="url"
+                value={linkUrl}
+                onChange={(e) => setLinkUrl(e.target.value)}
+                placeholder="Enter URL"
+                required
+            />
+            <button type="submit">Add</button>
+            <button type="button" onClick={onCancel}>Cancel</button>
+        </form>
+    );
+};
+
 const AnnouncementWriter = ({
     isPost,
     announcement,
+    links,
+    youtubeLinks,
     handleAnnouncementChange,
     toggleWriteAssignment,
     handlePost,
@@ -128,9 +131,16 @@ const AnnouncementWriter = ({
     files,
     setFiles,
     handleFileChange,
-    handleDeleteFile
+    handleDeleteFile,
+    handleLinkSubmit,
+    handleYouTubeLinkSubmit,
+    handleRemoveLink, // Add this
+    handleRemoveYouTubeLink // Add this
 }) => {
     const currClass = useSelector((state) => state.classes.currClass);
+    const [showUploadOptions, setShowUploadOptions] = useState(false);
+    const [showLinkInput, setShowLinkInput] = useState(false);
+    const [showYouTubeInput, setShowYouTubeInput] = useState(false);
 
     useEffect(() => {
         files.forEach((file) => {
@@ -147,6 +157,20 @@ const AnnouncementWriter = ({
             }
         });
     }, [files]);
+
+    const handleUploadOption = (option) => {
+        setShowUploadOptions(false);
+        if (option === 'computer') {
+            document.getElementById('file-upload').click();
+        } else if (option === 'other') {
+            setShowLinkInput(true);
+        }
+    };
+
+    const handleYouTubeLinkSubmitInternal = (url) => {
+        handleYouTubeLinkSubmit(url);
+        setShowYouTubeInput(false);
+    };
 
     return (
         <div className="announcement-writer">
@@ -174,6 +198,30 @@ const AnnouncementWriter = ({
                         disableUnderline: true,
                     }}
                 />
+                {links.map((link, index) => (
+                    <div key={index} className="link-preview">
+                        <a href={link} target="_blank" rel="noopener noreferrer">{link}</a>
+                        <IconButton onClick={() => handleRemoveLink(link)} color="secondary">
+                            <Delete />
+                        </IconButton>
+                    </div>
+                ))}
+                {youtubeLinks.map((url, index) => (
+                    <div key={index} className="youtube-preview">
+                        <iframe
+                            width="560"
+                            height="315"
+                            src={`https://www.youtube.com/embed/${url}`}
+                            title="YouTube video player"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        ></iframe>
+                        <IconButton onClick={() => handleRemoveYouTubeLink(url)} color="secondary">
+                            <Delete />
+                        </IconButton>
+                    </div>
+                ))}
                 <div className="preview-of-upload-container">
                     {files.map((file) => (
                         <FilePreview
@@ -194,18 +242,36 @@ const AnnouncementWriter = ({
                         <IconButton color="primary" size="small">
                             <FormatUnderlined />
                         </IconButton>
-                        <input
-                            type="file"
-                            multiple
-                            onChange={handleFileChange}
-                            style={{ display: "none" }}
-                            id="file-upload"
-                        />
-                        <label htmlFor="file-upload">
-                            <IconButton component="span" color="primary" size="small">
+                        <div className="upload-container">
+                            <input
+                                type="file"
+                                multiple
+                                onChange={handleFileChange}
+                                style={{ display: "none" }}
+                                id="file-upload"
+                            />
+                            <IconButton
+                                component="span"
+                                color="primary"
+                                size="small"
+                                onClick={() => setShowUploadOptions(!showUploadOptions)}
+                            >
                                 <CloudUpload />
                             </IconButton>
-                        </label>
+                            {showUploadOptions && (
+                                <div className="upload-options">
+                                    <IconButton onClick={() => handleUploadOption('computer')}>
+                                        <Computer style={{ color: 'purple' }} />
+                                    </IconButton>
+                                    <IconButton onClick={() => setShowYouTubeInput(true)}>
+                                        <YouTube style={{ color: 'red' }} />
+                                    </IconButton>
+                                    <IconButton onClick={() => handleUploadOption('other')}>
+                                        <Link style={{ color: '#076048' }} />
+                                    </IconButton>
+                                </div>
+                            )}
+                        </div>
                     </div>
                     <div className="right-side-controllers">
                         <button className="button-cancel" onClick={handleClose}>
@@ -216,6 +282,24 @@ const AnnouncementWriter = ({
                         </button>
                     </div>
                 </div>
+                {showLinkInput && (
+                    <LinkInput
+                        onSubmit={handleLinkSubmit}
+                        onCancel={() => setShowLinkInput(false)}
+                    />
+                )}
+                {showYouTubeInput && (
+                    <form onSubmit={(e) => { e.preventDefault(); handleYouTubeLinkSubmitInternal(e.target.elements.youtubeUrl.value); }}>
+                        <input
+                            type="url"
+                            name="youtubeUrl"
+                            placeholder="Enter YouTube URL"
+                            required
+                        />
+                        <button type="submit">Add</button>
+                        <button type="button" onClick={() => setShowYouTubeInput(false)}>Cancel</button>
+                    </form>
+                )}
             </div>
         </div>
     );
@@ -226,7 +310,9 @@ export default function AnnouncementContainer() {
     const [isPost, setIsPost] = useState(true);
     const [finalAnnouncement, setFinalAnnouncement] = useState({
         text: "",
-        files: []
+        links: [],
+        files: [],
+        youtubeLinks: [] // Add this
     });
 
     const handleAnnouncementChange = (e) => {
@@ -238,12 +324,12 @@ export default function AnnouncementContainer() {
 
     const handleClose = () => {
         setWriteAssignment(false);
-        setFinalAnnouncement({ text: "", files: [] });
+        setFinalAnnouncement({ text: "", links: [], files: [], youtubeLinks: [] });
     };
 
     const handlePost = () => {
         console.log("Post Announcement:", finalAnnouncement);
-        setFinalAnnouncement({ text: "", files: [] });
+        setFinalAnnouncement({ text: "", links: [], files: [], youtubeLinks: [] });
         setWriteAssignment(false);
     };
 
@@ -268,6 +354,23 @@ export default function AnnouncementContainer() {
         }));
     };
 
+    const handleLinkSubmit = (url) => {
+        setFinalAnnouncement(prev => ({
+            ...prev,
+            links: [...prev.links, url]
+        }));
+    };
+
+    const handleYouTubeLinkSubmit = (url) => {
+        const videoId = new URL(url).searchParams.get("v");
+        if (videoId) {
+            setFinalAnnouncement(prev => ({
+                ...prev,
+                youtubeLinks: [...prev.youtubeLinks, videoId]
+            }));
+        }
+    };
+
     return (
         <div className="main-announcement-container">
             <div className="announce-something-container">
@@ -276,6 +379,8 @@ export default function AnnouncementContainer() {
                     <AnnouncementWriter
                         isPost={isPost}
                         announcement={finalAnnouncement.text}
+                        links={finalAnnouncement.links}
+                        youtubeLinks={finalAnnouncement.youtubeLinks} // Add this
                         handleAnnouncementChange={handleAnnouncementChange}
                         toggleWriteAssignment={setIsPost}
                         handlePost={handlePost}
@@ -283,6 +388,8 @@ export default function AnnouncementContainer() {
                         files={finalAnnouncement.files}
                         handleFileChange={handleFileChange}
                         handleDeleteFile={handleDeleteFile}
+                        handleLinkSubmit={handleLinkSubmit}
+                        handleYouTubeLinkSubmit={handleYouTubeLinkSubmit} // Add this
                     />
                 )}
             </div>
