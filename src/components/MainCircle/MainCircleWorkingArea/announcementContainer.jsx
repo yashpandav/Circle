@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TextField, IconButton } from "@mui/material";
+import { TextField, IconButton, Button } from "@mui/material";
 import { useSelector } from "react-redux";
 import { IoIosSend } from "react-icons/io";
 import {
@@ -102,23 +102,70 @@ const LinkInput = ({ onSubmit, onCancel }) => {
         e.preventDefault();
         onSubmit(linkUrl);
         setLinkUrl('');
+        onCancel();
     };
+
+    const currClass = useSelector((state) => state.classes.currClass);
+    const borderFocusColor = currClass.classTheme;
 
     return (
         <form onSubmit={handleSubmit} className="link-input-form">
-            <input
-                type="url"
-                value={linkUrl}
-                onChange={(e) => setLinkUrl(e.target.value)}
-                placeholder="Enter URL"
-                required
-            />
-            <button type="submit">Add</button>
-            <button type="button" onClick={onCancel}>Cancel</button>
+            <div className="link-input-container" style={{
+                border: `1px solid ${borderFocusColor}`
+            }}>
+                <input
+                    type="url"
+                    value={linkUrl}
+                    onChange={(e) => setLinkUrl(e.target.value)}
+                    placeholder="Enter URL"
+                    required
+                    className="link-input"
+                />
+                <IconButton type="button" onClick={onCancel} className="close-link-btn" title="Cancel">
+                    <CloseIcon className="icon" style={{
+                        color: borderFocusColor,
+                    }} />
+                </IconButton>
+                <Button variant="outlined" type="submit" style={{
+                    border: 'none',
+                    color:borderFocusColor
+                }}>
+                    Add
+                </Button>
+            </div>
         </form>
     );
 };
 
+
+const YouTubeLinkInput = ({ onSubmit, onCancel }) => {
+    const [youtubeUrl, setYoutubeUrl] = useState('');
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSubmit(youtubeUrl);
+        setYoutubeUrl('');
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="youtube-link-input-form">
+            <div className="youtube-link-input-container">
+                <input
+                    type="url"
+                    value={youtubeUrl}
+                    onChange={(e) => setYoutubeUrl(e.target.value)}
+                    placeholder="Enter YouTube URL"
+                    required
+                    className="youtube-link-input"
+                />
+                <div className="youtube-link-input-buttons">
+                    <button type="submit" className="youtube-link-submit-btn">Add</button>
+                    <button type="button" onClick={onCancel} className="youtube-link-cancel-btn">Cancel</button>
+                </div>
+            </div>
+        </form>
+    );
+};
 const AnnouncementWriter = ({
     isPost,
     announcement,
@@ -134,8 +181,8 @@ const AnnouncementWriter = ({
     handleDeleteFile,
     handleLinkSubmit,
     handleYouTubeLinkSubmit,
-    handleRemoveLink, // Add this
-    handleRemoveYouTubeLink // Add this
+    handleRemoveLink,
+    handleRemoveYouTubeLink
 }) => {
     const currClass = useSelector((state) => state.classes.currClass);
     const [showUploadOptions, setShowUploadOptions] = useState(false);
@@ -289,16 +336,10 @@ const AnnouncementWriter = ({
                     />
                 )}
                 {showYouTubeInput && (
-                    <form onSubmit={(e) => { e.preventDefault(); handleYouTubeLinkSubmitInternal(e.target.elements.youtubeUrl.value); }}>
-                        <input
-                            type="url"
-                            name="youtubeUrl"
-                            placeholder="Enter YouTube URL"
-                            required
-                        />
-                        <button type="submit">Add</button>
-                        <button type="button" onClick={() => setShowYouTubeInput(false)}>Cancel</button>
-                    </form>
+                    <YouTubeLinkInput
+                        onSubmit={handleYouTubeLinkSubmitInternal}
+                        onCancel={() => setShowYouTubeInput(false)}
+                    />
                 )}
             </div>
         </div>
@@ -312,7 +353,7 @@ export default function AnnouncementContainer() {
         text: "",
         links: [],
         files: [],
-        youtubeLinks: [] // Add this
+        youtubeLinks: []
     });
 
     const handleAnnouncementChange = (e) => {
@@ -331,6 +372,13 @@ export default function AnnouncementContainer() {
         console.log("Post Announcement:", finalAnnouncement);
         setFinalAnnouncement({ text: "", links: [], files: [], youtubeLinks: [] });
         setWriteAssignment(false);
+    };
+
+    const handleRemoveYouTubeLink = (urlToRemove) => {
+        setFinalAnnouncement(prev => ({
+            ...prev,
+            youtubeLinks: prev.youtubeLinks.filter(url => url !== urlToRemove)
+        }));
     };
 
     const handleFileChange = (e) => {
@@ -362,7 +410,9 @@ export default function AnnouncementContainer() {
     };
 
     const handleYouTubeLinkSubmit = (url) => {
+        console.log(url);
         const videoId = new URL(url).searchParams.get("v");
+        console.log(videoId);
         if (videoId) {
             setFinalAnnouncement(prev => ({
                 ...prev,
@@ -380,7 +430,7 @@ export default function AnnouncementContainer() {
                         isPost={isPost}
                         announcement={finalAnnouncement.text}
                         links={finalAnnouncement.links}
-                        youtubeLinks={finalAnnouncement.youtubeLinks} // Add this
+                        youtubeLinks={finalAnnouncement.youtubeLinks}
                         handleAnnouncementChange={handleAnnouncementChange}
                         toggleWriteAssignment={setIsPost}
                         handlePost={handlePost}
@@ -389,7 +439,8 @@ export default function AnnouncementContainer() {
                         handleFileChange={handleFileChange}
                         handleDeleteFile={handleDeleteFile}
                         handleLinkSubmit={handleLinkSubmit}
-                        handleYouTubeLinkSubmit={handleYouTubeLinkSubmit} // Add this
+                        handleYouTubeLinkSubmit={handleYouTubeLinkSubmit}
+                        handleRemoveYouTubeLink={handleRemoveYouTubeLink}
                     />
                 )}
             </div>
