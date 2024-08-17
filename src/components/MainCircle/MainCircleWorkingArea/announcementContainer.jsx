@@ -95,8 +95,13 @@ const FilePreview = ({ file, onDelete }) => {
     );
 };
 
+
 const LinkInput = ({ onSubmit, onCancel }) => {
     const [linkUrl, setLinkUrl] = useState('');
+    const [isFocused, setIsFocused] = useState(false);
+
+    const currClass = useSelector((state) => state.classes.currClass);
+    const borderFocusColor = currClass.classTheme;
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -105,14 +110,12 @@ const LinkInput = ({ onSubmit, onCancel }) => {
         onCancel();
     };
 
-    const currClass = useSelector((state) => state.classes.currClass);
-    const borderFocusColor = currClass.classTheme;
-
     return (
-        <form onSubmit={handleSubmit} className="link-input-form">
-            <div className="link-input-container" style={{
-                border: `1px solid ${borderFocusColor}`
-            }}>
+        <form onSubmit={handleSubmit}>
+            <div className={`link-input-container ${isFocused ? 'focused' : ''}`}
+                style={{
+                    border: isFocused ? `1px solid ${borderFocusColor}` : `1px solid #276e7e`
+                }}>
                 <input
                     type="url"
                     value={linkUrl}
@@ -120,15 +123,16 @@ const LinkInput = ({ onSubmit, onCancel }) => {
                     placeholder="Enter URL"
                     required
                     className="link-input"
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
                 />
                 <IconButton type="button" onClick={onCancel} className="close-link-btn" title="Cancel">
-                    <CloseIcon className="icon" style={{
-                        color: borderFocusColor,
-                    }} />
+                    <CloseIcon className="icon" style={{ color: 'grey' }} />
                 </IconButton>
                 <Button variant="outlined" type="submit" style={{
                     border: 'none',
-                    color:borderFocusColor
+                    color: 'white',
+                    backgroundColor : borderFocusColor
                 }}>
                     Add
                 </Button>
@@ -137,9 +141,10 @@ const LinkInput = ({ onSubmit, onCancel }) => {
     );
 };
 
-
 const YouTubeLinkInput = ({ onSubmit, onCancel }) => {
     const [youtubeUrl, setYoutubeUrl] = useState('');
+
+    const [isFocused, setIsFocused] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -148,24 +153,38 @@ const YouTubeLinkInput = ({ onSubmit, onCancel }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="youtube-link-input-form">
-            <div className="youtube-link-input-container">
+        <form onSubmit={handleSubmit}>
+            <div className="link-input-container"
+                style={{
+                    border: isFocused ? `1px solid red` : `1px solid #276e7e`
+                }}>
                 <input
                     type="url"
                     value={youtubeUrl}
                     onChange={(e) => setYoutubeUrl(e.target.value)}
                     placeholder="Enter YouTube URL"
                     required
-                    className="youtube-link-input"
+                    className="link-input"
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
                 />
-                <div className="youtube-link-input-buttons">
-                    <button type="submit" className="youtube-link-submit-btn">Add</button>
-                    <button type="button" onClick={onCancel} className="youtube-link-cancel-btn">Cancel</button>
-                </div>
+                <IconButton type="button" onClick={onCancel} className="close-link-btn" title="Cancel">
+                    <CloseIcon className="icon" style={{
+                        color: 'grey',
+                    }} />
+                </IconButton>
+                <Button variant="outlined" type="submit" style={{
+                    backgroundColor: 'red',
+                    color: 'white',
+                    border: 'none'
+                }}>
+                    Add
+                </Button>
             </div>
         </form>
     );
 };
+
 const AnnouncementWriter = ({
     isPost,
     announcement,
@@ -381,6 +400,13 @@ export default function AnnouncementContainer() {
         }));
     };
 
+    const handleRemoveLink = (urlToRemove) => {
+        setFinalAnnouncement(prev => ({
+            ...prev,
+            links: prev.links.filter(url => url !== urlToRemove)
+        }));
+    };
+
     const handleFileChange = (e) => {
         const newFiles = Array.from(e.target.files).map((file) => ({
             file,
@@ -441,6 +467,7 @@ export default function AnnouncementContainer() {
                         handleLinkSubmit={handleLinkSubmit}
                         handleYouTubeLinkSubmit={handleYouTubeLinkSubmit}
                         handleRemoveYouTubeLink={handleRemoveYouTubeLink}
+                        handleRemoveLink={handleRemoveLink}
                     />
                 )}
             </div>
