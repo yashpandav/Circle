@@ -413,11 +413,10 @@ export default function AnnouncementContainer() {
             formData.append('youtubeLinks', data.youtubeLinks);
             formData.append('currClassId', currClass._id);
 
-            //! Need to change currClassID to the calling part
             const response = await dispatch(createPost(formData)).unwrap();
             console.log("API RESPONSE ", response);
         } catch(err) {
-            console.error("Error During Posting Announcement");
+            // console.error("Error During Posting Announcement");
         }
         setdata((prev) => ({
             ...prev,

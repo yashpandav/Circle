@@ -3,9 +3,6 @@ const { uploadImage } = require("../../Utils/imageUpload");
 const User = require("../../Models/User");
 const Class = require("../../Models/Class");
 const Category = require("../../Models/Category");
-const multer = require('multer');
-const storage = multer.memoryStorage();
-const upload = multer({ storage : storage });
 require("dotenv").config();
 exports.createPost = async (req, res) => {
     try {
