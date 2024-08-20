@@ -4,13 +4,12 @@ const User = require("../../Models/User");
 const Class = require("../../Models/Class");
 const Category = require("../../Models/Category");
 require("dotenv").config();
-
 exports.createPost = async (req, res) => {
     try {
-        const { currClassId, title, postBody, category, uploadDate, status } = req.body;
-
-        // Handle multiple files
-        const postFiles = req.files?.postFiles;
+        const { currClassId, title, category, uploadDate, status, links, youtubeLinks } = req.body;
+        const postBody = req.body.text;
+        const postFiles = req.files?.files;
+        console.log(postFiles)
 
         if (!currClassId || !title || !postBody) {
             return res.status(401).json({
@@ -34,6 +33,8 @@ exports.createPost = async (req, res) => {
             title,
             postBody,
             postFiles: fileUrls || [],
+            links: links || [],
+            youtubeLinks: youtubeLinks || [],
             teacher,
             category: category || null,
             status,

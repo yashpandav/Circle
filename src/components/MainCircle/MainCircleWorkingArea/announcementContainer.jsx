@@ -19,6 +19,8 @@ import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import CloseIcon from '@mui/icons-material/Close';
 import "./announcementContainer.css";
 import './uploadFile.css';
+import { createPost } from "../../../Api/apiCaller/posapicaller";
+import { useDispatch } from "react-redux";
 
 const UserAnnouncementHeader = ({ setWriteAssignment }) => {
     const user = useSelector((state) => state.auth.user);
@@ -132,7 +134,7 @@ const LinkInput = ({ onSubmit, onCancel }) => {
                 <Button variant="outlined" type="submit" style={{
                     border: 'none',
                     color: 'white',
-                    backgroundColor : borderFocusColor
+                    backgroundColor: borderFocusColor
                 }}>
                     Add
                 </Button>
@@ -184,12 +186,13 @@ const YouTubeLinkInput = ({ onSubmit, onCancel }) => {
         </form>
     );
 };
-
 const AnnouncementWriter = ({
     isPost,
     announcement,
+    title,
     links,
     youtubeLinks,
+    handleTitleChange,
     handleAnnouncementChange,
     toggleWriteAssignment,
     handlePost,
@@ -230,6 +233,8 @@ const AnnouncementWriter = ({
             document.getElementById('file-upload').click();
         } else if (option === 'other') {
             setShowLinkInput(true);
+        } else {
+            setShowYouTubeInput(true);
         }
     };
 
@@ -245,19 +250,34 @@ const AnnouncementWriter = ({
             </div>
             <div className="announcement-editor">
                 <TextField
+                    placeholder="Post Title"
+                    autoFocus
+                    variant="standard"
+                    value={title}
+                    onChange={handleTitleChange}
+                    className="announcement-textfield"
+                    InputProps={{
+                        style: {
+                            fontSize: "18px",
+                            paddingInline: "10px",
+                            caretColor: currClass.classTheme,
+                            fontWeight: '600'
+                        },
+                        disableUnderline: true,
+                    }}
+                />
+                <TextField
                     placeholder="Type in here…"
                     minRows={2}
                     maxRows={10}
                     multiline
-                    autoFocus
                     variant="standard"
                     value={announcement}
                     onChange={handleAnnouncementChange}
-                    className="announcement-textfield no-border"
+                    className="announcement-textfield"
                     InputProps={{
                         style: {
-                            color: "#28231d",
-                            fontSize: "15px",
+                            fontSize: "16px",
                             paddingInline: "10px",
                             caretColor: currClass.classTheme,
                         },
@@ -329,7 +349,7 @@ const AnnouncementWriter = ({
                                     <IconButton onClick={() => handleUploadOption('computer')}>
                                         <Computer style={{ color: 'purple' }} />
                                     </IconButton>
-                                    <IconButton onClick={() => setShowYouTubeInput(true)}>
+                                    <IconButton onClick={() => handleUploadOption('Youtube')}>
                                         <YouTube style={{ color: 'red' }} />
                                     </IconButton>
                                     <IconButton onClick={() => handleUploadOption('other')}>
@@ -366,17 +386,29 @@ const AnnouncementWriter = ({
 };
 
 export default function AnnouncementContainer() {
+    const currClass = useSelector((state) => state.classes.currClass);
+    console.log(currClass._id);
     const [writeAssignment, setWriteAssignment] = useState(false);
     const [isPost, setIsPost] = useState(true);
-    const [finalAnnouncement, setFinalAnnouncement] = useState({
+    const dispatch = useDispatch();
+    const [data, setdata] = useState({
+        currClassId: currClass._id,
+        title: "",
         text: "",
         links: [],
         files: [],
         youtubeLinks: []
     });
 
+    const handleTitleChange = (e) => {
+        setdata(prev => ({
+            ...prev,
+            title: e.target.value
+        }));
+    };
+
     const handleAnnouncementChange = (e) => {
-        setFinalAnnouncement(prev => ({
+        setdata(prev => ({
             ...prev,
             text: e.target.value
         }));
@@ -384,24 +416,37 @@ export default function AnnouncementContainer() {
 
     const handleClose = () => {
         setWriteAssignment(false);
-        setFinalAnnouncement({ text: "", links: [], files: [], youtubeLinks: [] });
+        setdata({ title: "", text: "", links: [], files: [], youtubeLinks: [] });
     };
 
-    const handlePost = () => {
-        console.log("Post Announcement:", finalAnnouncement);
-        setFinalAnnouncement({ text: "", links: [], files: [], youtubeLinks: [] });
+    const handlePost = async () => {
+        try {
+            const response = await dispatch(createPost(data)).unwrap();
+            console.log("API RESPONSE ", response);
+        } catch {
+            console.log("Error During Posting Announcement");
+        }
+        setdata((prev) => ({
+            ...prev,
+            title: "",
+            text: "",
+            links: [],
+            files: [],
+            youtubeLinks: []
+        }));
+
         setWriteAssignment(false);
     };
 
     const handleRemoveYouTubeLink = (urlToRemove) => {
-        setFinalAnnouncement(prev => ({
+        setdata(prev => ({
             ...prev,
             youtubeLinks: prev.youtubeLinks.filter(url => url !== urlToRemove)
         }));
     };
 
     const handleRemoveLink = (urlToRemove) => {
-        setFinalAnnouncement(prev => ({
+        setdata(prev => ({
             ...prev,
             links: prev.links.filter(url => url !== urlToRemove)
         }));
@@ -415,21 +460,21 @@ export default function AnnouncementContainer() {
             url: URL.createObjectURL(file),
         }));
 
-        setFinalAnnouncement(prev => ({
+        setdata(prev => ({
             ...prev,
             files: [...prev.files, ...newFiles]
         }));
     };
 
     const handleDeleteFile = (fileName) => {
-        setFinalAnnouncement(prev => ({
+        setdata(prev => ({
             ...prev,
             files: prev.files.filter((file) => file.name !== fileName)
         }));
     };
 
     const handleLinkSubmit = (url) => {
-        setFinalAnnouncement(prev => ({
+        setdata(prev => ({
             ...prev,
             links: [...prev.links, url]
         }));
@@ -440,7 +485,7 @@ export default function AnnouncementContainer() {
         const videoId = new URL(url).searchParams.get("v");
         console.log(videoId);
         if (videoId) {
-            setFinalAnnouncement(prev => ({
+            setdata(prev => ({
                 ...prev,
                 youtubeLinks: [...prev.youtubeLinks, videoId]
             }));
@@ -454,14 +499,16 @@ export default function AnnouncementContainer() {
                 {writeAssignment && (
                     <AnnouncementWriter
                         isPost={isPost}
-                        announcement={finalAnnouncement.text}
-                        links={finalAnnouncement.links}
-                        youtubeLinks={finalAnnouncement.youtubeLinks}
+                        title={data.title}
+                        announcement={data.text}
+                        links={data.links}
+                        youtubeLinks={data.youtubeLinks}
+                        handleTitleChange={handleTitleChange}
                         handleAnnouncementChange={handleAnnouncementChange}
                         toggleWriteAssignment={setIsPost}
                         handlePost={handlePost}
                         handleClose={handleClose}
-                        files={finalAnnouncement.files}
+                        files={data.files}
                         handleFileChange={handleFileChange}
                         handleDeleteFile={handleDeleteFile}
                         handleLinkSubmit={handleLinkSubmit}
