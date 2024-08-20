@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { TextField, IconButton, Button } from "@mui/material";
 import { useSelector } from "react-redux";
 import { IoIosSend } from "react-icons/io";
@@ -198,7 +198,6 @@ const AnnouncementWriter = ({
     handlePost,
     handleClose,
     files,
-    setFiles,
     handleFileChange,
     handleDeleteFile,
     handleLinkSubmit,
@@ -210,22 +209,6 @@ const AnnouncementWriter = ({
     const [showUploadOptions, setShowUploadOptions] = useState(false);
     const [showLinkInput, setShowLinkInput] = useState(false);
     const [showYouTubeInput, setShowYouTubeInput] = useState(false);
-
-    useEffect(() => {
-        files.forEach((file) => {
-            if (!file.url && file.file) {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    setFiles((prevFiles) =>
-                        prevFiles.map((f) =>
-                            f.name === file.name ? { ...f, url: reader.result } : f
-                        )
-                    );
-                };
-                reader.readAsDataURL(file.file);
-            }
-        });
-    }, [files]);
 
     const handleUploadOption = (option) => {
         setShowUploadOptions(false);
@@ -387,7 +370,6 @@ const AnnouncementWriter = ({
 
 export default function AnnouncementContainer() {
     const currClass = useSelector((state) => state.classes.currClass);
-    console.log(currClass._id);
     const [writeAssignment, setWriteAssignment] = useState(false);
     const [isPost, setIsPost] = useState(true);
     const dispatch = useDispatch();
@@ -421,10 +403,21 @@ export default function AnnouncementContainer() {
 
     const handlePost = async () => {
         try {
-            const response = await dispatch(createPost(data)).unwrap();
+            const formData = new FormData();
+            data.files.forEach((file) => {
+                formData.append("files", file.file);
+            });
+            formData.append('title', data.title);
+            formData.append('text', data.text);
+            formData.append('links', data.links);
+            formData.append('youtubeLinks', data.youtubeLinks);
+            formData.append('currClassId', currClass._id);
+
+            //! Need to change currClassID to the calling part
+            const response = await dispatch(createPost(formData)).unwrap();
             console.log("API RESPONSE ", response);
-        } catch {
-            console.log("Error During Posting Announcement");
+        } catch(err) {
+            console.error("Error During Posting Announcement");
         }
         setdata((prev) => ({
             ...prev,
@@ -481,9 +474,7 @@ export default function AnnouncementContainer() {
     };
 
     const handleYouTubeLinkSubmit = (url) => {
-        console.log(url);
         const videoId = new URL(url).searchParams.get("v");
-        console.log(videoId);
         if (videoId) {
             setdata(prev => ({
                 ...prev,

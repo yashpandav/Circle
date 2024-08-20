@@ -3,13 +3,15 @@ const { uploadImage } = require("../../Utils/imageUpload");
 const User = require("../../Models/User");
 const Class = require("../../Models/Class");
 const Category = require("../../Models/Category");
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage : storage });
 require("dotenv").config();
 exports.createPost = async (req, res) => {
     try {
         const { currClassId, title, category, uploadDate, status, links, youtubeLinks } = req.body;
         const postBody = req.body.text;
         const postFiles = req.files?.files;
-        console.log(postFiles)
 
         if (!currClassId || !title || !postBody) {
             return res.status(401).json({
@@ -19,10 +21,15 @@ exports.createPost = async (req, res) => {
         }
 
         let fileUrls = [];
-
-        if (postFiles && Array.isArray(postFiles)) {
-            for (const file of postFiles) {
-                const fileUrl = await uploadImage(file, process.env.FOLDER_NAME);
+        if (postFiles) {
+            if(postFiles?.length > 0) {
+                for (const file of postFiles) {
+                    const fileUrl = await uploadImage(file, process.env.FOLDER_NAME);
+                    fileUrls.push(fileUrl.secure_url);
+                }
+            }
+            else{
+                const fileUrl = await uploadImage(postFiles, process.env.FOLDER_NAME);
                 fileUrls.push(fileUrl.secure_url);
             }
         }
