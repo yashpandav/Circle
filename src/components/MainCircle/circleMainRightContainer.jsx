@@ -1,83 +1,13 @@
 import React from "react";
-import AnnouncementContainer from '../MainCircle/MainCircleWorkingArea/announcementContainer';
+import AnnouncementContainer from './MainCircleWorkingArea/announcementContainer'
+import ShowPostMain from "./MainCircleWorkingArea/showPost";
 import './circleMainRightContainer.css'
 
 export default function CircleMainRightContainer() {
     return (
         <div className="main-circle-right-container">
             <AnnouncementContainer/>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>   
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>   
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>
-            <div>Circle Main Left Container</div>   
+            <ShowPostMain/>
         </div>
     );
 }

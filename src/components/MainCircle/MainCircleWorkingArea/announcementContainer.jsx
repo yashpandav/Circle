@@ -19,7 +19,7 @@ import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import CloseIcon from '@mui/icons-material/Close';
 import "./announcementContainer.css";
 import './uploadFile.css';
-import { createPost } from "../../../Api/apiCaller/posapicaller";
+import { createPost } from "../../../Api/apiCaller/postapicaller";
 import { useDispatch } from "react-redux";
 
 const UserAnnouncementHeader = ({ setWriteAssignment }) => {

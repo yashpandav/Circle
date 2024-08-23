@@ -3,7 +3,8 @@ import {apiConnector} from '../apiconfig.js';
 import toast from 'react-hot-toast';
 
 const {
-    CREATE_POST_API
+    CREATE_POST_API,
+    GET_POST_API
 } = POST_API_URL;
 
 export const createPost = async(data) => {
