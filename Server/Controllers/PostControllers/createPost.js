@@ -6,7 +6,8 @@ const Category = require("../../Models/Category");
 require("dotenv").config();
 exports.createPost = async (req, res) => {
     try {
-        const { currClassId, title, category, uploadDate, status, links, youtubeLinks } = req.body;
+        const { currClassId, title, category, status, links, youtubeLinks } =
+            req.body;
         const postBody = req.body.text;
         const postFiles = req.files?.files;
 
@@ -19,18 +20,19 @@ exports.createPost = async (req, res) => {
 
         let fileUrls = [];
         if (postFiles) {
-            if(postFiles?.length > 0) {
+            if (postFiles?.length > 0) {
                 for (const file of postFiles) {
                     const fileUrl = await uploadImage(file, process.env.FOLDER_NAME);
                     fileUrls.push(fileUrl.secure_url);
                 }
-            }
-            else{
+            } else {
                 const fileUrl = await uploadImage(postFiles, process.env.FOLDER_NAME);
                 fileUrls.push(fileUrl.secure_url);
             }
         }
 
+        const uploadDate = new Date().toLocaleString();
+        console.log(`Uploading ${uploadDate}`);
         const teacher = req.user.id;
 
         const newPost = new Post({
@@ -42,46 +44,46 @@ exports.createPost = async (req, res) => {
             teacher,
             category: category || null,
             status,
+            uploadDate,
         });
 
         await newPost.save();
 
-        if (newPost.status === "Published") {
-            newPost.uploadDate = uploadDate;
+        // if (newPost.status === "Published") {
 
-            await Class.findByIdAndUpdate(currClassId, {
-                $push: {
-                    addedPost: newPost.id,
-                },
-            });
+        await Class.findByIdAndUpdate(currClassId, {
+            $push: {
+                addedPost: newPost.id,
+            },
+        });
 
-            if (category) {
-                const currCategory = await Category.findOne({ name: category });
-                if (currCategory) {
-                    await Category.findByIdAndUpdate(currCategory.id, {
-                        $push: {
-                            post: newPost.id,
-                        },
-                    });
+        if (category) {
+            const currCategory = await Category.findOne({ name: category });
+            if (currCategory) {
+                await Category.findByIdAndUpdate(currCategory.id, {
+                    $push: {
+                        post: newPost.id,
+                    },
+                });
 
-                    await Post.findByIdAndUpdate(newPost.id, {
-                        $push: { category: currCategory.id },
-                    });
-                }
+                await Post.findByIdAndUpdate(newPost.id, {
+                    $push: { category: currCategory.id },
+                });
             }
-            await newPost.save();
-            return res.status(200).json({
-                success: true,
-                message: "Post Created Successfully",
-                data: newPost,
-            });
-        } else {
-            return res.status(200).json({
-                success: true,
-                message: "Post Drafted Successfully",
-                data: newPost,
-            });
         }
+        await newPost.save();
+        return res.status(200).json({
+            success: true,
+            message: "Post Created Successfully",
+            data: newPost,
+        });
+        // } else {
+        //     return res.status(200).json({
+        //         success: true,
+        //         message: "Post Drafted Successfully",
+        //         data: newPost,
+        //     });
+        // }
     } catch (err) {
         console.error(err);
         return res.status(400).json({

@@ -28,8 +28,7 @@ const PostSchema = new mongoose.Schema({
         }
     ],
     uploadDate: {
-        type: Date,
-        default: Date.now
+        type: String,
     },
     status: {
         type: String,

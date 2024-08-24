@@ -21,6 +21,13 @@ exports.getClass = async (req, res) => {
             .populate("addedAssignment")
             .populate("addedCategory")
             .populate("addedPost")
+            .populate({
+                path: 'addedPost',
+                populate: {
+                    path: 'teacher',
+                    select: 'firstName lastName image'
+                }
+            })
             .exec();
 
         if (!findClass) {

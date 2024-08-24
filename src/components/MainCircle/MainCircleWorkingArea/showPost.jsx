@@ -4,17 +4,21 @@ import PostContainer from "./postContainer";
 
 export default function ShowPostMain() {
     const currClass = useSelector((state) => state.classes.currClass);
-    const [allPost, setAllPost] = useState(null);
+    const [allPost, setAllPost] = useState([]);
 
     useEffect(() => {
-        if (currClass) {
-            setAllPost(currClass.addedPost);
+        if (currClass && currClass.addedPost) {
+            setAllPost([...currClass.addedPost].reverse());
         }
     }, [currClass]);
     
+    if (allPost.length === 0) {
+        return <p>Loading...</p>;
+    }
+
     return (
-        allPost && allPost.map((post, index) => (
-            <PostContainer key={index} post={post} />
+        allPost.map((post) => (
+            <PostContainer key={post._id} post={post} />
         ))
     );
 }
