@@ -267,30 +267,35 @@ const AnnouncementWriter = ({
                         disableUnderline: true,
                     }}
                 />
-                {links.map((link, index) => (
-                    <div key={index} className="link-preview">
-                        <a href={link} target="_blank" rel="noopener noreferrer">{link}</a>
-                        <IconButton onClick={() => handleRemoveLink(link)} color="secondary">
-                            <Delete />
-                        </IconButton>
-                    </div>
-                ))}
-                {youtubeLinks.map((url, index) => (
-                    <div key={index} className="youtube-preview">
-                        <iframe
-                            width="560"
-                            height="315"
-                            src={`https://www.youtube.com/embed/${url}`}
-                            title="YouTube video player"
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                        ></iframe>
-                        <IconButton onClick={() => handleRemoveYouTubeLink(url)} color="secondary">
-                            <Delete />
-                        </IconButton>
-                    </div>
-                ))}
+                <div className="links-for-post">
+                    {links.map((link, index) => (
+                        <div key={index} className="link-preview">
+                            <a href={link} target="_blank">{link}</a>
+                            <IconButton onClick={() => handleRemoveLink(link)} color="secondary">
+                                <Delete />
+                            </IconButton>
+                        </div>
+                    ))}
+                </div>
+                <div className="youtube-links-for-post uploader-post-side">
+                    {youtubeLinks.map((url, index) => (
+                        <div key={index} className="youtube-preview">
+                            <iframe
+                                key={index}
+                                width="340"
+                                height="200"
+                                src={`https://www.youtube.com/embed/${url}`}
+                                title="YouTube video player"
+                                frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                            ></iframe>
+                            <IconButton onClick={() => handleRemoveYouTubeLink(url)} color="secondary">
+                                <Delete />
+                            </IconButton>
+                        </div>
+                    ))}
+                </div>
                 <div className="preview-of-upload-container">
                     {files.map((file) => (
                         <FilePreview
@@ -409,13 +414,17 @@ export default function AnnouncementContainer() {
             });
             formData.append('title', data.title);
             formData.append('text', data.text);
-            formData.append('links', data.links);
-            formData.append('youtubeLinks', data.youtubeLinks);
+            data.links.forEach((link) => {
+                formData.append('links', link);
+            });
+            data.youtubeLinks.forEach((link) => {
+                formData.append('youtubeLinks', link);
+            });
             formData.append('currClassId', currClass._id);
 
             const response = await dispatch(createPost(formData)).unwrap();
             console.log("API RESPONSE ", response);
-        } catch(err) {
+        } catch (err) {
             // console.error("Error During Posting Announcement");
         }
         setdata((prev) => ({

@@ -9,9 +9,9 @@ const PostSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    postFiles: [String], 
-    links: [String],
-    youtubeLinks: [String],
+    postFiles: [], 
+    links: [],
+    youtubeLinks: [],
     teacher: {
         type: mongoose.Schema.Types.ObjectId,   
         required: true,

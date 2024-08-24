@@ -301,17 +301,22 @@
     transition: all 0.3s ease;
 }
 
-.youtube-preview {
-    margin-top: 10px;
+.link-preview{
     display: flex;
     justify-content: flex-start;
 }
 
-.youtube-preview iframe {
-    width: 45%;
-    max-width: 560px;
-    height: auto;
-    border: none;
+.youtube-preview {
+    display: flex;
+    align-items: end;
+}
+
+.link-preview{
+    margin-block: 10px;
+}
+
+.youtube-links-for-post.uploader-post-side{
+    margin-left: 5px;
 }
 
 .link-input-container {

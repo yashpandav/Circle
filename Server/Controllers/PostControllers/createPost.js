@@ -32,7 +32,6 @@ exports.createPost = async (req, res) => {
         }
 
         const uploadDate = new Date().toLocaleString();
-        console.log(`Uploading ${uploadDate}`);
         const teacher = req.user.id;
 
         const newPost = new Post({

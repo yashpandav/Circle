@@ -1,17 +1,20 @@
 .post-container {
     border: 1px solid #ddd;
-    padding: 15px;
     border-radius: 7px;
     margin-bottom: 20px;
     background-color: #fff;
-    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+}
+
+.post-wrapper{
+    margin-top: 15px;
+    margin-bottom: 20px;
 }
 
 .post-header{
+    padding: 0px 15px 15px 15px;   
     display: flex;
     align-items: center;   
     justify-content: space-between;
-    margin-bottom: 15px;
 }
 
 .left-side-post-details{
@@ -27,10 +30,13 @@
 }
 
 h3.post-uploader-name{
+    color: black;
     font-size: 1em;
+    margin: 0;
 }
 
 h6.post-upload-date{
+    color: rgb(85, 85, 85);
     font-size: 0.75em ;
     margin: 0;
 }
@@ -39,7 +45,6 @@ h6.post-upload-date{
     border-radius: 50%;
     width: 40px;
     height: 40px;
-    /* border: 2px solid #eee; */
 }
 
 .post-upload-details {
@@ -47,28 +52,53 @@ h6.post-upload-date{
     flex-direction: column;
 }
 
-.post-uploader-name {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin: 0;
-    color: #333;
-}
-
-.post-upload-date {
-    font-size: 0.9rem;
-    color: #777;
-}
-
-.post-title {
-    font-size: 1.5rem;
+h1.post-title {
+    font-size: 1.4em;
     font-weight: bold;
-    margin: 10px 0;
-    color: #222;
+    color: #000000;
+    padding-inline : 20px;
+    margin-block: 15px;
 }
 
-.post-content {
-    font-size: 1rem;
+p.post-content {
+    font-size: 1em;
+    margin: 0;
     line-height: 1.6;
-    color: #444;
-    margin-bottom: 0;
+    padding-inline : 20px;
+    color: #020202;
+}
+
+.links-for-post a {
+    display: block;
+    font-size: 1em;
+    color: #1a73e8;
+    text-decoration: none;
+    padding: 10px 15px;
+    background-color: #f8f8f8;
+    border-radius: 5px;
+}
+
+.links-for-post.user-post-side a{
+    margin-inline : 20px;
+    margin-block: 10px;
+}
+
+.youtube-links-for-post {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.youtube-links-for-post.user-post-side {
+    padding-inline : 20px;
+}
+
+.youtube-links-for-post iframe {
+    border-radius: 7px;
+    border: 1px solid #ddd;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.youtube-links-for-post.user-post-side iframe{
+    margin-top: 10px;
 }
