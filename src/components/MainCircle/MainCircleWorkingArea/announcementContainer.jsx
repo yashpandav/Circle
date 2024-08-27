@@ -15,7 +15,6 @@ import {
     Link
 } from "@mui/icons-material";
 import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
-import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import CloseIcon from '@mui/icons-material/Close';
 import "./announcementContainer.css";
 import './uploadFile.css';
@@ -61,20 +60,13 @@ const ToggleSwitch = ({ isPost, setIsPost }) => {
 };
 
 const FilePreview = ({ file, onDelete }) => {
-    const isMediaFile = file.type.startsWith("image/") || file.type.startsWith("video/");
-    const isPdf = file.type.startsWith("application/pdf");
+    const isMediaFile = file.type.startsWith("image/");
 
     return (
         <div className={isMediaFile ? "file-preview-teacher" : "unsupported-file-container"} style={!isMediaFile ? { width: '80%' } : {}}>
             {isMediaFile ? (
                 <>
-                    {file.type.startsWith("image/") ? (
-                        <img src={file.url} alt="Preview" />
-                    ) : (
-                        <video controls>
-                            <source src={file.url} type={file.type} />
-                        </video>
-                    )}
+                    <img src={file.url} alt="Preview" />
                     <IconButton className="delete-prev-btn" onClick={() => onDelete(file.name)} color="secondary">
                         <Delete />
                     </IconButton>
@@ -82,7 +74,7 @@ const FilePreview = ({ file, onDelete }) => {
             ) : (
                 <div className="unsupported-files">
                     <div className="unsupported-file-first-div">
-                        {isPdf ? <PictureAsPdfRoundedIcon /> : <TextSnippetIcon />}
+                        <PictureAsPdfRoundedIcon />
                         <div className="vertical-line"></div>
                     </div>
                     <div className="file-preview-name" title={file.name}>{file.name}</div>
@@ -322,6 +314,7 @@ const AnnouncementWriter = ({
                                 multiple
                                 onChange={handleFileChange}
                                 style={{ display: "none" }}
+                                accept=".jpg,.jpeg,.png,.pdf"
                                 id="file-upload"
                             />
                             <IconButton

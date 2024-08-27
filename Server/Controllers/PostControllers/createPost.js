@@ -23,11 +23,21 @@ exports.createPost = async (req, res) => {
             if (postFiles?.length > 0) {
                 for (const file of postFiles) {
                     const fileUrl = await uploadImage(file, process.env.FOLDER_NAME);
-                    fileUrls.push(fileUrl.secure_url);
+                    console.log(fileUrl);
+                    const fileDetails = {
+                        fileName : fileUrl.original_filename,
+                        fileType : fileUrl.format,
+                        fileUrl : fileUrl.secure_url
+                    }
+                    fileUrls.push(fileDetails);
                 }
             } else {
                 const fileUrl = await uploadImage(postFiles, process.env.FOLDER_NAME);
-                fileUrls.push(fileUrl.secure_url);
+                const fileDetails = {
+                    fileType : fileUrl.format,
+                    fileUrl : fileUrl.secure_url
+                }
+                fileUrls.push(fileDetails);
             }
         }
 

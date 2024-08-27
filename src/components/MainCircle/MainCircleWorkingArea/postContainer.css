@@ -1,43 +1,44 @@
 .post-container {
     border: 1px solid #ddd;
-    border-radius: 7px;
+    border-radius: 10px;
     margin-bottom: 20px;
     background-color: #fff;
 }
 
-.post-wrapper{
+.post-wrapper {
     margin-top: 15px;
     margin-bottom: 20px;
 }
 
-.post-header{
+.post-header {
     padding: 0px 15px 15px 15px;   
     display: flex;
-    align-items: center;   
+    align-items: center;
     justify-content: space-between;
 }
 
-.left-side-post-details{
+.left-side-post-details {
     display: flex;
     align-items: center;
     gap: 15px;
 }
 
-.post-upload-details{
+.post-upload-details {
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
 
-h3.post-uploader-name{
+.post-uploader-name {
     color: black;
-    font-size: 1em;
+    font-size: 1.05em;
+    font-weight: bold;
     margin: 0;
 }
 
-h6.post-upload-date{
-    color: rgb(85, 85, 85);
-    font-size: 0.75em ;
+.post-upload-date {
+    color: #777;
+    font-size: 0.8em;
     margin: 0;
 }
 
@@ -47,25 +48,39 @@ h6.post-upload-date{
     height: 40px;
 }
 
-.post-upload-details {
-    display: flex;
-    flex-direction: column;
-}
-
 h1.post-title {
-    font-size: 1.4em;
+    font-size: 1.6em;
     font-weight: bold;
-    color: #000000;
-    padding-inline : 20px;
-    margin-block: 15px;
+    color: #222;
+    padding: 15px 20px;
+    margin: 0;
 }
 
 p.post-content {
     font-size: 1em;
-    margin: 0;
     line-height: 1.6;
     padding-inline : 20px;
-    color: #020202;
+    color: #171717;
+}
+
+.post-attachments {
+    padding: 15px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.post-attachments img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.post-attachments a {
+    color: #0b0705;
+    text-decoration: none;
 }
 
 .links-for-post a {
@@ -74,31 +89,27 @@ p.post-content {
     color: #1a73e8;
     text-decoration: none;
     padding: 10px 15px;
-    background-color: #f8f8f8;
+    background-color: #f0f0f0;
     border-radius: 5px;
+    transition: background-color 0.3s ease;
 }
 
-.links-for-post.user-post-side a{
-    margin-inline : 20px;
-    margin-block: 10px;
+.links-for-post a:hover {
+    background-color: #e0e0e0;
+}
+
+.links-for-post.user-post-side a {
+    margin: 10px 20px;
 }
 
 .youtube-links-for-post {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
-}
-
-.youtube-links-for-post.user-post-side {
-    padding-inline : 20px;
+    padding: 15px 20px;
 }
 
 .youtube-links-for-post iframe {
     border-radius: 7px;
-    border: 1px solid #ddd;
-    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
-}
-
-.youtube-links-for-post.user-post-side iframe{
-    margin-top: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
