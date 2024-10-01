@@ -48,7 +48,7 @@ export default function SignUp() {
         dispatch(setUser(data));
         const email = data.email;
         try {
-            const result = await dispatch(sendOTP({ email, navigate })).unwrap();
+            await dispatch(sendOTP({ email, navigate })).unwrap();
             // console.log("RESULT", result);
         } catch (err) { 
             // console.error("Failed to send OTP:", err);

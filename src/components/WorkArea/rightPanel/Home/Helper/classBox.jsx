@@ -5,7 +5,6 @@ import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined';
 import TaskOutlinedIcon from '@mui/icons-material/TaskOutlined';
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setCurrClass } from "../../../../../Slices/classSlice";
 import { getClass } from "../../../../../Api/apiCaller/classapicaller";
 import "./classBox.css";
 

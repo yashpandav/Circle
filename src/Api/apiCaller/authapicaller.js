@@ -1,8 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { apiConnector } from '../apiconfig';
 import { AUTH_API_URL } from '../apis';
-import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
 import { setUser } from '../../Slices/authSlice';

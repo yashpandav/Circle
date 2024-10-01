@@ -1,8 +1,6 @@
 import React from "react";
 import "./home.css";
 import { CgQuote } from "react-icons/cg";
-import { TypeAnimation } from "react-type-animation";
-import ScrollAnimation from "react-animate-on-scroll";
 
 export default function Home() {
     return (

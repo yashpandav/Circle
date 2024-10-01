@@ -6,7 +6,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { signUp } from '../../Api/apiCaller/authapicaller.js';
 import toast from "react-hot-toast";
-import { setUser } from "../../Slices/authSlice.js";
 import "./otppage.css";
 import { setLoading } from "../../Slices/loadingSlice.js";
 import { CreatingLoader } from "../Helper/Loaders/loader.jsx";
@@ -39,7 +38,7 @@ export default function OtpPage() {
         // console.log(`${firstName} ${lastName} ${email} ${password} ${confirmPassword} ${otp}`);
         try {
             dispatch(setLoading(true));
-            const response = dispatch(signUp({
+            dispatch(signUp({
                 firstName,
                 lastName,
                 email,

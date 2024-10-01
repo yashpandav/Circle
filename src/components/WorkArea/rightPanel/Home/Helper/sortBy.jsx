@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import { MenuItem, Select, FormControl, InputLabel } from "@mui/material";
-import { useSelector } from "react-redux";
+import React from "react";
+import { MenuItem, Select} from "@mui/material";
 import './sortBy.css';
 
 export default function SortBy({sortby , setSortBy}) {

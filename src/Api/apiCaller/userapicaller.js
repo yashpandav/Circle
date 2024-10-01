@@ -6,10 +6,6 @@ import { setLoading } from '../../Slices/loadingSlice.js';
 const {
     // GET_USER_DETAILS_API,
     GET_USER_JOINED_API,
-    GET_USER_CREATED_API,
-    // DELETE_USER_API,
-    // UPDATE_USER_API,
-    TOTAL_USER_API
 } = PROFILE_API_URL;
 
 export const joinedClass = createAsyncThunk(

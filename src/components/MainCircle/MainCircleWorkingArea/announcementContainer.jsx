@@ -262,7 +262,7 @@ const AnnouncementWriter = ({
                 <div className="links-for-post">
                     {links.map((link, index) => (
                         <div key={index} className="link-preview">
-                            <a href={link} target="_blank">{link}</a>
+                            <a href={link} target="_blank" rel="noreferrer">{link}</a>
                             <IconButton onClick={() => handleRemoveLink(link)} color="secondary">
                                 <Delete />
                             </IconButton>

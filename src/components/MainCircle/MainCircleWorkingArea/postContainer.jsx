@@ -55,7 +55,7 @@ export default function PostContainer({ post }) {
                     {
                         post.links && post.links.map((link) => {
                             return (
-                                <a href={link} target="_blank" key={link}>{link}</a>
+                                <a href={link} target="_blank" rel="noreferrer" key={link}>{link}</a>
                             )
                         })
                     }
