@@ -1,12 +1,15 @@
 .main-circle-code-container {
     background-color: #ffffff;
-    padding: 15px;
+    margin: 0;
+    padding-inline: 15px;
+    padding-top: 7px;
+    padding-bottom: 13px;
     border-radius: 7px;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), 0 -1px 1px rgba(0, 0, 0, 0.1), 1px 0 1px rgba(0, 0, 0, 0.1), -1px 0 1px rgba(0, 0, 0, 0.1);
     font-family: 'Roboto', sans-serif;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 7px;
     width: 170px;
     position: relative;
 }
@@ -15,11 +18,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin: 0;
 }
 
 .entry-code-header pre {
-    font-size: 15px;
+    font-size: 17px;
     margin: 0;
+    padding: 0;
 }
 
 .entry-code-header svg {
