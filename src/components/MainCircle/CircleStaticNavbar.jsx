@@ -1,30 +1,39 @@
-import React from "react";
-import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
-import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { SiGoogleclassroom } from "react-icons/si";
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import "./circleStaticNav.css";
 
 export default function CircleStaticNavbar() {
     const currClass = useSelector((state) => state.classes.currClass);
+    const [activeTab, setActiveTab] = useState("Stream");
+
+    const navItems = ["Stream", "Classwork", "People"];
 
     return (
-        <div className="navbar-container" style={{
-            borderBottom : `2px solid ${currClass.classTheme}`,
-        }}>
+        <div
+            className="navbar-container"
+            style={{
+                borderBottom: `2px solid ${currClass.classTheme}`,
+            }}
+        >
             <div className="circle-navbar">
-                <div className="navbar-list">
-                    <SiGoogleclassroom className="icon" />
-                    <h3>Circle</h3>
-                </div>
-                <div className="navbar-list">
-                    <AssignmentOutlinedIcon className="icon" />
-                    <h3>Task</h3>
-                </div>
-                <div className="navbar-list">
-                    <PeopleAltOutlinedIcon className="icon" />
-                    <h3>People</h3>
-                </div>
+                {navItems.map((item) => (
+                    <div
+                        key={item}
+                        className="navbar-list"
+                        onClick={() => setActiveTab(item)}
+                        style={{
+                            backgroundColor: activeTab === item ? 'rgba(0, 0, 0, 0.04)' : 'transparent',
+                        }}
+                    >
+                        <h3 style={{ color: activeTab === item ? currClass.classTheme : '#1a1a1a' }}>
+                            {item}
+                        </h3>
+                    </div>
+                ))}
+            </div>
+            <div className="navbar-setting-class">
+                <SettingsOutlinedIcon className="settings-icon" />
             </div>
         </div>
     );
