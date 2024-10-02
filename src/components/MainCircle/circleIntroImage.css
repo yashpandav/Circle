@@ -10,6 +10,38 @@
     z-index: 10;
 }
 
+.customize-circle-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.customize-circle-btn:hover {
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.customize-circle-btn svg {
+    margin-right: 6px;
+    font-size: 18px;
+}
+
+.customize-circle-btn span {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333333;
+}
+
 .temp-circle-info-icon{
     position: absolute;
     bottom: 8px;
