@@ -1,12 +1,11 @@
 const Class = require('../../Models/Class');
 const { uploadImage } = require('../../Utils/imageUpload');
-const convert = require('color-convert');
 require('dotenv').config();
 
 exports.updateClass = async (req, res) => {
     try {
         const id = req.params.id;
-        let { name, description, subject, roomNo, classTheme } = req.body;
+        let { name, description, subject, classTheme } = req.body;
         let thumbnail = req.files?.thumbnail;
 
         if (!id) {
@@ -33,11 +32,6 @@ exports.updateClass = async (req, res) => {
             });
         }
 
-        if (classTheme) {
-            let rgb = convert.keyword.rgb(`${classTheme}`);
-            classTheme = '#' + convert.rgb.hex(rgb);
-        }
-
         if (thumbnail) {
             const uploadResponse = await uploadImage(thumbnail, process.env.FOLDER_NAME);
             thumbnail = uploadResponse.secure_url;
@@ -47,10 +41,11 @@ exports.updateClass = async (req, res) => {
             name: name || findClass.name,
             description: description || findClass.description,
             subject: subject || findClass.subject,
-            roomNo: roomNo || findClass.roomNo,
             classTheme: classTheme || findClass.classTheme,
             thumbnail: thumbnail || findClass.thumbnail
         }, { new: true });
+
+        console.log(updatedClass);
 
         return res.status(200).json({
             success: true,

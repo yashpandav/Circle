@@ -1,0 +1,38 @@
+.color-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    transition: border 0.3s ease;
+    position: relative;
+}
+
+.theme-color-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.color-btn.selected::after {
+    content: '✔️';
+    position: absolute;
+    top: 50%;   
+    left: 50%;
+    font-size: 18px;
+    transform: translate(-50%, -50%); 
+}
+
+.color-btn.blue { background-color: #4285f4; }
+.color-btn.green { background-color: #34a853; }
+.color-btn.pink { background-color: #ea4335; }
+.color-btn.orange { background-color: #fbbc05; }
+.color-btn.teal { background-color: #00897b; }
+.color-btn.purple { background-color: #7e57c2; }
+.color-btn.dark-red { background-color: #800101; }
+.color-btn.navy { background-color: #001f3f; }
+.color-btn.dark-green { background-color: #004d40; }
+.color-btn.maroon { background-color: #800000; }
+.color-btn.dark-gray { background-color: #2f2f2f; }
+.color-btn.indigo { background-color: #4b0082; }

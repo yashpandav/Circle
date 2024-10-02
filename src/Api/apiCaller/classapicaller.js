@@ -9,7 +9,7 @@ const {
     GET_CLASS_API,
     GET_ALL_CLASS_API,
     // DELETE_CLASS_API,
-    // UPDATE_CLASS_API,s
+    UPDATE_CLASS_API,
     // LEFT_CLASS_API,
     CHANGE_ENTRY_CODE
 } = CLASS_API_URL;
@@ -103,3 +103,19 @@ export const changeEntryCode = createAsyncThunk(
         }
     }
 )
+
+export const updateClassDetails = createAsyncThunk(
+    'updateClass',
+    async ({ id, data, dispatch }) => {
+        console.log("API Called with ID:", id, "Data:", data);
+        try {
+            const response = await apiConnector('POST', `${UPDATE_CLASS_API}/${id}`, data);
+            console.log("API Response:", response);
+            dispatch(setCurrClass(response.data.data));
+            return response.data;
+        } catch (err) {
+            console.log("SOMETHING WENT WRONG WHILE CALLING UPDATE CLASS DETAILS API", err);
+            return err.response ? err.response : err.message;
+        }
+    }
+);

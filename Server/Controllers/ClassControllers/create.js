@@ -55,7 +55,7 @@ exports.createClass = async (req, res) => {
         newClass = await Class.findById(newClass.id).populate('admin');
 
         //* Update user's created and joined classes
-        const user = await User.findByIdAndUpdate(req.user.id, {
+        await User.findByIdAndUpdate(req.user.id, {
             $addToSet: {
                 createdClasses: newClass.id,
                 joinedClassAsAteacher: newClass.id

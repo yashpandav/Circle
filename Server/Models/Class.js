@@ -12,9 +12,6 @@ const ClassSchema = new mongoose.Schema({
     subject : {
         type : String
     },
-    roomNo : {
-        type : Number
-    },
     classTheme : {
         type : String,
         default : randomColor()

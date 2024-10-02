@@ -6,7 +6,7 @@ const {createClass} = require('../Controllers/ClassControllers/create');
 router.post('/create' , auth , createClass);
 
 const {updateClass} = require('../Controllers/ClassControllers/update');
-router.put('/update/:id' , auth , updateClass);
+router.post('/update/:id' , auth , updateClass);
 
 const {getClass} = require('../Controllers/ClassControllers/getClass');
 router.get('/getdetails/:id', getClass);
