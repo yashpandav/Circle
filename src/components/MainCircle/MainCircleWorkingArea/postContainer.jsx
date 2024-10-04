@@ -27,57 +27,56 @@ export default function PostContainer({ post }) {
                 </div>
                 <Divider />
                 <h1 className="post-title">{post.title}</h1>
-                <p className="post-content">{post.postBody}</p>
-                <div className="post-attachments">
-                    {
-                        post.postFiles && post.postFiles.map((file) => {
+                <p className="post-content" dangerouslySetInnerHTML={{ __html: post.postBody }}></p>
+
+                {post.postFiles && post.postFiles.length > 0 && (
+                    <div className="post-attachments">
+                        {post.postFiles.map((file) => {
                             if (file.fileType === 'pdf') {
                                 return (
-                                    <div className="unsupported-files">
+                                    <div className="unsupported-files" key={file.fileName}>
                                         <div className="unsupported-file-first-div">
                                             <PictureAsPdfRoundedIcon />
                                             <div className="vertical-line"></div>
                                         </div>
                                         <div className="file-preview-name" title={file.fileName}>
-                                            <a href={file.fileUrl} target="_blank" rel="noopener noreferrer" key={file.fileName}>This is A file Name{file.fileName}</a>
+                                            <a href={file.fileUrl} target="_blank" rel="noopener noreferrer">{file.fileName}</a>
                                         </div>
                                     </div>
-                                )
+                                );
                             } else {
                                 return (
                                     <img src={file.fileUrl} alt={`Attachment ${file.fileName}`} key={file.fileName} />
-                                )
+                                );
                             }
-                        })
-                    }
-                </div>
-                <div className="links-for-post user-post-side">
-                    {
-                        post.links && post.links.map((link) => {
-                            return (
-                                <a href={link} target="_blank" rel="noreferrer" key={link}>{link}</a>
-                            )
-                        })
-                    }
-                </div>
-                <div className="youtube-links-for-post user-post-side">
-                    {
-                        post.youtubeLinks && post.youtubeLinks.map((link, index) => {
-                            return (
-                                <iframe
-                                    key={index}
-                                    width="340"
-                                    height="200"
-                                    src={`https://www.youtube.com/embed/${link}`}
-                                    title="YouTube video player"
-                                    frameBorder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowFullScreen
-                                ></iframe>
-                            )
-                        })
-                    }
-                </div>
+                        })}
+                    </div>
+                )}
+
+                {post.links && post.links.length > 0 && (
+                    <div className="links-for-post user-post-side">
+                        {post.links.map((link) => (
+                            <a href={link} target="_blank" rel="noreferrer" key={link}>{link}</a>
+                        ))}
+                    </div>
+                )}
+
+                {post.youtubeLinks && post.youtubeLinks.length > 0 && (
+                    <div className="youtube-links-for-post user-post-side">
+                        {post.youtubeLinks.map((link, index) => (
+                            <iframe
+                                key={index}
+                                width="340"
+                                height="200"
+                                src={`https://www.youtube.com/embed/${link}`}
+                                title="YouTube video player"
+                                frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                            ></iframe>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );

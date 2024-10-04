@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { TextField, IconButton, Button } from "@mui/material";
 import { useSelector } from "react-redux";
 import { IoIosSend } from "react-icons/io";
@@ -201,6 +201,17 @@ const AnnouncementWriter = ({
     const [showUploadOptions, setShowUploadOptions] = useState(false);
     const [showLinkInput, setShowLinkInput] = useState(false);
     const [showYouTubeInput, setShowYouTubeInput] = useState(false);
+    const announcementRef = useRef(null);
+
+    const applyFormatting = (command) => {
+        document.execCommand(command, false, null);
+    };  
+
+    const handleAnnouncementChangeInternal = () => {
+        const htmlContent = announcementRef.current.innerHTML;
+        handleAnnouncementChange({ target: { value: htmlContent } });
+    };
+
 
     const handleUploadOption = (option) => {
         setShowUploadOptions(false);
@@ -236,29 +247,29 @@ const AnnouncementWriter = ({
                             fontSize: "18px",
                             paddingInline: "10px",
                             caretColor: currClass.classTheme,
-                            fontWeight: '600'
+                            fontWeight: "600",
                         },
                         disableUnderline: true,
                     }}
                 />
-                <TextField
-                    placeholder="Type in here…"
-                    minRows={2}
-                    maxRows={10}
-                    multiline
-                    variant="standard"
-                    value={announcement}
-                    onChange={handleAnnouncementChange}
-                    className="announcement-textfield"
-                    InputProps={{
-                        style: {
-                            fontSize: "16px",
-                            paddingInline: "10px",
-                            caretColor: currClass.classTheme,
-                        },
-                        disableUnderline: true,
+                <div
+                    ref={announcementRef}
+                    contentEditable
+                    className="announcement-textfield content-editable"
+                    onInput={handleAnnouncementChangeInternal}
+                    style={{
+                        fontSize: "16px",
+                        paddingInline: "10px",
+                        caretColor: currClass.classTheme,
+                        minHeight: "100px",
+                        border: "1px solid #ddd",
+                        padding: "10px",
+                        borderRadius: "4px",
+                        textAlign: "left",
+                        direction: "ltr",
                     }}
-                />
+                    dir="ltr"  
+                ></div>
                 <div className="links-for-post">
                     {links.map((link, index) => (
                         <div key={index} className="link-preview">
@@ -299,13 +310,13 @@ const AnnouncementWriter = ({
                 </div>
                 <div className="editor-controls">
                     <div className="left-side-controllers">
-                        <IconButton color="primary" size="small">
+                        <IconButton color="primary" size="small" onClick={() => applyFormatting("bold")}>
                             <FormatBold />
                         </IconButton>
-                        <IconButton color="primary" size="small">
+                        <IconButton color="primary" size="small" onClick={() => applyFormatting("italic")}>
                             <FormatItalic />
                         </IconButton>
-                        <IconButton color="primary" size="small">
+                        <IconButton color="primary" size="small" onClick={() => applyFormatting("underline")}>
                             <FormatUnderlined />
                         </IconButton>
                         <div className="upload-container">
