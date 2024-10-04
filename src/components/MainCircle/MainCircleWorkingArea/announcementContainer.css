@@ -132,17 +132,43 @@
     width: 100%;
 }
 
+
 .announcement-textfield {
     width: 100%;
     cursor: text;
+    font-size: 19px;
+    padding-inline: 10px;
+    min-height: 5px;
+    max-height: 200px;
+    border-radius: 4px;
+    text-align: left;
+    direction: ltr;
+    overflow: auto;
+    outline: none; 
+    border: none;
+    word-wrap: break-word;  
+    overflow-wrap: break-word;
+    white-space: normal; 
 }
 
-.announcement-textfield .MuiInputBase-inputMultiline::-webkit-scrollbar {
+#header-textfield{
+    font-size : 21.5px;
+    padding-inline: 10px;
+    font-weight : 600
+}
+
+.announcement-textfield[contenteditable]:empty:before {
+    content: "Announce Here...";
+    color: #999;
+    pointer-events: none;
+}
+
+.announcement-textfield::-webkit-scrollbar {
     display: none;
 }
 
-.announcement-textfield .MuiInputBase-inputMultiline {
-    -ms-overflow-style: none;
+.announcement-textfield {
+    -ms-overflow-style: none; 
     scrollbar-width: none;
 }
 

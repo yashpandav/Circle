@@ -205,7 +205,7 @@ const AnnouncementWriter = ({
 
     const applyFormatting = (command) => {
         document.execCommand(command, false, null);
-    };  
+    };
 
     const handleAnnouncementChangeInternal = () => {
         const htmlContent = announcementRef.current.innerHTML;
@@ -242,12 +242,10 @@ const AnnouncementWriter = ({
                     value={title}
                     onChange={handleTitleChange}
                     className="announcement-textfield"
+                    id="header-textfield"
                     InputProps={{
                         style: {
-                            fontSize: "18px",
-                            paddingInline: "10px",
                             caretColor: currClass.classTheme,
-                            fontWeight: "600",
                         },
                         disableUnderline: true,
                     }}
@@ -258,17 +256,9 @@ const AnnouncementWriter = ({
                     className="announcement-textfield content-editable"
                     onInput={handleAnnouncementChangeInternal}
                     style={{
-                        fontSize: "16px",
-                        paddingInline: "10px",
                         caretColor: currClass.classTheme,
-                        minHeight: "100px",
-                        border: "1px solid #ddd",
-                        padding: "10px",
-                        borderRadius: "4px",
-                        textAlign: "left",
-                        direction: "ltr",
                     }}
-                    dir="ltr"  
+                    dir="ltr"
                 ></div>
                 <div className="links-for-post">
                     {links.map((link, index) => (

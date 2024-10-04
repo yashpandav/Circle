@@ -53,6 +53,7 @@ h1.post-title {
     font-weight: bold;
     color: #222;
     padding: 15px 20px;
+    padding-bottom: 0px;
     margin: 0;
 }
 
