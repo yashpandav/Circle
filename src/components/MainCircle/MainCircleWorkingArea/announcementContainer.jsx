@@ -260,14 +260,13 @@ const AnnouncementWriter = ({
                     }}
                     dir="ltr"
                 ></div>
-                <div className="links-for-post">
-                    {links.map((link, index) => (
-                        <div key={index} className="link-preview">
-                            <a href={link} target="_blank" rel="noreferrer">{link}</a>
-                            <IconButton onClick={() => handleRemoveLink(link)} color="secondary">
-                                <Delete />
-                            </IconButton>
-                        </div>
+                <div className="preview-of-upload-container">
+                    {files.map((file) => (
+                        <FilePreview
+                            key={file.name}
+                            file={file}
+                            onDelete={handleDeleteFile}
+                        />
                     ))}
                 </div>
                 <div className="youtube-links-for-post uploader-post-side">
@@ -289,15 +288,17 @@ const AnnouncementWriter = ({
                         </div>
                     ))}
                 </div>
-                <div className="preview-of-upload-container">
-                    {files.map((file) => (
-                        <FilePreview
-                            key={file.name}
-                            file={file}
-                            onDelete={handleDeleteFile}
-                        />
+                <div className="links-for-post">
+                    {links.map((link, index) => (
+                        <div key={index} className="link-preview">
+                            <a href={link} target="_blank" rel="noreferrer">{link}</a>
+                            <IconButton onClick={() => handleRemoveLink(link)} color="secondary">
+                                <Delete />
+                            </IconButton>
+                        </div>
                     ))}
                 </div>
+                
                 <div className="editor-controls">
                     <div className="left-side-controllers">
                         <IconButton color="primary" size="small" onClick={() => applyFormatting("bold")}>
@@ -419,7 +420,7 @@ export default function AnnouncementContainer() {
             const response = await dispatch(createPost(formData)).unwrap();
             console.log("API RESPONSE ", response);
         } catch (err) {
-            // console.error("Error During Posting Announcement");
+            console.error("Error During Posting Announcement");
         }
         setdata((prev) => ({
             ...prev,

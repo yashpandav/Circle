@@ -338,12 +338,13 @@
 }
 
 .link-preview{
-    margin-block: 10px;
+    margin-block: 15px;
 }
 
 .youtube-links-for-post.uploader-post-side{
-    margin-left: 5px;
     margin-top: 10px;
+    margin-left: 2px;
+    padding: 0px;
 }
 
 .link-input-container {

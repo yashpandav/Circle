@@ -29,11 +29,13 @@ exports.createPost = async (req, res) => {
                         fileType : fileUrl.format,
                         fileUrl : fileUrl.secure_url
                     }
+                    console.log(fileDetails);
                     fileUrls.push(fileDetails);
                 }
             } else {
                 const fileUrl = await uploadImage(postFiles, process.env.FOLDER_NAME);
                 const fileDetails = {
+                    fileName : fileUrl.original_filename,
                     fileType : fileUrl.format,
                     fileUrl : fileUrl.secure_url
                 }
