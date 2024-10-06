@@ -11,6 +11,7 @@
     flex-direction: column;
     gap: 7px;
     width: 170px;
+    margin-bottom: 20px;
     position: relative;
 }
 

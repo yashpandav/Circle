@@ -15,6 +15,7 @@ export const createPost = async(data) => {
         return response.data;
     }catch(err){
         console.log("Error During Creating Post " , err);
+        toast.error('Something Went Wrong While Creating Post');
         return err.response? err.response : err.message;
     }
 }

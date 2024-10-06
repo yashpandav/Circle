@@ -6,6 +6,14 @@ import "./postContainer.css";
 import "./uploadFile.css";
 
 export default function PostContainer({ post }) {
+    const removeFileSuffix = (fileName) => {
+        if (!fileName) return '';
+        const nameParts = fileName.split("|");
+        if (nameParts.length > 1) {
+            return nameParts[0] + "." + fileName.split(".").pop();
+        }
+        return fileName;
+    };
 
     return (
         <div className="post-container" key={post._id}>
@@ -49,7 +57,10 @@ export default function PostContainer({ post }) {
                         {post.postFiles.map((file) => {
                             if (file.fileType === "pdf") {
                                 return (
-                                    <div className="unsupported-files" key={file.fileName}>
+                                    <div
+                                        className="unsupported-files post-side"
+                                        key={file.fileName}
+                                    >
                                         <div className="unsupported-file-first-div">
                                             <PictureAsPdfRoundedIcon />
                                             <div className="vertical-line"></div>
@@ -61,19 +72,25 @@ export default function PostContainer({ post }) {
                                                 rel="noopener noreferrer"
                                                 key={file.fileName}
                                             >
-                                                This is A file Name{file.fileName}
+                                                {removeFileSuffix(file.fileName)}
                                             </a>
                                         </div>
                                     </div>
                                 );
                             } else {
                                 return (
-                                    <img
-                                        src={file.fileUrl}
-                                        alt={`Attachment ${file.fileName}`}
-                                        class
+                                    <a
+                                        href={file.fileUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
                                         key={file.fileName}
-                                    />
+                                    >
+                                        <img
+                                            src={file.fileUrl}
+                                            alt={file.fileName}
+                                            key={file.fileName}
+                                        />
+                                    </a>
                                 );
                             }
                         })}

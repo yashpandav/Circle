@@ -68,7 +68,7 @@ p.post-content {
     padding: 15px 20px;
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 17px;
 }
 
 .post-attachments img {
@@ -87,7 +87,7 @@ p.post-content {
 
 .links-for-post a {
     display: block;
-    font-size: 1em;
+    font-size: 17px;
     color: #1a73e8;
     text-decoration: none;
     padding: 10px 15px;
@@ -108,7 +108,7 @@ p.post-content {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
-    padding: 15px 20px;
+    padding-inline: 20px;
 }
 
 .youtube-links-for-post iframe {

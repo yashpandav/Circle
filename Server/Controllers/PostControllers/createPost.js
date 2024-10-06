@@ -22,24 +22,34 @@ exports.createPost = async (req, res) => {
         if (postFiles) {
             if (postFiles?.length > 0) {
                 for (const file of postFiles) {
-                    const fileUrl = await uploadImage(file, process.env.FOLDER_NAME);
-                    console.log(fileUrl);
-                    const fileDetails = {
-                        fileName : fileUrl.original_filename,
-                        fileType : fileUrl.format,
-                        fileUrl : fileUrl.secure_url
+                    const originalFileName = file.name;
+                    if (originalFileName) {
+                        const uniqueSuffix = Date.now();
+                        const newFileName = `${originalFileName.split('.')[0]}|${uniqueSuffix}.${originalFileName.split('.').pop()}`;
+
+                        const fileUrl = await uploadImage(file, process.env.FOLDER_NAME, newFileName);
+                        const fileDetails = {
+                            fileName: newFileName,
+                            fileType: fileUrl.format,
+                            fileUrl: fileUrl.secure_url,
+                        };
+                        fileUrls.push(fileDetails);
                     }
-                    console.log(fileDetails);
-                    fileUrls.push(fileDetails);
                 }
             } else {
-                const fileUrl = await uploadImage(postFiles, process.env.FOLDER_NAME);
-                const fileDetails = {
-                    fileName : fileUrl.original_filename,
-                    fileType : fileUrl.format,
-                    fileUrl : fileUrl.secure_url
+                const originalFileName = postFiles.name;
+                if (originalFileName) {
+                    const uniqueSuffix = Date.now(); 
+                    const newFileName = `${originalFileName.split('.')[0]}|${uniqueSuffix}.${originalFileName.split('.').pop()}`;
+
+                    const fileUrl = await uploadImage(postFiles, process.env.FOLDER_NAME, newFileName);
+                    const fileDetails = {
+                        fileName: newFileName,
+                        fileType: fileUrl.format,
+                        fileUrl: fileUrl.secure_url,
+                    };
+                    fileUrls.push(fileDetails);
                 }
-                fileUrls.push(fileDetails);
             }
         }
 
