@@ -1,9 +1,13 @@
-import React from "react";
+import React , {useState} from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
-import { Divider } from "@mui/material";
+import Divider from '@mui/material/Divider';
 import "./postContainer.css";
 import "./uploadFile.css";
+import {CommentController} from "./commentController";
+import { AddCommentController } from "./commentController";
+import { useDispatch } from "react-redux";
+import { createComment } from "../../../Api/apiCaller/commentapicaller";
 
 export default function PostContainer({ post }) {
     const removeFileSuffix = (fileName) => {
@@ -14,6 +18,27 @@ export default function PostContainer({ post }) {
         }
         return fileName;
     };
+
+    const [comments, setComments] = useState(post.comments || []); 
+
+    const dispatch = useDispatch();
+
+    const addComment = async (newCommentText) => {
+
+        const data = {
+            commentBody : newCommentText,
+            commentOn : "Post",
+            id : post._id
+        }
+
+        const response = await dispatch(createComment(data))?.data;
+        console.log(response);
+    
+        // setComments([...comments, newComment]);
+    };
+
+
+    console.log(post);
 
     return (
         <div className="post-container" key={post._id}>
@@ -123,6 +148,10 @@ export default function PostContainer({ post }) {
                     </div>
                 )}
             </div>
+            <Divider></Divider>
+
+            <CommentController comments={post.comment} />
+            <AddCommentController addComment = {addComment}/>
         </div>
     );
 }

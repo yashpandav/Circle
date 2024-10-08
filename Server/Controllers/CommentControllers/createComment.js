@@ -5,13 +5,12 @@ const Assignment = require('../../Models/Assignment');
 exports.createComment = async (req, res) => {
     try {
         const { 
-            name,
             commentBody,
             commentOn,
             id
         } = req?.body;
 
-        if (!name || !commentBody) {
+        if (!commentBody) {
             return res.status(400).json({
                 success: false,
                 message: "Name and commentBody are required",
@@ -39,12 +38,11 @@ exports.createComment = async (req, res) => {
         }
 
         const createdComment = await Comment.create({
-            name,
             commentBody,
             user: req.user.id
         });
 
-        commentOnWhich.comments.push(createdComment.id);
+        commentOnWhich.comment.push(createdComment.id);
         await commentOnWhich.save();
 
         return res.status(201).json({

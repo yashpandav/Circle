@@ -1,0 +1,84 @@
+.comment-controller {
+    padding: 15px 20px;
+    background-color: #f9f9f9;
+}
+
+.comment {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.comment-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.commenter-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.comment-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.commenter-name {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin: 0;
+}
+
+.comment-date {
+    font-size: 0.9em;
+    color: #777;
+}
+
+.comment-body {
+    padding-left: 50px;
+}
+
+.no-comments {
+    text-align: center;
+    font-size: 1em;
+    color: #888;
+}
+
+
+
+/* Add Comment CSS */
+
+.add-comment-controller {
+    padding: 10px 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+.comment-input {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 1em;
+    resize: none;  
+}
+
+.submit-comment-btn {
+    display: block;
+    margin-top: 10px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.submit-comment-btn:hover {
+    background-color: #0056b3;
+}
