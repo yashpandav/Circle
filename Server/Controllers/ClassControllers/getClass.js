@@ -23,10 +23,20 @@ exports.getClass = async (req, res) => {
             .populate("addedPost")
             .populate({
                 path: 'addedPost',
-                populate: {
-                    path: 'teacher',
-                    select: 'firstName lastName image'
-                }
+                populate: [
+                    {
+                        path: 'teacher',
+                        select: 'firstName lastName image'
+                    },
+                    {
+                        path: 'comment',
+                        populate: {
+                            path: 'user',
+                            select: 'firstName lastName image'
+                        },
+                        select: 'commentBody user'
+                    }
+                ]
             })
             .exec();
 

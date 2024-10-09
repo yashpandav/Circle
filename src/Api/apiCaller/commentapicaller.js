@@ -7,7 +7,6 @@ const {
     CREATE_COMMENT_API
 } = COMMENTS_API_URL;
 
-
 export const createComment = (data) => {
     return async (dispatch) => {
         try {
@@ -17,9 +16,11 @@ export const createComment = (data) => {
                 type: 'COMMENT_CREATED',
                 payload: response.data,
             });
+            return response.data;
         } catch (err) {
             console.log("Error during creating comment", err);
             toast.error("Something went wrong while creating comment");
+            return err.response? err.response : err.message;
         }
     };
 };

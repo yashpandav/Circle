@@ -45,10 +45,12 @@ exports.createComment = async (req, res) => {
         commentOnWhich.comment.push(createdComment.id);
         await commentOnWhich.save();
 
+        const populatedComment = await Comment.findById(createdComment.id).populate('user' , 'firstName lastName image'); 
+
         return res.status(201).json({
             success: true,
             message: "Comment added",
-            data : createdComment
+            data : populatedComment
         });
 
     } catch (err) {
