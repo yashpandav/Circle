@@ -1,28 +1,25 @@
-import React , {useState} from "react";
+import React, { useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
-import Divider from '@mui/material/Divider';
+import Divider from "@mui/material/Divider";
 import "./postContainer.css";
 import "./uploadFile.css";
-import {CommentController} from "./commentController";
+import { CommentController } from "./commentController";
 import { AddCommentController } from "./commentController";
 import { useDispatch } from "react-redux";
 import { createComment } from "../../../Api/apiCaller/commentapicaller";
-import toast from "react-hot-toast";
 
 export default function PostContainer({ post }) {
+    const [comments, setComments] = useState(post.comment || []);
+
+    const dispatch = useDispatch();
+
+    // Function to remove file suffix
     const removeFileSuffix = (fileName) => {
         if (!fileName) return "";
         const nameParts = fileName.split("|");
-        if (nameParts.length > 1) {
-            return nameParts[0] + "." + fileName.split(".").pop();
-        }
-        return fileName;
+        return nameParts.length > 1 ? nameParts[0] + "." + fileName.split(".").pop() : fileName;
     };
-
-    const [comments, setComments] = useState(post.comment || []); 
-
-    const dispatch = useDispatch();
 
     const addComment = async (newCommentText) => {
         const data = {
@@ -30,33 +27,28 @@ export default function PostContainer({ post }) {
             commentOn: "Post",
             id: post._id,
         };
-        const response = dispatch(createComment(data)); 
 
-        // try {
-        //     const response = await dispatch(createComment(data)); 
-        //     if (response && response.data) {
-        //         const { createdComment, user } = response.data;
-
-        //         const newComment = {
-        //             commentBody: createdComment.commentBody,
-        //             user: {
-        //                 firstName: user.firstName,
-        //                 lastName: user.lastName,
-        //                 image: user.image,
-        //             },
-        //             _id: createdComment._id,
-        //         };
-
-                
-        //         setComments([...comments, newComment]);
-        //         toast.success("Comment added!");
-        //     }
-        // } catch (error) {
-        //     toast.error("Something went wrong while adding the comment.");
-        //     console.log("Error adding comment:", error);
-        // }
+        await dispatch(createComment(data))
+        .then(async (response) => {
+            if (response && response.data) {
+                const { commentBody, user } = response.data;
+    
+                const newComment = {
+                    commentBody: commentBody,
+                    user: {
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        image: user.image,
+                    },
+                    _id: response.data._id,
+                };
+                setComments((prevComments) => [...prevComments, newComment]);
+            }
+        })
+        .catch((error) => {
+            console.error("Error adding comment:", error);
+        });
     };
-
 
     return (
         <div className="post-container" key={post._id}>
@@ -166,10 +158,9 @@ export default function PostContainer({ post }) {
                     </div>
                 )}
             </div>
-            <Divider></Divider>
-
+            <Divider />
             <CommentController comments={comments} />
-            <AddCommentController addComment = {addComment}/>
+            <AddCommentController addComment={addComment} />
         </div>
     );
 }

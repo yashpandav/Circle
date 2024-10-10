@@ -11,7 +11,7 @@ export const createComment = (data) => {
     return async (dispatch) => {
         try {
             const response = await apiConnector("POST", CREATE_COMMENT_API, data);
-            toast.success("Comment created successfully!");
+            toast.success("Comment added!");
             dispatch({
                 type: 'COMMENT_CREATED',
                 payload: response.data,

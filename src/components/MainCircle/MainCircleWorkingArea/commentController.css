@@ -1,17 +1,14 @@
 .comment-controller {
-    padding: 15px 20px;
-    background-color: #f9f9f9;
+    margin: 15px 20px;
 }
 
-.comment {
-    display: flex;
-    margin-bottom: 20px;
-    align-items: flex-start;
+.comment {  
+    /* padding: 10px; */
 }
 
 .comment-header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 10px;
 }
 
@@ -27,51 +24,73 @@
 }
 
 .commenter-name {
-    font-size: 1em;
-    font-weight: bold;
+    font-size: 0.8em;
+    color: #333;
     margin: 0;
 }
 
 .comment-body {
+    font-size: 1em;
+    margin: 0;
+}
+
+.show-more-btn-comment, .show-less-btn-comment {
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
     font-size: 0.9em;
-    color: #333;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.show-more-btn:hover, .show-less-btn:hover {
+    background-color: #0056b3;
 }
 
 .no-comments {
     text-align: center;
     font-size: 1em;
     color: #888;
+    margin-top: 20px;
 }
 
-
-/* Add Comment CSS */
 .add-comment-controller {
-    padding: 10px 20px;
+    margin-top: 20px;
+    padding: 15px 20px;
     background-color: #f9f9f9;
-    border-radius: 5px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .comment-input {
     width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 5px;
     padding: 10px;
     font-size: 1em;
-    resize: none; /* Prevent resizing */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    resize: none;
+    min-height: 60px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.comment-input:focus {
+    border-color: #007bff;
 }
 
 .submit-comment-btn {
-    display: block;
-    margin-top: 10px;
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
+    background-color: #28a745;
+    color: #fff;
     border: none;
+    padding: 10px 15px;
     border-radius: 5px;
-    font-size: 1em;
     cursor: pointer;
+    margin-top: 10px;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
 }
 
 .submit-comment-btn:hover {
-    background-color: #0056b3;
+    background-color: #218838;
 }
