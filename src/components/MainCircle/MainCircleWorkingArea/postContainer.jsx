@@ -1,24 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
 import Divider from "@mui/material/Divider";
+import { Menu, MenuItem, IconButton } from "@mui/material"; // Importing Menu and MenuItem from Material-UI
 import "./postContainer.css";
 import "./uploadFile.css";
-import { CommentController } from "./commentController";
-import { AddCommentController } from "./commentController";
-import { useDispatch } from "react-redux";
+import { CommentController, AddCommentController } from "./commentController";
+import { useDispatch, useSelector } from "react-redux";
 import { createComment } from "../../../Api/apiCaller/commentapicaller";
 
 export default function PostContainer({ post }) {
     const [comments, setComments] = useState(post.comment || []);
-
+    const [anchorEl, setAnchorEl] = useState(null); // State to track the anchor for the menu (dialog box)
+    const currUser = useSelector((state) => state.auth.user);
     const dispatch = useDispatch();
+    const [isAnnouncer, setAnnouncer] = useState(false);
+
+    useEffect(() => {
+        setAnnouncer(currUser._id === post.teacher._id);
+    }, [post, currUser]);
 
     // Function to remove file suffix
     const removeFileSuffix = (fileName) => {
         if (!fileName) return "";
         const nameParts = fileName.split("|");
-        return nameParts.length > 1 ? nameParts[0] + "." + fileName.split(".").pop() : fileName;
+        return nameParts.length > 1
+            ? nameParts[0] + "." + fileName.split(".").pop()
+            : fileName;
     };
 
     const addComment = async (newCommentText) => {
@@ -29,25 +37,33 @@ export default function PostContainer({ post }) {
         };
 
         await dispatch(createComment(data))
-        .then(async (response) => {
-            if (response && response.data) {
-                const { commentBody, user } = response.data;
-    
-                const newComment = {
-                    commentBody: commentBody,
-                    user: {
-                        firstName: user.firstName,
-                        lastName: user.lastName,
-                        image: user.image,
-                    },
-                    _id: response.data._id,
-                };
-                setComments((prevComments) => [...prevComments, newComment]);
-            }
-        })
-        .catch((error) => {
-            console.error("Error adding comment:", error);
-        });
+            .then(async (response) => {
+                if (response && response.data) {
+                    const { commentBody, user } = response.data;
+                    const newComment = {
+                        commentBody: commentBody,
+                        user: {
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            image: user.image,
+                        },
+                        _id: response.data._id,
+                    };
+                    setComments((prevComments) => [...prevComments, newComment]);
+                }
+            })
+            .catch((error) => {
+                console.error("Error adding comment:", error);
+            });
+    };
+
+    // Handle Menu Open and Close
+    const handleMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget); // Set the clicked element as the anchor for the menu
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null); // Close the menu
     };
 
     return (
@@ -78,7 +94,43 @@ export default function PostContainer({ post }) {
                             </h6>
                         </div>
                     </div>
-                    <MoreVertIcon className="more-vert-icon" />
+                    {isAnnouncer && (
+                        <IconButton className="more-vert-icon" onClick={handleMenuOpen}>
+                            <MoreVertIcon />
+                        </IconButton>
+                    )}
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={handleMenuClose} 
+                    >
+                        <MenuItem
+                            onClick={handleMenuClose}
+                            sx={{
+                                fontFamily: "Roboto, Arial, sans-serif",
+                                fontSize: "15px",
+                                fontWeight: 400,
+                                letterSpacing: ".1px",
+                                boxSizing: "border-box",
+                                width: "120px",
+                            }}
+                        >
+                            Edit
+                        </MenuItem>
+                        <MenuItem
+                            onClick={handleMenuClose}
+                            sx={{
+                                fontFamily: "Roboto, Arial, sans-serif",
+                                fontSize: "15px",
+                                fontWeight: 400,
+                                letterSpacing: ".1px",
+                                boxSizing: "border-box",
+                                width: "120px",
+                            }}
+                        >
+                            Delete
+                        </MenuItem>
+                    </Menu>
                 </div>
                 <Divider />
                 <h1 className="post-title">{post.title}</h1>
