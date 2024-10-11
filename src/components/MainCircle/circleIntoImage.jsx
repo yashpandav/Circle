@@ -6,25 +6,21 @@ import "./circleIntroImage.css";
 import ColorSelector from "../Helper/colorSelector";
 import { useDispatch } from "react-redux";
 import { updateClassDetails } from "../../Api/apiCaller/classapicaller";
+import { Button, styled } from "@mui/material";
+import { CloudUploadOutlined } from "@mui/icons-material";
 
 export default function CircleIntroImage() {
     const currUser = useSelector((state) => state.auth.user);
     const currClass = useSelector((state) => state.classes.currClass);
-    const [adminFirstName, setAdminFirstName] = useState(currClass.admin.firstName);
-    const [adminLastName, setAdminLastName] = useState(currClass.admin.lastName);
-    const [toggleInfoContainer, setToggleInfoContainer] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
-
+    const [adminName, setAdminName] = useState(`${currClass.admin.firstName} ${currClass.admin.lastName}`);
+    const [toggleInfoContainer, setToggleInfoContainer] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const [selectedColor, setselectedColor] = useState(null);
     const [file, setFile] = useState(null);
 
     useEffect(() => {
-        setAdminFirstName(currClass.admin.firstName);
-        setAdminLastName(currClass.admin.lastName);
-    }, []);
-
-    useEffect(() => {
+        setAdminName(`${currClass.admin.firstName} ${currClass.admin.lastName}`);
         if (currClass && currUser && currClass.admin._id === currUser._id) {
             setIsAdmin(true);
         }
@@ -48,20 +44,30 @@ export default function CircleIntroImage() {
 
     const handleSubmit = async () => {
         const formData = new FormData();
-        formData.append('classTheme', selectedColor);
-        formData.append('thumbnail', file);
+        if (selectedColor) formData.append('classTheme', selectedColor);
+        if (file) formData.append('thumbnail', file);
     
-        let id = currClass._id;
         try {
-            console.log(formData);
-            dispatch(updateClassDetails({ id, data: formData , dispatch }));
+            dispatch(updateClassDetails({ id: currClass._id, data: formData }));
         } catch (err) {
-            console.log(err);
-            console.error("SOMETHING WENT WRONG WHILE SENDING API FUNCTION");
+            console.error("SOMETHING WENT WRONG WHILE SENDING API FUNCTION", err);
         }
 
         handleClose();
     };
+
+    const VisuallyHiddenInput = styled('input')({
+        clip: 'rect(0 0 0 0)',
+        clipPath: 'inset(50%)',
+        height: 1,
+        overflow: 'hidden',
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        whiteSpace: 'nowrap',
+        width: 1,
+    });
+
     return (
         <>
             <div
@@ -73,10 +79,6 @@ export default function CircleIntroImage() {
                         <CreateOutlinedIcon />
                         <span>Customize</span>
                     </button>
-                )}
-
-                {toggleInfoContainer && (
-                    <span className="temp-circle-info-icon"></span>
                 )}
 
                 <div className="circle-content">
@@ -91,7 +93,7 @@ export default function CircleIntroImage() {
             {toggleInfoContainer && (
                 <div className={`circle-info-container ${toggleInfoContainer ? 'show' : ''}`}>
                     <div className="info-group">
-                        <h3 className="info-header">Created By: <span>{adminFirstName} {adminLastName}</span></h3>
+                        <h3 className="info-header">Created By: <span>{adminName}</span></h3>
                         <h3 className="info-header">Description: <span>{currClass.description}</span></h3>
                         <h3 className="info-header">Subject: <span>{currClass.subject}</span></h3>
                     </div>
@@ -103,7 +105,6 @@ export default function CircleIntroImage() {
                 </div>
             )}
 
-            {/* Modal Implementation */}
             {openModal && (
                 <div className="custom-modal">
                     <div className="modal-content">
@@ -112,17 +113,20 @@ export default function CircleIntroImage() {
                             <button onClick={handleClose} className="close-btn">&times;</button>
                         </div>
                         <div className="modal-body">
-                            <p className="file-upload-label">
+                            <Button
+                                component="label"
+                                variant="contained"
+                                startIcon={<CloudUploadOutlined />}
+                            >
                                 Select Stream Header Image
-                            </p>
-                            <input
-                                type="file"
-                                id="header-image"
-                                name="header-image"
-                                accept="image/*"
-                                className="file-upload-input"
-                                onChange={(e) => setFile(e.target.files[0])}
-                            />
+                                <VisuallyHiddenInput
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => setFile(e.target.files[0])}
+                                />
+                            </Button>
+                            {file && <p>Selected file: {file.name}</p>}
+
                             <ColorSelector setselectedColor={setselectedColor} selectedColor={selectedColor} />
                         </div>
                         <div className="modal-footer">
