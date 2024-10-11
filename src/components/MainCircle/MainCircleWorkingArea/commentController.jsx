@@ -1,23 +1,59 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
-import './commentController.css';
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import { Button, IconButton } from "@mui/material";
+import "./commentController.css";
+import { useSelector } from "react-redux";
+import SendRoundedIcon from "@mui/icons-material/SendRounded";
 
 function CommentController({ comments }) {
     const [visibleComments, setVisibleComments] = useState(1);
+    const [displayComments, setDisplayComments] = useState([
+        comments[comments.length - 1],
+    ]);
 
-    const showMoreComments = () => {
-        setVisibleComments(comments.length);
-    };
+    useEffect(() => {
+        if (comments.length === 1) {
+            setDisplayComments([comments[comments.length - 1]]);
+            return;
+        } else
+            setDisplayComments(
+                visibleComments === 1 ? [comments[comments.length - 1]] : [...comments]
+            );
+    }, [visibleComments, comments]);
 
-    const showLessComments = () => {
-        setVisibleComments(1);
+    const changeCommentLength = () => {
+        if (visibleComments < comments.length) {
+            setVisibleComments(comments.length);
+        } else {
+            setVisibleComments(1);
+        }
     };
 
     return (
         <div className="comment-controller">
             {comments && comments.length > 0 ? (
                 <>
-                    {comments.slice(0, visibleComments).map((comment) => (
+                    {comments.length > 1 && (
+                        <Button
+                            id="show-more-comment-btn"
+                            startIcon={<PeopleAltIcon />}
+                            onClick={changeCommentLength}
+                            sx={{
+                                backgroundColor: "white",
+                                color: "#343434",
+                                "&:hover": { backgroundColor: "#f9f9f9ff" },
+                                textTransform: "lowercase",
+                                fontFamily: "monospace",
+                            }}
+                        >
+                            {visibleComments < comments.length
+                                ? `${comments.length} more comments`
+                                : "Show Less"}
+                        </Button>
+                    )}
+
+                    {displayComments.slice(0, visibleComments).map((comment) => (
                         <div key={comment._id} className="comment">
                             <div className="comment-header">
                                 <img
@@ -34,28 +70,18 @@ function CommentController({ comments }) {
                             </div>
                         </div>
                     ))}
-
-                    {visibleComments < comments.length && (
-                        <div className="show-more-btn-comment" onClick={showMoreComments}>
-                            Show More Comments
-                        </div>
-                    )}
-                    {visibleComments === comments.length && comments.length > 1 && (
-                        <div className="show-less-btn-comment" onClick={showLessComments}>
-                            Show Less
-                        </div>
-                    )}
                 </>
             ) : (
-                <p className="no-comments">No comments yet. Be the first to comment!</p>
+                <></>
             )}
         </div>
     );
 }
 
-
-function AddCommentController({addComment}){
+function AddCommentController({ addComment }) {
     const [commentText, setCommentText] = useState("");
+
+    const currUser = useSelector((state) => state?.auth?.user);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -66,20 +92,27 @@ function AddCommentController({addComment}){
 
     return (
         <div className="add-comment-controller">
-            <form onSubmit={handleSubmit}>
+            <img src={currUser.image} alt="commenter" className="commenter-image" />
+            <form className="add-comment-form">
                 <textarea
-                    className="comment-input"
-                    placeholder="Add a comment..."
+                    className="add-comment-input"
+                    placeholder="Add your comment..."
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
-                    rows="3"
+                    onInput={(e) => {
+                        e.target.style.height = "auto";
+                        e.target.style.height = `${e.target.scrollHeight}px`;
+                    }}
                 />
-                <button className="submit-comment-btn" type="submit">
-                    Post Comment
-                </button>
+                <IconButton
+                    disabled={commentText.trim() === "" ? true : false}
+                    onClick={handleSubmit}
+                >
+                    <SendRoundedIcon />
+                </IconButton>
             </form>
         </div>
     );
 }
 
-export { AddCommentController , CommentController }
+export { AddCommentController, CommentController };
