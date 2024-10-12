@@ -49,7 +49,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "cd Server && npm run dev",
-    "dev": "concurrently -n \"client,server\" -c \"bgBlue,bgGreen\" \"npm start\" \"npm run server\""
+    "dev": "concurrently -n \"client,server\" -c \"bgBlue,bgRed\" \"npm start\" \"npm run server\""
   },
   "eslintConfig": {
     "extends": [

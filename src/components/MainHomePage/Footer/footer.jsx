@@ -1,45 +1,21 @@
-import React from 'react';
-import './footer.css';
-import { FaLinkedin, FaGithub, FaInstagramSquare } from 'react-icons/fa';
+import React from "react";
+import "./footer.css";
+import { FaLinkedin, FaGithub } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <div className="footer">
-      <div className="footer-container">
-        <div className="footer-section">
-          <img id='footer-logo' alt='img-logo' src={require('../../../Data/Images/logo.png')} />
-        </div>
-        <div className="footer-section">
-          <h6>Product</h6>
-          <a href="/">Features</a>
-          <a href="/">Integrations</a>
-          <a href="/">Pricing</a>
-          <a href="/">FAQ</a>
-        </div>
-        <div className="footer-section">
-          <h6>Company</h6>
-          <a href="/">About Us</a>
-          <a href="/">Careers</a>
-          <a href="/">Privacy Policy</a>
-          <a href="/">Terms of Service</a>
-        </div>
-        <div className="footer-section">
-          <h6>Developers</h6>
-          <a href="/">Public API</a>
-          <a href="/">Documentation</a>
-          <a href="/">Guides</a>
-        </div>
-        <div className="footer-section">
-          <h6>Social Media</h6>
-          <div className="social-icons">
-            <a href="/"><FaLinkedin /></a>
-            <a href="/"><FaGithub /></a>
-            <a href="/"><FaInstagramSquare /></a>
-          </div>
-        </div>
+    <footer className="footer">
+      <div className="top-footer-div"></div>
+      <div className="footer-content">
+        <p className="love-text">ɱα∂ε ωเƭɦ ℓσѵε</p>
+        <p className="by-text">ɓყ</p>
+        <h1 className="name-text">𝕐𝔸𝕊ℍ ℙ𝔸ℕ𝔻𝔸𝕍</h1>
       </div>
-      <p className="footer-text">Made with ❤️ by <b>Yash Pandav</b></p>
-    </div>
+      <div className="social-icons">
+        <a href="https://www.linkedin.com/in/yash-pandav-139314290" target="_blank" rel="noopener noreferrer"><FaLinkedin /></a>
+        <a href="https://github.com/yashpandav" target="_blank" rel="noopener noreferrer"><FaGithub /></a>
+      </div>
+    </footer>
   );
 };
 
