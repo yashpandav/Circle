@@ -12,6 +12,7 @@ import HomeCircle from './components/WorkArea/rightPanel/Home/home';
 import Review from './components/WorkArea/rightPanel/ReviewList/review';
 import Todo from './components/WorkArea/rightPanel/ToDo/todo';
 import MainCurrCircle from './components/WorkArea/rightPanel/CurrCircle/mainPage';
+import ScrollToTop from './components/Helper/scrollToTop';
 import './App.css';
 
 const App = () => {
@@ -31,7 +32,7 @@ const App = () => {
   }, [login]);
 
   return (
-    <Routes>
+    <><Routes>
       <Route path="/" element={<MainHomePage />} />
       <Route path="/auth/signup" element={login ? <Navigate to="/workarea/home" /> : <Signup />} />
       <Route path="/auth/login" element={login ? <Navigate to="/workarea/home" /> : <Login />} />
@@ -44,7 +45,7 @@ const App = () => {
         <Route path="todo" element={<Todo />} />
       </Route>
       <Route path="*" element={<MainHomePage />} />
-    </Routes>
+    </Routes><ScrollToTop /></>
   );
 };
 
