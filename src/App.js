@@ -14,6 +14,7 @@ import Todo from './components/WorkArea/rightPanel/ToDo/todo';
 import MainCurrCircle from './components/WorkArea/rightPanel/CurrCircle/mainPage';
 import ScrollToTop from './components/Helper/scrollToTop';
 import './App.css';
+import ForgotPassword from './components/AuthPages/forgotPassword';
 
 const App = () => {
   const { login } = useSelector((state) => state.auth);
@@ -36,6 +37,7 @@ const App = () => {
       <Route path="/" element={<MainHomePage />} />
       <Route path="/auth/signup" element={login ? <Navigate to="/workarea/home" /> : <Signup />} />
       <Route path="/auth/login" element={login ? <Navigate to="/workarea/home" /> : <Login />} />
+      <Route path="/auth/forgot-password" element={login ? <Navigate to="/workarea/home" /> : <ForgotPassword />} />
       <Route path="/auth/otp" element={<OtpPage />} />
       <Route path="/workarea" element={<WorkArea />}>
         <Route path="" element={<Navigate to="home" />} />

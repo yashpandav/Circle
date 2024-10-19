@@ -13,6 +13,7 @@ import { logIn } from '../../Api/apiCaller/authapicaller.js';
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import ForgotPassword from "./forgotPassword.jsx";
 
 export default function Login() {
     const {
@@ -118,7 +119,7 @@ export default function Login() {
                             LogIn
                         </Button>
                         <div className="form-group">
-                            <Link to='/auth/forgotpassword' id="forgotpass" element={<></>}>
+                            <Link to='/auth/forgot-password' id="forgotpass" element={<ForgotPassword/>}>
                                 Forgot Password?
                             </Link>
                         </div>
