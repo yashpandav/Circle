@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TextField, Button, IconButton, InputAdornment } from "@mui/material";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -8,6 +8,9 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import OTPInput from "react-otp-input";
 import "./forgotPassword.css";
+import { useDispatch } from "react-redux";
+import { forgotPassword, validateForgotPasswordOTP } from "../../Api/apiCaller/authapicaller";
+import { useSelector } from "react-redux";
 
 export default function ForgotPassword() {
     const {
@@ -19,21 +22,51 @@ export default function ForgotPassword() {
 
     const [otpSent, setOtpSent] = useState(false);
     const [otpVerified, setOtpVerified] = useState(false);
+    const [sendBtnAvailability , setSendBtnAvailability] = useState(true);
 
-    const sendOtpHandler = (data) => {
-        const email = data.email;
-        setOtpSent(true);
-        toast.success("OTP sent successfully!");
+    const forgotPasswordValidity = useSelector((state) => state.auth.forgotPasswordValidity);
+
+    const dispatch = useDispatch();
+    
+    const sendOtpHandler = async (data) => {
+        try {
+            setSendBtnAvailability(false);
+            await dispatch(validateForgotPasswordOTP(data, dispatch)).unwrap();
+    
+            if (forgotPasswordValidity) {
+                setOtpSent(true);
+            } else {
+                setOtpSent(false);
+            }
+    
+            setSendBtnAvailability(true);
+        } catch (err) {
+            toast.error("Failed to send OTP");
+            setOtpSent(false); 
+            setSendBtnAvailability(true);
+        }
     };
-
-    const verifyOtpHandler = (data) => {
+    
+    const verifyOtpHandler = async (data) => {
         const { otp, newPassword, confirmPassword } = data;
         if (newPassword !== confirmPassword) {
             toast.error("Passwords do not match!");
             return;
         }
-        setOtpVerified(true);
-        toast.success("Password reset successfully!");
+
+        try{
+            setSendBtnAvailability(false);
+            const response = await dispatch(forgotPassword(data , dispatch)).unwrap();
+
+            if(response){
+                setOtpVerified(true);
+                toast.success("Password reset successfully!");
+            }
+            setSendBtnAvailability(true);
+        } catch (err) {
+            toast.error("Failed to send OTP");
+            setSendBtnAvailability(true);
+        }
     };
     
     const [otp, setOtp] = useState("");
@@ -86,7 +119,7 @@ export default function ForgotPassword() {
                                 </div>
                             </div>
 
-                            <Button variant="contained" type="submit" id="send-otp-btn">
+                            <Button disabled = {!sendBtnAvailability} variant="contained" type="submit" id="send-otp-btn">
                                 Send OTP
                             </Button>
                         </form>
@@ -206,7 +239,7 @@ export default function ForgotPassword() {
                                 </div>
                             </div>
 
-                            <Button variant="contained" type="submit" id="reset-password-btn">
+                            <Button disabled = {!sendBtnAvailability} variant="contained" type="submit" id="reset-password-btn">
                                 Reset Password
                             </Button>
                         </form>

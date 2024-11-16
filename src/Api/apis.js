@@ -8,6 +8,8 @@ export const AUTH_API_URL = {
     CHANGE_PASSWORD_API: `${BASE_URL}/auth/user/changepassword`,
     LOGOUT_API : `${BASE_URL}/auth/user/logout`,
     VALIDATE_API : `${BASE_URL}/auth/user/validate`,
+    FORGOT_PASSWORD_OTP_API : `${BASE_URL}/auth/user/forgot-password-otp`,
+    FORGOT_PASSWORD_API : `${BASE_URL}/auth/user/forgot-password`
 };
 
 //* USER API URL

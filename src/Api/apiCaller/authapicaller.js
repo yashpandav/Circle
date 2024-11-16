@@ -3,10 +3,10 @@ import { apiConnector } from '../apiconfig';
 import { AUTH_API_URL } from '../apis';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
-import { setUser } from '../../Slices/authSlice';
+import { setForgotPasswordValidity, setUser } from '../../Slices/authSlice';
 import { setLoggedIn } from '../../Slices/authSlice';
 import { setToken } from '../../Slices/authSlice';
-const { SEND_OTP_API, SIGNUP_API, LOGIN_API, LOGOUT_API , VALIDATE_API } = AUTH_API_URL;
+const { SEND_OTP_API, SIGNUP_API, LOGIN_API, LOGOUT_API, VALIDATE_API, FORGOT_PASSWORD_API } = AUTH_API_URL;
 
 export const sendOTP = createAsyncThunk(
     'sendOTP',
@@ -32,6 +32,53 @@ export const sendOTP = createAsyncThunk(
         }
     }
 );
+export const validateForgotPasswordOTP = createAsyncThunk(
+    'validateForgotPassword',
+    async ({ email, dispatch }) => {
+        try {
+            const response = await apiConnector('POST', FORGOT_PASSWORD_API, { email });
+            dispatch(setForgotPasswordValidity(true));
+            toast.success("OTP Sent");
+            return response;
+        } catch (err) {
+            if (err.response) {
+                console.log
+                if (err.response.status == 409) {
+                    toast.error("Email is not registered.");
+                    return null;
+                }
+            }
+
+            toast.error("Failed To send OTP", {
+                position: 'top-right',
+            });
+
+            return err.response ? err.response : err.message;
+        }
+    });
+
+export const forgotPassword = createAsyncThunk(
+    'forgotPassword',
+    async (data, dispatch) => {
+        try {
+            const response = await apiConnector('POST', FORGOT_PASSWORD_API, data);
+
+            console.log(response.data);
+
+            toast.success("Password Reset Successfully");
+            return response;
+        } catch (err) {
+
+            if (err.response && err.response.status === 400) {
+                toast.error("Invalid OTP");
+                return null;
+            }
+
+            toast.error("Failed To Reset Password");
+            return err.response ? err.response : err.message;
+        }
+    });
+
 
 export const signUp = createAsyncThunk(
     'singup',
@@ -81,7 +128,7 @@ export const logIn = createAsyncThunk(
             Cookies.set('token', response.data.data.token, { expires: 2 });
             toast.success('LogIn Success');
             return response;
-        } catch (err) { 
+        } catch (err) {
             console.log(err);
             // console.log(err.response);
             if (err.response.status === 400) {
@@ -116,7 +163,7 @@ export const logOut = createAsyncThunk(
 
 export const validateLogin = createAsyncThunk(
     'validateLogin',
-    async ({dispatch , navigate}) => {
+    async ({ dispatch, navigate }) => {
         try {
             console.log('Validate Login Function');
             const response = await apiConnector('POST', VALIDATE_API);
@@ -124,12 +171,12 @@ export const validateLogin = createAsyncThunk(
             dispatch(setUser(response.data.data));
             dispatch(setLoggedIn(true));
             dispatch(setToken(response.data.data.token));
-            Cookies.set('token' , response.data.data.token , {
-                expires : '2'
+            Cookies.set('token', response.data.data.token, {
+                expires: '2'
             });
             toast.success('Login Success')
         } catch (err) {
-            return err.response? err.response : err.message;
+            return err.response ? err.response : err.message;
         }
     }
 )

@@ -1,3 +1,4 @@
+import { SnippetFolderRounded } from "@mui/icons-material";
 import { createSlice } from "@reduxjs/toolkit"; 
 import Cookies from 'js-cookie';
 
@@ -8,6 +9,7 @@ const authSlice = createSlice({
         user: null,
         token: Cookies.get('token') || null,
         login: false,
+        forgotPasswordValidity : false
     },
     reducers: {
         setUser(state , value){
@@ -22,9 +24,12 @@ const authSlice = createSlice({
         },
         setToken(state, value){
             state.token = value.payload;
+        },
+        setForgotPasswordValidity(state, value){
+            state.forgotPasswordValidity = value.payload;
         }
     }
 })
 
-export const { setUser , setLoggedIn , setToken } = authSlice.actions;
+export const { setUser , setLoggedIn , setToken , setForgotPasswordValidity } = authSlice.actions;
 export default authSlice.reducer
