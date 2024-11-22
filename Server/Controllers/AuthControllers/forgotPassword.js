@@ -1,7 +1,6 @@
 const User = require("../../Models/User");
 const OTP = require("../../Models/OTP");
 const Profile = require("../../Models/Profile");
-x;
 const { sendMail } = require("../../Utils/mailSender");
 const bcrypt = require("bcrypt");
 

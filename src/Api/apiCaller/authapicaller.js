@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import { setForgotPasswordValidity, setUser } from '../../Slices/authSlice';
 import { setLoggedIn } from '../../Slices/authSlice';
 import { setToken } from '../../Slices/authSlice';
-const { SEND_OTP_API, SIGNUP_API, LOGIN_API, LOGOUT_API, VALIDATE_API, FORGOT_PASSWORD_API } = AUTH_API_URL;
+const { SEND_OTP_API, SIGNUP_API, LOGIN_API, LOGOUT_API, VALIDATE_API, FORGOT_PASSWORD_API,FORGOT_PASSWORD_OTP_API } = AUTH_API_URL;
 
 export const sendOTP = createAsyncThunk(
     'sendOTP',
@@ -36,13 +36,12 @@ export const validateForgotPasswordOTP = createAsyncThunk(
     'validateForgotPassword',
     async ({ email, dispatch }) => {
         try {
-            const response = await apiConnector('POST', FORGOT_PASSWORD_API, { email });
+            const response = await apiConnector('POST', FORGOT_PASSWORD_OTP_API, { email });
             dispatch(setForgotPasswordValidity(true));
             toast.success("OTP Sent");
             return response;
         } catch (err) {
             if (err.response) {
-                console.log
                 if (err.response.status == 409) {
                     toast.error("Email is not registered.");
                     return null;
