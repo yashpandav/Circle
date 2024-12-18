@@ -1,0 +1,47 @@
+.joined-circle-list {
+    max-height: 200px;
+    min-height: fit-content;
+    overflow-y: auto;
+    scrollbar-width: none;
+    padding-left: 20px;
+    padding-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.joined-circles {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #f9f9f9;
+    padding: 0.75rem 0.75rem 0.75rem 0.5rem;
+    border-radius: 10px; 
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.joined-circles:hover {
+    box-shadow: var(--classTheme-shadow, 0 2px 4px rgba(0, 0, 0, 0.1));
+    transform: translateX(1.5px);
+}
+
+.circle-imgs {
+    width: 45px;
+    height: 45px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.joined-circles p {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+    white-space: nowrap;
+    color: #333;
+}

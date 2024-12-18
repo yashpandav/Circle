@@ -1,0 +1,98 @@
+.main-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #ffffffcc;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    width: 100%;
+    height: 7vh;
+    top: 0;  
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+}
+
+#logo {
+    display: flex;
+    align-items: center;
+}
+
+#logo-img {
+    width: 50px;
+    margin-right: 10px;
+}
+
+#nav {
+    display: flex;
+    align-items: center;
+}
+
+#nav ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#nav #li {
+    margin: 0 15px;
+    transition: all 0.3s;
+}
+
+#li a , #logo a{
+    text-decoration: none;
+    color: #004346;
+    font-weight: bold;
+    position: relative;
+    transition: color 0.3s;
+    cursor: pointer;
+    font-size: 1.4vw;
+}
+
+.is-current a {
+    color: #f72585 !important;
+}   
+
+#nav a::after {
+    content: '';    
+    position: absolute;
+    width: 0;
+    height: 2px;
+    display: block;
+    margin-top: 5px;
+    right: 0;
+    background-color: rgb(24, 126, 109);
+    transition: width 0.3s ease;
+}
+
+#li a:hover::after {
+    width: 100%;
+    left: 0;
+}
+
+h2 {
+    margin: 0;
+    font-size: 1.5em;
+    text-decoration: none;
+    color: #333;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.btns {
+    display: flex;
+    gap: 10px;
+    margin-right: 40px;
+    margin-left: 10px;
+}
+
+#signup-btn {
+    background-color: #84d1c93e;
+    color: #11706d;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    max-width: fit-content;
+    font-size: 1.14vw;
+}

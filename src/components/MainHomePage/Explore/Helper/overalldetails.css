@@ -1,0 +1,29 @@
+.main-overall {
+    padding: 50px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.total {
+    position: relative;
+    text-align: center;
+    margin: 20px;
+}
+
+.total .counter {
+    font-size: 6em;
+    line-height: 1;
+    color: #1d3348;
+}
+
+.total h4 {
+    position: absolute;
+    top: 2%;
+    left: 100%;
+    font-size: 1.2em;
+    color: #21525f;
+}

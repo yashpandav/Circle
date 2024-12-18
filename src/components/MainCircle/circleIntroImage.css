@@ -1,0 +1,234 @@
+.circle-intro-image {
+    width: 100%;
+    height: 250px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 5px;
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 10;
+}
+
+.customize-circle-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.customize-circle-btn:hover {
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.customize-circle-btn svg {
+    margin-right: 6px;
+    font-size: 18px;
+}
+
+.customize-circle-btn span {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333333;
+}
+
+.temp-circle-info-icon{
+    position: absolute;
+    bottom: 8px;
+    right: 7.5px;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;     
+    animation: opacitychange 0.1s ease-in 0s 1;
+    background-color: #1a03037e;
+    opacity: 0.5;
+}
+
+@keyframes opacitychange {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 0.5;
+    }
+}
+
+.circle-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3) , transparent);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.circle-intro-image.hide-border{
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.curr-circle-name {
+    margin: 0;
+    font-size: 22px;
+    color: #ffffff;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    font-family: 'Roboto', sans-serif;
+}
+
+.info-icon {
+    color: #ffffff;
+    padding-right: calc(2rem + 4px);
+    font-size: 24px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.circle-info-container {
+    width: 100%;
+    background-color: #f8f9fa;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;    
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    padding-inline : 20px;
+    padding-block : 3.5px;
+    display: flex;
+    justify-content: space-between;
+    animation: fadeIn 0.2s ease-in 0s 1;
+    align-items: flex-start;
+    gap: 20px;
+    z-index: 9;
+}
+
+.info-group {
+    width: 48%; 
+}
+
+.info-header {
+    font-size: 16px;
+    color: #333333;
+    font-weight: bolder;
+    margin-bottom: 10px;
+}
+
+.info-header span {
+    font-weight: normal;
+    color: #666666;
+}
+
+.custom-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    width: 400px; 
+    max-width: 90%; 
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+    animation: zoomIn 0.3s ease;
+}
+
+@keyframes zoomIn {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h4 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.modal-body {
+    margin-top: 20px;
+}
+
+.file-upload-label {
+    margin-bottom: 10px;
+}
+
+.file-upload-input {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.modal-footer {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.save-btn,
+.cancel-btn {
+    padding: 10px 15px; 
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.save-btn {
+    background-color: #007bff;
+    color: white;
+    margin-right: 10px; 
+}
+
+.save-btn:hover {
+    background-color: #0056b3;
+}
+
+.cancel-btn {
+    background-color: #6c757d;
+    color: white;
+}
+
+.cancel-btn:hover {
+    background-color: #5a6268; 
+}

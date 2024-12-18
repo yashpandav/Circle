@@ -1,0 +1,56 @@
+#explore-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 50px 20px;
+    position: relative;
+}
+
+#arrow{
+    position: absolute;
+    left: 60.4%;
+    bottom: 17.5%;
+    z-index: -1;
+}
+
+#explore-section h2 {
+    font-size: 2.5em;
+    color: #0d47a1; 
+    margin-bottom: 20px;
+}
+
+#explore-section p {
+    font-size: 1.2em;
+    color: #555;
+    margin-bottom: 40px;
+}
+
+#explore-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap; 
+}
+
+.explore-btn{
+    padding: 15px 30px;
+    font-size: 1.2em;
+    color: white;
+    background-color: #0d47a1; 
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #explore-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .explore-btn {
+        width: 100%;
+        padding: 15px 0;
+    }
+}

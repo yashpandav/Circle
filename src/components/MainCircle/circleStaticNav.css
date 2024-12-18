@@ -1,0 +1,49 @@
+.navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 64px;
+}
+
+.circle-navbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;  
+}
+
+.navbar-list {
+    padding: 8px 16px;
+    transition: all 0.3s ease;
+    border-radius: 24px;
+    cursor: pointer;
+}
+
+.navbar-list h3 {
+    font-size: 1.2em;
+    color: #1a1a1a;
+    margin: 0;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    letter-spacing: 0.3px;
+}
+
+.navbar-setting-class {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.navbar-setting-class:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+.settings-icon {
+    font-size: 24px !important;
+    color: #5f6368 !important;
+}

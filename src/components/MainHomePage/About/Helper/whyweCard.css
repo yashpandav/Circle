@@ -1,0 +1,111 @@
+#why-we {
+    padding: 5px 0;
+}
+
+#why-we-cards {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 30px;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.why-we-card {
+    flex: 1;
+    max-width: 300px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.why-we-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.why-we-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, #bde0fe, #caf0f8, #ade8f4, #90e0ef, #d4f8e8);
+    background-size: 400%;
+    z-index: 0;
+    transition: all 0.4s;
+    transform: rotate(45deg);
+    opacity: 0;
+    border-radius: 50%;
+}
+
+.why-we-card:hover::before {
+    opacity: 1;
+    transform: rotate(45deg) translate(46.5%, 46.5%);
+}
+
+.why-we-icon {
+    font-size: 2.5em;
+    color: #00a896;
+    margin-bottom: 10px;
+    z-index: 1;
+    position: relative;
+    transition: all 0.5s ease;
+}
+
+.why-we-icon:hover {
+    transform: rotate(360deg);
+}
+
+.why-we-card h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #333 !important;
+    z-index: 1;
+    position: relative;
+}
+
+.why-we-card p {
+    font-size: 1em;
+    color: #666;
+    line-height: 1.5;
+    z-index: 1;
+    position: relative;
+    transition: all 0.3s;
+}
+
+.why-we-card:nth-child(1) .why-we-icon {
+    color: rebeccapurple;
+}
+
+.why-we-card:nth-child(2) .why-we-icon {
+    color: rgb(141, 153, 126);
+}
+
+.why-we-card:nth-child(3) .why-we-icon {
+    color: rgb(204, 91, 91);
+}
+
+@media (max-width: 768px) {
+    #why-we-cards {
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .why-we-card {
+        margin: auto;
+    }
+    
+    .why-we-card:hover::before {
+        opacity: 1;
+        transform: rotate(45deg) translate(48.4%, 48.4%);
+    }
+    
+}

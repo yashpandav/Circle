@@ -1,0 +1,149 @@
+.alertMsg {
+    position: absolute;
+    top: 0%;
+    width: 20%;
+}
+
+#body {
+    background-color: #e0f7fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#signup-teacher-img {
+    padding-top: 21rem;
+    height: 15rem;
+    animation: fadeIn 0.2s ease-in;
+}
+
+.main-signup-form {
+    height: auto;
+    display: flex;
+    background-color: #ffffff;
+    border-radius: 10px 4rem 4rem 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 860px;
+    overflow: hidden;
+    width: 60%;
+}
+
+.form-container {
+    padding-inline: 2.5rem;
+    flex: 1;
+    animation: fadeIn 0.2s ease-in;
+}
+
+.form-container h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: #00796b;
+}
+
+
+.form-container pre {
+    text-align: center;
+    color: #00796b;
+    font-size: 1.2rem;
+}
+
+#signup-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin: 0rem 1rem 1rem 0rem;
+}
+
+#registerbutton {
+    width: 75%;
+    font-size: 1em;
+    border: none;
+    border-radius: 150px;
+    margin: auto;
+    margin-bottom: 0.2rem;
+    margin-top: 1rem;
+    color: #fff;
+    background-size: 300% 100%;
+    background-image: linear-gradient(to right, #218380, #339989, #09bc8a, #17bebb);
+    transition: all 0.4s ease-in-out;
+}
+
+#registerbutton:hover {
+    background-position: 100% 0;
+    transition: all 0.4s ease-in-out;
+}
+
+#secondary {
+    width: 20rem;
+    background-color: #4db6ac;
+    border-radius: 0 4rem 4rem 0;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;    
+}
+
+.sec-content h2 {
+    font-size: 1.8rem;
+    animation: fadeIn 0.2s ease-in;
+}
+
+.sec-content pre {
+    font-size: 1.2rem;
+    animation: fadeIn 0.2s ease-in;
+}
+
+#login-btn {
+    color: #e0f7fa;
+    font-size: 1.3rem;
+    animation: fadeIn 0.2s ease-in;
+}
+
+.sec-content .btn {
+    background-color: #004d40;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    transition: all 0.3s ease-in-out;
+    animation: fadeIn 0.2s ease-in;
+}
+
+.sec-content .btn:hover {
+    background-color: #00251a;
+}
+
+.input-fileds {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.error-msg {
+    width: 150%;
+    color: red;
+    position: absolute;
+    z-index: 1;
+    top: 70%;
+    font-style: italic;
+    font-size: smaller;
+}
+
+
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}

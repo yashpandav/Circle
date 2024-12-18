@@ -1,0 +1,121 @@
+.post-container {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    background-color: #fff;
+}
+
+.post-wrapper {
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
+.post-header {
+    padding: 0px 15px 15px 15px;   
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.left-side-post-details {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.post-upload-details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.post-uploader-name {
+    color: black;
+    font-size: 1.05em;
+    font-weight: bold;
+    margin: 0;
+}
+
+.post-upload-date {
+    color: #777;
+    font-size: 0.8em;
+    margin: 0;
+}
+
+.post-uploader-image {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+}
+
+h1.post-title {
+    font-size: 1.6em;
+    font-weight: bold;
+    color: #222;
+    padding: 15px 20px;
+    padding-bottom: 0px;
+    margin: 0;
+}
+
+p.post-content {
+    font-size: 1em;
+    line-height: 1.6;
+    padding-inline : 20px;
+    color: #171717;
+}
+
+.post-attachments {
+    padding: 15px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 17px;
+}
+
+.post-attachments img {
+    width: 100%;
+    max-width: 250px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.post-attachments a {
+    color: #0b0705;
+    text-decoration: none;
+}
+
+.links-for-post a {
+    display: block;
+    font-size: 17px;
+    color: #1a73e8;
+    text-decoration: none;
+    padding: 10px 15px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.links-for-post a:hover {
+    background-color: #e0e0e0;
+}
+
+.links-for-post.user-post-side a {
+    margin: 10px 20px;
+}
+
+.youtube-links-for-post {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding-inline: 20px;
+}
+
+.youtube-links-for-post iframe {
+    border-radius: 7px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.more-vert-icon{
+    color: #5f6368;
+} 

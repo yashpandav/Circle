@@ -1,0 +1,86 @@
+.navbar2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    width: 100%;
+    height: 7vh;
+    top: 0;
+    z-index: 1000;
+}
+
+#logo {
+    display: flex;
+    align-items: center;
+}
+
+#temp-nav {
+    display: flex;
+    align-items: center;
+}
+
+#temp-ul {
+    display: flex;
+    list-style: none;
+    gap: 13px;
+}
+
+#iconli {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    position: relative;
+}
+
+#add-icon {
+    font-size: 2rem;
+    color: #333;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+#add-icon:hover {
+    color: #007bff;
+}
+
+#user-info-li {
+    display: flex;
+    align-items: center;
+}
+
+/* Dialog Box */
+#dialog-box {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    background: white;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    z-index: 1000;
+    width: 200px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.dialog-option {
+    padding: 10px 15px;
+    margin: 0;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

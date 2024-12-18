@@ -1,0 +1,38 @@
+.custom-dialog {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.custom-dialog-title {
+    background-color: #5bc0be; 
+    color: #ffffff;
+    padding: 16px;
+    text-align: center;
+}
+
+.custom-dialog-content {
+    padding-block: 3px;
+    font-size: 1rem;
+    color: #555;
+}
+
+.custom-dialog-content strong {
+    color: #34949f; 
+}
+
+@keyframes fadeIn { 
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.custom-dialog-content:last-child{
+    color: #b7094c; 
+    font-weight: bold;
+    margin-top: 16px;
+}

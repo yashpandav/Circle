@@ -1,0 +1,368 @@
+.main-announcement-container {
+    margin-bottom: 20px;
+}
+
+.announce-something-container {
+    background-color: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.announcement-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.user-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.announce-content {
+    flex: 1;
+}
+
+.announce-heading {
+    font-size: 16px;
+    margin: 0;
+    color: #276e7e;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.announce-description {
+    font-size: 14px;
+    color: #715d66;
+    margin: 5px 0 0;
+}
+
+.announcement-writer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 20px;
+    margin-inline: 5px;
+    border-top: 2px solid #e0e0e0;
+    animation: slideInFromTop 0.5s ease forwards;
+}
+
+@keyframes slideInFromTop {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.toggle-container {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.toggle-switch-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: max-content;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.toggle-button {
+    text-align: center;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    font-size: 14.5px;
+}
+
+.toggle-button:first-child {
+    border-radius: 12px 0 0 12px;
+}
+
+.toggle-button:last-child {
+    border-radius: 0 12px 12px 0;
+}
+
+.toggle-button p {
+    margin: 0;
+}
+
+.toggle-button.active-opc {
+    position: relative;
+}
+
+.toggle-button.active-opc::before {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    right: 0;
+    width: 0;
+    height: 2px;
+    background-color: #276e7e;
+    animation: borderAnimation 0.3s ease-in-out forwards;
+}
+
+@keyframes borderAnimation {
+    0% {
+        width: 0;
+        right: 0;
+    }
+
+    100% {
+        width: 100%;
+        right: 0;
+    }
+}
+
+.announcement-editor {
+    margin-top: 10px;
+    width: 100%;
+}
+
+
+.announcement-textfield {
+    width: 100%;
+    cursor: text;
+    font-size: 19px;
+    padding-inline: 10px;
+    min-height: 5px;
+    max-height: 200px;
+    border-radius: 4px;
+    text-align: left;
+    direction: ltr;
+    overflow: auto;
+    outline: none; 
+    border: none;
+    word-wrap: break-word;  
+    overflow-wrap: break-word;
+    white-space: normal; 
+}
+
+#header-textfield{
+    font-size : 21.5px;
+    padding-inline: 10px;
+    font-weight : 600
+}
+
+.announcement-textfield[contenteditable]:empty:before {
+    content: "Announce Here...";
+    color: #999;
+    pointer-events: none;
+}
+
+.announcement-textfield::-webkit-scrollbar {
+    display: none;
+}
+
+.announcement-textfield {
+    -ms-overflow-style: none; 
+    scrollbar-width: none;
+}
+
+.editor-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.left-side-controllers {
+    display: flex;
+    gap: 15px;
+}
+
+.right-side-controllers {
+    display: flex;
+    gap: 10px;
+}
+
+.left-side-controllers button {
+    transition: all 0.3s ease;
+}
+
+.left-side-controllers button:hover {
+    background-color: #e0e0e0;
+    color: #276e7e;
+}
+
+.announcement-textfield.no-border {
+    border: none;
+}
+
+.announcement-textfield input:focus {
+    border: none;
+    outline: none;
+    box-shadow: none;
+    color: #000000;
+}
+
+.upload-option-container {
+    display: flex;
+    justify-content: flex-start;
+    gap: 20px;
+    margin-top: 10px;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.upload-option-container .MuiIconButton-root {
+    transition: all 0.3s ease;
+}
+
+.upload-option-container .MuiIconButton-root:hover {
+    transform: scale(1.2);
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.upload-option-container .MuiSvgIcon-root {
+    font-size: 2.5rem;
+}
+
+.button-cancel,
+.button-post {
+    padding: 5px 15px;
+    font-size: 14px;
+    border: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.button-cancel {
+    background-color: transparent;
+    color: #276e7e;
+    font-size: 15px;
+}
+
+.button-post {
+    width: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    font-size: 17px;
+    background-color: #38a3a5;
+    color: #edf6f9;
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.button-post::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.3);
+    transition: left 0.3s ease;
+}
+
+.button-post:hover {
+    transform: scale(1.061);
+}
+
+.button-post:hover::before {
+    left: 100%;
+}
+
+.upload-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.upload-options {
+    position: absolute;
+    left: 110%;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 5px;
+    padding: 2px;
+    border-radius: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    animation: slideIn 0.3s ease-out forwards;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50%) translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+    }
+}
+
+.upload-options .MuiIconButton-root {
+    font-size: 1.4rem;
+    padding: 8px;
+    transition: all 0.3s ease;
+}
+
+.link-preview{
+    display: flex;
+    justify-content: flex-start;
+}
+
+.youtube-preview {
+    display: flex;
+    align-items: end;
+}
+
+.link-preview{
+    margin-block: 15px;
+}
+
+.youtube-links-for-post.uploader-post-side{
+    margin-top: 10px;
+    margin-left: 2px;
+    padding: 0px;
+}
+
+.link-input-container {
+    width: 50%;
+    max-width: 500px;
+    display: flex;
+    align-items: center;
+    border-radius: 6px;
+    margin-block: 15px;
+    padding: 3px;
+    transition: all 0.3s ease;
+}
+
+.link-input {
+    margin-left: 10px;
+    flex-grow: 1;
+    border-right: none;
+    font-size: 14px;
+    outline: none;
+    border: none;
+}

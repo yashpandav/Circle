@@ -1,0 +1,38 @@
+.workArea {
+    margin-top: 7vh;
+    transition: all 0.3s ease;
+}
+
+.right-main {
+    flex-grow: 1;
+    margin-left: 276px;
+    background-color: #f8f9fa;
+    transition: all 0.5s ease;
+}
+
+.box-toggle{
+    margin-left: 114px;
+}
+
+.toast-custom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1d73ac;
+    padding: 2px 8px;
+    color: #fff;
+    border-radius: 4px; 
+}
+
+.toast-custom.show {
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

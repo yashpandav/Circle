@@ -1,0 +1,36 @@
+#dialog-box {
+    position: absolute;
+    top: 40px;
+    right: 35%;
+    min-width: max-content;
+    background-color: #ffffff;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    height: max-content;
+    z-index: 1000;
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dialog-option {
+    margin-block: 2px;
+    font-size: 1.1em;
+    cursor: pointer;
+    color: #218279;
+    transition: all 0.3s;
+}
+
+.dialog-option:hover {
+    color: #ff9800; 
+    transform: scale(1.02);
+}
