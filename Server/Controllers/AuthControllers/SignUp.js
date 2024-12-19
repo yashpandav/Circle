@@ -17,7 +17,7 @@ exports.signUp = async (req, res) => {
             otp,
         } = req.body;
 
-        console.log("ENTERD API IN" , firstName, lastName, email, password , confirmPassword , otp);
+        console.log("ENTERD API IN", firstName, lastName, email, password, confirmPassword, otp);
 
         if (!firstName || !lastName || !email || !password || !confirmPassword || !otp) {
             return res.status(400).json({
@@ -51,6 +51,8 @@ exports.signUp = async (req, res) => {
                 message: "Invalid or expired OTP",
             });
         }
+
+        await OTP.deleteMany({ email });
 
         //* Hash password
         const hashedPassword = await bcrypt.hash(password, 10);

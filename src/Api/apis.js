@@ -6,8 +6,10 @@ export const AUTH_API_URL = {
     SIGNUP_API: `${BASE_URL}/auth/user/signup`,
     LOGIN_API: `${BASE_URL}/auth/user/login`,
     CHANGE_PASSWORD_API: `${BASE_URL}/auth/user/changepassword`,
-    LOGOUT_API : `${BASE_URL}/auth/user/logout`,
-    VALIDATE_API : `${BASE_URL}/auth/user/validate`,
+    LOGOUT_API: `${BASE_URL}/auth/user/logout`,
+    VALIDATE_API: `${BASE_URL}/auth/user/validate`,
+    VALIDATE_EMAIL: `${BASE_URL}/auth/user/validate-otp`,
+    FORGOT_PASSSWORD_API : `${BASE_URL}/auth/user/forgot-password`
 };
 
 //* USER API URL
@@ -28,7 +30,7 @@ export const CLASS_API_URL = {
     DELETE_CLASS_API: `${BASE_URL}/class/delete`,
     UPDATE_CLASS_API: `${BASE_URL}/class/update`,
     LEFT_CLASS_API: `${BASE_URL}/class/left`,
-    CHANGE_ENTRY_CODE : `${BASE_URL}/class/reset-code`
+    CHANGE_ENTRY_CODE: `${BASE_URL}/class/reset-code`
 };
 
 //* ASSIGNMENT API URL

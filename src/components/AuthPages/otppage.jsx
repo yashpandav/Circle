@@ -33,9 +33,7 @@ export default function OtpPage() {
     } = user;
 
     const handleSubmit = (e) => {
-        e.preventDefault();
-        // console.log("SET user IN OTPPAGE", setUser);
-        // console.log(`${firstName} ${lastName} ${email} ${password} ${confirmPassword} ${otp}`);
+        e.preventDefault(); 
         try {
             dispatch(setLoading(true));
             dispatch(signUp({
@@ -50,7 +48,6 @@ export default function OtpPage() {
             )
             ).unwrap();
             dispatch(setLoading(true));
-            // console.log("RESPONSE  ", response);
         } catch (err) {
             console.log("failed to create a user", err);
             toast.error("Something went wrong while creating user", {
@@ -61,10 +58,10 @@ export default function OtpPage() {
 
     //* ACCOUNT CREATION LOADER
     const loading = useSelector((state) => state.loading.loading);
-    if(loading){
-        return <CreatingLoader/>;
+    if (loading) {
+        return <CreatingLoader />;
     }
-    
+
     return (
         <div className="otp-container">
             <div>

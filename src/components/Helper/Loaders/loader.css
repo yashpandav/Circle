@@ -5,6 +5,12 @@
     transform: translate(-50%, -50%);
     text-align: center;
     z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
 }
 
 .loader {
@@ -12,11 +18,9 @@
     height: 140px;
     background: #979794;
     box-sizing: border-box;
-    position: absolute;
     border-radius: 8px;
     perspective: 1000px;
-    top: 50%;
-    left: 50%;
+    position: relative; /* Center inside parent container */
 }
 
 .loader:before {
@@ -98,8 +102,8 @@
     animation: animloader 1s linear infinite;
 }
 
-.sendipOtp-loader{
-    margin-top: 200px;
+.sendipOtp-loader {
+    margin-top: 20px;
 }
 
 @keyframes animloader {
