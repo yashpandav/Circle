@@ -20,9 +20,11 @@ import "./announcementContainer.css";
 import './uploadFile.css';
 import { createPost } from "../../../Api/apiCaller/postapicaller";
 import { useDispatch } from "react-redux";
+import { LoaderComponent } from "../../Helper/Loaders/loader";
+import { setLoading } from "../../../Slices/loadingSlice";
 
 const UserAnnouncementHeader = ({ setWriteAssignment }) => {
-    const user = useSelector((state) => state.auth.user);
+    const user = useSelector((state) => state?.auth?.user);
     const currClass = useSelector((state) => state.classes.currClass);
 
     return (
@@ -298,7 +300,7 @@ const AnnouncementWriter = ({
                         </div>
                     ))}
                 </div>
-                
+
                 <div className="editor-controls">
                     <div className="left-side-controllers">
                         <IconButton color="primary" size="small" onClick={() => applyFormatting("bold")}>
@@ -401,7 +403,10 @@ export default function AnnouncementContainer() {
         setdata({ title: "", text: "", links: [], files: [], youtubeLinks: [] });
     };
 
+    const loading = useSelector((state) => state.loading.loading);
+
     const handlePost = async () => {
+        setLoading(true);
         try {
             const formData = new FormData();
             data.files.forEach((file) => {
@@ -430,7 +435,7 @@ export default function AnnouncementContainer() {
             files: [],
             youtubeLinks: []
         }));
-
+        setLoading(false);
         setWriteAssignment(false);
     };
 
@@ -485,6 +490,10 @@ export default function AnnouncementContainer() {
             }));
         }
     };
+
+    if(loading){
+        return <LoaderComponent />
+    }
 
     return (
         <div className="main-announcement-container">

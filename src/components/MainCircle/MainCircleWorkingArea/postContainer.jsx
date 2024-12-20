@@ -2,25 +2,27 @@ import React, { useEffect, useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
 import Divider from "@mui/material/Divider";
-import { Menu, MenuItem, IconButton } from "@mui/material"; // Importing Menu and MenuItem from Material-UI
+import { Menu, MenuItem, IconButton } from "@mui/material";
 import "./postContainer.css";
 import "./uploadFile.css";
 import { CommentController, AddCommentController } from "./commentController";
 import { useDispatch, useSelector } from "react-redux";
 import { createComment } from "../../../Api/apiCaller/commentapicaller";
+import { LoaderComponent } from "../../Helper/Loaders/loader";
+import { setLoading } from "../../../Slices/loadingSlice";
 
 export default function PostContainer({ post }) {
     const [comments, setComments] = useState(post.comment || []);
-    const [anchorEl, setAnchorEl] = useState(null); // State to track the anchor for the menu (dialog box)
+    const [anchorEl, setAnchorEl] = useState(null); 
     const currUser = useSelector((state) => state.auth.user);
     const dispatch = useDispatch();
     const [isAnnouncer, setAnnouncer] = useState(false);
+    const loading = useSelector((state) => state.loading.loading);
 
     useEffect(() => {
         setAnnouncer(currUser._id === post.teacher._id);
     }, [post, currUser]);
 
-    // Function to remove file suffix
     const removeFileSuffix = (fileName) => {
         if (!fileName) return "";
         const nameParts = fileName.split("|");
@@ -35,7 +37,7 @@ export default function PostContainer({ post }) {
             commentOn: "Post",
             id: post._id,
         };
-
+        setLoading(true);
         await dispatch(createComment(data))
             .then(async (response) => {
                 if (response && response.data) {
@@ -55,16 +57,20 @@ export default function PostContainer({ post }) {
             .catch((error) => {
                 console.error("Error adding comment:", error);
             });
+        setLoading(false);
     };
 
-    // Handle Menu Open and Close
     const handleMenuOpen = (event) => {
-        setAnchorEl(event.currentTarget); // Set the clicked element as the anchor for the menu
+        setAnchorEl(event.currentTarget); 
     };
 
     const handleMenuClose = () => {
-        setAnchorEl(null); // Close the menu
+        setAnchorEl(null);
     };
+
+    if(loading){
+        return <LoaderComponent />
+    }
 
     return (
         <div className="post-container" key={post._id}>

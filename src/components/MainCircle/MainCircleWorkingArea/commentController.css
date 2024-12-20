@@ -2,13 +2,13 @@
     margin-inline: 20px;
 }
 
-#show-more-comment-btn{
+#show-more-comment-btn {
     margin: 5px 5px 0px 5px;
     font-size: 15px;
     word-spacing: -3px;
 }
 
-.comment {  
+.comment {
     margin-block: 10px;
 }
 
@@ -40,7 +40,7 @@
     font-weight: 400;
     font-family: "Roboto", sans-serif;
     margin: 0;
-    line-break :anywhere;
+    line-break: anywhere;
     word-wrap: break-word;
     letter-spacing: .014em;
     line-height: 1.25rem;
@@ -57,7 +57,7 @@
     justify-content: space-evenly;
     gap: 15px;
     margin-inline: 20px;
-    margin-block : 15px;
+    margin-block: 15px;
 }
 
 .add-comment-form {
@@ -70,16 +70,15 @@
     width: 100%;
     font-family: "Roboto", sans-serif;
     font-size: 1rem;
-    padding: 10px;
-    padding-inline: 15px;
+    padding: 5px !important;
+    padding-inline: 15px !important;
     color: #444;
     line-height: 1.5rem;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 
-        0 2px 4px rgb(0, 0, 0 , 0.1)
-    ;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1),
+        0 2px 4px rgb(0, 0, 0, 0.1);
     border-radius: 20px;
 }
 
-.send-comment-icon-btn{
+.send-comment-icon-btn {
     margin-left: 3px;
 }
