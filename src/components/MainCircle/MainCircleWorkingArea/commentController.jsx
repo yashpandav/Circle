@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import TextField from '@mui/material/TextField';
 import { Button, IconButton } from "@mui/material";
 import "./commentController.css";
 import { useSelector } from "react-redux";
@@ -94,19 +95,21 @@ function AddCommentController({ addComment }) {
         <div className="add-comment-controller">
             <img src={currUser.image} alt="commenter" className="commenter-image" />
             <form className="add-comment-form">
-                <textarea
+                <TextField
                     className="add-comment-input"
                     placeholder="Add your comment..."
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
-                    onInput={(e) => {
-                        e.target.style.height = "auto";
-                        e.target.style.height = `${e.target.scrollHeight}px`;
+                    multiline
+                    variant="standard"
+                    InputProps={{
+                        disableUnderline: true
                     }}
                 />
                 <IconButton
                     disabled={commentText.trim() === "" ? true : false}
                     onClick={handleSubmit}
+                    className="send-comment-icon-btn"
                 >
                     <SendRoundedIcon />
                 </IconButton>
