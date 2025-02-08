@@ -105,8 +105,8 @@
     border-bottom-right-radius: 5px;    
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
-    padding-inline : 20px;
-    padding-block : 3.5px;
+    padding-inline: 20px;
+    padding-block: 12px;
     display: flex;
     justify-content: space-between;
     animation: fadeIn 0.2s ease-in 0s 1;
@@ -120,15 +120,17 @@
 }
 
 .info-header {
-    font-size: 16px;
-    color: #333333;
-    font-weight: bolder;
-    margin-bottom: 10px;
+    font-size: 14px;
+    color: #5f6368;
+    font-weight: 500;
+    margin-bottom: 8px;
+    font-family: 'Google Sans', sans-serif;
 }
 
 .info-header span {
-    font-weight: normal;
-    color: #666666;
+    font-weight: 400;
+    color: #3c4043;
+    font-family: 'Roboto', sans-serif;
 }
 
 .custom-modal {

@@ -68,6 +68,18 @@ export default function CircleIntroImage() {
         width: 1,
     });
 
+    const StyledButton = styled(Button)({
+        fontFamily: "'Google Sans', sans-serif",
+        textTransform: 'none',
+        borderRadius: '24px',
+        padding: '8px 24px',
+        backgroundColor: '#f1f3f4',
+        color: '#202124',
+        '&:hover': {
+            backgroundColor: '#e8eaed',
+        }
+    });
+
     return (
         <>
             <div
@@ -93,14 +105,14 @@ export default function CircleIntroImage() {
             {toggleInfoContainer && (
                 <div className={`circle-info-container ${toggleInfoContainer ? 'show' : ''}`}>
                     <div className="info-group">
-                        <h3 className="info-header">Created By: <span>{adminName}</span></h3>
-                        <h3 className="info-header">Description: <span>{currClass.description}</span></h3>
-                        <h3 className="info-header">Subject: <span>{currClass.subject}</span></h3>
+                        <p className="info-header">Created By: <span>{adminName}</span></p>
+                        <p className="info-header">Description: <span>{currClass.description}</span></p>
+                        <p className="info-header">Subject: <span>{currClass.subject}</span></p>
                     </div>
                     <div className="info-group">
-                        <h3 className="info-header">Create Date: <span>{currClass.createDate}</span></h3>
-                        <h3 className="info-header">Total Students: <span>{currClass.student.length}</span></h3>
-                        <h3 className="info-header">Total Teachers: <span>{currClass.teacher.length}</span></h3>
+                        <p className="info-header">Create Date: <span>{currClass.createDate}</span></p>
+                        <p className="info-header">Total Students: <span>{currClass.student.length}</span></p>
+                        <p className="info-header">Total Teachers: <span>{currClass.teacher.length}</span></p>
                     </div>
                 </div>
             )}
@@ -113,7 +125,7 @@ export default function CircleIntroImage() {
                             <button onClick={handleClose} className="close-btn">&times;</button>
                         </div>
                         <div className="modal-body">
-                            <Button
+                            <StyledButton
                                 component="label"
                                 variant="contained"
                                 startIcon={<CloudUploadOutlined />}
@@ -124,7 +136,7 @@ export default function CircleIntroImage() {
                                     accept="image/*"
                                     onChange={(e) => setFile(e.target.files[0])}
                                 />
-                            </Button>
+                            </StyledButton>
                             {file && <p>Selected file: {file.name}</p>}
 
                             <ColorSelector setselectedColor={setselectedColor} selectedColor={selectedColor} />
