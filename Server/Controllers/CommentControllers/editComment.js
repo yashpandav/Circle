@@ -11,7 +11,7 @@ exports.editComment = async (req, res) => {
             });
         }
 
-        const { name, commentBody } = req.body;
+        const { commentBody } = req.body;
 
         let findComment = await Comment.findById(commentId);
 
@@ -30,7 +30,6 @@ exports.editComment = async (req, res) => {
             });
         }
 
-        findComment.name = name || findComment.name;
         findComment.commentBody = commentBody || findComment.commentBody;
 
         await findComment.save();

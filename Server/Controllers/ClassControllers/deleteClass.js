@@ -22,7 +22,7 @@ exports.deleteClass = async (req, res) => {
         }
 
         //* AUTHORIZIG ADMIN
-        if (response.admin.toString() !== req.user.id) {
+        if (!response.admin || response.admin.toString() !== req.user.id) {
             return res.status(401).json({
                 success: false,
                 message: "You are not authorized to delete this class"

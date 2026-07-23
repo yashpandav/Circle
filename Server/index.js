@@ -22,7 +22,15 @@ app.use(fileUpload({
 
 //* CORS
 const cors = require("cors");
-const allowedOrigins = JSON.parse(process.env.ALLOWD_ORIGIN);
+let allowedOrigins = ["http://localhost:3000"];
+try {
+    if (process.env.ALLOWD_ORIGIN) {
+        allowedOrigins = JSON.parse(process.env.ALLOWD_ORIGIN);
+    }
+} catch (error) {
+    // Fallback if the env variable is a plain string or comma-separated string rather than JSON
+    allowedOrigins = process.env.ALLOWD_ORIGIN.split(',').map(origin => origin.trim());
+}
 // console.log("CORS allowed origins: " + allowedOrigins)
 app.use(
     cors({
@@ -32,9 +40,6 @@ app.use(
     })
 );
 
-//* MAIL ROUTES
-const { sendMail } = require('./Utils/mailSender')
-app.use('/sendMail', sendMail);
 
 
 //* AUTH ROUTER IMPORTs

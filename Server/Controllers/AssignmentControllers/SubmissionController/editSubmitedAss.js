@@ -59,22 +59,29 @@ exports.editSubmimtedAss = async (req, res) => {
             });
         }
 
+        if (currSubmitted && currSubmitted.student.toString() !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not authorized to edit this submission"
+            });
+        }
+
         //* IF ASSIGNMENT IS ALREDAY SUBMITTED
         if (currSubmitted && overwrite) {
             if (file) {
                 const image = await uploadImage(file , process.env.FOLDER_NAME);
                 file = image.secure_url;
             }
-            await SubmitAssignment.findByIdAndUpdate(submitedID , {
+            const updatedSubmission = await SubmitAssignment.findByIdAndUpdate(submitedID , {
                 data,
                 file,
-            });
+            }, { new: true });
 
             return res.status(200).json({
                 success: true,
                 message: "Assignment Edited Successfully",
                 assDetails,
-                newSubmission
+                data: updatedSubmission
             });
         }
 

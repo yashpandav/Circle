@@ -61,7 +61,7 @@ export const Classes = ({ item, index }) => {
                 </div>
                 <div className="icons">
                     {
-                        user._id === admin._id ? <RateReviewOutlinedIcon/> : <TaskOutlinedIcon/>
+                        user?._id === admin?._id ? <RateReviewOutlinedIcon/> : <TaskOutlinedIcon/>
                     }
                 </div>
             </div>

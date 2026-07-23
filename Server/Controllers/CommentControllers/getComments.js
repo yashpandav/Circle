@@ -3,7 +3,7 @@ const Assignment = require('../../Models/Assignment');
 
 exports.getAllComment = async (req, res) => {
     try {
-        const { commentOn } = req.body;
+        const { commentOn } = req.query;
         const id = req.params.id;
 
         if (!commentOn) {

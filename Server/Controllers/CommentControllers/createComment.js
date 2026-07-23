@@ -13,7 +13,7 @@ exports.createComment = async (req, res) => {
         if (!commentBody) {
             return res.status(400).json({
                 success: false,
-                message: "Name and commentBody are required",
+                message: "commentBody is required",
             });
         }
 

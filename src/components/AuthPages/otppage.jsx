@@ -32,11 +32,11 @@ export default function OtpPage() {
         confirmPassword
     } = user;
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault(); 
         try {
             dispatch(setLoading(true));
-            dispatch(signUp({
+            await dispatch(signUp({
                 firstName,
                 lastName,
                 email,
@@ -44,10 +44,8 @@ export default function OtpPage() {
                 confirmPassword,
                 otp,
                 navigate
-            }
-            )
-            ).unwrap();
-            dispatch(setLoading(true));
+            })).unwrap();
+            // Loading is handled globally or we can set it to false if needed, but signup typically redirects.
         } catch (err) {
             console.log("failed to create a user", err);
             toast.error("Something went wrong while creating user", {

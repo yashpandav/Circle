@@ -29,7 +29,7 @@ export default function AssignmentDetails() {
             const foundAss = currClass.addedAssignment.find(a => a._id === assignmentId);
             if (foundAss) {
                 setAssignment(foundAss);
-                setIsTeacher(currUser._id === foundAss.teacher._id);
+                setIsTeacher(currUser?._id === foundAss?.teacher?._id);
             }
         }
     }, [currClass, assignmentId, currUser]);

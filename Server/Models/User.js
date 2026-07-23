@@ -62,7 +62,7 @@ const UserSchema = new mongoose.Schema({
     },
     todo : {
         type : mongoose.Schema.Types.ObjectId,
-        ref : "TODO"
+        ref : "ToDo"
     },
     reviewList :{
         type : mongoose.Schema.Types.ObjectId,

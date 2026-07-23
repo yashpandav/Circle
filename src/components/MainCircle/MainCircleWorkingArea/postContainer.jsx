@@ -14,14 +14,14 @@ import { setLoading } from "../../../Slices/loadingSlice";
 
 export default function PostContainer({ post }) {
     const [comments, setComments] = useState(post.comment || []);
-    const [anchorEl, setAnchorEl] = useState(null); 
+    const [anchorEl, setAnchorEl] = useState(null);
     const currUser = useSelector((state) => state.auth.user);
     const dispatch = useDispatch();
     const [isAnnouncer, setAnnouncer] = useState(false);
     const loading = useSelector((state) => state.loading.loading);
 
     useEffect(() => {
-        setAnnouncer(currUser._id === post.teacher._id);
+        setAnnouncer(currUser?._id === post?.teacher?._id);
     }, [post, currUser]);
 
     const removeFileSuffix = (fileName) => {
@@ -62,7 +62,7 @@ export default function PostContainer({ post }) {
     };
 
     const handleMenuOpen = (event) => {
-        setAnchorEl(event.currentTarget); 
+        setAnchorEl(event.currentTarget);
     };
 
     const handleMenuClose = () => {
@@ -73,15 +73,14 @@ export default function PostContainer({ post }) {
         handleMenuClose();
         setLoading(true);
         try {
-            await deletePost(post._id);
-            // Optimally we would remove the post from local state here.
+            await dispatch(deletePost(post._id));
         } catch (err) {
             console.error("Failed to delete post", err);
         }
         setLoading(false);
     };
 
-    if(loading){
+    if (loading) {
         return <LoaderComponent />
     }
 
@@ -121,7 +120,7 @@ export default function PostContainer({ post }) {
                     <Menu
                         anchorEl={anchorEl}
                         open={Boolean(anchorEl)}
-                        onClose={handleMenuClose} 
+                        onClose={handleMenuClose}
                     >
                         <MenuItem
                             onClick={handleMenuClose}

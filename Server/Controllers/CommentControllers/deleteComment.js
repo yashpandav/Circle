@@ -51,7 +51,7 @@ exports.deleteComment = async (req, res) => {
         }
 
         await Comment.findByIdAndDelete(commentId);
-        commentOnWhich.comments.pull(commentId);
+        commentOnWhich.comment.pull(commentId);
         await commentOnWhich.save();
 
         return res.status(200).json({

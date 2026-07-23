@@ -15,8 +15,13 @@ async function fetchAssignmentReview(classId, user) {
     }
 
     const reviewData = await Review.findById(user.reviewList);
-    const reviewedAssignments = reviewData ? reviewData.reviewdAss : [];
-    const notReviewedAssignments = reviewData ? reviewData.notReviedAss : thisTeacherAssignments.map(ass => ass.id);
+    let classReviewData = null;
+    if (reviewData && reviewData.byClass) {
+        classReviewData = reviewData.byClass.find(c => c.classId.toString() === classId.toString());
+    }
+    
+    const reviewedAssignments = classReviewData ? classReviewData.reviewdAss.map(id => id.toString()) : [];
+    const notReviewedAssignments = classReviewData ? classReviewData.notReviedAss.map(id => id.toString()) : thisTeacherAssignments.map(ass => ass.id);
 
     //* seperate pending and reviewed assignments
     const reviewed = thisTeacherAssignments.filter(assignment => reviewedAssignments.includes(assignment.id));
@@ -38,7 +43,7 @@ exports.pendingReview = async (req, res) => {
             });
         }
 
-        const classId = req.params.classId;
+        const classId = req.params.classId === 'all' ? null : req.params.classId;
         const joinedClasses = user.joinedClassAsAteacher;
 
         if (!joinedClasses || joinedClasses.length === 0) {
@@ -53,13 +58,23 @@ exports.pendingReview = async (req, res) => {
         const reviewData = await Promise.all(classIds.map(classId => fetchAssignmentReview(classId, user)));
 
         let reviewList = await Review.findById(user.reviewList);
+        const validReviewData = reviewData.filter(data => data !== null);
+        
         if (!reviewList) {
             reviewList = new Review({
                 user: userId,
-                byClass: reviewData.filter(data => data !== null)
+                byClass: validReviewData
             });
         } else {
-            reviewList.byClass = reviewData.filter(data => data !== null);
+            // Merge validReviewData into the existing byClass array safely
+            validReviewData.forEach(newClassData => {
+                const existingIndex = reviewList.byClass.findIndex(c => c.classId.toString() === newClassData.classId.toString());
+                if (existingIndex !== -1) {
+                    reviewList.byClass[existingIndex] = newClassData;
+                } else {
+                    reviewList.byClass.push(newClassData);
+                }
+            });
         }
 
         await reviewList.save();

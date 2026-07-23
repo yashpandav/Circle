@@ -26,7 +26,7 @@ export default function AssignmentContainer({ assignment }) {
     const loading = useSelector((state) => state.loading.loading);
 
     useEffect(() => {
-        setAnnouncer(currUser._id === assignment.teacher._id);
+        setAnnouncer(currUser?._id === assignment?.teacher?._id);
     }, [assignment, currUser]);
 
     const removeFileSuffix = (fileName) => {

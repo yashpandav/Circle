@@ -31,7 +31,7 @@ const AssignmentSchema = new mongoose.Schema({
 	},
 	dueDate: {
 		type: Date,
-		default : Date.now() * 3 * 24 * 60 * 60 * 1000
+		default: () => new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
 	},
 	submission : [
 		{

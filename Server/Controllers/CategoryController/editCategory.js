@@ -20,7 +20,7 @@ exports.editCategory = async (req, res) => {
             });
         }
 
-        const isAuthorized = findClass.teacher.includes(req.user.id) || findClass.admin.toString() === req.user.id;
+        const isAuthorized = findClass.teacher.includes(req.user.id) || (findClass.admin && findClass.admin.toString() === req.user.id);
         if (!isAuthorized) {
             return res.status(403).json({
                 success: false,

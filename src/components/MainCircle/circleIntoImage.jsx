@@ -21,7 +21,7 @@ export default function CircleIntroImage() {
 
     useEffect(() => {
         setAdminName(`${currClass.admin.firstName} ${currClass.admin.lastName}`);
-        if (currClass && currUser && currClass.admin._id === currUser._id) {
+        if (currClass && currUser && currClass?.admin?._id === currUser?._id) {
             setIsAdmin(true);
         }
     }, [currClass, currUser]);
@@ -48,7 +48,7 @@ export default function CircleIntroImage() {
         if (file) formData.append('thumbnail', file);
     
         try {
-            dispatch(updateClassDetails({ id: currClass._id, data: formData }));
+            await dispatch(updateClassDetails({ id: currClass._id, data: formData, dispatch })).unwrap();
         } catch (err) {
             console.error("SOMETHING WENT WRONG WHILE SENDING API FUNCTION", err);
         }

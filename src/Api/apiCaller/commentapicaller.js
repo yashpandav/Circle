@@ -24,3 +24,31 @@ export const createComment = (data) => {
         }
     };
 };
+
+export const deleteComment = (commentId, data) => {
+    return async (dispatch) => {
+        try {
+            const response = await apiConnector("DELETE", `${COMMENTS_API_URL.DELETE_COMMENT_API}/${commentId}`, data);
+            toast.success("Comment deleted!");
+            return response.data;
+        } catch (err) {
+            console.log("Error during deleting comment", err);
+            toast.error("Something went wrong while deleting comment");
+            return err.response ? err.response : err.message;
+        }
+    };
+};
+
+export const editComment = (commentId, data) => {
+    return async (dispatch) => {
+        try {
+            const response = await apiConnector("PUT", `${COMMENTS_API_URL.EDIT_COMMENT_API}/${commentId}`, data);
+            toast.success("Comment edited!");
+            return response.data;
+        } catch (err) {
+            console.log("Error during editing comment", err);
+            toast.error("Something went wrong while editing comment");
+            return err.response ? err.response : err.message;
+        }
+    };
+};

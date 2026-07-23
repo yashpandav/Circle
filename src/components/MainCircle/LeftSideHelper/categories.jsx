@@ -19,7 +19,7 @@ export default function CategoriesComponent() {
 
     if (!currClass) return null;
 
-    const isAdminOrTeacher = currClass.admin._id === user._id || currClass.teacher.some(t => t._id === user._id);
+    const isAdminOrTeacher = currClass?.admin?._id === user?._id || currClass?.teacher?.some(t => t?._id === user?._id);
     const categories = currClass.addedCategory || [];
 
     const handleCreateTopic = async (e) => {

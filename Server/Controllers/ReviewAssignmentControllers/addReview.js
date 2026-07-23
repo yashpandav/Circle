@@ -31,10 +31,9 @@ exports.addIntoReviewd = async (req, res) => {
 
         let found = false;
         reviewList.byClass.forEach(classReview => {
-            const index = classReview.notReviedAss.indexOf(assId);
-            if (index !== -1) {
+            if (classReview.notReviedAss.some(id => id.toString() === assId.toString())) {
                 classReview.reviewdAss.push(assId);
-                classReview.notReviedAss.splice(index, 1);
+                classReview.notReviedAss.pull(assId);
                 found = true;
             }
         });

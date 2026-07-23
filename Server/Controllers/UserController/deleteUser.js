@@ -25,15 +25,11 @@ exports.deleteUser = async (req, res) => {
         const allClasses = await Class.find({});
 
         await Promise.all(allClasses.map(async (classes) => {
-            if(classes.admin.toString() === user.id){
+            if(classes.admin && classes.admin.toString() === user.id){
                 classes.admin = null;
             }
-            if (classes.teacher.includes(user.id)) {
-                classes.teacher.pull(user.id);
-            }
-            if (classes.student.includes(user.id)) {
-                classes.student.pull(user.id);
-            }
+            classes.teacher.pull(user.id);
+            classes.student.pull(user.id);
             await classes.save();
         }));
 

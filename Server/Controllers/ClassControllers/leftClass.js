@@ -29,13 +29,10 @@ exports.leftClass = async (req, res) => {
             });
         }
 
-        if (userDetails.joinedClassAsAteacher.includes(classId)) {
-            userDetails.joinedClassAsAteacher.pull(classId);
-            classDetails.teacher.pull(userDetails.id);
-        } else if (userDetails.joinedClassAsStudent.includes(classId)) {
-            userDetails.joinedClassAsStudent.pull(classId);
-            classDetails.student.pull(userDetails.id);
-        }
+        userDetails.joinedClassAsAteacher.pull(classId);
+        userDetails.joinedClassAsStudent.pull(classId);
+        classDetails.teacher.pull(userDetails.id);
+        classDetails.student.pull(userDetails.id);
 
         await Promise.all([userDetails.save(), classDetails.save()]);
 

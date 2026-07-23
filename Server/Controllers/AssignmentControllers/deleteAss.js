@@ -8,23 +8,22 @@ const submittedAss = require('../../Models/SubmitAssignment');
 exports.deleteAss = async (req, res) => {
     try {
         const assId = req.params.id;
-        const classId = req.body.classId;
-
-        if (!assId || !classId) {
+        if (!assId) {
             return res.status(400).json({
                 success: false,
-                message: "Assignment ID and Class ID are required",
+                message: "Assignment ID is required",
             });
         }
 
         //* AUTHORIZING TEACHER || ADMIN
-        const currClass = await Class.findById(classId);
+        const currClass = await Class.findOne({ addedAssignment: assId });
         if (!currClass) {
             return res.status(404).json({
                 success: false,
-                message: "Class not found",
+                message: "Class not found for this assignment",
             });
         }
+        const classId = currClass._id;
 
         const assignment = await Assignment.findById(assId);
         if (!assignment) {
@@ -34,7 +33,7 @@ exports.deleteAss = async (req, res) => {
             });
         }
 
-        const isAuthorized = currClass.admin.toString() === req.user.id || assignment.teacher.toString() === req.user.id;
+        const isAuthorized = (currClass.admin && currClass.admin.toString() === req.user.id) || (assignment.teacher && assignment.teacher.toString() === req.user.id);
         if (!isAuthorized) {
             return res.status(403).json({
                 success: false,

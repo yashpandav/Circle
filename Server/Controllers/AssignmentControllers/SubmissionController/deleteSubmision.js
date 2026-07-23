@@ -36,13 +36,22 @@ exports.deleteSubmittedAss = async (req, res) => {
             });
         }
 
-        const currSubmitted = await SubmitAssignment.findByIdAndDelete(submittedID);
+        const currSubmitted = await SubmitAssignment.findById(submittedID);
         if (!currSubmitted) {
             return res.status(404).json({
                 success: false,
                 message: "Submission Not Found"
             });
         }
+        
+        if (currSubmitted.student.toString() !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not authorized to delete this submission"
+            });
+        }
+        
+        await SubmitAssignment.findByIdAndDelete(submittedID);
 
         await Assignment.findByIdAndUpdate(assId, {
             $pull: { submission: submittedID },

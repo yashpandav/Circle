@@ -34,17 +34,19 @@ exports.editPost = async (req, res) => {
         }
 
         if (category) {
-            const currCategory = await Category.findOne({ category });
+            const currCategory = await Category.findById(category);
             if (!currCategory) {
                 return res.status(404).json({
                     success: false,
                     message: "Category not found",
                 });
             }
-            const prevCategory = await Category.findById(findPost.category);
-            if (prevCategory) {
-                prevCategory.post.pull(postId);
-                await prevCategory.save();
+            if (findPost.category) {
+                const prevCategory = await Category.findById(findPost.category);
+                if (prevCategory) {
+                    prevCategory.post.pull(postId);
+                    await prevCategory.save();
+                }
             }
             currCategory.post.push(postId);
             await currCategory.save();

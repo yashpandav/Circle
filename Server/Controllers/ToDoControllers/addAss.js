@@ -18,12 +18,16 @@ async function fetchClassAssignments(classId, userId) {
 
         const submission = currAssignment.submission.find(sub => sub.student.equals(userId));
 
-        if (!submission && new Date(currAssignment.dueDate) > new Date()) {
-            assigned.push(currAssignment.id);
-        } else if (!submission && new Date(currAssignment.dueDate) < new Date()) {
-            missing.push(currAssignment.id);
-        } else if (submission) {
+        if (submission) {
             completed.push(currAssignment.id);
+        } else {
+            if (!currAssignment.dueDate || new Date(currAssignment.dueDate).toString() === 'Invalid Date') {
+                assigned.push(currAssignment.id);
+            } else if (new Date(currAssignment.dueDate) > new Date()) {
+                assigned.push(currAssignment.id);
+            } else {
+                missing.push(currAssignment.id);
+            }
         }
     }));
 
@@ -64,7 +68,18 @@ async function updateToDo(req, res) {
                 byClass: assignmentsByClass,
             });
         } else {
-            toDo.byClass = assignmentsByClass;
+            if (!claId || claId === 'all') {
+                toDo.byClass = assignmentsByClass;
+            } else {
+                assignmentsByClass.forEach(newClassData => {
+                    const existingIndex = toDo.byClass.findIndex(c => c.classId.toString() === newClassData.classId.toString());
+                    if (existingIndex !== -1) {
+                        toDo.byClass[existingIndex] = newClassData;
+                    } else {
+                        toDo.byClass.push(newClassData);
+                    }
+                });
+            }
         }
 
         await toDo.save();
@@ -101,6 +116,9 @@ cron.schedule('0 0 * * *', async () => {
                 user: {
                     id: user.id,
                     email: user.email
+                },
+                params: {
+                    classId: 'all'
                 }
             };
             const res = {

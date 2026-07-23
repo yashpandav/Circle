@@ -7,22 +7,21 @@ const Comment = require("../../Models/Comment");
 exports.deletePost = async (req, res) => {
     try {
         const postId = req.params.id;
-        const classId = req.body.classId;
-
-        if (!postId || !classId) {
+        if (!postId) {
             return res.status(400).json({
                 success: false,
-                message: "Both postId and classId are required",
+                message: "postId is required",
             });
         }
 
-        const findClass = await Class.findById(classId);
+        const findClass = await Class.findOne({ addedPost: postId });
         if (!findClass) {
             return res.status(404).json({
                 success: false,
-                message: "Class not found",
+                message: "Class not found for this post",
             });
         }
+        const classId = findClass._id;
         
         const findPost = await Post.findById(postId);
         if (!findPost) {
@@ -32,7 +31,7 @@ exports.deletePost = async (req, res) => {
             });
         }
 
-        const isAuthorized = findClass.admin.toString() !== req.user.id || findPost.teacher.toString() !== req.user.id;
+        const isAuthorized = (findClass.admin && findClass.admin.toString() === req.user.id) || (findPost.teacher && findPost.teacher.toString() === req.user.id);
         if (!isAuthorized) {
             return res.status(403).json({
                 success: false,

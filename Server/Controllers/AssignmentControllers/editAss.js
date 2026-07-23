@@ -52,17 +52,19 @@ exports.editAss = async (req , res) => {
 
         //* Updating category if provided
         if (category) {
-            let currCategory = await Category.findOne({ name: category });
+            let currCategory = await Category.findById(category);
             if (!currCategory) {
                 return res.status(404).json({
                     success: false,
                     message: "Category not found",
                 });
             }
-            let prevCategory = await Category.findById(findAss.category);
-            if (prevCategory) {
-                prevCategory.assignment.pull(assId);
-                await prevCategory.save();
+            if (findAss.category) {
+                let prevCategory = await Category.findById(findAss.category);
+                if (prevCategory) {
+                    prevCategory.assignment.pull(assId);
+                    await prevCategory.save();
+                }
             }
             currCategory.assignment.push(assId);
             await currCategory.save();

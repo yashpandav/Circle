@@ -30,12 +30,12 @@ export default function Login() {
         setShowPassword(!showPassword);
     };
 
-    function loginSubmitHandler(data) {
+    async function loginSubmitHandler(data) {
         // console.log(data);
         const email = data.email;
         const password = data.password;
         try {
-            dispatch(logIn({email , password , navigate , dispatch})).unwrap();
+            await dispatch(logIn({email , password , navigate , dispatch})).unwrap();
             // console.log(response);
         } catch (err) {
             // console.log("Failed to log in" , err);

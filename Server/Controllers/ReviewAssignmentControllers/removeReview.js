@@ -39,7 +39,7 @@ exports.removeFromReviewed = async (req, res) => {
         let found = false;
 
         reviewList.byClass.forEach(classReview => {
-            if (classReview.reviewdAss.includes(assId)) {
+            if (classReview.reviewdAss.some(id => id.toString() === assId.toString())) {
                 classReview.notReviedAss.push(assId);
                 classReview.reviewdAss.pull(assId);
                 found = true;

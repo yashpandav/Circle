@@ -11,6 +11,6 @@ const {deletePost} = require('../Controllers/PostControllers/deletePost');
 router.delete('/delete/:id', auth , deletePost);
 
 const {getPostDetails} = require('../Controllers/PostControllers/getPostDetails');
-router.get('/detail/:id' , getPostDetails);
+router.get('/detail/:id', auth, getPostDetails);
 
 module.exports = router;

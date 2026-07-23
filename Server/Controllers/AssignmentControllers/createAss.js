@@ -18,7 +18,7 @@ exports.createAss = async (req , res) => {
             acceptAfterDue
         } = req.body;
 
-        if(dueDate < Date.now()) {
+        if (dueDate && new Date(dueDate).getTime() < Date.now()) {
             return res.status(401).json({
                 success : false,
                 message : "Due Date should be greater than current date"
@@ -79,14 +79,9 @@ exports.createAss = async (req , res) => {
                 }
             })
 
-            //* ADDED PENDING STUDENT FOR ASSIGNMENT
-            const students = await User.find({ joinedClassAsStudent: currClassId }, 'id');
-            console.log("STUDENTS => " , students)
-            const studentIds = students.map(student => student.id);
-            console.log("STUDENTS ID => " , studentIds)
-            await Assignment.findByIdAndUpdate(newAss.id, {
-                $push: { pendingStudent: studentIds }
-            });
+            const students = await User.find({ joinedClassAsStudent: currClassId });
+            const studentIds = students.map(student => student._id);
+            newAss.pendingStudent = studentIds;
 
             if(category){
                 const currCategory = await Category.findById(category);

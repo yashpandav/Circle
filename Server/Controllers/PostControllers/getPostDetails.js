@@ -23,6 +23,25 @@ exports.getPostDetails = async (req, res) => {
             });
         }
 
+        const parentClass = await require('../../Models/Class').findOne({ addedPost: postId });
+        if (!parentClass) {
+            return res.status(404).json({
+                success: false,
+                message: "Parent class not found",
+            });
+        }
+
+        const isAuthorized = parentClass.admin.toString() === req.user.id || 
+                             parentClass.teacher.includes(req.user.id) || 
+                             parentClass.student.includes(req.user.id);
+        
+        if (!isAuthorized) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not authorized to view this post",
+            });
+        }
+
         return res.status(200).json({
             success: true,
             message: "Post found",

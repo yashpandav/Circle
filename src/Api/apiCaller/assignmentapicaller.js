@@ -29,9 +29,9 @@ export const createAssignment = createAsyncThunk(
 
 export const editAssignment = createAsyncThunk(
     'editAssignment',
-    async (assignmentData) => {
+    async ({ assId, assignmentData }) => {
         try {
-            const response = await apiConnector('POST', EDIT_ASSIGNMENT_API, assignmentData);
+            const response = await apiConnector('PUT', `${EDIT_ASSIGNMENT_API}/${assId}`, assignmentData);
             toast.success("Assignment Edited Successfully");
             return response.data;
         } catch (err) {
@@ -45,7 +45,7 @@ export const getAssignmentDetails = createAsyncThunk(
     'getAssignmentDetails',
     async (assId) => {
         try {
-            const response = await apiConnector('POST', GET_ASSIGNMENT_API, { assId });
+            const response = await apiConnector('GET', `${GET_ASSIGNMENT_API}/${assId}`);
             return response.data;
         } catch (err) {
             toast.error("Failed to Get Assignment Details");
@@ -58,7 +58,7 @@ export const deleteAssignment = createAsyncThunk(
     'deleteAssignment',
     async (assId) => {
         try {
-            const response = await apiConnector('POST', DELETE_ASSIGNMENT_API, { assId });
+            const response = await apiConnector('DELETE', `${DELETE_ASSIGNMENT_API}/${assId}`);
             toast.success("Assignment Deleted Successfully");
             return response.data;
         } catch (err) {
@@ -108,7 +108,7 @@ export const editSubmittedAssignment = createAsyncThunk(
             if (file) formData.append('file', file);
             if (overwrite !== undefined) formData.append('overwrite', overwrite);
 
-            const response = await apiConnector('POST', `${EDITED_SUBMITTED_ASSIGNMENT_API}/${assId}`, formData, {
+            const response = await apiConnector('PUT', `${EDITED_SUBMITTED_ASSIGNMENT_API}/${assId}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 }
@@ -132,7 +132,7 @@ export const deleteSubmittedAssignment = createAsyncThunk(
     'deleteSubmittedAssignment',
     async ({ assId, submittedID }) => {
         try {
-            const response = await apiConnector('POST', DELETED_SUBMITTED_ASSIGNMENT_API, { assId, submittedID });
+            const response = await apiConnector('DELETE', DELETED_SUBMITTED_ASSIGNMENT_API, { assId, submittedID });
             toast.success("Assignment Submission Deleted Successfully");
             return response.data;
         } catch (err) {

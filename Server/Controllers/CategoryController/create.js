@@ -20,7 +20,7 @@ exports.createCategory = async (req, res) => {
             });
         }
 
-        const isAuthorized = findClass.admin.toString() === req.user.id || findClass.teacher.includes(req.user.id);
+        const isAuthorized = (findClass.admin && findClass.admin.toString() === req.user.id) || findClass.teacher.includes(req.user.id);
         if (!isAuthorized) {
             return res.status(403).json({
                 success: false,

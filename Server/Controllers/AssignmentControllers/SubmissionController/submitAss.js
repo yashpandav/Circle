@@ -51,6 +51,13 @@ exports.submitAss = async (req, res) => {
 
         //* IF ASSIGNMENT IS ALREADY SUBMITTED
         if (currSubmitted) {
+            if (currSubmitted.student.toString() !== req.user.id) {
+                return res.status(403).json({
+                    success: false,
+                    message: "You are not authorized to modify this submission"
+                });
+            }
+
             if (!overwrite || overwrite === 'false') {
                 return res.status(409).json({
                     success: false,
