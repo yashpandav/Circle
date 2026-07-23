@@ -68,36 +68,6 @@ const UserSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : "Review"
     }
-    // createdAss : [
-    //     {
-    //         type : mongoose.Schema.Types.ObjectId,
-    //         ref : "Assignment"
-    //     }
-    // ],
-    // totalAss : [
-    //     {
-    //         type : mongoose.Schema.Types.ObjectId,
-    //         ref : "Assignment"
-    //     }
-    // ],
-    // submittedAss : [
-    //     {
-    //         type :  mongoose.Schema.Types.ObjectId,
-    //         ref : "Assignment"
-    //     }
-    // ],
-    // comment : [
-    //     {
-    //         type : mongoose.Schema.Types.ObjectId,
-    //         ref : "Comment"
-    //     }
-    // ],
-    // post : [
-    //     {
-    //         type : mongoose.Schema.Types.ObjectId,
-    //         ref : "Post"
-    //     }
-    // ],
 })
 
 module.exports = mongoose.model("User", UserSchema);

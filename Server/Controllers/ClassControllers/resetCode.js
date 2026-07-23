@@ -12,6 +12,13 @@ exports.resetEntryCode = async (req , res) => {
             });
         }
 
+        if (currClass.admin.toString() !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not authorized to reset the entry code"
+            });
+        }
+
         currClass.entryCode =  randomstring.generate(8);
 
         await currClass.save();

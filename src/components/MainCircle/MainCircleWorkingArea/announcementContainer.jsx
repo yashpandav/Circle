@@ -22,6 +22,7 @@ import { createPost } from "../../../Api/apiCaller/postapicaller";
 import { useDispatch } from "react-redux";
 import { LoaderComponent } from "../../Helper/Loaders/loader";
 import { setLoading } from "../../../Slices/loadingSlice";
+import { createAssignment } from "../../../Api/apiCaller/assignmentapicaller";
 
 const UserAnnouncementHeader = ({ setWriteAssignment }) => {
     const user = useSelector((state) => state?.auth?.user);
@@ -188,6 +189,10 @@ const AnnouncementWriter = ({
     youtubeLinks,
     handleTitleChange,
     handleAnnouncementChange,
+    handleDueDateChange,
+    dueDate,
+    categoryId,
+    handleCategoryChange,
     toggleWriteAssignment,
     handlePost,
     handleClose,
@@ -252,6 +257,33 @@ const AnnouncementWriter = ({
                         disableUnderline: true,
                     }}
                 />
+                {!isPost && (
+                    <TextField
+                        type="datetime-local"
+                        label="Due Date"
+                        variant="standard"
+                        InputLabelProps={{ shrink: true }}
+                        value={dueDate}
+                        onChange={handleDueDateChange}
+                        className="announcement-textfield"
+                        style={{ marginTop: '10px' }}
+                    />
+                )}
+                
+                {currClass.addedCategory && currClass.addedCategory.length > 0 && (
+                    <select
+                        value={categoryId}
+                        onChange={handleCategoryChange}
+                        className="announcement-textfield"
+                        style={{ marginTop: '10px', padding: '5px', border: 'none', borderBottom: '1px solid rgba(0, 0, 0, 0.42)', outline: 'none', backgroundColor: 'transparent' }}
+                    >
+                        <option value="">No topic</option>
+                        {currClass.addedCategory.map(cat => (
+                            <option key={cat._id} value={cat._id}>{cat.name}</option>
+                        ))}
+                    </select>
+                )}
+                
                 <div
                     ref={announcementRef}
                     contentEditable
@@ -381,7 +413,10 @@ export default function AnnouncementContainer() {
         text: "",
         links: [],
         files: [],
-        youtubeLinks: []
+        youtubeLinks: [],
+        dueDate: "",
+        categoryId: "",
+        acceptAfterDue: true
     });
 
     const handleTitleChange = (e) => {
@@ -398,9 +433,23 @@ export default function AnnouncementContainer() {
         }));
     };
 
+    const handleDueDateChange = (e) => {
+        setdata(prev => ({
+            ...prev,
+            dueDate: e.target.value
+        }));
+    };
+
+    const handleCategoryChange = (e) => {
+        setdata(prev => ({
+            ...prev,
+            categoryId: e.target.value
+        }));
+    };
+
     const handleClose = () => {
         setWriteAssignment(false);
-        setdata({ title: "", text: "", links: [], files: [], youtubeLinks: [] });
+        setdata({ title: "", text: "", links: [], files: [], youtubeLinks: [], categoryId: "" });
     };
 
     const loading = useSelector((state) => state.loading.loading);
@@ -409,21 +458,46 @@ export default function AnnouncementContainer() {
         setLoading(true);
         try {
             const formData = new FormData();
-            data.files.forEach((file) => {
-                formData.append("files", file.file);
-            });
-            formData.append('title', data.title);
-            formData.append('text', data.text);
-            data.links.forEach((link) => {
-                formData.append('links', link);
-            });
-            data.youtubeLinks.forEach((link) => {
-                formData.append('youtubeLinks', link);
-            });
-            formData.append('currClassId', currClass._id);
+            if (isPost) {
+                data.files.forEach((file) => {
+                    formData.append("files", file.file);
+                });
+                formData.append('title', data.title);
+                formData.append('text', data.text);
+                data.links.forEach((link) => {
+                    formData.append('links', link);
+                });
+                data.youtubeLinks.forEach((link) => {
+                    formData.append('youtubeLinks', link);
+                });
+                formData.append('currClassId', currClass._id);
+                if (data.categoryId) {
+                    formData.append('category', data.categoryId);
+                }
 
-            const response = await dispatch(createPost(formData)).unwrap();
-            console.log("API RESPONSE ", response);
+                const response = await dispatch(createPost(formData)).unwrap();
+                console.log("API RESPONSE ", response);
+            } else {
+                if (data.files.length > 0) formData.append("file", data.files[0].file);
+                formData.append('name', data.title);
+                formData.append('description', data.text);
+                formData.append('currClassId', currClass._id);
+                formData.append('status', 'Published');
+                formData.append('acceptAfterDue', data.acceptAfterDue);
+                if (data.dueDate) {
+                    formData.append('dueDate', data.dueDate);
+                } else {
+                    const defaultDate = new Date();
+                    defaultDate.setDate(defaultDate.getDate() + 7);
+                    formData.append('dueDate', defaultDate.toISOString());
+                }
+                if (data.categoryId) {
+                    formData.append('category', data.categoryId);
+                }
+
+                const response = await dispatch(createAssignment(formData)).unwrap();
+                console.log("API RESPONSE ", response);
+            }
         } catch (err) {
             console.error("Error During Posting Announcement");
         }
@@ -433,7 +507,9 @@ export default function AnnouncementContainer() {
             text: "",
             links: [],
             files: [],
-            youtubeLinks: []
+            youtubeLinks: [],
+            dueDate: "",
+            categoryId: ""
         }));
         setLoading(false);
         setWriteAssignment(false);
@@ -491,7 +567,7 @@ export default function AnnouncementContainer() {
         }
     };
 
-    if(loading){
+    if (loading) {
         return <LoaderComponent />
     }
 
@@ -504,10 +580,14 @@ export default function AnnouncementContainer() {
                         isPost={isPost}
                         title={data.title}
                         announcement={data.text}
+                        dueDate={data.dueDate}
+                        categoryId={data.categoryId}
                         links={data.links}
                         youtubeLinks={data.youtubeLinks}
                         handleTitleChange={handleTitleChange}
                         handleAnnouncementChange={handleAnnouncementChange}
+                        handleDueDateChange={handleDueDateChange}
+                        handleCategoryChange={handleCategoryChange}
                         toggleWriteAssignment={setIsPost}
                         handlePost={handlePost}
                         handleClose={handleClose}

@@ -2,12 +2,12 @@ const User = require('../../Models/User');
 
 exports.totalUser = async (req , res) => {
     try{
-        const user = await User.find({});
+        const userCount = await User.countDocuments({});
 
         return res.status(200).json({
             success: true,
             message: "All the users",
-            data: user
+            data: userCount
         })
     }catch(err){
         console.log(err);

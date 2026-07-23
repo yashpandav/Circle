@@ -4,6 +4,8 @@ import toast from 'react-hot-toast';
 
 const {
     CREATE_POST_API,
+    DELETE_POST_API,
+    EDIT_POST_API
 } = POST_API_URL;
 
 export const createPost = async(data) => {
@@ -17,5 +19,16 @@ export const createPost = async(data) => {
         console.log("Error During Creating Post " , err);
         toast.error('Something Went Wrong While Creating Post');
         return err.response? err.response : err.message;
+    }
+}
+
+export const deletePost = async(postId) => {
+    try {
+        const response = await apiConnector('POST', DELETE_POST_API, { postId });
+        toast.success('Post deleted successfully!');
+        return response.data;
+    } catch (err) {
+        toast.error('Failed to delete post');
+        return err.response ? err.response : err.message;
     }
 }

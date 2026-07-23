@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ClassCodeComponent from "./LeftSideHelper/classCode.jsx";
 import TaskSummaryComponent from "./LeftSideHelper/taskSummary.jsx";
+import CategoriesComponent from "./LeftSideHelper/categories.jsx";
 import { useSelector } from "react-redux";
 import './circleMainLeftContainer.css';
 
@@ -11,7 +12,7 @@ export default function CircleMainLeftContainer() {
     const [admin, setAdmin] = useState(false);
 
     useEffect(() => {
-        if (user && currClass && user._id === currClass.admin._id) {
+        if (user && currClass && currClass.admin && user._id === currClass.admin._id) {
             setAdmin(true);
         }
     }, [user, currClass]);
@@ -20,6 +21,7 @@ export default function CircleMainLeftContainer() {
         <div className="circle-main-left-container">
             {admin && <ClassCodeComponent />}
             <TaskSummaryComponent />
+            <CategoriesComponent />
         </div>
     );
 }

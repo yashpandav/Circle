@@ -52,7 +52,7 @@ async function updateToDo(req, res) {
             });
         }
 
-        const classIds = claId ? [claId] : joinedClasses;
+        const classIds = (claId && claId !== 'all') ? [claId] : joinedClasses;
 
         const allAssignments = await Promise.all(classIds.map(classId => fetchClassAssignments(classId, userId)));
         const assignmentsByClass = allAssignments.filter(Boolean); // Removes null values
@@ -71,10 +71,17 @@ async function updateToDo(req, res) {
         user.todo = toDo.id;
         await user.save();
 
+        const populatedToDo = await ToDo.findById(toDo._id)
+            .populate('byClass.classId', 'name className classTheme')
+            .populate('byClass.assigned', 'name dueDate category')
+            .populate('byClass.missing', 'name dueDate category')
+            .populate('byClass.completed', 'name dueDate category')
+            .exec();
+
         return res.status(200).json({
             success: true,
             message: "ToDo list updated successfully",
-            data : toDo
+            data: populatedToDo
         });
     } catch (err) {
         console.log(err);

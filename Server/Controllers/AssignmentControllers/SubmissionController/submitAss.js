@@ -7,7 +7,7 @@ require('dotenv').config();
 exports.submitAss = async (req, res) => {
     try {
         const assId = req.params.id;
-        const { data, submittedID } = req.body;
+        const { data, submittedID, overwrite } = req.body;
         let file = req.files?.file;
 
         if (!file && !data) {
@@ -51,7 +51,13 @@ exports.submitAss = async (req, res) => {
 
         //* IF ASSIGNMENT IS ALREADY SUBMITTED
         if (currSubmitted) {
-            // TODO: Add confirmation message that asks if the user is sure about overwriting the previous submission
+            if (!overwrite || overwrite === 'false') {
+                return res.status(409).json({
+                    success: false,
+                    overwriteRequired: true,
+                    message: "Assignment already submitted. Do you want to overwrite?"
+                });
+            }
             //? IF USER SAYS YES THEN CONTINUE
             await SubmitAssignment.findByIdAndDelete(submittedID);
             await Assignment.findByIdAndUpdate(assId, {

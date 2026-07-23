@@ -36,7 +36,8 @@ exports.forgotPassword = async (req, res) => {
             });
         }
 
-        if (new Date() > new Date(latestOTP.expiresAt)) {
+        const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+        if (new Date(latestOTP.createdAt) < tenMinutesAgo) {
             return res.status(401).json({
                 success: false,
                 message: "OTP has expired. Please request a new one.",

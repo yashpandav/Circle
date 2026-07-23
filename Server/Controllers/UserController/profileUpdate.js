@@ -13,7 +13,7 @@ exports.updateProfile = async (req, res) => {
             about
         } = req.body;
 
-        const id = req.params.userId;
+        const id = req.user.id;
 
         let image = req?.files?.image;
 

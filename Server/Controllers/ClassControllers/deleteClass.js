@@ -29,22 +29,28 @@ exports.deleteClass = async (req, res) => {
             })
         }
 
-        let allUsers = await User.find({});
-
-        await Promise.all(allUsers.map(async user => {
-            user.joinedClassAsStudent.pull(classId);
-            user.joinedClassAsAteacher.pull(classId);
-            user.createdClasses.pull(classId);
-            await user.save();
-        }));
-        allUsers = await User.find();
+        await User.updateMany(
+            {
+                $or: [
+                    { joinedClassAsStudent: classId },
+                    { joinedClassAsAteacher: classId },
+                    { createdClasses: classId }
+                ]
+            },
+            {
+                $pull: {
+                    joinedClassAsStudent: classId,
+                    joinedClassAsAteacher: classId,
+                    createdClasses: classId
+                }
+            }
+        );
         response = await Class.findByIdAndDelete(classId);
 
         return res.status(200).json({
             success: true,
             message: "Class Deleted Successfully",
-            response,
-            allUsers
+            response
         })
     } catch (err) {
         console.log(err);

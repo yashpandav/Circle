@@ -10,7 +10,7 @@ exports.editSubmimtedAss = async (req, res) => {
         const data = req.body.data;
         let file = req?.files?.file;
         const submitedID = req.body.submittedID;
-        const overwrite = true; //req.body.overwrite
+        const overwrite = req.body.overwrite === 'true' || req.body.overwrite === true;
 
         if (!file && !data) {
             return res.status(401).json({
@@ -52,15 +52,15 @@ exports.editSubmimtedAss = async (req, res) => {
         let currSubmitted = await SubmitAssignment.findById(submitedID);
 
         if(!overwrite && currSubmitted){
-            return res.status(401).json({
+            return res.status(409).json({
                 success: false,
-                message: "Assignment Already Submitted"
+                overwriteRequired: true,
+                message: "Assignment Already Submitted. Do you want to overwrite?"
             });
         }
 
         //* IF ASSIGNMENT IS ALREDAY SUBMITTED
         if (currSubmitted && overwrite) {
-            // TODO : Add conirmation message that are you sure want to overwrite previous submission
             if (file) {
                 const image = await uploadImage(file , process.env.FOLDER_NAME);
                 file = image.secure_url;

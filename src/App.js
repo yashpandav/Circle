@@ -15,6 +15,7 @@ import MainCurrCircle from './components/WorkArea/rightPanel/CurrCircle/mainPage
 import ScrollToTop from './components/Helper/scrollToTop';
 import ForgotPassword from './components/AuthPages/ForgotPassword';
 import People from './components/People/People';
+import AssignmentDetails from './components/MainCircle/AssignmentDetails/AssignmentDetails';
 import './App.css';
 
 const App = () => {
@@ -45,6 +46,7 @@ const App = () => {
         <Route path="home" element={<HomeCircle />} />
         <Route path="circle/:id" element={<MainCurrCircle />} />
         <Route path='circle/:id/people' element={<People />} />
+        <Route path="circle/:id/assignment/:assignmentId" element={<AssignmentDetails />} />
         <Route path="review" element={<Review />} />
         <Route path="todo" element={<Todo />} />
       </Route>

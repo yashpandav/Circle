@@ -3,26 +3,31 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
 import Divider from "@mui/material/Divider";
 import { Menu, MenuItem, IconButton } from "@mui/material";
+import { Assignment as AssignmentIcon } from "@mui/icons-material";
 import "./postContainer.css";
 import "./uploadFile.css";
 import { CommentController, AddCommentController } from "./commentController";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { createComment } from "../../../Api/apiCaller/commentapicaller";
-import { deletePost } from "../../../Api/apiCaller/postapicaller";
+import { deleteAssignment } from "../../../Api/apiCaller/assignmentapicaller";
 import { LoaderComponent } from "../../Helper/Loaders/loader";
 import { setLoading } from "../../../Slices/loadingSlice";
+import { toast } from "react-hot-toast";
 
-export default function PostContainer({ post }) {
-    const [comments, setComments] = useState(post.comment || []);
-    const [anchorEl, setAnchorEl] = useState(null); 
+export default function AssignmentContainer({ assignment }) {
+    const [comments, setComments] = useState(assignment.comment || []);
+    const [anchorEl, setAnchorEl] = useState(null);
     const currUser = useSelector((state) => state.auth.user);
+    const currClass = useSelector((state) => state.classes.currClass);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [isAnnouncer, setAnnouncer] = useState(false);
     const loading = useSelector((state) => state.loading.loading);
 
     useEffect(() => {
-        setAnnouncer(currUser._id === post.teacher._id);
-    }, [post, currUser]);
+        setAnnouncer(currUser._id === assignment.teacher._id);
+    }, [assignment, currUser]);
 
     const removeFileSuffix = (fileName) => {
         if (!fileName) return "";
@@ -35,8 +40,8 @@ export default function PostContainer({ post }) {
     const addComment = async (newCommentText) => {
         const data = {
             commentBody: newCommentText,
-            commentOn: "Post",
-            id: post._id,
+            commentOn: "Assignment",
+            id: assignment._id,
         };
         setLoading(true);
         await dispatch(createComment(data))
@@ -62,7 +67,7 @@ export default function PostContainer({ post }) {
     };
 
     const handleMenuOpen = (event) => {
-        setAnchorEl(event.currentTarget); 
+        setAnchorEl(event.currentTarget);
     };
 
     const handleMenuClose = () => {
@@ -73,34 +78,43 @@ export default function PostContainer({ post }) {
         handleMenuClose();
         setLoading(true);
         try {
-            await deletePost(post._id);
-            // Optimally we would remove the post from local state here.
+            await dispatch(deleteAssignment(assignment._id)).unwrap();
         } catch (err) {
-            console.error("Failed to delete post", err);
+            console.error("Failed to delete assignment", err);
         }
         setLoading(false);
     };
 
-    if(loading){
+    const handleEdit = () => {
+        handleMenuClose();
+        toast("Editing assignment feature coming soon!");
+    };
+
+    if (loading) {
         return <LoaderComponent />
     }
 
     return (
-        <div className="post-container" key={post._id}>
+        <div className="post-container" key={assignment._id}>
             <div className="post-wrapper">
                 <div className="post-header">
                     <div className="left-side-post-details">
-                        <img
-                            src={post.teacher.image}
-                            alt="Post uploader"
-                            className="post-uploader-image"
-                        />
-                        <div className="post-upload-details">
+                        <div className="post-uploader-image" style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: currClass.classTheme,
+                            color: 'white',
+                            borderRadius: '50%'
+                        }}>
+                            <AssignmentIcon />
+                        </div>
+                        <div className="post-upload-details" style={{ cursor: 'pointer' }} onClick={() => navigate(`/workarea/circle/${currClass._id}/assignment/${assignment._id}`)}>
                             <h3 className="post-uploader-name">
-                                {post.teacher.firstName} {post.teacher.lastName}
+                                {assignment.teacher.firstName} {assignment.teacher.lastName} posted a new assignment: {assignment.name}
                             </h3>
                             <h6 className="post-upload-date">
-                                {new Date(post.uploadDate)
+                                {new Date(assignment.uploadDate)
                                     .toLocaleString("en-GB", {
                                         day: "numeric",
                                         month: "long",
@@ -121,10 +135,10 @@ export default function PostContainer({ post }) {
                     <Menu
                         anchorEl={anchorEl}
                         open={Boolean(anchorEl)}
-                        onClose={handleMenuClose} 
+                        onClose={handleMenuClose}
                     >
                         <MenuItem
-                            onClick={handleMenuClose}
+                            onClick={handleEdit}
                             sx={{
                                 fontFamily: "Roboto, Arial, sans-serif",
                                 fontSize: "15px",
@@ -152,80 +166,39 @@ export default function PostContainer({ post }) {
                     </Menu>
                 </div>
                 <Divider />
-                <h1 className="post-title">{post.title}</h1>
-                <p
-                    className="post-content"
-                    dangerouslySetInnerHTML={{ __html: post.postBody }}
-                ></p>
+                <div style={{ padding: '10px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                        <h1 className="post-title" style={{ marginTop: 0 }}>{assignment.name}</h1>
+                        <p
+                            className="post-content"
+                            dangerouslySetInnerHTML={{ __html: assignment.description }}
+                            style={{ marginTop: '5px' }}
+                        ></p>
+                    </div>
+                    {assignment.dueDate && (
+                        <div style={{ color: '#5f6368', fontSize: '13px', fontWeight: '500' }}>
+                            Due {new Date(assignment.dueDate).toLocaleDateString("en-GB", { month: "short", day: "numeric" })}
+                        </div>
+                    )}
+                </div>
 
-                {post.postFiles && post.postFiles.length > 0 && (
+                {assignment.file && (
                     <div className="post-attachments">
-                        {post.postFiles.map((file) => {
-                            if (file.fileType === "pdf") {
-                                return (
-                                    <div
-                                        className="unsupported-files post-side"
-                                        key={file.fileName}
-                                    >
-                                        <div className="unsupported-file-first-div">
-                                            <PictureAsPdfRoundedIcon />
-                                            <div className="vertical-line"></div>
-                                        </div>
-                                        <div className="file-preview-name" title={file.fileName}>
-                                            <a
-                                                href={file.fileUrl}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                key={file.fileName}
-                                            >
-                                                {removeFileSuffix(file.fileName)}
-                                            </a>
-                                        </div>
-                                    </div>
-                                );
-                            } else {
-                                return (
-                                    <a
-                                        href={file.fileUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        key={file.fileName}
-                                    >
-                                        <img
-                                            src={file.fileUrl}
-                                            alt={file.fileName}
-                                            key={file.fileName}
-                                        />
-                                    </a>
-                                );
-                            }
-                        })}
-                    </div>
-                )}
-
-                {post.youtubeLinks && post.youtubeLinks.length > 0 && (
-                    <div className="youtube-links-for-post user-post-side">
-                        {post.youtubeLinks.map((link, index) => (
-                            <iframe
-                                key={index}
-                                width="340"
-                                height="200"
-                                src={`https://www.youtube.com/embed/${link}`}
-                                title="YouTube video player"
-                                frameBorder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                            ></iframe>
-                        ))}
-                    </div>
-                )}
-                {post.links && post.links.length > 0 && (
-                    <div className="links-for-post user-post-side">
-                        {post.links.map((link) => (
-                            <a href={link} target="_blank" rel="noreferrer" key={link}>
-                                {link}
-                            </a>
-                        ))}
+                        <div className="unsupported-files post-side">
+                            <div className="unsupported-file-first-div">
+                                <PictureAsPdfRoundedIcon />
+                                <div className="vertical-line"></div>
+                            </div>
+                            <div className="file-preview-name" title={assignment.file}>
+                                <a
+                                    href={assignment.file}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    View Attachment
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>

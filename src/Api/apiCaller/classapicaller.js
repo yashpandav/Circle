@@ -8,9 +8,9 @@ const {
     JOIN_CLASS_API,
     GET_CLASS_API,
     GET_ALL_CLASS_API,
-    // DELETE_CLASS_API,
+    DELETE_CLASS_API,
     UPDATE_CLASS_API,
-    // LEFT_CLASS_API,
+    LEFT_CLASS_API,
     CHANGE_ENTRY_CODE
 } = CLASS_API_URL;
 
@@ -27,10 +27,8 @@ export const fetchAllClasses = async () => {
             throw new Error("RESPONSE failed , FALSE")
         }
 
-        // console.log("RESPONSE", response);
         return response.data;
     } catch (err) {
-        // console.log("ERROR DURING FETCHING ALL CLASS API => " ,  err);
         throw err;
     }
 };
@@ -77,10 +75,8 @@ export const getClass = createAsyncThunk(
     'getClass',
     async ({ id, dispatch, navigate }) => {
         try {
-            // console.log('Fetching Class');
             const response = await apiConnector('GET', `${GET_CLASS_API}/${id}`);
             dispatch(setCurrClass(response.data.data));
-            // console.log("API RESPONSE ", response);
             navigate(`/workarea/circle/${response.data.data._id}`);
             return response.data;
         } catch (err) {
@@ -92,14 +88,14 @@ export const getClass = createAsyncThunk(
 
 export const changeEntryCode = createAsyncThunk(
     'changeEntryCode',
-    async ({ id , dispatch}) => {
+    async ({ id, dispatch }) => {
         try {
             const response = await apiConnector('POST', `${CHANGE_ENTRY_CODE}/${id}`);
             dispatch(setCurrClass(response.data.data));
             return response.data;
         } catch (err) {
             console.log("SOMETHING WENT WRONG WHILE CALLING CHANGE ENTRY CODE API ", err);
-            return err.response? err.response : err.message;
+            return err.response ? err.response : err.message;
         }
     }
 )
@@ -116,6 +112,36 @@ export const updateClassDetails = createAsyncThunk(
         } catch (err) {
             console.log("SOMETHING WENT WRONG WHILE CALLING UPDATE CLASS DETAILS API", err);
             return err.response ? err.response : err.message;
+        }
+    }
+);
+
+export const deleteClassAction = createAsyncThunk(
+    'deleteClass',
+    async ({ id, navigate }) => {
+        try {
+            const response = await apiConnector('DELETE', `${DELETE_CLASS_API}/${id}`);
+            toast.success("Class deleted successfully");
+            navigate('/workarea/home');
+            return response.data;
+        } catch (err) {
+            toast.error("Failed to delete class");
+            return err.response ? err.response.data : err.message;
+        }
+    }
+);
+
+export const leaveClassAction = createAsyncThunk(
+    'leaveClass',
+    async ({ classId, navigate }) => {
+        try {
+            const response = await apiConnector('POST', LEFT_CLASS_API, { classId });
+            toast.success("Left class successfully");
+            navigate('/workarea/home');
+            return response.data;
+        } catch (err) {
+            toast.error("Failed to leave class");
+            return err.response ? err.response.data : err.message;
         }
     }
 );

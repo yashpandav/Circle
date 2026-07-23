@@ -12,13 +12,9 @@ export default function OverAllDetails() {
         const getTotalClass = async () => {
             try {
                 const data = await fetchAllClasses();
-                setTotalClass(data?.data?.length);
-                // console.log(data.data)
-
-                data.data.map((data) => {
-                    setTotalTeacher((prev) => prev + data.teacher.length + 1);
-                    setTotalStudent((prev) => prev + data.student.length);
-                })
+                setTotalClass(data?.data?.totalClass || 0);
+                setTotalTeacher(data?.data?.totalTeacher || 0);
+                setTotalStudent(data?.data?.totalStudent || 0);
 
             } catch (err) {
                 console.error("Error fetching classes", err);

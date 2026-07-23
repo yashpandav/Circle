@@ -38,12 +38,40 @@ exports.getClass = async (req, res) => {
                     }
                 ]
             })
+            .populate({
+                path: 'addedAssignment',
+                populate: [
+                    {
+                        path: 'teacher',
+                        select: 'firstName lastName image'
+                    },
+                    {
+                        path: 'comment',
+                        populate: {
+                            path: 'user',
+                            select: 'firstName lastName image'
+                        },
+                        select: 'commentBody user'
+                    }
+                ]
+            })
             .exec();
 
         if (!findClass) {
             return res.status(404).json({
                 success: false,
                 message: "Class Not Found"
+            });
+        }
+
+        const isMember = findClass.admin?._id?.toString() === req.user.id ||
+            findClass.teacher?.some(t => t._id?.toString() === req.user.id) ||
+            findClass.student?.some(s => s._id?.toString() === req.user.id);
+
+        if (!isMember) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not authorized to view this class"
             });
         }
 

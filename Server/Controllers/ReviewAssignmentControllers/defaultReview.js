@@ -22,7 +22,7 @@ async function fetchAssignmentReview(classId, user) {
     const reviewed = thisTeacherAssignments.filter(assignment => reviewedAssignments.includes(assignment.id));
     const pending = thisTeacherAssignments.filter(assignment => notReviewedAssignments.includes(assignment.id));
 
-    return { classId, reviewed, pending };
+    return { classId, reviewdAss: reviewed, notReviedAss: pending };
 }
 
 
@@ -69,7 +69,7 @@ exports.pendingReview = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: "Review data fetched successfully",
-            data: reviewList
+            data: reviewData.filter(data => data !== null)
         });
     } catch (err) {
         console.error(err);

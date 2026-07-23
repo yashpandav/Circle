@@ -89,17 +89,13 @@ exports.createAss = async (req , res) => {
             });
 
             if(category){
-                const currCategory = await Category.findOne({ category});
+                const currCategory = await Category.findById(category);
                 if(currCategory){
                     await Category.findByIdAndUpdate(currCategory.id, {
                         $push : {
                             assignment : newAss.id
                         }
                     })
-
-                    await Assignment.findByIdAndUpdate(newAss.id, {
-                        $push: { category: currCategory.id }
-                    });
                 }
             }
             await newAss.save();

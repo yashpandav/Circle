@@ -28,15 +28,15 @@ exports.createCategory = async (req, res) => {
             });
         }
 
-        const findCategory = await Category.findOne({ name });
+        const findCategory = await Category.findOne({ name, classId });
         if (findCategory) {
             return res.status(409).json({
                 success: false,
-                message: "Category already exists"
+                message: "Category already exists in this class"
             });
         }
 
-        const newCategory = new Category({ name });
+        const newCategory = new Category({ name, classId });
         await newCategory.save();
 
         findClass.addedCategory.push(newCategory.id);

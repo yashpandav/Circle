@@ -50,8 +50,7 @@ exports.validateEmail = async (req, res) => {
         if (otpResponse.success) {
             return res.status(200).json({
                 success: true,
-                message: "OTP generated successfully",
-                otp: otpResponse.otp,
+                message: "OTP generated successfully"
             });
         } else {
             return res.status(422).json({

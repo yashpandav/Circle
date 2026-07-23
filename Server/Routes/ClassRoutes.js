@@ -9,7 +9,7 @@ const {updateClass} = require('../Controllers/ClassControllers/update');
 router.post('/update/:id' , auth , updateClass);
 
 const {getClass} = require('../Controllers/ClassControllers/getClass');
-router.get('/getdetails/:id', getClass);
+router.get('/getdetails/:id', auth, getClass);
 
 const {joinClass} = require('../Controllers/ClassControllers/joinClass');
 router.post('/join' ,auth, joinClass);

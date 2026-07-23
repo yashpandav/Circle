@@ -54,8 +54,6 @@ const assignmentRoutes = require('./Routes/AssignmentRoutes');
 app.use('/assignment', assignmentRoutes);
 
 //* REVIEWS LIST ROUTER IMPORTs
-const { pendingReview } = require('./Controllers/ReviewAssignmentControllers/defaultReview');
-app.post('/reviews/:classId', auth, pendingReview);
 const reviewlistRoutes = require('./Routes/ReviewRoutes');
 app.use('/reviews', reviewlistRoutes);
 
@@ -68,8 +66,8 @@ const postRoutes = require('./Routes/PostRoutes');
 app.use('/post', postRoutes);
 
 //* TODOS ROUTER IMPORTs
-const { updateToDo } = require('./Controllers/ToDoControllers/addAss');
-app.post('/todos:classId', auth, updateToDo);
+const todosRoutes = require('./Routes/ToDosRoutes');
+app.use('/todos', todosRoutes);
 
 //* CATEGORY ROUTES IMPORTs
 const categoryRoutes = require('./Routes/CategoryRoutes');

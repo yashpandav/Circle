@@ -79,16 +79,12 @@ exports.createPost = async (req, res) => {
         });
 
         if (category) {
-            const currCategory = await Category.findOne({ name: category });
+            const currCategory = await Category.findById(category);
             if (currCategory) {
                 await Category.findByIdAndUpdate(currCategory.id, {
                     $push: {
                         post: newPost.id,
                     },
-                });
-
-                await Post.findByIdAndUpdate(newPost.id, {
-                    $push: { category: currCategory.id },
                 });
             }
         }

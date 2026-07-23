@@ -16,7 +16,12 @@ const CategorySchema = new mongoose.Schema({
 			type: mongoose.Schema.Types.ObjectId,
             ref: "Post",
 		}
-	]
+	],
+	classId: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Class",
+		required: true
+	}
 });
 
 module.exports = mongoose.model("Category", CategorySchema);

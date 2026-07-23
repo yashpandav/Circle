@@ -38,8 +38,7 @@ exports.genrateOtp = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: "OTP Generated",
-            OTP: finalOTP
+            message: "OTP Generated successfully"
         });
 
     } catch (err) {

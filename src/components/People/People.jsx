@@ -6,14 +6,11 @@ import { Divider } from '@mui/material';
 const People = () => {
     const currClass = useSelector((state) => state.classes.currClass);
     const [isLoading] = useState(false);
-
-    // Helper function to get initials
     const getInitials = (firstName, lastName) => {
         return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase();
     };
 
-    // Group users by role
-    const teachers = [currClass.admin, ...currClass.teacher];
+    const teachers = [currClass.admin, ...currClass.teacher].filter(Boolean);
     const students = currClass.student || [];
 
     const UserCard = ({ user, role }) => (
@@ -34,7 +31,7 @@ const People = () => {
 
     const EmptyState = ({ role }) => (
         <div className="empty-state">
-            {role === 'teacher' ? 
+            {role === 'teacher' ?
                 'No teachers have joined this class yet.' :
                 'No students have joined this class yet.'}
         </div>
@@ -56,9 +53,9 @@ const People = () => {
                     ) : teachers.length > 0 ? (
                         teachers.map((teacher, index) => (
                             <React.Fragment key={teacher._id}>
-                                <UserCard 
-                                    user={teacher} 
-                                    role={teacher._id === currClass.admin._id ? 'admin' : 'teacher'}
+                                <UserCard
+                                    user={teacher}
+                                    role={currClass.admin && teacher._id === currClass.admin._id ? 'admin' : 'teacher'}
                                 />
                                 {index < teachers.length - 1 && <Divider />}
                             </React.Fragment>
@@ -78,11 +75,11 @@ const People = () => {
                 <div className="users-list">
                     {students.map((student, index) => (
                         <React.Fragment key={student._id}>
-                            <UserCard 
-                                user={student} 
+                            <UserCard
+                                user={student}
                                 role="student"
                             />
-                            {index < students.length - 1 && <Divider variant="middle"/>}
+                            {index < students.length - 1 && <Divider variant="middle" />}
                         </React.Fragment>
                     ))}
                 </div>

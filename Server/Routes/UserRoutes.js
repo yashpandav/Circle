@@ -3,7 +3,7 @@ const router = express.Router();
 const {auth} = require('../Middleware/auth')
 
 const {updateProfile} = require('../Controllers/UserController/profileUpdate');
-router.put('/updateprofile' , updateProfile)
+router.put('/updateprofile' , auth, updateProfile)
 
 const {deleteUser} = require('../Controllers/UserController/deleteUser');
 router.delete('/deleteuser' , auth , deleteUser)

@@ -8,4 +8,7 @@ router.post('/add' , auth , addIntoReviewd);
 const {removeFromReviewed} = require('../Controllers/ReviewAssignmentControllers/removeReview');
 router.post('/remove' , auth , removeFromReviewed);
 
+const { pendingReview } = require('../Controllers/ReviewAssignmentControllers/defaultReview');
+router.post('/:classId', auth, pendingReview);
+
 module.exports = router;
