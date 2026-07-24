@@ -71,7 +71,7 @@ export default function Login() {
                                     {...register("email", {
                                         required: "E-Mail is Required",
                                         pattern: {
-                                            value: /^[\w\-\.]+@([\w-]+\.)+[\w-]{2,}$/gmu,
+                                            value: /^[\w\-.]+@([\w-]+\.)+[\w-]{2,}$/gmu,
                                             message: "Invalid email address",
                                         },
                                     })}

@@ -10,23 +10,22 @@ import "./todo.css";
 export default function ToDo() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    
+
     const loading = useSelector(state => state.loading.loading);
     const [todoData, setTodoData] = useState([]);
     const [activeTab, setActiveTab] = useState("Assigned"); // "Assigned", "Missing", "Done"
 
-    const fetchTodos = async () => {
-        try {
-            const res = await dispatch(getTodoAssignments()).unwrap();
-            if (res && res.data && res.data.byClass) {
-                setTodoData(res.data.byClass);
-            }
-        } catch (err) {
-            console.error("Failed to fetch todos", err);
-        }
-    };
-
     useEffect(() => {
+        const fetchTodos = async () => {
+            try {
+                const res = await dispatch(getTodoAssignments()).unwrap();
+                if (res && res.data && res.data.byClass) {
+                    setTodoData(res.data.byClass);
+                }
+            } catch (err) {
+                console.error("Failed to fetch todos", err);
+            }
+        };
         fetchTodos();
     }, [dispatch]);
 
@@ -96,21 +95,21 @@ export default function ToDo() {
             <div className="todo-header">
                 <h1>To-do</h1>
             </div>
-            
+
             <div className="todo-tabs">
-                <div 
+                <div
                     className={`todo-tab ${activeTab === "Assigned" ? "active" : ""}`}
                     onClick={() => setActiveTab("Assigned")}
                 >
                     Assigned
                 </div>
-                <div 
+                <div
                     className={`todo-tab ${activeTab === "Missing" ? "active" : ""}`}
                     onClick={() => setActiveTab("Missing")}
                 >
                     Missing
                 </div>
-                <div 
+                <div
                     className={`todo-tab ${activeTab === "Done" ? "active" : ""}`}
                     onClick={() => setActiveTab("Done")}
                 >

@@ -38,16 +38,3 @@ export default function Home() {
     );
 }
 
-
-
-
-{/* <TypeAnimation
-                    sequence={[
-                        'Where Learning Comes Full Circle'
-                    ]}
-                    repeat={Infinity}
-                    wrapper="h1"
-                    speed={50}
-                    cursor={false}
-                    deletionSpeed={50}
-                /> */}

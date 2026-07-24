@@ -1,14 +1,13 @@
 import {POST_API_URL} from '../apis.js';
 import {apiConnector} from '../apiconfig.js';
 import toast from 'react-hot-toast';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 
 const {
     CREATE_POST_API,
     DELETE_POST_API,
     EDIT_POST_API
 } = POST_API_URL;
-
-import { createAsyncThunk } from '@reduxjs/toolkit';
 
 export const createPost = createAsyncThunk(
     'createPost',

@@ -22,7 +22,7 @@ export default function OtpPage() {
         if (!user) {
             navigate("/auth/signup");
         }
-    }, []);
+    }, [navigate, user]);
 
     const {
         firstName,

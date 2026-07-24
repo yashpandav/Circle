@@ -14,14 +14,10 @@ export default function TaskSummaryComponent() {
 
     useEffect(() => {
         if (assignments.length > 0) {
-            assignmentArranger();
+            const sortedAssignments = [...assignments].sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
+            setTopAssignments(sortedAssignments[0]);
         }
     }, [assignments]);
-
-    function assignmentArranger() {
-        const sortedAssignments = [...assignments].sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
-        setTopAssignments(sortedAssignments[0]);
-    }
 
     return (
         <div className="task-summary-container">

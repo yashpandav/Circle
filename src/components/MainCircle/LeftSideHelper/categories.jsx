@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { createCategory, deleteCategory } from "../../../../Api/apiCaller/categoryapicaller";
-import { setLoading } from "../../../Slices/loadingSlice";
+import { createCategory, deleteCategory } from "../../../Api/apiCaller/categoryapicaller";
+
 import { IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate, useSearchParams } from "react-router-dom";

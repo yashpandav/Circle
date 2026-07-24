@@ -6,7 +6,6 @@ import toast from 'react-hot-toast';
 const {
     CREATE_CATEGORY_API,
     DELETE_category_API,
-    GET_CATEGORY_API,
     EDIT_CATEGORY_API
 } = CATEGORY_API_URL;
 

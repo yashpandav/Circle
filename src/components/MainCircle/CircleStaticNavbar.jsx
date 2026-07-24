@@ -4,7 +4,7 @@ import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import "./circleStaticNav.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { updateClassDetails, deleteClassAction, leaveClassAction, changeEntryCode } from "../../../Api/apiCaller/classapicaller";
+import { updateClassDetails, deleteClassAction, leaveClassAction, changeEntryCode } from "../../Api/apiCaller/classapicaller";
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 

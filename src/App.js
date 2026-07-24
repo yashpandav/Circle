@@ -32,7 +32,7 @@ const App = () => {
       }
     };
     relogin();
-  }, [login]);
+  }, [login, dispatch, navigate]);
 
   return (
     <><Routes>

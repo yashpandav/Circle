@@ -10,7 +10,7 @@ import { setLoading } from '../../../Slices/loadingSlice';
 import './AssignmentDetails.css';
 
 export default function AssignmentDetails() {
-    const { id, assignmentId } = useParams();
+    const { assignmentId } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const currClass = useSelector((state) => state.classes.currClass);

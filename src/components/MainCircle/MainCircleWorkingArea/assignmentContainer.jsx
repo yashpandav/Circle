@@ -29,13 +29,7 @@ export default function AssignmentContainer({ assignment }) {
         setAnnouncer(currUser?._id === assignment?.teacher?._id);
     }, [assignment, currUser]);
 
-    const removeFileSuffix = (fileName) => {
-        if (!fileName) return "";
-        const nameParts = fileName.split("|");
-        return nameParts.length > 1
-            ? nameParts[0] + "." + fileName.split(".").pop()
-            : fileName;
-    };
+
 
     const addComment = async (newCommentText) => {
         const data = {

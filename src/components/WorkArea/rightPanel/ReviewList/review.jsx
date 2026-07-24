@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getPendingReviews, addIntoReviewed, removeFromReviewed } from "../../../../Api/apiCaller/reviewapicaller";
@@ -20,7 +20,7 @@ export default function Review() {
     const [reviewData, setReviewData] = useState([]);
     const [activeTab, setActiveTab] = useState("To Review");
 
-    const fetchReviews = async () => {
+    const fetchReviews = useCallback(async () => {
         setLoading(true);
         try {
             const res = await dispatch(getPendingReviews()).unwrap();
@@ -29,11 +29,11 @@ export default function Review() {
             console.error("Failed to fetch reviews", err);
         }
         setLoading(false);
-    };
+    }, [dispatch]);
 
     useEffect(() => {
         fetchReviews();
-    }, [dispatch]);
+    }, [fetchReviews]);
 
     const handleMarkReviewed = async (assId) => {
         await dispatch(addIntoReviewed(assId)).unwrap();
