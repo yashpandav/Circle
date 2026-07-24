@@ -4,24 +4,41 @@
 }
 
 #login-container{
-    margin-top: 1.3rem;
+    padding: 2.5rem 3rem 2.5rem 2.5rem;
+    background-color: #ffffff;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-#loginbtn{
-    width: 75%;
-    font-size: 1em;
+#loginbtn {
+    width: 60%;
+    font-size: 1rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
     margin: auto;
     margin-block: 1.2rem;
     border: none;
     color: #fff;
-    border-radius: 150px;
-    background-size: 300% 100%;
-    background-image: linear-gradient(to right, #218380, #339989, #09bc8a, #17bebb);
-    transition: all 0.4s ease-in-out;
+    border-radius: 8px;
+    padding: 10px 0;
+    background-color: #00a896;
+    transition: all 0.3s ease-in-out;
+    text-transform: none;
+    box-shadow: 0 4px 10px rgba(0, 168, 150, 0.2);
 }
 
 #loginbtn:hover {
-    background-position: 100% 0;
+    background-color: #11706d;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(17, 112, 109, 0.3);
+}
+
+.form-footer-link {
+    text-align: right;
+    margin: 0.6rem 0 0 0;
 }
 
 .form-group:last-child{
@@ -30,8 +47,49 @@
 }
 
 #forgotpass{
-    font-size: large;
+    font-size: 0.95rem;
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 600;
     text-decoration: none;
-    color:#457b9d;
+    color: #11706d;
     text-align: right;
+    transition: color 0.3s ease;
+}
+
+#forgotpass:hover {
+    color: #00a896;
+    text-decoration: underline;
+}
+
+#googlebtn {
+    width: 60%;
+    margin: auto;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: #4a5568 !important;
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    padding: 10px 0 !important;
+    text-transform: none !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05) !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease-in-out !important;
+}
+
+#googlebtn:hover {
+    background-color: #f8fafc !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.08) !important;
+}
+
+/* Responsive Styles */
+@media (max-width: 480px) {
+    #loginbtn, #googlebtn {
+        width: 100%;
+    }
 }

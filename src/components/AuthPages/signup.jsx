@@ -7,6 +7,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import Divider from "@mui/material/Divider";
+import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import { sendOTP } from "../../Api/apiCaller/authapicaller";
 import { useDispatch, useSelector } from "react-redux";
@@ -66,11 +67,12 @@ export default function SignUp() {
 
     return (
         <div id="body">
-            <img
-                src={require("../../Data/Images/5oob9hmb.png")}
-                alt="signup-teacher-img"
-                id="signup-teacher-img"
-            ></img>
+            <div className="auth-card-wrapper">
+                <img
+                    src={require("../../Data/Images/5oob9hmb.png")}
+                    alt="signup-teacher-img"
+                    id="signup-teacher-img"
+                />
             <div className="main-signup-form">
                 <div className="form-container">
                     <h1>New Account?</h1>
@@ -214,30 +216,23 @@ export default function SignUp() {
                             Register
                         </Button>
                     </form>
-                    <Divider>or</Divider>
-                    <Button variant="contained">Register with Google</Button>
+                    <Divider sx={{ margin: '1.2rem 0' }}>or</Divider>
+                    <Button variant="contained" id="googlebtn">
+                        <FcGoogle size={24} style={{ marginRight: '8px' }} />
+                        Register with Google
+                    </Button>
                 </div>
                 <svg
-                    width="67px"
-                    height="578px"
-                    viewBox="0 0 67 578"
-                    version="1.1"
+                    className="wave-divider"
+                    viewBox="0 0 60 100"
+                    preserveAspectRatio="none"
                     xmlns="http://www.w3.org/2000/svg"
+                    style={{ flexShrink: 0, display: 'block', alignSelf: 'stretch', width: '50px' }}
                 >
-                    <g
-                        id="Page-1"
-                        stroke="none"
-                        strokeWidth="1"
-                        fill="none"
-                        fillRule="evenodd"
-                    >
-                        <path
-                            d="M11.3847656,-5.68434189e-14 C-7.44726562,36.7213542 5.14322917,126.757812 49.15625,270.109375 C70.9827986,341.199016 54.8877465,443.829224 0.87109375,578 L67,578 L67,-5.68434189e-14 L11.3847656,-5.68434189e-14 Z"
-                            id="Path"
-                            stroke="#4db6ac"
-                            fill="#4db6ac"
-                        ></path>
-                    </g>
+                    <path
+                        d="M40,0 C60,25 60,75 40,100 L0,100 L0,0 Z"
+                        fill="#ffffff"
+                    />
                 </svg>
                 <div id="secondary">
                     <div className="sec-content">
@@ -250,6 +245,7 @@ export default function SignUp() {
                         </Link>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
     );

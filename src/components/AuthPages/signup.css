@@ -5,48 +5,79 @@
 }
 
 #body {
-    background-color: #e0f7fa;
+    background-color: #eff7f6;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
 }
 
+.auth-card-wrapper {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
 #signup-teacher-img {
-    padding-top: 21rem;
-    height: 15rem;
-    animation: fadeIn 0.2s ease-in;
+    height: 19rem;
+    flex-shrink: 0;
+    margin-bottom: -4px;
+    animation: fadeIn 0.4s ease-in;
+    filter: drop-shadow(2px 6px 10px rgba(0,0,0,0.15));
 }
 
 .main-signup-form {
-    height: auto;
-    display: flex;
-    background-color: #ffffff;
-    border-radius: 10px 4rem 4rem 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 860px;
+    display: grid;
+    grid-template-columns: 1fr 55px auto;
+    background-color: #00a896;
+    border-radius: 12px 4rem 4rem 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    max-width: 900px;
     overflow: hidden;
-    width: 60%;
+    width: 62vw;
+    max-width: 880px;
+    animation: cardEntrance 0.3s ease-out forwards;
+}
+
+@keyframes cardEntrance {
+    from {
+        opacity: 0.6;
+        transform: scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .form-container {
-    padding-inline: 2.5rem;
-    flex: 1;
-    animation: fadeIn 0.2s ease-in;
+    padding: 2.5rem 2.5rem;
+    background-color: #ffffff;
+    position: relative;
+    z-index: 1;
+}
+
+.wave-divider {
+    display: block;
+    width: 100%;
+    height: 100%;
 }
 
 .form-container h1 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
     text-align: center;
-    color: #00796b;
+    color: #11706d;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
 }
-
 
 .form-container pre {
     text-align: center;
-    color: #00796b;
-    font-size: 1.2rem;
+    color: #4a5568;
+    font-size: 1.1rem;
+    font-family: 'Josefin Sans', sans-serif;
+    margin-bottom: 1rem;
 }
 
 #signup-form {
@@ -61,27 +92,32 @@
 }
 
 #registerbutton {
-    width: 75%;
-    font-size: 1em;
+    width: 60%;
+    font-size: 1rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
     border: none;
-    border-radius: 150px;
+    border-radius: 8px;
     margin: auto;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.5rem;
     margin-top: 1rem;
+    padding: 10px 0;
     color: #fff;
-    background-size: 300% 100%;
-    background-image: linear-gradient(to right, #218380, #339989, #09bc8a, #17bebb);
-    transition: all 0.4s ease-in-out;
+    background-color: #00a896;
+    transition: all 0.3s ease-in-out;
+    text-transform: none;
+    box-shadow: 0 4px 10px rgba(0, 168, 150, 0.2);
 }
 
 #registerbutton:hover {
-    background-position: 100% 0;
-    transition: all 0.4s ease-in-out;
+    background-color: #11706d;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(17, 112, 109, 0.3);
 }
 
 #secondary {
-    width: 20rem;
-    background-color: #4db6ac;
+    width: 22rem;
+    background-color: #00a896;
     border-radius: 0 4rem 4rem 0;
     text-align: center;
     display: flex;
@@ -91,19 +127,32 @@
 }
 
 .sec-content h2 {
-    font-size: 1.8rem;
-    animation: fadeIn 0.2s ease-in;
+    font-size: 2rem;
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
 }
 
 .sec-content pre {
-    font-size: 1.2rem;
-    animation: fadeIn 0.2s ease-in;
+    font-size: 1.1rem;
+    color: #e0f7fa;
+    font-family: 'Josefin Sans', sans-serif;
+    margin-bottom: 1.5rem;
 }
 
 #login-btn {
-    color: #e0f7fa;
-    font-size: 1.3rem;
-    animation: fadeIn 0.2s ease-in;
+    color: #11706d;
+    background-color: white;
+    font-size: 1.1rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    padding: 8px 24px;
+    border-radius: 8px;
+    text-transform: none;
+}
+#login-btn:hover {
+    background-color: #f0f0f0;
 }
 
 .sec-content .btn {
@@ -113,7 +162,6 @@
     padding: 0.5rem 1rem;
     border-radius: 5px;
     transition: all 0.3s ease-in-out;
-    animation: fadeIn 0.2s ease-in;
 }
 
 .sec-content .btn:hover {
@@ -145,5 +193,82 @@
 
     100% {
         opacity: 1;
+    }
+}
+
+#googlebtn {
+    width: 60%;
+    margin: auto;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: #4a5568 !important;
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    padding: 10px 0 !important;
+    text-transform: none !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05) !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease-in-out !important;
+}
+
+#googlebtn:hover {
+    background-color: #f8fafc !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.08) !important;
+}
+
+/* Responsive Styles */
+@media (max-width: 968px) {
+    .main-signup-form {
+        width: 85%;
+        margin-left: 3rem; /* account for teacher image overhanging left */
+    }
+}
+
+@media (max-width: 768px) {
+    .main-signup-form {
+        display: flex;
+        flex-direction: column;
+        width: 95%;
+        max-width: 450px;
+        border-radius: 16px;
+        max-height: 95vh;
+        overflow-y: auto;
+        margin-left: 0;
+    }
+    .main-signup-form > svg {
+        display: none;
+    }
+    #signup-teacher-img {
+        display: none;
+    }
+    #secondary {
+        width: 100%;
+        border-radius: 0 0 16px 16px;
+        padding: 2rem 0;
+    }
+    .form-container {
+        padding: 2rem 1.5rem;
+        border-radius: 16px 16px 0 0;
+    }
+    .alertMsg {
+        width: 90%;
+    }
+}
+
+@media (max-width: 480px) {
+    .form-container h1 {
+        font-size: 1.8rem;
+    }
+    #registerbutton, #googlebtn, #loginbtn, #loginbtn {
+        width: 100%;
+    }
+    .form-group {
+        margin: 0rem 0rem 1rem 0rem;
     }
 }
