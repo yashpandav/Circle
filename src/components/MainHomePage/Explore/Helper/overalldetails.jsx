@@ -36,8 +36,7 @@ export default function OverAllDetails() {
                     enableScrollSpy={true}
                     className='counter'
                 ></CountUp>
-                <h4>𝒞𝓁𝒶𝓈𝓈𝑒𝓈 𝒞𝓇𝑒𝒶𝓉𝑒𝒹
-                </h4>
+                <h4>Classes Created</h4>
             </div>
             <div className='total'>
                 <CountUp start={0}
@@ -46,8 +45,7 @@ export default function OverAllDetails() {
                     enableScrollSpy={true}
                     className='counter'
                 ></CountUp>
-                <h4>𝒯𝑒𝒶𝒸𝒽𝑒𝓇 𝒥𝑜𝒾𝓃𝑒𝒹
-                </h4>
+                <h4>Teachers Joined</h4>
             </div>
             <div className='total'>
                 <CountUp start={0}
@@ -56,8 +54,7 @@ export default function OverAllDetails() {
                     enableScrollSpy={true}
                     className='counter'
                 ></CountUp>
-                <h4>𝒮𝓉𝓊𝒹𝑒𝓃𝓉 𝒥𝑜𝒾𝓃𝑒𝒹
-                </h4>
+                <h4>Students Enrolled</h4>
             </div>
         </div>
     );

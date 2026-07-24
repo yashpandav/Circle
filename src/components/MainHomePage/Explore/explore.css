@@ -1,56 +1,110 @@
 #explore-section {
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%;
     text-align: center;
-    padding: 50px 20px;
+    padding: 80px max(5%, calc(50vw - 750px)) 120px;
     position: relative;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-#arrow{
+#arrow {
     position: absolute;
-    left: 60.4%;
-    bottom: 17.5%;
-    z-index: -1;
+    left: 50%;
+    margin-left: 170px;
+    bottom: 145px;
+    z-index: 0;
+    opacity: 0.7;
+    transform: scaleX(-1) rotate(-10deg);
 }
 
 #explore-section h2 {
-    font-size: 2.5em;
-    color: #0d47a1; 
-    margin-bottom: 20px;
+    font-size: 3rem;
+    color: #d81159;
+    /* Brand Pink for headings */
+    margin-bottom: 0.5rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+}
+
+#explore-section h2::after {
+    content: '';
+    width: 80px;
+    height: 5px;
+    background: linear-gradient(90deg, #d81159, #ff6b6b);
+    display: block;
+    margin: 1rem auto 1.5rem;
+    border-radius: 3px;
 }
 
 #explore-section p {
-    font-size: 1.2em;
-    color: #555;
-    margin-bottom: 40px;
+    font-size: 1.3rem;
+    color: #4a5568;
+    margin-bottom: 3.5rem;
+    font-family: 'Josefin Sans', sans-serif;
+    line-height: 1.6;
 }
 
 #explore-buttons {
     display: flex;
     justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap; 
+    gap: 2rem;
+    flex-wrap: wrap;
 }
 
-.explore-btn{
-    padding: 15px 30px;
-    font-size: 1.2em;
-    color: white;
-    background-color: #0d47a1; 
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+.explore-btn {
+    padding: 12px 28px !important;
+    font-size: 1.15rem !important;
+    font-family: 'Josefin Sans', sans-serif !important;
+    font-weight: 600 !important;
+    color: white !important;
+    background-color: #00a896 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+    text-transform: none !important;
+    box-shadow: 0 4px 10px rgba(0, 168, 150, 0.3) !important;
+}
+
+.explore-btn:hover {
+    background-color: #11706d !important;
+    color: white !important;
+    transform: translateY(-4px);
+    box-shadow: 0 6px 15px rgba(17, 112, 109, 0.4) !important;
 }
 
 /* Responsive adjustments */
+@media (max-width: 968px) {
+    #arrow {
+        display: none;
+    }
+}
+
 @media (max-width: 768px) {
+    #explore-section {
+        padding-top: 40px;
+        padding-bottom: 80px;
+    }
+
+    #explore-section h2 {
+        font-size: 2.4rem;
+    }
+
+    #explore-section p {
+        font-size: 1.15rem;
+        padding: 0 1rem;
+    }
+
     #explore-buttons {
         flex-direction: column;
-        gap: 10px;
+        gap: 1.5rem;
+        width: 100%;
+        padding: 0 2rem;
+        box-sizing: border-box;
     }
 
     .explore-btn {
         width: 100%;
-        padding: 15px 0;
     }
 }

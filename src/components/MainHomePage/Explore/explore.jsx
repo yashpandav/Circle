@@ -55,9 +55,9 @@ export default function Explore() {
             <TiltedArrowSVG />
             <p>Discover the various ways you can engage with our platform.</p>
             <div id="explore-buttons">
-                <Button variant="outlined" style={{padding : "10px 20px" , color : "#0077b1" , borderColor : "#219ebc"}}>Join Class</Button>
-                <Button variant="outlined" style={{padding : "10px 20px" , color : "#0077b1" , borderColor : "#219ebc"}}>Create Class</Button>
-                <Button variant="outlined" style={{padding : "10px 20px" , color : "#0077b1" , borderColor : "#219ebc"}}>Go To WorkArea</Button>
+                <Button variant="outlined" className="explore-btn">Join Class</Button>
+                <Button variant="outlined" className="explore-btn">Create Class</Button>
+                <Button variant="outlined" className="explore-btn">Go To WorkArea</Button>
             </div>
         </div>
     );

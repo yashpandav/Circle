@@ -1,80 +1,78 @@
 #about-us {
-    padding: 50px 20px;
+    padding: 100px max(5%, calc(50vw - 750px));
     background-color: #eff7f6;
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 #about-us h2 {
-    font-size: 2.5em;
-    color: #d81159;
+    font-size: 3rem;
+    color: #11706d;
     text-align: center;
-    margin-bottom: 20px;
-    position: relative;
+    margin-bottom: 0;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
 }
 
 #about-us h2::after {
     content: '';
-    width: 60px;
-    height: 4px;
-    background: linear-gradient(45deg, #ff6b6b, #f06595, #00a896, #1c7ed6);
+    width: 80px;
+    height: 5px;
+    background: linear-gradient(90deg, #11706d, #00a896, #004346);
     display: block;
-    margin: 15px auto;
-    border-radius: 2px;
+    margin: 0.8rem auto 1.5rem;
+    border-radius: 3px;
 }
 
 #about-us-p {
-    font-size: 1.2em;
-    color: #666;
-    line-height: 1.6;
+    font-size: 1.3rem;
+    color: #4a5568;
+    line-height: 1.7;
     text-align: center;
     max-width: 800px;
-    margin: 0 auto 30px;
+    margin: 0 auto 3rem;
+    font-family: 'Josefin Sans', sans-serif;
 }
 
 #about-us h4 {
-    font-size: 1.8em;
-    color: #e12f59;
+    font-size: 2.2rem;
+    color: #d81159;
     text-align: center;
-    margin-bottom: 40px;
-    position: relative;
+    margin-bottom: 0;
+    font-family: 'Montserrat', sans-serif;
 }
 
 #about-us h4::after {
     content: '';
-    width: 40px;
-    height: 4px;    
-    background: linear-gradient(45deg, #ff6b6b, #f06595, #00a896, #1c7ed6);
+    width: 60px;
+    height: 5px;
+    background: linear-gradient(90deg, #d81159, #ff6b6b, #f06595);
     display: block;
-    margin: 15px auto;
-    border-radius: 2px;
+    margin: 0.8rem auto 2.5rem;
+    border-radius: 3px;
 }
 
 /* Responsive */
-@media (max-width: 1200px) {
-    #about-us {
-        padding: 50px 10px;
-    }
-}
-
 @media (max-width: 768px) {
-    #about-us h2 {
-        font-size: 2em;
-        padding: 0px;
+    #about-us {
+        padding-top: 60px;
+        padding-bottom: 60px;
     }
 
-    #about-us p {
-        font-size: 1em;
-        max-width: 100%;
-        margin-left: auto;
-        margin-right: auto;
+    #about-us h2 {
+        font-size: 2.4rem;
+    }
+
+    #about-us-p {
+        font-size: 1.15rem;
+        padding: 0 1rem;
     }
 
     #about-us h4 {
-        font-size: 1.5em;
-    }
-
-    #about-us {
-        padding: 10px;
+        font-size: 1.9rem;
+        margin-bottom: 2.5rem;
     }
 }

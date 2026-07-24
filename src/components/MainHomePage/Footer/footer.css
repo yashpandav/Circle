@@ -1,7 +1,7 @@
 .footer {
     background-color: #f0f0f0;
     color: #333;
-    padding: 3rem 1rem;
+    padding: 80px max(5%, calc(50vw - 750px));
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -13,15 +13,16 @@
     background-position: center;
     background-attachment: fixed;
     position: relative;
+    overflow: hidden;
 }
 
 .top-footer-div {
     width: 100%;
-    height: 30px;
-    background-color: #f9f9f9;
+    height: 40px;
+    background-color: #ffffff;
     border-bottom-left-radius: 50px;
     border-bottom-right-radius: 50px;
-    box-shadow: 0px 15px 10px rgba(0, 0, 0, 0.226);
+    box-shadow: 0px 15px 25px rgba(0, 0, 0, 0.1);
     position: absolute;
     top: 0px; 
 }
@@ -33,50 +34,100 @@
     justify-content: center;
     flex-grow: 1;
     z-index: 1;
+    /* Modern Scroll-driven reveal animation */
+    animation: revealText linear forwards;
+    animation-timeline: view();
+    animation-range: entry 0% cover 50%;
 }
 
-.love-text,
-.by-text,
-.name-text {
-    margin: 1rem 0;
+@keyframes revealText {
+    from {
+        opacity: 0;
+        transform: translateY(150px) scale(0.9);
+        filter: blur(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
 }
 
 .love-text {
-    font-size: 3.6em;
-    font-weight: bold;
+    font-size: 3rem;
+    font-weight: 300;
     color: #ff6b6b;
+    font-family: 'Josefin Sans', sans-serif;
+    font-style: italic;
+    margin: 0;
+    letter-spacing: 2px;
 }
 
 .by-text {
-    font-size: 2.6em;
-    color: #333;
+    font-size: 1.5rem;
+    color: #666;
+    font-family: 'Montserrat', sans-serif;
+    margin: 1rem 0;
+    font-weight: 300;
 }
 
 .name-text {
-    font-size: 6.6em;
+    font-size: 6rem;
     margin: 0;
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #00a896);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    letter-spacing: 5px;
+    text-transform: uppercase;
 }
 
 .social-icons {
     display: flex;
     justify-content: center;
-    gap: 2rem;
-    margin-top: 2rem;
+    gap: 3rem;
+    margin-top: 4rem;
+    animation: revealIcons linear forwards;
+    animation-timeline: view();
+    animation-range: entry 0% cover 30%;
+}
+
+@keyframes revealIcons {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .social-icons a {
     color: #333;
-    font-size: 2.5vw;
-    transition: color 0.3s ease;
+    font-size: 2.5rem;
+    transition: all 0.3s ease;
+}
+
+.social-icons a:hover {
+    transform: translateY(-8px);
 }
 
 .social-icons a:nth-child(1):hover {
     color: #0a66c2;
 }
 .social-icons a:nth-child(2):hover {
-    color: black;
+    color: #000;
+}
+
+@media (max-width: 968px) {
+    .name-text { font-size: 4rem; }
+    .love-text { font-size: 2.5rem; }
+}
+
+@media (max-width: 768px) {
+    .name-text { font-size: 3rem; letter-spacing: 2px;}
+    .love-text { font-size: 2rem; }
 }

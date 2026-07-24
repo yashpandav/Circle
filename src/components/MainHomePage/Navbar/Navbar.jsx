@@ -49,7 +49,7 @@ const Navbar = () => {
                             <Link to="auth/login" id="login-link">
                                 <Button
                                     variant="outlined"
-                                    style={{ color: "#11706d", border: "green", fontSize: "1.14vw" }}
+                                    style={{ color: "#11706d", border: "green", fontSize: "1rem" }}
                                 >
                                     Login
                                 </Button>

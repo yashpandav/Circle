@@ -20,7 +20,7 @@ export default function Home() {
                     <div id='join-class-home-btn'>
                         Join Class
                     </div>
-                    <div id='straightLin'></div>
+                    <span id='btn-separator'>or</span>
                     <div id='create-class-home-btn'>
                         Create Class
                     </div>

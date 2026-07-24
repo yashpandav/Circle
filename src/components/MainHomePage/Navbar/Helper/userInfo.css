@@ -2,14 +2,13 @@
     position: relative;
     display: flex;
     align-items: center;
-    margin-right: 20px;
-    margin-left: 10px;
 }
 
 #user-img {
     border-radius: 50%;
-    height: 67%;
-    width: 67%;
+    height: 45px;
+    width: 45px;
+    object-fit: cover;
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -20,8 +19,8 @@
 
 #user-dialog {
     position: absolute;
-    top: 46px;
-    right: 20px;
+    top: 60px;
+    right: 0px;
     width: 280px;
     background-color: white;
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);

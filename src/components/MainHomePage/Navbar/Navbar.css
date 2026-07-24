@@ -2,15 +2,15 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
+    padding: 15px 5%;
     background-color: #ffffffcc;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     position: fixed;
     width: 100%;
-    height: 7vh;
-    top: 0;  
+    top: 0;
     backdrop-filter: blur(10px);
     z-index: 1000;
+    box-sizing: border-box;
 }
 
 #logo {
@@ -26,6 +26,7 @@
 #nav {
     display: flex;
     align-items: center;
+    gap: 20px;
 }
 
 #nav ul {
@@ -33,29 +34,30 @@
     list-style: none;
     margin: 0;
     padding: 0;
+    gap: 25px;
 }
 
 #nav #li {
-    margin: 0 15px;
     transition: all 0.3s;
 }
 
-#li a , #logo a{
+#li a,
+#logo a {
     text-decoration: none;
     color: #004346;
     font-weight: bold;
     position: relative;
     transition: color 0.3s;
     cursor: pointer;
-    font-size: 1.4vw;
+    font-size: 1.2rem;
 }
 
 .is-current a {
     color: #f72585 !important;
-}   
+}
 
 #nav a::after {
-    content: '';    
+    content: '';
     position: absolute;
     width: 0;
     height: 2px;
@@ -81,8 +83,7 @@ h2 {
 
 .btns {
     display: flex;
-    gap: 10px;
-    margin-right: 40px;
+    gap: 15px;
     margin-left: 10px;
 }
 
@@ -94,5 +95,10 @@ h2 {
     cursor: pointer;
     border-radius: 5px;
     max-width: fit-content;
-    font-size: 1.14vw;
+    font-size: 1rem;
+}
+@media (max-width: 768px) {
+    #nav ul {
+        display: none;
+    }
 }

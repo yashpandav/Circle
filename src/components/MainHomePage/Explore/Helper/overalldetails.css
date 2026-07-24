@@ -1,29 +1,49 @@
 .main-overall {
-    padding: 50px 20px;
-    max-width: 1200px;
-    margin: 0 auto;
+    padding: 2rem 0 4rem;
+    width: 100%;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
     flex-wrap: wrap;
+    gap: 3rem;
 }
 
 .total {
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    margin: 20px;
 }
 
 .total .counter {
-    font-size: 6em;
-    line-height: 1;
-    color: #1d3348;
+    font-size: 5rem;
+    line-height: 1.1;
+    color: #11706d; /* Primary teal */
+    font-weight: 800;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .total h4 {
-    position: absolute;
-    top: 2%;
-    left: 100%;
-    font-size: 1.2em;
-    color: #21525f;
+    font-size: 1.4rem;
+    color: #4a5568;
+    margin-top: 0.5rem;
+    font-family: 'Josefin Sans', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+@media (max-width: 768px) {
+    .main-overall {
+        gap: 2rem;
+        padding-bottom: 2rem;
+    }
+    
+    .total .counter {
+        font-size: 3.5rem;
+    }
+
+    .total h4 {
+        font-size: 1.1rem;
+    }
 }

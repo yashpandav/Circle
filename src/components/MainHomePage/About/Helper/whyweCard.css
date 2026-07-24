@@ -102,10 +102,10 @@
     .why-we-card {
         margin: auto;
     }
-    
+
     .why-we-card:hover::before {
         opacity: 1;
         transform: rotate(45deg) translate(48.4%, 48.4%);
     }
-    
+
 }
