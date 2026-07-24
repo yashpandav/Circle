@@ -8,83 +8,79 @@ exports.otpMailTemplate = (otp) => {
         <style>
             body {
                 font-family: 'Helvetica Neue', Arial, sans-serif;
-                background-color: #f0f0f0;
+                background-color: #eff7f6;
                 margin: 0;
                 padding: 0;
                 -webkit-text-size-adjust: none;
                 -ms-text-size-adjust: none;
             }
             .container {
-                max-width: 600px;
-                margin: 20px auto;
+                max-width: 500px;
+                margin: 40px auto;
                 background-color: #ffffff;
-                padding: 20px;
-                border-radius: 10px;
-                box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             }
             .header {
                 text-align: center;
-                padding: 10px 0;
-                border-bottom: 2px solid #232023;
-            }
-            .header img {
-                max-width: 100px;
-                margin-bottom: 10px;
+                padding-bottom: 20px;
+                border-bottom: 1px solid #e2e8f0;
             }
             .header h1 {
                 margin: 0;
-                font-size: 24px;
-                color: #333333;
-                font-weight: bold;
-                text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+                font-size: 22px;
+                color: #d81159;
+                font-weight: 800;
             }
             .content {
-                padding: 20px;
+                padding: 30px 20px;
                 text-align: center;
             }
             .content p {
-                font-size: 16px;
-                color: #333333;
-                margin: 20px 0;
+                font-size: 15px;
+                color: #4a5568;
+                line-height: 1.6;
+                margin: 10px 0;
             }
             .otp {
                 display: inline-block;
-                font-size: 30px;
-                color: #030001;
-                padding: 10px 20px;
-                border-radius: 5px;
-                letter-spacing: 4px;
+                font-size: 32px;
+                color: #00a896;
+                background-color: #f0fdfa;
+                padding: 15px 30px;
+                border: 2px dashed #00a896;
+                border-radius: 8px;
+                letter-spacing: 8px;
                 font-weight: bold;
+                margin: 20px 0;
             }
             .footer {
                 text-align: center;
-                padding: 20px;
-                border-top: 2px solid #232023;
+                padding-top: 20px;
+                border-top: 1px solid #e2e8f0;
             }
             .footer p {
-                font-size: 14px;
-                color: #777777;
+                font-size: 13px;
+                color: #718096;
             }
         </style>
     </head>
     <body>
         <div class="container">
             <div class="header">
-                <img src="https://res.cloudinary.com/domjlns2q/image/upload/v1717001685/Circle/ukogkxycxtiguvf5hkc8.png" alt="Circle Logo">
-                <h1>Circle Says Verify Your Email Address 😊</h1>
+                <h1>Verify Your Email</h1>
             </div>
             <div class="content">
                 <p>Hello,</p>
-                <p>Thank you for registering with us. Please use the following OTP to verify your email address:</p>
+                <p>Thank you for signing up for Circle. Please use the following code to verify your email address:</p>
                 <div class="otp">${otp}</div>
-                <p>This OTP is valid for 10 minutes. Do not share this code with anyone.</p>
-                <p>If you did not request this, please ignore this email.</p>
+                <p>This code is valid for 10 minutes. Please do not share it with anyone.</p>
             </div>
             <div class="footer">
-                <p>Thank you,<br>Team Circle 😊</p>
+                <p>Thank you,<br>The Circle Team</p>
             </div>
         </div>
     </body>
-    </html>
-    `;
+    </html>`;
 }

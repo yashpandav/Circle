@@ -44,10 +44,11 @@ export const createClass = async ({ data }) => {
             "Content-Type": "multipart/form-data",
         });
         console.log("API RESPONSE ", response);
-        toast.success('Successfully created new Circle')
+        toast.success('Successfully created new Circle');
+        return true;
     } catch (err) {
         console.log("SOMETHING WENT WRONG WHILE CALLING CREATE CLASS API ", err);
-        return err.response ? err.response : err.message;
+        return false;
     }
 }
 

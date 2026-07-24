@@ -4,96 +4,96 @@ exports.successSignUp = (firstName , lastName) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>SignUp Completed</title>
+        <title>Welcome to Circle</title>
         <style>
             body {
                 font-family: 'Helvetica Neue', Arial, sans-serif;
-                background-color: #f0f0f0;
+                background-color: #eff7f6;
                 margin: 0;
                 padding: 0;
                 -webkit-text-size-adjust: none;
                 -ms-text-size-adjust: none;
             }
             .container {
-                max-width: 600px;
-                margin: 20px auto;
-                background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
-                padding: 20px;
-                border-radius: 10px;
-                box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-                position: relative; /* Ensure relative positioning for the overlay */
-            }
-            .background-image {
-                background-image: url('https://res.cloudinary.com/domjlns2q/image/upload/v1717001685/Circle/ukogkxycxtiguvf5hkc8.png');
-                background-size: cover;
-                background-repeat: no-repeat;
-                background-position: center;
-                position: absolute;
-                top: 10%;
-                left: 10%;
-                width: 80%;
-                height: 80%;
-                border-radius: 10px;
-                z-index: -1; 
+                max-width: 500px;
+                margin: 40px auto;
+                background-color: #ffffff;
+                padding: 40px 30px;
+                border-radius: 12px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             }
             .header {
                 text-align: center;
-                padding-bottom: 10px;
-                border-bottom: 2px solid #7b7888;
+                padding-bottom: 20px;
+                border-bottom: 1px solid #e2e8f0;
             }
             .header h1 {
                 margin: 0;
                 font-size: 24px;
-                color: #333333;
-                font-weight: bold;
-                text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+                color: #d81159;
+                font-weight: 800;
             }
             .content {
-                padding: 20px;
+                padding: 30px 10px;
                 text-align: center;
             }
+            .content h2 {
+                color: #00a896;
+                font-size: 20px;
+                margin-bottom: 15px;
+            }
             .content p {
-                font-size: 16px;
-                color: #333333;
-                margin: 20px 0;
+                font-size: 15px;
+                color: #4a5568;
+                line-height: 1.6;
+                margin: 15px 0;
+            }
+            .features {
+                background-color: #f0fdfa;
+                padding: 20px;
+                border-radius: 8px;
+                text-align: left;
+                margin-top: 25px;
+            }
+            .features ul {
+                margin: 0;
+                padding-left: 20px;
+                color: #4a5568;
+                font-size: 14px;
+                line-height: 1.8;
             }
             .footer {
                 text-align: center;
-                padding: 20px;
-                border-top: 2px solid #7b7888;
+                padding-top: 20px;
+                border-top: 1px solid #e2e8f0;
             }
             .footer p {
-                font-size: 14px;
-                color: #2b2828;
-            }
-            .header img {
-                max-width: 100px;
-                margin-bottom: 10px;
+                font-size: 13px;
+                color: #718096;
             }
         </style>
     </head>
     <body>
         <div class="container">
             <div class="header">
-                <img src="https://res.cloudinary.com/domjlns2q/image/upload/v1717001685/Circle/ukogkxycxtiguvf5hkc8.png" alt="CircleLogo">
-                <h1>Sign Up Completed Successfully 😊</h1>
+                <h1>Sign Up Complete!</h1>
             </div>
             <div class="content">
-                <p>Hello, ${firstName} ${lastName}</p>
-                <p>Welcome to Circle! Your sign up process is now complete.</p>
-                <p>Your account is ready to use. Here are some next steps:</p>
-                <ol style="text-align: left;">
-                    <li>Explore our platform and discover all the features.</li>
-                    <li>Complete your profile to enhance your experience.</li>
-                    <li>Join classes or create your own to start learning.</li>
-                </ol>
-                <p>If you have any questions or need assistance, feel free to contact our support team.</p>
+                <h2>Welcome to Circle, ${firstName} ${lastName}!</h2>
+                <p>Your account has been successfully created and verified. We are thrilled to have you join our platform.</p>
+                <div class="features">
+                    <p style="margin-top: 0; font-weight: bold; color: #00a896;">What's next?</p>
+                    <ul>
+                        <li>Set up your personal profile</li>
+                        <li>Explore available classes and groups</li>
+                        <li>Connect with students and teachers</li>
+                    </ul>
+                </div>
             </div>
             <div class="footer">
-                <p>Thank you for choosing Circle,<br>Team Circle 😊</p>
+                <p>Happy Learning,<br>The Circle Team</p>
             </div>
         </div>
     </body>
-    </html>
-    `;
+    </html>`;
 }

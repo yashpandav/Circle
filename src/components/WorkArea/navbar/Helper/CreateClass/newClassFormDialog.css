@@ -1,57 +1,43 @@
 .custom-dialog {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    animation: fadeIn 0.5s ease-in-out;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+}
+
+.custom-dialog .MuiDialog-paper {
+    border-radius: 12px;
+    animation: fadeInDialog 0.5s ease-in-out;
 }
 
 .custom-dialog-title {
-    background-color: #5bc0be;
+    background-color: #00a896;
     color: #ffffff;
-    padding: 16px;
+    padding: 24px;
     text-align: center;
+    font-weight: 800;
+    font-size: 1.5rem;
+    letter-spacing: 0.5px;
 }
 
 .custom-dialog-content {
-    padding-block: 3px;
-    font-size: 1rem;
-    color: #333333;
+    padding-top: 20px !important;
+    font-size: 1.05rem;
+    color: #4a5568;
+    line-height: 1.7;
 }
 
-.custom-dialog-content strong {
-    color: #3a506b;
+.side-by-side {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
 }
 
-.custom-dialog-content:last-child {
-    color: #b7094c; 
-    font-weight: bold;
-    margin-top: 16px;
-}
-
-.custom-dialog-button {
-    color: #ffffff;
-    font-weight: bold;
-    margin: 8px;
-    padding: 8px 16px;
-    border-radius: 4px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    background-color: #3a506b;  
-}
-
-.custom-dialog-button:hover {
-    background-color: #5bc0be; 
-    transform: scale(1.05);
-}
-
-@keyframes fadeIn {
+@keyframes fadeInDialog {
     from {
         opacity: 0;
-        transform: translateY(-20px);
+        transform: translateY(-40px);
     }
     to {
         opacity: 1;
         transform: translateY(0);
     }
-}
-.side-by-side {
-    display: flex;
-    gap: 16px;
 }

@@ -48,11 +48,11 @@ exports.joinClass = async (req, res) => {
 
         await Promise.all([findClass.save(), user.save()]);
 
-        await sendMail(
+        /* await sendMail(
             user.email,
             "Class Joined",
             `You have successfully joined ${findClass.name}`
-        );
+        ); */
 
         return res.status(200).json({
             success: true,

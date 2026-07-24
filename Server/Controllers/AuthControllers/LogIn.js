@@ -57,7 +57,7 @@ exports.LogIn = async (req, res) => {
             message: "Logged In Successfully",
         });
 
-        try {
+        /* try {
             await sendMail(
                 findUser.email,
                 "LogIn Successfully",
@@ -66,7 +66,7 @@ exports.LogIn = async (req, res) => {
             console.log("Login mail sent successfully");
         } catch (mailError) {
             console.error("Login mail error:", mailError.message);
-        }
+        } */
     } catch (err) {
         console.error(err);
         return res.status(500).json({

@@ -64,11 +64,11 @@ const CreateClassDialog = ({ setCreateDialog }) => {
                         Failure to adhere to these terms and conditions may result in removal from the circle and potential further action.
                     </DialogContentText>
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} variant='text'>
+                <DialogActions style={{ padding: '20px', justifyContent: 'space-between' }}>
+                    <Button onClick={handleClose} variant='outlined' style={{ color: '#d81159', borderColor: '#d81159', fontWeight: 'bold' }}>
                         Disagree
                     </Button>
-                    <Button onClick={handleAgree} variant='text'>
+                    <Button onClick={handleAgree} variant='contained' style={{ backgroundColor: '#00a896', color: 'white', fontWeight: 'bold' }}>
                         Agree
                     </Button>
                 </DialogActions>

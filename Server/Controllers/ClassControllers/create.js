@@ -63,11 +63,11 @@ exports.createClass = async (req, res) => {
         });
 
         //* Send email notification
-        await sendMail(
+        /* await sendMail(
             req.user.email,
             "Class Created",
             `Your Class has been created. Your Class Code is ${newClass.entryCode} and your Class URL is ${newClass.entryUrl}`
-        );
+        ); */
 
         console.log("Created Class => ", newClass);
         return res.status(200).json({
