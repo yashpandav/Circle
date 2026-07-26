@@ -97,7 +97,7 @@ export default function LeftMain() {
                             className={`left-link sub-menu-closed ${activeLink === "/workarea/review" ? "active" : ""
                                 }`}
                         >
-                            <RateReviewOutlinedIcon className="icon-closed" />
+                            <RateReviewOutlinedIcon />
                         </Link>
                     </div>
                 )}
@@ -147,7 +147,7 @@ export default function LeftMain() {
                             className={`left-link sub-menu-closed ${activeLink === "/workarea/todo" ? "active" : ""
                                 }`}
                         >
-                            <TaskOutlinedIcon className="icon-closed" />
+                            <TaskOutlinedIcon />
                         </Link>
                     </div>
                 )}

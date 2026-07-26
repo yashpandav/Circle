@@ -32,7 +32,7 @@ const UserAnnouncementHeader = ({ setWriteAssignment }) => {
         <div className="announcement-header" onClick={() => setWriteAssignment(true)}>
             <img src={user.image} alt="user-img" className="user-img" />
             <div className="announce-content">
-                <h6 className="announce-heading" style={{ color: currClass.classTheme }}>
+                <h6 className="announce-heading">
                     Announce something to your circle...
                 </h6>
                 <p className="announce-description">
@@ -51,7 +51,6 @@ const ToggleSwitch = ({ isPost, setIsPost }) => {
                 <div
                     key={type}
                     className={`toggle-button ${isPost === (type === 'Post') ? "active-opc" : ""}`}
-                    style={{ color: isPost === (type === 'Post') ? currClass.classTheme : "#276e7e" }}
                     onClick={() => setIsPost(type === 'Post')}
                 >
                     {type === 'Post' ? <PostAdd style={{ marginRight: "5px" }} /> : <Assignment style={{ marginRight: "5px" }} />}
@@ -97,9 +96,6 @@ const LinkInput = ({ onSubmit, onCancel }) => {
     const [linkUrl, setLinkUrl] = useState('');
     const [isFocused, setIsFocused] = useState(false);
 
-    const currClass = useSelector((state) => state.classes.currClass);
-    const borderFocusColor = currClass.classTheme;
-
     const handleSubmit = (e) => {
         e.preventDefault();
         onSubmit(linkUrl);
@@ -109,10 +105,7 @@ const LinkInput = ({ onSubmit, onCancel }) => {
 
     return (
         <form onSubmit={handleSubmit}>
-            <div className={`link-input-container ${isFocused ? 'focused' : ''}`}
-                style={{
-                    border: isFocused ? `1px solid ${borderFocusColor}` : `1px solid #276e7e`
-                }}>
+            <div className={`link-input-container ${isFocused ? 'focused' : ''}`}>
                 <input
                     type="url"
                     value={linkUrl}
@@ -126,11 +119,7 @@ const LinkInput = ({ onSubmit, onCancel }) => {
                 <IconButton type="button" onClick={onCancel} className="close-link-btn" title="Cancel">
                     <CloseIcon className="icon" style={{ color: 'grey' }} />
                 </IconButton>
-                <Button variant="outlined" type="submit" style={{
-                    border: 'none',
-                    color: 'white',
-                    backgroundColor: borderFocusColor
-                }}>
+                <Button variant="outlined" type="submit" className="add-link-btn">
                     Add
                 </Button>
             </div>
@@ -252,7 +241,7 @@ const AnnouncementWriter = ({
                     id="header-textfield"
                     InputProps={{
                         style: {
-                            caretColor: currClass.classTheme,
+                            caretColor: 'var(--class-theme)',
                         },
                         disableUnderline: true,
                     }}
@@ -290,7 +279,7 @@ const AnnouncementWriter = ({
                     className="announcement-textfield content-editable"
                     onInput={handleAnnouncementChangeInternal}
                     style={{
-                        caretColor: currClass.classTheme,
+                        caretColor: 'var(--class-theme)',
                     }}
                     dir="ltr"
                 ></div>

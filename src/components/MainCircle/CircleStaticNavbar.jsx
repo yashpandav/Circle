@@ -64,20 +64,20 @@ export default function CircleStaticNavbar() {
         <div
             className="navbar-container"
             style={{
-                borderBottom: `2px solid ${currClass.classTheme}`,
+                borderBottom: `1px solid #e2e8f0`,
             }}
         >
             <div className="circle-navbar">
                 {navItems.map((item) => (
                     <div
                         key={item}
-                        className="navbar-list"
-                        onClick={() => setActiveTab(item)}
-                        style={{
-                            backgroundColor: activeTab === item ? 'rgba(0, 0, 0, 0.03)' : 'transparent',
+                        className={`navbar-list ${activeTab === item ? 'active-tab' : ''}`}
+                        onClick={() => {
+                            setActiveTab(item);
+                            navigate(`/workarea/circle/${currClass._id}/${item.toLowerCase()}`);
                         }}
                     >
-                        <h3 style={{ color: activeTab === item ? currClass.classTheme : '#1a1a1a' }} onClick={() => navigate(`/workarea/circle/${currClass._id}/${item.toLowerCase()}`)}>
+                        <h3>
                             {item}
                         </h3>
                     </div>

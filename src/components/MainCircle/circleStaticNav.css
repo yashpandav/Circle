@@ -1,33 +1,47 @@
 .navbar-container {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
+    align-items: flex-end;
+    width: 100%;
+    margin: 0;
     height: 64px;
+    padding: 0 2rem;
+    box-sizing: border-box;
 }
 
 .circle-navbar {
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 1rem;  
+    gap: 2rem;  
+    height: 100%;
 }
 
 .navbar-list {
-    padding: 8px 16px;
-    transition: all 0.3s ease;
-    border-radius: 24px;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    height: 100%;
     cursor: pointer;
+    box-sizing: border-box;
+}
+
+.navbar-list:hover h3 {
+    color: #1e293b !important;
 }
 
 .navbar-list h3 {
-    font-size: 1.2em;
-    color: #1a1a1a;
+    font-size: 1.05rem;
     margin: 0;
+    transition: all 0.2s ease;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #64748b;
     font-weight: 500;
-    transition: all 0.3s ease;
-    letter-spacing: 0.3px;
+}
+
+.navbar-list.active-tab h3 {
+    color: var(--class-theme) !important;
+    font-weight: 600;
 }
 
 .navbar-setting-class {

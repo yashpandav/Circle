@@ -21,16 +21,12 @@ export default function TaskSummaryComponent() {
 
     return (
         <div className="task-summary-container">
-            <div className="task-summary-header" style={{
-                borderColor: currClass.classTheme
-            }}>
-                <pre style={{
-                    color: currClass.classTheme
-                }}>Task</pre>
+            <div className="task-summary-header">
+                <h4>Upcoming Tasks</h4>
             </div>
             <div className="task-list">
                 {assignments.length === 0 ? (
-                    <div className="no-task-message">𝑯𝒐𝒐𝒓𝒂𝒚 ! 𝑵𝒐 𝒕𝒂𝒔𝒌 𝒂𝒅𝒅𝒆𝒅 𝒚𝒆𝒕🥳</div>
+                    <div className="no-task-message">No tasks due soon.</div>
                 ) : (
                     <>
                         <div className="task-item">

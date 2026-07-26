@@ -1,16 +1,18 @@
 .categories-container {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
     padding: 16px;
     background: white;
-    margin-top: 16px;
+    margin-top: 0px;
+    width: 200px;
+    box-sizing: border-box;
 }
 
 .categories-title {
     margin: 0 0 12px 0;
-    font-size: 14px;
-    font-weight: 500;
-    color: #3c4043;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #334155;
 }
 
 .create-topic-form {
@@ -21,11 +23,12 @@
 
 .topic-input {
     flex: 1;
-    border: 1px solid #dadce0;
-    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
     padding: 6px 10px;
-    font-size: 13px;
+    font-size: 0.9rem;
     outline: none;
+    transition: all 0.2s ease;
 }
 
 .topic-input:focus {
@@ -35,11 +38,12 @@
 .topic-submit-btn {
     background-color: transparent;
     border: none;
-    color: #1a73e8;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 0.9rem;
     padding: 0 8px;
+    transition: all 0.2s ease;
+    color: var(--class-theme);
 }
 
 .topic-submit-btn:disabled {
@@ -68,16 +72,28 @@
     justify-content: space-between;
     padding: 6px 8px;
     border-radius: 4px;
-    transition: background-color 0.2s;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
 }
 
 .category-item:hover {
     background-color: #f1f3f4;
 }
 
+.category-item.active-topic {
+    background-color: color-mix(in srgb, var(--class-theme) 15%, transparent);
+    border-left: 3px solid var(--class-theme);
+    padding-left: 5px;
+}
+
+.category-item.active-topic .category-name {
+    color: var(--class-theme);
+    font-weight: 600;
+}
+
 .category-name {
-    font-size: 13px;
-    color: #3c4043;
+    font-size: 0.95rem;
+    color: #475569;
     font-weight: 500;
 }
 

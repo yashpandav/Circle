@@ -18,19 +18,17 @@ export default function SortBy({sortby , setSortBy}) {
                     <p>Sort By: </p>
                     <Select
                         id='select'
-                        labelId="sortby-label"
                         value={sortby}
                         onChange={handleChange}
                         size="small"
                         variant="standard"
                         disableUnderline
                         sx={{
-                            backgroundColor: '#f1f5f9',
-                            borderRadius: '20px',
-                            padding: '2px 12px',
-                            fontWeight: 500,
-                            color: '#1e293b',
-                            fontSize: '0.95rem'
+                            minWidth: 80,
+                            backgroundColor: 'transparent',
+                            fontWeight: 600,
+                            fontSize: '0.95rem',
+                            color: '#1e293b'
                         }}
                     >
                         <MenuItem value='All'>All</MenuItem>
@@ -40,7 +38,7 @@ export default function SortBy({sortby , setSortBy}) {
                     </Select>
                 </div>
             </div>
-            <div className='divider'></div>
+            <div className='sort-divider'></div>
         </>
     );
 }

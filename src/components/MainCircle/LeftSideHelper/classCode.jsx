@@ -9,7 +9,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefaultOutlined';
-import { Divider, IconButton } from "@mui/material";
+import { Divider, IconButton, Typography } from "@mui/material";
 import { changeEntryCode } from '../../../Api/apiCaller/classapicaller.js'
 import "./classCode.css";
 
@@ -28,10 +28,20 @@ const CustomTooltip = styled(({ className, ...props }) => (
 
 export default function ClassCodeComponent() {
     const currClass = useSelector((state) => state.classes.currClass);
+    const currUser = useSelector((state) => state.auth.user);
     const [tooltipOpen, setTooltipOpen] = useState(false);
     const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+    const [isAdmin, setAdmin] = useState(false);
 
     const dispatch = useDispatch();
+
+    React.useEffect(() => {
+        if (currUser && currClass) {
+            if (currClass.admin && currUser._id === currClass.admin._id) {
+                setAdmin(true);
+            }
+        }
+    }, [currUser, currClass]);
 
     const handleMenuOpen = (event) => {
         setMenuAnchorEl(event.currentTarget);
@@ -65,17 +75,17 @@ export default function ClassCodeComponent() {
         dispatch(changeEntryCode({ id, dispatch }));
     }
 
+    if (!isAdmin) return null;
+
     return (
         <div className="main-circle-code-container">
             <div className="entry-code-header">
-                <pre>Entry Code</pre>
-                <IconButton className={`btn-more ${menuAnchorEl ? 'clicked' : ''}`} onClick={handleMenuOpen} >
-                    <MoreVertIcon />
+                <h4>Entry Code</h4>
+                <IconButton className={`btn-more ${menuAnchorEl ? 'clicked' : ''}`} onClick={handleMenuOpen} size="small">
+                    <MoreVertIcon fontSize="small" />
                 </IconButton>
             </div>
-            <div className="entry-code" style={{
-                color: currClass.classTheme
-            }}>
+            <div className="entry-code">
                 {currClass.entryCode}
                 <CustomTooltip
                     title="Copied!"

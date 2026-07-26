@@ -1,22 +1,23 @@
 .task-summary-container {
     background-color: #ffffff;
-    padding: 15px;
-    border-radius: 7px;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), 0 -1px 1px rgba(0, 0, 0, 0.1), 1px 0 1px rgba(0, 0, 0, 0.1), -1px 0 1px rgba(0, 0, 0, 0.1);
-    width: 170px;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    width: 200px;
     height: max-content;
+    box-sizing: border-box;
 }
 
 .task-summary-header {
-    border-bottom: 2px solid #156f85;
+    border-bottom: 2px solid var(--class-theme);
     padding-bottom: 10px;
 }
 
-.task-summary-header pre {
-    font-size: 18px;
+.task-summary-header h4 {
+    font-size: 1.05rem;
     margin: 0;
-    color: #156f85;
-    font-weight: bold;
+    color: var(--class-theme);
+    font-weight: 600;
 }
 
 .task-list {
@@ -24,14 +25,13 @@
 }
 
 .no-task-message {
-    font-size: 16px;
-    color: #444;
-    text-align: left;
-    padding: 10px;
-    border: 2px dashed #ddd;
-    border-radius: 7px;
-    background-color: #fdfdfd;
-    letter-spacing: 0.5px;
+    font-size: 0.9rem;
+    color: #64748b;
+    text-align: center;
+    padding: 16px 10px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    letter-spacing: 0.3px;
 }
 
 .task-item {

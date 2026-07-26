@@ -48,7 +48,7 @@
 }
 
 .left-links {
-    margin-block: 0.25rem;
+    margin-block: 0.6rem;
     cursor: pointer;
     border-radius: 12px;
     transition: all 0.3s ease;
@@ -102,10 +102,17 @@
     align-items: center;
 }
 
-.left-link.menu-closed {
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-end;
+.left-link.menu-closed,
+.left-link-main.menu-closed {
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: 0 !important;
+}
+
+.left-link.menu-closed svg,
+.left-link-main.menu-closed svg {
+    margin-right: 14px !important;
 }
 
 .sub-menu {
@@ -163,21 +170,17 @@
     color: #00a896 !important;
 }
 
-.icon-closed {
-    padding: 8px;
-    font-size: 27px;
-    transition: all 0.3s ease;
-    color: #64748b;
-}
 
-.sub-menu:hover .icon-closed {
-    color: #00a896;
-    transform: scale(1.05);
-}
 
 .sub-menu-closed {
     flex-direction: row;
     justify-content: flex-end;
+    padding-right: 0 !important;
+    margin-block: 0.6rem;
+}
+
+.sub-menu-closed svg {
+    margin-right: 14px !important;
 }
 
 .settings-icon {

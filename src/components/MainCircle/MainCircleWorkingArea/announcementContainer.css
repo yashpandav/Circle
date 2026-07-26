@@ -4,9 +4,9 @@
 
 .announce-something-container {
     background-color: #fff;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
-    padding: 15px;
-    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    padding: 20px;
+    border-radius: 12px;
 }
 
 .announcement-header {
@@ -29,7 +29,7 @@
 .announce-heading {
     font-size: 16px;
     margin: 0;
-    color: #276e7e;
+    color: var(--class-theme);
 }
 
 .announce-description {
@@ -85,6 +85,11 @@
     justify-content: center;
     transition: all 0.3s;
     font-size: 14.5px;
+    color: #475569;
+}
+
+.toggle-button.active-opc {
+    color: var(--class-theme);
 }
 
 .toggle-button:first-child {
@@ -110,7 +115,7 @@
     right: 0;
     width: 0;
     height: 2px;
-    background-color: #276e7e;
+    background-color: var(--class-theme);
     animation: borderAnimation 0.3s ease-in-out forwards;
 }
 
@@ -253,7 +258,7 @@
 
 .button-cancel {
     background-color: transparent;
-    color: #276e7e;
+    color: #64748b;
     font-size: 15px;
 }
 
@@ -264,8 +269,8 @@
     align-items: center;
     gap: 5px;
     font-size: 17px;
-    background-color: #38a3a5;
-    color: #edf6f9;
+    background-color: var(--class-theme);
+    color: #ffffff;
     border: none;
     position: relative;
     overflow: hidden;
@@ -351,10 +356,21 @@
     max-width: 500px;
     display: flex;
     align-items: center;
+    border: 1px solid #cbd5e1;
     border-radius: 6px;
     margin-block: 15px;
     padding: 3px;
     transition: all 0.3s ease;
+}
+
+.link-input-container.focused {
+    border-color: var(--class-theme);
+}
+
+.add-link-btn {
+    border: none !important;
+    color: white !important;
+    background-color: var(--class-theme) !important;
 }
 
 .link-input {

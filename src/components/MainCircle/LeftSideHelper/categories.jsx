@@ -54,7 +54,11 @@ export default function CategoriesComponent() {
                         disabled={isCreating}
                         className="topic-input"
                     />
-                    <button type="submit" disabled={isCreating || !newTopic.trim()} className="topic-submit-btn">
+                    <button 
+                        type="submit" 
+                        disabled={isCreating || !newTopic.trim()} 
+                        className="topic-submit-btn"
+                    >
                         Add
                     </button>
                 </form>

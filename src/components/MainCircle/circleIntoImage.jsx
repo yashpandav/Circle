@@ -19,6 +19,16 @@ export default function CircleIntroImage() {
     const [selectedColor, setselectedColor] = useState(null);
     const [file, setFile] = useState(null);
 
+    const formatDate = (isoString) => {
+        if (!isoString) return "N/A";
+        const date = new Date(isoString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    };
+
     useEffect(() => {
         setAdminName(`${currClass.admin.firstName} ${currClass.admin.lastName}`);
         if (currClass && currUser && currClass?.admin?._id === currUser?._id) {
@@ -105,14 +115,34 @@ export default function CircleIntroImage() {
             {toggleInfoContainer && (
                 <div className={`circle-info-container ${toggleInfoContainer ? 'show' : ''}`}>
                     <div className="info-group">
-                        <p className="info-header">Created By: <span>{adminName}</span></p>
-                        <p className="info-header">Description: <span>{currClass.description}</span></p>
-                        <p className="info-header">Subject: <span>{currClass.subject}</span></p>
+                        <div className="info-item">
+                            <span className="info-label">Created By</span>
+                            <span className="info-value">{adminName}</span>
+                        </div>
+                        <div className="info-item">
+                            <span className="info-label">Created On</span>
+                            <span className="info-value">{formatDate(currClass.createDate)}</span>
+                        </div>
                     </div>
-                    <div className="info-group">
-                        <p className="info-header">Create Date: <span>{currClass.createDate}</span></p>
-                        <p className="info-header">Total Students: <span>{currClass.student.length}</span></p>
-                        <p className="info-header">Total Teachers: <span>{currClass.teacher.length}</span></p>
+                    <div className="info-group center-group">
+                        <div className="info-item">
+                            <span className="info-label">Subject</span>
+                            <span className="info-value">{currClass.subject || "N/A"}</span>
+                        </div>
+                        <div className="info-item">
+                            <span className="info-label">Description</span>
+                            <span className="info-value">{currClass.description || "No description provided."}</span>
+                        </div>
+                    </div>
+                    <div className="info-group right-group">
+                        <div className="info-item">
+                            <span className="info-label">Total Students</span>
+                            <span className="info-value">{currClass.student?.length || 0}</span>
+                        </div>
+                        <div className="info-item">
+                            <span className="info-label">Total Teachers</span>
+                            <span className="info-value">{currClass.teacher?.length || 0}</span>
+                        </div>
                     </div>
                 </div>
             )}

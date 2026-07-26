@@ -3,8 +3,8 @@
     height: 250px;
     position: relative;
     overflow: hidden;
-    border-radius: 5px;
-    background-size: 100% 100%;
+    border-radius: 12px;
+    background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     z-index: 10;
@@ -42,13 +42,13 @@
     color: #333333;
 }
 
-.temp-circle-info-icon{
+.temp-circle-info-icon {
     position: absolute;
     bottom: 8px;
     right: 7.5px;
     width: 2.5rem;
     height: 2.5rem;
-    border-radius: 50%;     
+    border-radius: 50%;
     animation: opacitychange 0.1s ease-in 0s 1;
     background-color: #1a03037e;
     opacity: 0.5;
@@ -58,6 +58,7 @@
     0% {
         opacity: 0;
     }
+
     100% {
         opacity: 0.5;
     }
@@ -68,66 +69,93 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3) , transparent);
-    padding: 15px 20px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+    padding: 24px 32px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
+    box-sizing: border-box;
 }
 
-.circle-intro-image.hide-border{
+.circle-intro-image.hide-border {
     border-bottom-left-radius: 0px;
     border-bottom-right-radius: 0px;
 }
 
 .curr-circle-name {
     margin: 0;
-    font-size: 22px;
+    font-size: 2.5rem;
     color: #ffffff;
-    font-weight: bold;
-    letter-spacing: 1.5px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    line-height: 1;
 }
 
 .info-icon {
     color: #ffffff;
-    padding-right: calc(2rem + 4px);
-    font-size: 24px;
+    font-size: 28px;
     cursor: pointer;
     transition: color 0.3s ease;
+    opacity: 0.9;
+    margin-bottom: 2px;
+}
+
+.info-icon:hover {
+    opacity: 1;
 }
 
 .circle-info-container {
     width: 100%;
-    background-color: #f8f9fa;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;    
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    border: 1px solid #e2e8f0;
+    border-top: none;
     box-sizing: border-box;
-    padding-inline: 20px;
-    padding-block: 12px;
+    padding: 24px 32px;
     display: flex;
     justify-content: space-between;
     animation: fadeIn 0.2s ease-in 0s 1;
     align-items: flex-start;
-    gap: 20px;
     z-index: 9;
 }
 
 .info-group {
-    width: 48%; 
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    flex: 1;
 }
 
-.info-header {
-    font-size: 14px;
-    color: #5f6368;
+.center-group {
+    align-items: center;
+    text-align: center;
+}
+
+.right-group {
+    align-items: flex-end;
+    text-align: right;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.info-label {
+    font-size: 0.75rem;
+    color: var(--class-theme);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-value {
     font-weight: 500;
-    margin-bottom: 8px;
-}
-
-.info-header span {
-    font-weight: 400;
-    color: #3c4043;
+    color: #334155;
+    font-size: 0.95rem;
 }
 
 .custom-modal {
@@ -136,7 +164,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); 
+    background-color: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -145,8 +173,8 @@
 
 .modal-content {
     background-color: white;
-    width: 400px; 
-    max-width: 90%; 
+    width: 400px;
+    max-width: 90%;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
@@ -159,6 +187,7 @@
         transform: scale(0.5);
         opacity: 0;
     }
+
     100% {
         transform: scale(1);
         opacity: 1;
@@ -205,7 +234,7 @@
 
 .save-btn,
 .cancel-btn {
-    padding: 10px 15px; 
+    padding: 10px 15px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -216,7 +245,7 @@
 .save-btn {
     background-color: #007bff;
     color: white;
-    margin-right: 10px; 
+    margin-right: 10px;
 }
 
 .save-btn:hover {
@@ -229,5 +258,5 @@
 }
 
 .cancel-btn:hover {
-    background-color: #5a6268; 
+    background-color: #5a6268;
 }
