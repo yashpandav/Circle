@@ -3,6 +3,8 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Divider } from "@mui/material";
 import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined';
 import TaskOutlinedIcon from '@mui/icons-material/TaskOutlined';
+import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
+import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getClass } from "../../../../../Api/apiCaller/classapicaller";
@@ -35,34 +37,28 @@ export const Classes = ({ item, index }) => {
                     backgroundImage: `url(${item.thumbnail})`,
                 }}
             >
-                <MoreVertIcon
-                    style={{
-                        position: "absolute",
-                        top: "10px",
-                        right: "10px",
-                        zIndex: 1,
-                    }}
-                />
-                <h2>{item.name}</h2>
-                <p>{item.description}</p>
+                <div className="header-text-content">
+                    <h2 className="class-title">{item.name}</h2>
+                    <p className="class-description">{item.description}</p>
+                </div>
+                <MoreVertIcon className="more-icon" />
             </div>
+
             <div className="admin-info">
-                <span>{admin.firstName} {admin.lastName}</span>
+                <span className="admin-name">{admin.firstName} {admin.lastName}</span>
                 {admin.image && (
                     <img src={admin.image} alt="admin-img" className="admin-img" />
                 )}
             </div>
-            <div className="plain-div"></div>
-            <Divider />
+
+            <div className="content-class">
+                {/* Reserved for future assignment lists, left intentionally blank to match Google Classroom */}
+            </div>
+
             <div className="footer-class">
-                <div className="student-teacher">
-                    <p>Total Students: {item.student.length}</p>
-                    <p>Total Teachers: {item.teacher.length}</p>
-                </div>
                 <div className="icons">
-                    {
-                        user?._id === admin?._id ? <RateReviewOutlinedIcon/> : <TaskOutlinedIcon/>
-                    }
+                    <AssignmentOutlinedIcon />
+                    <FolderOpenOutlinedIcon />
                 </div>
             </div>
         </div>

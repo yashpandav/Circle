@@ -23,6 +23,15 @@ export default function SortBy({sortby , setSortBy}) {
                         onChange={handleChange}
                         size="small"
                         variant="standard"
+                        disableUnderline
+                        sx={{
+                            backgroundColor: '#f1f5f9',
+                            borderRadius: '20px',
+                            padding: '2px 12px',
+                            fontWeight: 500,
+                            color: '#1e293b',
+                            fontSize: '0.95rem'
+                        }}
                     >
                         <MenuItem value='All'>All</MenuItem>
                         <MenuItem value='Admin'>Admin</MenuItem>

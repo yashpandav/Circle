@@ -40,7 +40,6 @@
      -webkit-background-clip: text;
      -webkit-text-fill-color: transparent;
      font-size: 3rem;
-     font-family: "PT Sans Caption", sans-serif;
      margin-bottom: 0;
      line-height: 1.2;
  }
@@ -65,7 +64,6 @@
      -webkit-background-clip: text;
      -webkit-text-fill-color: transparent;
      font-size: 1.25rem;
-     font-family: "Josefin Sans", sans-serif;
      line-height: 1.6;
      margin-top: 2.5rem;
      text-align: left;
@@ -105,7 +103,6 @@
  #btn-separator {
      color: #666;
      font-size: 1.2rem;
-     font-family: "Josefin Sans", sans-serif;
      font-style: italic;
      opacity: 0.7;
  }

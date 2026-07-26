@@ -11,14 +11,12 @@
 
 .otp-container h1 {
     color: #11706d;
-    font-family: 'Montserrat', sans-serif;
     font-weight: 800;
     margin-bottom: 0.5rem;
 }
 
 .otp-container p {
     color: #4a5568;
-    font-family: 'Josefin Sans', sans-serif;
     font-size: 1.1rem;
     margin-bottom: 1rem;
 }
@@ -40,7 +38,6 @@
     border-radius: 8px;
     max-width: fit-content;
     font-size: 1rem;
-    font-family: 'Montserrat', sans-serif;
     font-weight: 600;
     border: none;
     transition: all 0.3s ease-in-out;

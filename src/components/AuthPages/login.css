@@ -16,7 +16,6 @@
 #loginbtn {
     width: 60%;
     font-size: 1rem;
-    font-family: 'Montserrat', sans-serif;
     font-weight: 600;
     margin: auto;
     margin-block: 1.2rem;
@@ -48,7 +47,6 @@
 
 #forgotpass{
     font-size: 0.95rem;
-    font-family: 'Josefin Sans', sans-serif;
     font-weight: 600;
     text-decoration: none;
     color: #11706d;
@@ -66,7 +64,6 @@
     margin: auto;
     margin-bottom: 1rem;
     font-size: 1rem;
-    font-family: 'Montserrat', sans-serif;
     font-weight: 600;
     color: #4a5568 !important;
     background-color: #ffffff !important;

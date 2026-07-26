@@ -71,14 +71,14 @@ export const logIn = createAsyncThunk(
             // console.log(response.data.data);
             dispatch(setUser(response.data.data));
             dispatch(setLoggedIn(true));
-            dispatch(setToken(response.data.data.token));
+            dispatch(setToken(response.data.token));
             // const dispatch = useDispatch();
             // const { setUser } = useSelector((state) => state.auth);
             // dispatch(setUser(response.data.data));
             // console.log(setUser);
             // console.log(response.data.data);
             navigate('/');
-            Cookies.set('token', response.data.data.token, { expires: 2 });
+            Cookies.set('token', response.data.token, { expires: 2 });
             toast.success('LogIn Success');
             return response;
         } catch (err) {
@@ -122,12 +122,15 @@ export const validateLogin = createAsyncThunk(
             console.log(response);
             dispatch(setUser(response.data.data));
             dispatch(setLoggedIn(true));
-            dispatch(setToken(response.data.data.token));
-            Cookies.set('token', response.data.data.token, {
-                expires: '2'
+            dispatch(setToken(response.data.token));
+            Cookies.set('token', response.data.token, {
+                expires: 2
             });
-            toast.success('Login Success')
         } catch (err) {
+            console.error("Auto-login validation failed:", err);
+            dispatch(setLoggedIn(false));
+            dispatch(setUser(null));
+            Cookies.remove('token');
             return err.response ? err.response : err.message;
         }
     }

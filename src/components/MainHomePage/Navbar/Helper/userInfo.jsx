@@ -30,16 +30,23 @@ export default function UserInfo() {
         }
     }
 
+    if (!user) {
+        return (
+            <div id="user" style={{ width: '45px', height: '45px', borderRadius: '50%', backgroundColor: '#e2e8f0', animation: 'pulse 1.5s infinite' }}>
+            </div>
+        );
+    }
+
     return (
         <div id="user" onMouseLeave={() => { setDialog(false) }}>
-            <img src={user.image} alt='user-img' id='user-img' onClick={dialogHandler} />
+            <img src={user?.image} alt='user-img' id='user-img' onClick={dialogHandler} />
             {showDialog && (
                 <div id='user-dialog'>
                     <div id="img-dialog">
-                        <img src={user.image} alt='user-img' id='dialog-user-img' />
+                        <img src={user?.image} alt='user-img' id='dialog-user-img' />
                         <div id='name-email'>
-                            <h3>{user.firstName} {user.lastName}</h3>
-                            <pre>{user.email}</pre>
+                            <h3>{user?.firstName} {user?.lastName}</h3>
+                            <pre>{user?.email}</pre>
                         </div>
                     </div>
                     <div id='user-info'>

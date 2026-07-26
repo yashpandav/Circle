@@ -19,20 +19,20 @@ import AssignmentDetails from './components/MainCircle/AssignmentDetails/Assignm
 import './App.css';
 
 const App = () => {
-  const { login } = useSelector((state) => state.auth);
+  const { login, user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
     const relogin = () => {
       const token = Cookies.get('token');
-      if (token && !login) {
+      if (token && !user) {
         //* CALL API FOR AUTO LOGIN
         dispatch(validateLogin({ dispatch, navigate }));
       }
     };
     relogin();
-  }, [login, dispatch, navigate]);
+  }, [user, dispatch, navigate]);
 
   return (
     <><Routes>

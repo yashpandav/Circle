@@ -3,7 +3,6 @@
     padding: 15px;
     border-radius: 7px;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), 0 -1px 1px rgba(0, 0, 0, 0.1), 1px 0 1px rgba(0, 0, 0, 0.1), -1px 0 1px rgba(0, 0, 0, 0.1);
-    font-family: 'Roboto', sans-serif;
     width: 170px;
     height: max-content;
 }
@@ -67,7 +66,6 @@
 }
 
 .show-more {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     padding: 3px 5px 0px 5px;
     margin-bottom: -5px;
     text-align: right;

@@ -87,7 +87,6 @@
     font-weight: bold;
     letter-spacing: 1.5px;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    font-family: 'Roboto', sans-serif;
 }
 
 .info-icon {
@@ -124,13 +123,11 @@
     color: #5f6368;
     font-weight: 500;
     margin-bottom: 8px;
-    font-family: 'Google Sans', sans-serif;
 }
 
 .info-header span {
     font-weight: 400;
     color: #3c4043;
-    font-family: 'Roboto', sans-serif;
 }
 
 .custom-modal {

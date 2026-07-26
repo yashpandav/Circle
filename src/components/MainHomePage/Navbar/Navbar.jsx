@@ -10,7 +10,7 @@ import LoGo from "../../Helper/logo";
 import "./Navbar.css";
 
 const Navbar = () => {
-    const { user } = useSelector((state) => state.auth);
+    const { login } = useSelector((state) => state.auth);
     return (
         <div className="main-navbar" id="main-navbar">
             <LoGo id="logo"></LoGo>
@@ -42,7 +42,7 @@ const Navbar = () => {
                     </li>
                 </Scrollspy>
                 {
-                    user ? (
+                    login ? (
                         <UserInfo id="user-info"></UserInfo>
                     ) : (
                         <div className="btns" id="btns">

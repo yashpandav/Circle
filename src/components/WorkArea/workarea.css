@@ -1,3 +1,10 @@
+.workArea *, .navbar2 * {
+}
+
+.workArea h1, .workArea h2, .workArea h3, .workArea h4, .workArea h5, .workArea h6,
+.navbar2 h1, .navbar2 h2, .navbar2 h3, .navbar2 h4, .navbar2 h5, .navbar2 h6 {
+}
+
 .workArea {
     margin-top: 7vh;
     transition: all 0.3s ease;

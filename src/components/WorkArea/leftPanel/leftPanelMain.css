@@ -18,25 +18,26 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    background-color: #edf2f4;
-    box-shadow: 2px 0px 2px rgba(0, 0, 0, 0.2);
+    background-color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     cursor: pointer;
     position: absolute;
-    top: 25px;
-    left: 91%;
+    top: 30px;
+    right: -16px;
     transition: all 0.3s ease;
+    z-index: 10;
 }
 
 .menu-icon-container:hover {
-    box-shadow: -2px 0px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .menu-icon-container svg {
-    font-size: 2rem;
-    color: #005f73;
+    font-size: 1.8rem;
+    color: #00a896;
     transition: all 0.3s ease;
 }
 
@@ -49,7 +50,7 @@
 .left-links {
     margin-block: 0.25rem;
     cursor: pointer;
-    border-radius: 15px;
+    border-radius: 12px;
     transition: all 0.3s ease;
 }
 
@@ -58,52 +59,36 @@
     text-decoration: none;
     display: flex;
     align-items: center;
-    color: #2f6690;
-    padding: 12px;
-    border-radius: 10px;
-    font-size: 16px;
+    color: #64748b;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 500;
     position: relative;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .left-links:hover,
 .left-link-main:hover {
-    background-color: #eaf9ff;
-}
-
-.left-links .left-link::before,
-.left-link-main::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 5px;
-    background-color: #81c3d7;
-    transform: scaleY(0);
-    transition: all 0.3s ease;
-}
-
-.left-links .left-link:hover::before,
-.left-link-main:hover::before {
-    transform: scaleY(1);
+    background-color: #f1f5f9;
 }
 
 .left-links .left-link:hover,
 .left-link-main:hover {
-    color: #fca311;
+    color: #1e293b;
 }
 
 .left-links .left-link svg,
 .left-link-main svg {
-    margin-right: 10px;
-    transition: all 0.3s ease;
-    color: #0f4c5c;
+    margin-right: 12px;
+    transition: all 0.2s ease;
+    color: #64748b;
 }
 
 .left-links .left-link:hover svg,
 .left-link-main:hover svg {
-    transform: scale(1.1);
+    color: #00a896;
+    transform: scale(1.05);
 }
 
 .left-links .left-link p,
@@ -144,17 +129,18 @@
     text-decoration: none;
     display: flex;
     align-items: center;
-    color: #2f6690;
-    padding: 4px;
-    border-radius: 15px;
+    color: #64748b;
+    padding: 8px 12px;
+    border-radius: 10px;
     font-size: 14px;
-    transition: all 0.3s ease;
+    font-weight: 500;
+    transition: all 0.2s ease;
 }
 
 .sub-menu .left-link:hover {
-    background-color: #eaf9ff;
-    padding-left: 5px;
-    color: #fca311;
+    background-color: #f1f5f9;
+    padding-left: 14px;
+    color: #1e293b;
 }
 
 @keyframes fadeIn {
@@ -169,24 +155,24 @@
 }
 
 .active {
-    color: #fca311 !important;
-    background-color: #eaf9ff;
+    color: #00a896 !important;
+    background-color: rgba(0, 168, 150, 0.1) !important;
 }
 
 .active svg {
-    color: #fb8500 !important;
+    color: #00a896 !important;
 }
 
 .icon-closed {
     padding: 8px;
     font-size: 27px;
     transition: all 0.3s ease;
-    color: #005f73;
+    color: #64748b;
 }
 
 .sub-menu:hover .icon-closed {
-    color: #005f73;
-    transform: scale(1.1);
+    color: #00a896;
+    transform: scale(1.05);
 }
 
 .sub-menu-closed {

@@ -15,9 +15,9 @@ export default function NoCircle() {
             <img src={require('../../../../../Data/9315312.png')} alt='no circle' />
             <h1>No Circle Found</h1>    
             <div id='nocircle-btn'>
-                <Button variant="contained" id="custom-btn" onClick={() => setJoinDialog(true)}>Join a Circle</Button>
+                <Button variant="outlined" className="btn-join" onClick={() => setJoinDialog(true)}>Join a Circle</Button>
                 {joinDialog && <JoinClassDialog setJoinDialog = {setJoinDialog} />}
-                <Button variant="contained" id="custom-btn" onClick={() => setCreateDialog(true)}>Create a Circle</Button>
+                <Button variant="contained" className="btn-create" onClick={() => setCreateDialog(true)}>Create a Circle</Button>
                 {createDialog && <CreateClassDialog setCreateDialog={setCreateDialog} />}
             </div>
         </div>
