@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { createCategory, deleteCategory } from "../../../Api/apiCaller/categoryapicaller";
+import { getClass } from "../../../Api/apiCaller/classapicaller";
 
 import { IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -30,13 +31,15 @@ export default function CategoriesComponent() {
         await dispatch(createCategory({ name: newTopic, classId: currClass._id })).unwrap();
         setNewTopic("");
         setIsCreating(false);
-        // Normally, we'd refetch class details here or update local state
+        // Refresh class details to show new topic
+        dispatch(getClass({ id: currClass._id, dispatch }));
     };
 
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this topic?")) {
             await dispatch(deleteCategory({ id, classId: currClass._id })).unwrap();
-            // Refetch class details
+            // Refresh class details to remove topic
+            dispatch(getClass({ id: currClass._id, dispatch }));
         }
     };
 

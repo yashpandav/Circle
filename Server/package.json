@@ -14,7 +14,6 @@
     "bcrypt": "^6.0.0",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.4.0",
-    "color-convert": "^2.0.1",
     "cookie-parser": "^1.4.6",
     "cron": "^3.1.7",
     "dotenv": "^16.4.5",
@@ -28,9 +27,7 @@
     "nodemailer": "^9.0.3",
     "nodemon": "^3.1.4",
     "otp-generator": "^4.0.1",
-    "randomcolor": "^0.6.2",
     "randomstring": "^1.3.0",
-    "router": "^2.2.0",
-    "uniqolor": "^1.1.1"
+    "router": "^2.2.0"
   }
 }

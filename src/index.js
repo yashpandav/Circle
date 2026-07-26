@@ -39,18 +39,12 @@ root.render(
                             primary: '#00a896',
                             secondary: '#ffffff',
                         },
-                        style: {
-                            borderLeft: '5px solid #00a896',
-                        },
                     },
                     error: {
                         duration: 4000,
                         iconTheme: {
                             primary: '#ef4444',
                             secondary: '#ffffff',
-                        },
-                        style: {
-                            borderLeft: '5px solid #ef4444',
                         },
                     },
                 }}

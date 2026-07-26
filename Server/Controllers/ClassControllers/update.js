@@ -50,7 +50,7 @@ exports.updateClass = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: "Class updated",
-            date : updatedClass
+            data: updatedClass
         });
 
     } catch (err) {

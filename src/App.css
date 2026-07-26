@@ -16,3 +16,76 @@ h5,
 h6 {
     font-family: "PT Sans Caption", sans-serif !important;
 }
+/* GLOBAL MODAL DESIGN SYSTEM */
+.global-dialog .MuiDialog-paper {
+    border-radius: 12px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+    animation: fadeInDialog 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    overflow: hidden !important;
+    border: 1px solid #e2e8f0;
+}
+
+.global-dialog-title {
+    background-color: var(--class-theme, #1e293b) !important;
+    color: #ffffff !important;
+    padding: 20px 24px !important;
+    text-align: center !important;
+    font-weight: 700 !important;
+    font-size: 1.15rem !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase;
+}
+
+.global-dialog-content {
+    padding: 24px 32px !important;
+    font-size: 0.95rem !important;
+    color: #475569 !important;
+    line-height: 1.7 !important;
+}
+
+.global-dialog-actions {
+    padding: 16px 24px !important;
+    justify-content: space-between !important;
+    background-color: #f8fafc !important;
+    border-top: 1px solid #e2e8f0 !important;
+}
+
+.global-dialog-btn-cancel {
+    color: #64748b !important;
+    border-color: #cbd5e1 !important;
+    font-weight: 600 !important;
+    text-transform: none !important;
+    padding: 6px 16px !important;
+    border-radius: 8px !important;
+}
+
+.global-dialog-btn-cancel:hover {
+    background-color: #f1f5f9 !important;
+    border-color: #94a3b8 !important;
+}
+
+.global-dialog-btn-submit {
+    background-color: var(--class-theme, #1e293b) !important;
+    color: white !important;
+    font-weight: 600 !important;
+    text-transform: none !important;
+    padding: 6px 24px !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+}
+
+.global-dialog-btn-submit:hover {
+    background-color: color-mix(in srgb, var(--class-theme, #1e293b) 85%, black) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+@keyframes fadeInDialog {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}

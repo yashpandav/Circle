@@ -8,7 +8,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import NewClassFormDialog from './newClassFormDialog';
-import './createClassDialog.css';
 
 const CreateClassDialog = ({ setCreateDialog }) => {
     const theme = useTheme();
@@ -36,39 +35,39 @@ const CreateClassDialog = ({ setCreateDialog }) => {
                 open={true}
                 onClose={() => { }}
                 aria-labelledby="responsive-dialog-title"
-                className="custom-dialog"
+                className="global-dialog"
             >
-                <DialogTitle id="responsive-dialog-title" className="custom-dialog-title">
+                <DialogTitle id="responsive-dialog-title" className="global-dialog-title">
                     Create a New Circle
                 </DialogTitle>
                 <DialogContent>
-                    <DialogContentText className="custom-dialog-content">
+                    <DialogContentText className="global-dialog-content">
                         By creating a circle, you agree to the following terms and conditions:
                     </DialogContentText>
-                    <DialogContentText className="custom-dialog-content">
+                    <DialogContentText className="global-dialog-content">
                         1. <strong>Respectful Communication</strong>: All members are expected to communicate respectfully. Harassment, hate speech, and discrimination of any kind are strictly prohibited.
                     </DialogContentText>
-                    <DialogContentText className="custom-dialog-content">
+                    <DialogContentText className="global-dialog-content">
                         2. <strong>Privacy and Confidentiality</strong>: Members must respect the privacy and confidentiality of others. Personal information shared within the circle should not be disclosed outside the group.
                     </DialogContentText>
-                    <DialogContentText className="custom-dialog-content">
+                    <DialogContentText className="global-dialog-content">
                         3. <strong>Content Guidelines</strong>: All content shared within the circle must comply with community standards. Inappropriate content, including but not limited to, explicit, violent, or illegal material, is not allowed.
                     </DialogContentText>
-                    <DialogContentText className="custom-dialog-content">
+                    <DialogContentText className="global-dialog-content">
                         4. <strong>Active Participation</strong>: Members are encouraged to participate actively in discussions and activities. Inactive members may be removed from the circle at the discretion of the circle's creator.
                     </DialogContentText>
-                    <DialogContentText className="custom-dialog-content">
+                    <DialogContentText className="global-dialog-content">
                         5. <strong>Compliance with Laws</strong>: All members must comply with applicable local, state, national, and international laws and regulations.
                     </DialogContentText>
-                    <DialogContentText className="custom-dialog-content">
+                    <DialogContentText className="global-dialog-content">
                         Failure to adhere to these terms and conditions may result in removal from the circle and potential further action.
                     </DialogContentText>
                 </DialogContent>
-                <DialogActions style={{ padding: '20px', justifyContent: 'space-between' }}>
-                    <Button onClick={handleClose} variant='outlined' style={{ color: '#d81159', borderColor: '#d81159', fontWeight: 'bold' }}>
+                <DialogActions className="global-dialog-actions">
+                    <Button onClick={handleClose} variant='outlined' className="global-dialog-btn-cancel">
                         Disagree
                     </Button>
-                    <Button onClick={handleAgree} variant='contained' style={{ backgroundColor: '#00a896', color: 'white', fontWeight: 'bold' }}>
+                    <Button onClick={handleAgree} variant='contained' className="global-dialog-btn-submit">
                         Agree
                     </Button>
                 </DialogActions>

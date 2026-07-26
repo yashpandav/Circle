@@ -10,7 +10,6 @@ import { TextField, Box, FormControl, FormLabel, RadioGroup, FormControlLabel, R
 import { useSelector } from 'react-redux';
 import { joinClass } from '../../../../../Api/apiCaller/classapicaller';
 import toast from 'react-hot-toast';
-import './joinClassDialog.css';
 
 const JoinClassDialog = ({ setJoinDialog }) => {
 
@@ -58,15 +57,15 @@ const JoinClassDialog = ({ setJoinDialog }) => {
             open={true}
             onClose={() => { }}
             aria-labelledby="responsive-dialog-title"
-            className="fade-in-dialog"
+            className="global-dialog"
         >
-            <DialogTitle id="dialog-title">
+            <DialogTitle id="dialog-title" className="global-dialog-title">
                 Join a Circle
             </DialogTitle>
             <DialogContent>
-                <Box className="dialog-content">
-                    <p className="dialog-subtitle">Circle Code</p>
-                    <p className="dialog-text">Ask your teacher for the class code, then enter it here.</p>
+                <Box className="global-dialog-content">
+                    <p style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#1e293b', marginTop: '1rem', marginBottom: '0.2rem' }}>Circle Code</p>
+                    <p style={{ fontSize: '0.9rem', color: '#64748b', marginTop: '0', marginBottom: '1rem' }}>Ask your teacher for the class code, then enter it here.</p>
                     <TextField
                         autoFocus
                         margin="dense"
@@ -74,13 +73,13 @@ const JoinClassDialog = ({ setJoinDialog }) => {
                         label="Circle Code"
                         fullWidth
                         variant="outlined"
-                        className="text-field"
                         value={classCode}
                         onChange={handleClassCodeChange}
                         required
+                        style={{ marginBottom: '1.5rem' }}
                     />
-                    <FormControl component="fieldset" className="radio-group">
-                        <FormLabel component="legend" className="dialog-subtitle">Join As</FormLabel>
+                    <FormControl component="fieldset" style={{ marginBlock: '1rem' }}>
+                        <FormLabel component="legend" style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#1e293b' }}>Join As</FormLabel>
                         <RadioGroup
                             aria-label="role"
                             name="role"
@@ -89,23 +88,23 @@ const JoinClassDialog = ({ setJoinDialog }) => {
                             row
                             required
                         >
-                            <FormControlLabel value="Student" style={{ marginRight: '1.5rem' }} control={<Radio />} label="Student" />
-                            <FormControlLabel value="Teacher" control={<Radio />} label="Teacher" />
+                            <FormControlLabel value="Student" style={{ marginRight: '1.5rem' }} control={<Radio color="primary" />} label="Student" />
+                            <FormControlLabel value="Teacher" control={<Radio color="primary" />} label="Teacher" />
                         </RadioGroup>
                     </FormControl>
-                    <p className="dialog-text bold-text">To sign in with a class code</p>
-                    <p className="dialog-text">
-                        Use an authorized account... currently <span className="email-highlight">{user.email}</span>
+                    <p style={{ fontSize: '0.9rem', color: '#1e293b', fontWeight: 'bold', marginTop: '1rem', marginBottom: '0.2rem' }}>To sign in with a class code</p>
+                    <p style={{ fontSize: '0.9rem', color: '#64748b', marginTop: '0' }}>
+                        Use an authorized account... currently <span style={{ color: '#00a896', fontWeight: 'bold', backgroundColor: '#e6f6f4', padding: '0.2rem 0.6rem', borderRadius: '4px' }}>{user.email}</span>
                     </p>
-                    <p className="dialog-text">Use a circle code with 5-7 letters or numbers, and no spaces or symbols.</p>
-                    <p className="dialog-text">If you have trouble joining the class, contact Circle's admin or teacher.</p>
+                    <p style={{ fontSize: '0.9rem', color: '#64748b', marginTop: '1rem' }}>Use a circle code with 5-7 letters or numbers, and no spaces or symbols.</p>
+                    <p style={{ fontSize: '0.9rem', color: '#64748b' }}>If you have trouble joining the class, contact Circle's admin or teacher.</p>
                 </Box>
             </DialogContent>
-            <DialogActions>
-                <Button variant="outlined" color="secondary" onClick={handleClose}>
+            <DialogActions className="global-dialog-actions">
+                <Button variant="outlined" className="global-dialog-btn-cancel" onClick={handleClose}>
                     Cancel
                 </Button>
-                <Button variant="contained" color="primary" onClick={handleSubmit}>
+                <Button variant="contained" className="global-dialog-btn-submit" onClick={handleSubmit}>
                     Join
                 </Button>
             </DialogActions>

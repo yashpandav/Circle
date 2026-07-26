@@ -11,7 +11,7 @@ import TextField from "@mui/material/TextField";
 import CircularProgress from '@mui/material/CircularProgress';
 import { createClass } from "../../../../../Api/apiCaller/classapicaller";
 import { joinedClass } from "../../../../../Api/apiCaller/userapicaller";
-import "./newClassFormDialog.css";
+import ColorSelector from "../../../../Helper/colorSelector";
 
 const NewClassFormDialog = ({ open, handleClose }) => {
     const {
@@ -21,12 +21,14 @@ const NewClassFormDialog = ({ open, handleClose }) => {
     } = useForm();
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
+    const [selectedColor, setselectedColor] = useState('#4285f4');
 
     const onSubmit = async (data) => {
         setLoading(true);
-        console.log(data);
+        const submitData = { ...data, color: selectedColor };
+        console.log(submitData);
         try{
-            const success = await createClass({data});
+            const success = await createClass({data: submitData});
             if (success) {
                 await dispatch(joinedClass({dispatch}));
                 handleClose();
@@ -43,14 +45,14 @@ const NewClassFormDialog = ({ open, handleClose }) => {
             open={open}
             onClose={() => { }}
             aria-labelledby="form-dialog-title"
-            className="custom-dialog"
+            className="global-dialog"
         >
-            <DialogTitle id="form-dialog-title" className="custom-dialog-title">
+            <DialogTitle id="form-dialog-title" className="global-dialog-title">
                 Create New Class
             </DialogTitle>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <DialogContent>
-                    <DialogContentText className="custom-dialog-content">
+                    <DialogContentText className="global-dialog-content">
                         Please fill out the following details to create a new class.
                     </DialogContentText>
                     <TextField
@@ -88,17 +90,11 @@ const NewClassFormDialog = ({ open, handleClose }) => {
                         fullWidth
                         variant="outlined"
                     />
-                    <div className="side-by-side">
-                        <TextField
-                            {...register("color")}
-                            margin="normal"
-                            id="color"
-                            label="Circle Theme"
-                            fullWidth
-                            type="color"
-                            variant="outlined"
-                            style={{ height: '56px' }}
-                        />
+                    <div style={{ marginTop: '16px', marginBottom: '8px' }}>
+                        <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#1e293b', marginBottom: '8px' }}>Select Circle Theme:</p>
+                        <ColorSelector setselectedColor={setselectedColor} selectedColor={selectedColor} />
+                    </div>
+                    <div style={{ marginTop: '8px' }}>
                         <TextField
                             {...register("banner")}
                             margin="normal"
@@ -109,11 +105,11 @@ const NewClassFormDialog = ({ open, handleClose }) => {
                         />
                     </div>
                 </DialogContent>
-                <DialogActions style={{ padding: '20px', justifyContent: 'space-between' }}>
-                    <Button onClick={handleClose} variant='outlined' style={{ color: '#d81159', borderColor: '#d81159', fontWeight: 'bold' }} disabled={loading}>
+                <DialogActions className="global-dialog-actions">
+                    <Button onClick={handleClose} variant='outlined' className="global-dialog-btn-cancel" disabled={loading}>
                         Cancel
                     </Button>
-                    <Button type="submit" variant='contained' style={{ backgroundColor: '#00a896', color: 'white', fontWeight: 'bold' }} disabled={loading}>
+                    <Button type="submit" variant='contained' className="global-dialog-btn-submit" disabled={loading}>
                         {loading ? <CircularProgress size={24} style={{color: 'white'}} /> : "Create"}
                     </Button>
                 </DialogActions>

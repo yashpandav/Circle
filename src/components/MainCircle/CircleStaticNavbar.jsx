@@ -1,8 +1,8 @@
-import React, { useState , useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import "./circleStaticNav.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { updateClassDetails, deleteClassAction, leaveClassAction, changeEntryCode } from "../../Api/apiCaller/classapicaller";
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, IconButton } from "@mui/material";
@@ -20,7 +20,7 @@ export default function CircleStaticNavbar() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if(currUser && currClass) {
+        if (currUser && currClass) {
             if (currClass.admin && currUser._id === currClass.admin._id) {
                 setAdmin(true);
             }
@@ -32,6 +32,18 @@ export default function CircleStaticNavbar() {
     }, [currUser, currClass]);
 
     const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        const path = location.pathname.toLowerCase();
+        if (path.includes('/people')) {
+            setActiveTab('People');
+        } else if (path.includes('/classwork')) {
+            setActiveTab('Classwork');
+        } else {
+            setActiveTab('Stream');
+        }
+    }, [location.pathname]);
 
     const navItems = ["Stream", "Classwork", "People"];
 
@@ -73,7 +85,6 @@ export default function CircleStaticNavbar() {
                         key={item}
                         className={`navbar-list ${activeTab === item ? 'active-tab' : ''}`}
                         onClick={() => {
-                            setActiveTab(item);
                             navigate(`/workarea/circle/${currClass._id}/${item.toLowerCase()}`);
                         }}
                     >
@@ -87,17 +98,25 @@ export default function CircleStaticNavbar() {
                 <SettingsOutlinedIcon className="settings-icon" style={{ cursor: 'pointer', color: '#5f6368' }} />
             </div>
 
-            <Dialog open={openSettings} onClose={() => setOpenSettings(false)} maxWidth="sm" fullWidth>
-                <DialogTitle style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Dialog
+                open={openSettings}
+                onClose={() => setOpenSettings(false)}
+                maxWidth="sm"
+                fullWidth
+                className="global-dialog"
+            >
+                <DialogTitle className="global-dialog-title">
                     Class Settings
-                    <IconButton onClick={() => setOpenSettings(false)}>
-                        <CloseIcon />
-                    </IconButton>
                 </DialogTitle>
-                <DialogContent dividers>
+                <DialogContent className="global-dialog-content">
                     {isAdmin && (
-                        <>
-                            <h3 style={{ marginTop: 0, fontWeight: 500, color: '#1967d2' }}>Class Details</h3>
+                        <div style={{ paddingTop: '16px' }}>
+                            {/* Derive isActive state backward-compatibly */}
+                            {(() => {
+                                const isActive = currClass.isCodeActive !== false;
+                                return (
+                                    <>
+                                        <h3 style={{ marginTop: 0, fontWeight: 600, color: 'var(--class-theme, #1967d2)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Class Details</h3>
                             <TextField
                                 label="Class Name"
                                 fullWidth
@@ -112,31 +131,38 @@ export default function CircleStaticNavbar() {
                                 value={editData.subject}
                                 onChange={(e) => setEditData({ ...editData, subject: e.target.value })}
                             />
-                            
-                            <h3 style={{ marginTop: '24px', fontWeight: 500, color: '#1967d2' }}>General</h3>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+
+                            <h3 style={{ marginTop: '32px', fontWeight: 600, color: 'var(--class-theme, #1967d2)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>General</h3>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', padding: '16px', backgroundColor: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                                 <div>
-                                    <div style={{ fontWeight: 500 }}>Class Code</div>
-                                    <div style={{ color: '#5f6368', fontSize: '14px' }}>{currClass.entryCode}</div>
+                                    <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Class Code</div>
+                                    <div style={{ color: isActive ? '#0f172a' : '#94a3b8', fontSize: '1.25rem', marginTop: '4px', letterSpacing: isActive ? '2px' : '0px', fontWeight: 700 }}>
+                                        {isActive ? currClass.entryCode : 'TURNED OFF'}
+                                    </div>
                                 </div>
-                                <Button variant="outlined" onClick={handleResetCode}>Reset Code</Button>
+                                {isActive && (
+                                    <Button variant="outlined" onClick={handleResetCode} style={{ borderColor: 'var(--class-theme, #1967d2)', color: 'var(--class-theme, #1967d2)', borderRadius: '24px', textTransform: 'none', fontWeight: 600, padding: '6px 20px' }}>Reset Code</Button>
+                                )}
                             </div>
-                        </>
+                                    </>
+                                );
+                            })()}
+                        </div>
                     )}
-                    
+
                     {isStudent && (
-                        <div style={{ textAlign: 'center', padding: '20px' }}>
-                            <p>You are currently enrolled as a student in this class.</p>
-                            <Button variant="outlined" color="error" onClick={handleLeave}>Leave Class</Button>
+                        <div style={{ textAlign: 'center', padding: '32px 20px' }}>
+                            <p style={{ color: '#64748b', fontSize: '1.05rem', marginBottom: '24px' }}>You are currently enrolled as a student in this class.</p>
+                            <Button variant="outlined" color="error" onClick={handleLeave} style={{ borderRadius: '24px', padding: '8px 24px', textTransform: 'none', fontWeight: 600, borderWidth: '2px' }}>Leave Class</Button>
                         </div>
                     )}
                 </DialogContent>
                 {isAdmin && (
-                    <DialogActions style={{ justifyContent: 'space-between', padding: '16px 24px' }}>
-                        <Button color="error" onClick={handleDelete}>Delete Class</Button>
-                        <div>
-                            <Button onClick={() => setOpenSettings(false)} style={{ marginRight: '8px' }}>Cancel</Button>
-                            <Button variant="contained" color="primary" onClick={handleUpdate}>Save</Button>
+                    <DialogActions className="global-dialog-actions" style={{ justifyContent: 'space-between' }}>
+                        <Button color="error" onClick={handleDelete} style={{ textTransform: 'none', fontWeight: 600, borderRadius: '24px', padding: '8px 20px' }}>Delete Class</Button>
+                        <div style={{ display: 'flex', gap: '12px' }}>
+                            <Button onClick={() => setOpenSettings(false)} variant="outlined" className="global-dialog-btn-cancel">Cancel</Button>
+                            <Button variant="contained" className="global-dialog-btn-submit" onClick={handleUpdate}>Save</Button>
                         </div>
                     </DialogActions>
                 )}

@@ -10,7 +10,7 @@ import MenuItem from '@mui/material/MenuItem';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefaultOutlined';
 import { Divider, IconButton, Typography } from "@mui/material";
-import { changeEntryCode } from '../../../Api/apiCaller/classapicaller.js'
+import { changeEntryCode, toggleEntryCodeStatus } from '../../../Api/apiCaller/classapicaller.js'
 import "./classCode.css";
 
 const CustomTooltip = styled(({ className, ...props }) => (
@@ -75,7 +75,15 @@ export default function ClassCodeComponent() {
         dispatch(changeEntryCode({ id, dispatch }));
     }
 
+    const toggleCodeHandler = () => {
+        let id = currClass._id;
+        handleMenuClose();
+        dispatch(toggleEntryCodeStatus({ id, dispatch }));
+    }
+
     if (!isAdmin) return null;
+
+    const isActive = currClass.isCodeActive !== false;
 
     return (
         <div className="main-circle-code-container">
@@ -85,18 +93,20 @@ export default function ClassCodeComponent() {
                     <MoreVertIcon fontSize="small" />
                 </IconButton>
             </div>
-            <div className="entry-code">
-                {currClass.entryCode}
-                <CustomTooltip
-                    title="Copied!"
-                    placement="bottom"
-                    open={tooltipOpen}
-                    disableFocusListener
-                    disableHoverListener
-                    disableTouchListener
-                >
-                    <ContentCopyIcon onClick={copyCodeToClipboard} />
-                </CustomTooltip>
+            <div className="entry-code" style={{ opacity: isActive ? 1 : 0.5 }}>
+                {isActive ? currClass.entryCode : 'TURNED OFF'}
+                {isActive && (
+                    <CustomTooltip
+                        title="Copied!"
+                        placement="bottom"
+                        open={tooltipOpen}
+                        disableFocusListener
+                        disableHoverListener
+                        disableTouchListener
+                    >
+                        <ContentCopyIcon onClick={copyCodeToClipboard} />
+                    </CustomTooltip>
+                )}
             </div>
 
             <Menu
@@ -110,24 +120,30 @@ export default function ClassCodeComponent() {
                     boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.1)',
                 }}
             >
-                <MenuItem onClick={copyCodeToClipboard}>
-                    <ContentCopyIcon fontSize="small" sx={{ marginRight: '15px' }} />
-                    Copy Invitation Code
-                </MenuItem>
-                <Divider />
-                <MenuItem onClick={copyUrlToClipboard}>
-                    <LinkIcon sx={{ marginRight: '15px', transform: 'rotate(60deg)' }} />
-                    Copy Invitation Link
-                </MenuItem>
-                <Divider />
-                <MenuItem onClick={resetCodeHandler}>
-                    <RestartAltIcon sx={{ marginRight: '15px' }} />
-                    Reset Code
-                </MenuItem>
-                <Divider />
-                <MenuItem onClick={handleMenuClose}>
+                {isActive && (
+                    <MenuItem onClick={copyCodeToClipboard}>
+                        <ContentCopyIcon fontSize="small" sx={{ marginRight: '15px' }} />
+                        Copy Invitation Code
+                    </MenuItem>
+                )}
+                {isActive && <Divider />}
+                {isActive && (
+                    <MenuItem onClick={copyUrlToClipboard}>
+                        <LinkIcon sx={{ marginRight: '15px', transform: 'rotate(60deg)' }} />
+                        Copy Invitation Link
+                    </MenuItem>
+                )}
+                {isActive && <Divider />}
+                {isActive && (
+                    <MenuItem onClick={resetCodeHandler}>
+                        <RestartAltIcon sx={{ marginRight: '15px' }} />
+                        Reset Code
+                    </MenuItem>
+                )}
+                {isActive && <Divider />}
+                <MenuItem onClick={toggleCodeHandler}>
                     <DisabledByDefaultOutlinedIcon sx={{ marginRight: '15px' }} />
-                    Turn Off
+                    {isActive ? "Turn Off" : "Turn On"}
                 </MenuItem>
             </Menu>
         </div>

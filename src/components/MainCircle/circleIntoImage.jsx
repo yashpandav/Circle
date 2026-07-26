@@ -8,6 +8,10 @@ import { useDispatch } from "react-redux";
 import { updateClassDetails } from "../../Api/apiCaller/classapicaller";
 import { Button, styled } from "@mui/material";
 import { CloudUploadOutlined } from "@mui/icons-material";
+import MuiDialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 
 export default function CircleIntroImage() {
     const currUser = useSelector((state) => state.auth.user);
@@ -59,11 +63,10 @@ export default function CircleIntroImage() {
     
         try {
             await dispatch(updateClassDetails({ id: currClass._id, data: formData, dispatch })).unwrap();
+            handleClose();
         } catch (err) {
             console.error("SOMETHING WENT WRONG WHILE SENDING API FUNCTION", err);
         }
-
-        handleClose();
     };
 
     const VisuallyHiddenInput = styled('input')({
@@ -148,35 +151,50 @@ export default function CircleIntroImage() {
             )}
 
             {openModal && (
-                <div className="custom-modal">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h4>Customize Appearance</h4>
-                            <button onClick={handleClose} className="close-btn">&times;</button>
+                <MuiDialog
+                    open={true}
+                    onClose={handleClose}
+                    aria-labelledby="customize-appearance-title"
+                    className="global-dialog"
+                    maxWidth="sm"
+                    fullWidth
+                >
+                    <DialogTitle id="customize-appearance-title" className="global-dialog-title">
+                        Customize Appearance
+                    </DialogTitle>
+                    <DialogContent className="global-dialog-content">
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingTop: '16px' }}>
+                            <div>
+                                <StyledButton
+                                    component="label"
+                                    variant="contained"
+                                    startIcon={<CloudUploadOutlined />}
+                                    fullWidth
+                                >
+                                    Select Stream Header Image
+                                    <VisuallyHiddenInput
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => setFile(e.target.files[0])}
+                                    />
+                                </StyledButton>
+                                {file && <p style={{ marginTop: '8px', fontSize: '0.85rem', color: '#64748b', textAlign: 'center' }}>Selected: {file.name}</p>}
+                            </div>
+                            <div>
+                                <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#1e293b', marginBottom: '12px' }}>Select Theme Color:</p>
+                                <ColorSelector setselectedColor={setselectedColor} selectedColor={selectedColor} />
+                            </div>
                         </div>
-                        <div className="modal-body">
-                            <StyledButton
-                                component="label"
-                                variant="contained"
-                                startIcon={<CloudUploadOutlined />}
-                            >
-                                Select Stream Header Image
-                                <VisuallyHiddenInput
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => setFile(e.target.files[0])}
-                                />
-                            </StyledButton>
-                            {file && <p>Selected file: {file.name}</p>}
-
-                            <ColorSelector setselectedColor={setselectedColor} selectedColor={selectedColor} />
-                        </div>
-                        <div className="modal-footer">
-                            <button className="save-btn" onClick={handleSubmit}>Save</button>
-                            <button className="cancel-btn" onClick={handleClose}>Cancel</button>
-                        </div>
-                    </div>
-                </div>
+                    </DialogContent>
+                    <DialogActions className="global-dialog-actions">
+                        <Button onClick={handleClose} variant="outlined" className="global-dialog-btn-cancel">
+                            Cancel
+                        </Button>
+                        <Button onClick={handleSubmit} variant="contained" className="global-dialog-btn-submit">
+                            Save
+                        </Button>
+                    </DialogActions>
+                </MuiDialog>
             )}
         </>
     );

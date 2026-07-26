@@ -3,11 +3,16 @@ import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import PostContainer from "./postContainer";
 import AssignmentContainer from "./assignmentContainer";
+import './showPost.css';
 
 export default function ShowPostMain() {
     const currClass = useSelector((state) => state.classes.currClass);
+    const currUser = useSelector((state) => state.auth.user);
     const [streamItems, setStreamItems] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [searchParams] = useSearchParams();
+
+    const isAdminOrTeacher = currClass && currUser && (currClass.admin._id === currUser._id || currClass.teacher.some(t => t.id === currUser._id));
 
     useEffect(() => {
         if (currClass) {
@@ -24,11 +29,48 @@ export default function ShowPostMain() {
             }
             
             setStreamItems(combined);
+            
+            // Artificial delay for smooth skeleton loader transition
+            setTimeout(() => {
+                setIsLoading(false);
+            }, 600);
         }
     }, [currClass, searchParams]);
     
+    if (isLoading || !currClass) {
+        return (
+            <div className="stream-skeleton-container">
+                {[1, 2, 3].map((n) => (
+                    <div key={n} className="post-skeleton">
+                        <div className="skeleton-header">
+                            <div className="skeleton-avatar"></div>
+                            <div className="skeleton-text-group">
+                                <div className="skeleton-line short"></div>
+                                <div className="skeleton-line date"></div>
+                            </div>
+                        </div>
+                        <div className="skeleton-body">
+                            <div className="skeleton-line"></div>
+                            <div className="skeleton-line"></div>
+                            <div className="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        );
+    }
+    
     if (streamItems.length === 0) {
-        return <p>Loading...</p>;
+        return (
+            <div className="empty-stream-container">
+                <h4>{isAdminOrTeacher ? "This is where you can talk to your class" : "No posts yet"}</h4>
+                <p>
+                    {isAdminOrTeacher 
+                        ? "Use the stream to share announcements, assignments, and respond to student questions." 
+                        : "Your teacher hasn't posted anything to the stream yet."}
+                </p>
+            </div>
+        );
     }
 
     return (

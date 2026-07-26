@@ -23,7 +23,8 @@ router.post('/left' , auth, leftClass);
 const {getAllClass} = require('../Controllers/ClassControllers/getAllClass');
 router.get('/allclass' , getAllClass);
 
-const {resetEntryCode} = require('../Controllers/ClassControllers/resetCode');
+const {resetEntryCode, toggleEntryCode} = require('../Controllers/ClassControllers/resetCode');
 router.post('/reset-code/:id' , auth , resetEntryCode);
+router.post('/toggle-code/:id', auth, toggleEntryCode);
 
 module.exports = router;

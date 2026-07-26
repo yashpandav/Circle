@@ -5,6 +5,7 @@ import { Divider } from '@mui/material';
 
 const People = () => {
     const currClass = useSelector((state) => state.classes.currClass);
+    const currUser = useSelector((state) => state.auth.user);
     const [isLoading] = useState(false);
     const getInitials = (firstName, lastName) => {
         return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase();
@@ -12,6 +13,10 @@ const People = () => {
 
     const teachers = [currClass.admin, ...currClass.teacher].filter(Boolean);
     const students = currClass.student || [];
+
+    const isAdminOrTeacher = 
+        (currClass.admin && currUser && currClass.admin._id === currUser._id) || 
+        (currClass.teacher && currUser && currClass.teacher.some(t => t._id === currUser._id));
 
     const UserCard = ({ user, role }) => (
         <div className="user-card">
@@ -41,12 +46,12 @@ const People = () => {
         <div className="people-container" role="main">
             <section className="teachers-section" aria-label="Teachers">
                 <div className="section-header">
-                    <h2>Teachers</h2>
+                    <h2 style={{ color: currClass.classTheme || '#1967d2' }}>Teachers</h2>
                     <span className="count-badge" role="status">
                         {teachers.length} teachers
                     </span>
                 </div>
-                <div className="divider" />
+                <div className="divider" style={{ backgroundColor: currClass.classTheme || '#1967d2' }} />
                 <div className="users-list">
                     {isLoading ? (
                         <div>Loading...</div>
@@ -68,10 +73,12 @@ const People = () => {
 
             <section className="students-section">
                 <div className="section-header">
-                    <h2>Classmates</h2>
+                    <h2 style={{ color: currClass.classTheme || '#1967d2' }}>
+                        {isAdminOrTeacher ? 'Students' : 'Classmates'}
+                    </h2>
                     <span className="count-badge">{students.length} students</span>
                 </div>
-                <div className="divider" />
+                <div className="divider" style={{ backgroundColor: currClass.classTheme || '#1967d2' }} />
                 <div className="users-list">
                     {students.map((student, index) => (
                         <React.Fragment key={student._id}>

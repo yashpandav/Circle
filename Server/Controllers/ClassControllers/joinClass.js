@@ -29,6 +29,13 @@ exports.joinClass = async (req, res) => {
             });
         }
 
+        if (findClass.isCodeActive === false) {
+            return res.status(403).json({
+                success: false,
+                message: "Invitations for this class have been turned off by the admin."
+            });
+        }
+
         const user = await User.findById(req.user.id);
 
         if (user.createdClasses.includes(findClass.id) || user.joinedClassAsAteacher.includes(findClass.id) || user.joinedClassAsStudent.includes(findClass.id)) {

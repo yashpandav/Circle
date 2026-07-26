@@ -12,6 +12,7 @@ import HomeCircle from './components/WorkArea/rightPanel/Home/home';
 import Review from './components/WorkArea/rightPanel/ReviewList/review';
 import Todo from './components/WorkArea/rightPanel/ToDo/todo';
 import MainCurrCircle from './components/WorkArea/rightPanel/CurrCircle/mainPage';
+import MainCircle from './components/MainCircle/mainCircle';
 import ScrollToTop from './components/Helper/scrollToTop';
 import ForgotPassword from './components/AuthPages/ForgotPassword';
 import People from './components/People/People';
@@ -44,9 +45,12 @@ const App = () => {
       <Route path="/workarea" element={<WorkArea />}>
         <Route path="" element={<Navigate to="home" />} />
         <Route path="home" element={<HomeCircle />} />
-        <Route path="circle/:id" element={<MainCurrCircle />} />
-        <Route path='circle/:id/people' element={<People />} />
-        <Route path="circle/:id/assignment/:assignmentId" element={<AssignmentDetails />} />
+        <Route path="circle/:id" element={<MainCurrCircle />}>
+          <Route path="" element={<Navigate to="stream" replace />} />
+          <Route path="stream" element={<MainCircle />} />
+          <Route path="people" element={<People />} />
+          <Route path="assignment/:assignmentId" element={<AssignmentDetails />} />
+        </Route>
         <Route path="review" element={<Review />} />
         <Route path="todo" element={<Todo />} />
       </Route>

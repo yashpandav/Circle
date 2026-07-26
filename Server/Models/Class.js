@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const randomColor = require('randomcolor');
+
 const ClassSchema = new mongoose.Schema({
 	name: { 
         type: String,
@@ -14,7 +14,7 @@ const ClassSchema = new mongoose.Schema({
     },
     classTheme : {
         type : String,
-        default : randomColor()
+        default : '#4285f4'
     },
 	createDate: {
 		type: Date,
@@ -32,6 +32,10 @@ const ClassSchema = new mongoose.Schema({
     },
     entryUrl : {
         type : String
+    },
+    isCodeActive: {
+        type: Boolean,
+        default: true
     },
 	student: [
 		{
@@ -63,18 +67,6 @@ const ClassSchema = new mongoose.Schema({
             ref : "Post"
         }
     ]
-    // submittedAss : [
-    //     {
-	// 		type: mongoose.Schema.Types.ObjectId,
-	// 		ref: "Assignment",
-    //     }
-    // ],
-	// finishedAss : [
-	// 	{
-	// 		type : mongoose.Schema.Types.ObjectId,
-    //         ref : "Assignment",
-	// 	}
-	// ],
     }
 );
 

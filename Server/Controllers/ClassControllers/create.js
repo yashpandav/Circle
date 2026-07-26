@@ -1,14 +1,9 @@
 const User = require('../../Models/User');
 const Class = require('../../Models/Class');
 const { uploadImage } = require('../../Utils/imageUpload');
-const randomColor = require('randomcolor');
-const convert = require('color-convert');
 const randomstring = require('randomstring');
 const { sendMail } = require('../../Utils/mailSender');
 const bannerURL = require('../../Data/banerUrl');
-const uniqolor = require('uniqolor');
-
-
 exports.createClass = async (req, res) => {
     try {
         const { name, description, subject } = req?.body;
@@ -28,18 +23,8 @@ exports.createClass = async (req, res) => {
                 console.log("Banner Uploaded => ", uploadResponse);
             }
         }
-
-        //* Generate class theme color
-        let color = req.body.color;
-        if (color === '#000000') {
-            color = uniqolor.random({
-                luminosity: [10, 255],
-                lightness: [40, 100],
-            }).color;
-        } else {
-            let rgb = convert.keyword.rgb(`${color}`);
-            color = '#' + convert.rgb.hex(rgb);
-        }
+        //* Extract class theme color
+        let color = req.body.color || '#4285f4';
 
         //* Create new class
         let newClass = await Class.create({

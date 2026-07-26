@@ -11,7 +11,8 @@ const {
     DELETE_CLASS_API,
     UPDATE_CLASS_API,
     LEFT_CLASS_API,
-    CHANGE_ENTRY_CODE
+    CHANGE_ENTRY_CODE,
+    TOGGLE_ENTRY_CODE
 } = CLASS_API_URL;
 
 export const fetchAllClasses = async () => {
@@ -78,7 +79,9 @@ export const getClass = createAsyncThunk(
         try {
             const response = await apiConnector('GET', `${GET_CLASS_API}/${id}`);
             dispatch(setCurrClass(response.data.data));
-            navigate(`/workarea/circle/${response.data.data._id}`);
+            if (navigate) {
+                navigate(`/workarea/circle/${response.data.data._id}`);
+            }
             return response.data;
         } catch (err) {
             console.log("SOMETHING WENT WRONG WHILE CALLING GET CLASS API ", err);
@@ -101,6 +104,22 @@ export const changeEntryCode = createAsyncThunk(
     }
 )
 
+export const toggleEntryCodeStatus = createAsyncThunk(
+    'toggleEntryCodeStatus',
+    async ({ id, dispatch }) => {
+        try {
+            const response = await apiConnector('POST', `${TOGGLE_ENTRY_CODE}/${id}`);
+            dispatch(setCurrClass(response.data.data));
+            toast.success(response.data.message);
+            return response.data;
+        } catch (err) {
+            console.log("SOMETHING WENT WRONG WHILE CALLING TOGGLE ENTRY CODE API ", err);
+            toast.error("Failed to toggle invitations");
+            return err.response ? err.response : err.message;
+        }
+    }
+)
+
 export const updateClassDetails = createAsyncThunk(
     'updateClass',
     async ({ id, data, dispatch }) => {
@@ -108,7 +127,9 @@ export const updateClassDetails = createAsyncThunk(
         try {
             const response = await apiConnector('POST', `${UPDATE_CLASS_API}/${id}`, data);
             console.log("API Response:", response);
-            dispatch(setCurrClass(response.data.data));
+            // Re-fetch the fully populated class rather than trusting the shallow update
+            await dispatch(getClass({ id, dispatch })).unwrap();
+            toast.success("Circle updated successfully");
             return response.data;
         } catch (err) {
             console.log("SOMETHING WENT WRONG WHILE CALLING UPDATE CLASS DETAILS API", err);
