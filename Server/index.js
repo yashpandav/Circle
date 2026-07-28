@@ -1,14 +1,15 @@
 //* IMPORT
 const express = require('express');
 const app = express();
+const { createServer } = require('http');
 const { dbConnect } = require('./Config/databaseConnection');
 const { cloudinaryConnect } = require('./Config/cloudinaryConnection');
 const cookieParser = require('cookie-parser');
 const fileUpload = require('express-fileupload');
-const { auth } = require('./Middleware/auth');
+const socketModule = require('./socket');
 require('dotenv').config();
 
-//* DATABASE & CLOUDINARY CONNECTION
+//* CLOUDINARY CONNECTION
 cloudinaryConnect();
 
 //* MIDDLEWARE
@@ -27,10 +28,8 @@ try {
         allowedOrigins = JSON.parse(process.env.ALLOWD_ORIGIN);
     }
 } catch (error) {
-    // Fallback if the env variable is a plain string or comma-separated string rather than JSON
     allowedOrigins = process.env.ALLOWD_ORIGIN.split(',').map(origin => origin.trim());
 }
-// console.log("CORS allowed origins: " + allowedOrigins)
 app.use(
     cors({
         origin: allowedOrigins,
@@ -39,55 +38,80 @@ app.use(
     })
 );
 
+//* CREATE HTTP SERVER & INITIALISE SOCKET.IO (via singleton — no circular deps)
+const httpServer = createServer(app);
+const io = socketModule.init(httpServer, {
+    cors: {
+        origin: allowedOrigins,
+        credentials: true,
+    }
+});
 
+//* SOCKET.IO — ROOM MANAGEMENT
+io.on('connection', (socket) => {
+    console.log(`[Socket] Client connected: ${socket.id}`);
 
-//* AUTH ROUTER IMPORTs
-const userRoute = require('./Routes/UserAuthRoutes');
-app.use('/auth/user', userRoute);
+    // Client joins a classroom room when they open a class page
+    socket.on('join:room', (classId) => {
+        socket.join(`room:${classId}`);
+        console.log(`[Socket] ${socket.id} joined room:${classId}`);
+    });
 
-//* CLASS ROUTER IMPORTs
-const classRoute = require('./Routes/ClassRoutes');
-app.use('/class', classRoute);
+    // Client leaves a classroom room
+    socket.on('leave:room', (classId) => {
+        socket.leave(`room:${classId}`);
+        console.log(`[Socket] ${socket.id} left room:${classId}`);
+    });
 
-//* USER ROUTER IMPORTs
-const userProfileRoute = require('./Routes/UserRoutes');
-app.use('/user', userProfileRoute);
-
-//* ASSIGNMENT ROUTER IMPORTs
-const assignmentRoutes = require('./Routes/AssignmentRoutes');
-app.use('/assignment', assignmentRoutes);
-
-//* REVIEWS LIST ROUTER IMPORTs
-const reviewlistRoutes = require('./Routes/ReviewRoutes');
-app.use('/reviews', reviewlistRoutes);
-
-//* COMMENT ROUTER IMPORTs
-const commentRoutes = require('./Routes/CommentRoutes');
-app.use('/comment', commentRoutes);
-
-//* POST ROUTER IMPORTs
-const postRoutes = require('./Routes/PostRoutes');
-app.use('/post', postRoutes);
-
-//* TODOS ROUTER IMPORTs
-const todosRoutes = require('./Routes/ToDosRoutes');
-app.use('/todos', todosRoutes);
-
-//* CATEGORY ROUTES IMPORTs
-const categoryRoutes = require('./Routes/CategoryRoutes');
-app.use('/category', categoryRoutes);
-
-//* PORT AND LISTEN
-const PORT = process.env.PORT || 5000;
-dbConnect().then(() => {
-    app.listen(PORT, () => {
-        console.log(`App is running on ${PORT}`);
+    socket.on('disconnect', () => {
+        console.log(`[Socket] Client disconnected: ${socket.id}`);
     });
 });
 
+//* AUTH ROUTER IMPORTS
+const userRoute = require('./Routes/UserAuthRoutes');
+app.use('/auth/user', userRoute);
+
+//* CLASS ROUTER IMPORTS
+const classRoute = require('./Routes/ClassRoutes');
+app.use('/class', classRoute);
+
+//* USER ROUTER IMPORTS
+const userProfileRoute = require('./Routes/UserRoutes');
+app.use('/user', userProfileRoute);
+
+//* ASSIGNMENT ROUTER IMPORTS
+const assignmentRoutes = require('./Routes/AssignmentRoutes');
+app.use('/assignment', assignmentRoutes);
+
+//* REVIEWS LIST ROUTER IMPORTS
+const reviewlistRoutes = require('./Routes/ReviewRoutes');
+app.use('/reviews', reviewlistRoutes);
+
+//* COMMENT ROUTER IMPORTS
+const commentRoutes = require('./Routes/CommentRoutes');
+app.use('/comment', commentRoutes);
+
+//* POST ROUTER IMPORTS
+const postRoutes = require('./Routes/PostRoutes');
+app.use('/post', postRoutes);
+
+//* TODOS ROUTER IMPORTS
+const todosRoutes = require('./Routes/ToDosRoutes');
+app.use('/todos', todosRoutes);
+
+//* CATEGORY ROUTES IMPORTS
+const categoryRoutes = require('./Routes/CategoryRoutes');
+app.use('/category', categoryRoutes);
+
 app.get('/', (req, res) => {
-    res.send({
-        message: 'Welcome to CIRCLE'
+    res.send({ message: 'Welcome to CIRCLE' });
+});
+
+//* PORT AND LISTEN — Start only after DB is connected
+const PORT = process.env.PORT || 5000;
+dbConnect().then(() => {
+    httpServer.listen(PORT, () => {
+        console.log(`App is running on ${PORT}`);
     });
-    console.log("HOME PAGE");
 });

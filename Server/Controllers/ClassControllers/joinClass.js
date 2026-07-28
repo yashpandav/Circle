@@ -1,6 +1,7 @@
 const Class = require('../../Models/Class');
 const User = require('../../Models/User');
 const { sendMail } = require('../../Utils/mailSender');
+const { getIO } = require('../../socket');
 
 exports.joinClass = async (req, res) => {
     try {
@@ -31,9 +32,9 @@ exports.joinClass = async (req, res) => {
 
         const user = await User.findById(req.user.id);
 
-        const alreadyEnrolled = 
-            user.createdClasses.some(id => id.toString() === findClass.id) || 
-            user.joinedClassAsAteacher.some(id => id.toString() === findClass.id) || 
+        const alreadyEnrolled =
+            user.createdClasses.some(id => id.toString() === findClass.id) ||
+            user.joinedClassAsAteacher.some(id => id.toString() === findClass.id) ||
             user.joinedClassAsStudent.some(id => id.toString() === findClass.id);
 
         if (alreadyEnrolled) {
@@ -54,6 +55,10 @@ exports.joinClass = async (req, res) => {
             "Class Joined",
             `You have successfully joined ${findClass.name}`
         ); */
+
+        const populatedUser = await User.findById(user._id).select('firstName lastName email image');
+
+        getIO().to(`room:${findClass._id.toString()}`).emit('class:member_joined', { user: populatedUser });
 
         return res.status(200).json({
             success: true,

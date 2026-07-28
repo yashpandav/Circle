@@ -1,6 +1,8 @@
 const User = require('../../../Models/User');
 const Assignment = require('../../../Models/Assignment');
 const SubmitAssignment = require('../../../Models/SubmitAssignment');
+const Class = require('../../../Models/Class');
+const { getIO } = require('../../../socket');
 
 exports.deleteSubmittedAss = async (req, res) => {
     try {
@@ -43,20 +45,29 @@ exports.deleteSubmittedAss = async (req, res) => {
                 message: "Submission Not Found"
             });
         }
-        
+
         if (currSubmitted.student.toString() !== req.user.id) {
             return res.status(403).json({
                 success: false,
                 message: "You are not authorized to delete this submission"
             });
         }
-        
+
         await SubmitAssignment.findByIdAndDelete(submittedID);
 
         await Assignment.findByIdAndUpdate(assId, {
             $pull: { submission: submittedID },
             $push: { pendingStudent: req.user.id }
         });
+
+        const classForAss = await Class.findOne({ addedAssignment: assId });
+        if (classForAss) {
+            getIO().to(`room:${classForAss._id.toString()}`).emit('assignment:submission_deleted', {
+                submittedID,
+                assId,
+                studentId: req.user.id
+            });
+        }
 
         return res.status(200).json({
             success: true,

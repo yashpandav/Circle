@@ -1,5 +1,6 @@
 const Class = require('../../Models/Class');
 const User = require('../../Models/User');
+const { getIO } = require('../../socket');
 
 exports.addTeacher = async (req, res) => {
     try {
@@ -37,9 +38,9 @@ exports.addTeacher = async (req, res) => {
         }
 
         // Check if user is already enrolled
-        const alreadyEnrolled = 
-            targetUser.createdClasses.some(id => id.toString() === classId) || 
-            targetUser.joinedClassAsAteacher.some(id => id.toString() === classId) || 
+        const alreadyEnrolled =
+            targetUser.createdClasses.some(id => id.toString() === classId) ||
+            targetUser.joinedClassAsAteacher.some(id => id.toString() === classId) ||
             targetUser.joinedClassAsStudent.some(id => id.toString() === classId);
 
         if (alreadyEnrolled) {
@@ -54,6 +55,10 @@ exports.addTeacher = async (req, res) => {
         targetUser.joinedClassAsAteacher.push(currClass._id);
 
         await Promise.all([currClass.save(), targetUser.save()]);
+
+        const populatedUser = await User.findById(targetUser._id).select('firstName lastName email image');
+
+        getIO().to(`room:${classId}`).emit('class:teacher_added', { user: populatedUser });
 
         return res.status(200).json({
             success: true,

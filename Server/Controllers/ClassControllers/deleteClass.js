@@ -1,5 +1,6 @@
 const Class = require('../../Models/Class');
 const User = require('../../Models/User');
+const { getIO } = require('../../socket');
 
 exports.deleteClass = async (req, res) => {
     try {
@@ -45,6 +46,9 @@ exports.deleteClass = async (req, res) => {
                 }
             }
         );
+
+        getIO().to(`room:${classId}`).emit('class:deleted', {});
+
         response = await Class.findByIdAndDelete(classId);
 
         return res.status(200).json({

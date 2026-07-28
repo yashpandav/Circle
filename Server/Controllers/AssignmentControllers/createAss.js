@@ -3,6 +3,7 @@ const { uploadImage } = require('../../Utils/imageUpload');
 const User = require('../../Models/User');
 const Class = require('../../Models/Class');
 const Category = require('../../Models/Category');
+const { getIO } = require('../../socket');
 require('dotenv').config();
 
 exports.createAss = async (req, res) => {
@@ -97,6 +98,7 @@ exports.createAss = async (req, res) => {
                 }
             }
             await newAss.save();
+            getIO().to(`room:${currClassId}`).emit('assignment:new', { data: newAss });
             return res.status(200).json({
                 success: true,
                 message: "Assignment Created Successfully",

@@ -14,6 +14,7 @@ import { deleteAssignment } from "../../../Api/apiCaller/assignmentapicaller";
 import { LoaderComponent } from "../../Helper/Loaders/loader";
 import { setLoading } from "../../../Slices/loadingSlice";
 import { toast } from "react-hot-toast";
+import socket from "../../../socket/socket";
 
 export default function AssignmentContainer({ assignment }) {
     const [comments, setComments] = useState(assignment.comment || []);
@@ -28,6 +29,28 @@ export default function AssignmentContainer({ assignment }) {
     useEffect(() => {
         setAnnouncer(currUser?._id === assignment?.teacher?._id);
     }, [assignment, currUser]);
+
+    useEffect(() => {
+        const handleNewComment = ({ data, parentId }) => {
+            if (parentId === assignment._id) {
+                setComments(prev => [...prev, data]);
+            }
+        };
+
+        const handleDeletedComment = ({ commentId, parentId }) => {
+            if (parentId === assignment._id) {
+                setComments(prev => prev.filter(c => c._id !== commentId));
+            }
+        };
+
+        socket.on('comment:new', handleNewComment);
+        socket.on('comment:deleted', handleDeletedComment);
+
+        return () => {
+            socket.off('comment:new', handleNewComment);
+            socket.off('comment:deleted', handleDeletedComment);
+        };
+    }, [assignment._id]);
 
 
 

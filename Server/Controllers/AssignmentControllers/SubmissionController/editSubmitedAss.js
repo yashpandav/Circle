@@ -1,7 +1,9 @@
 const User = require('../../../Models/User');
 const Assignment = require('../../../Models/Assignment');
 const SubmitAssignment = require('../../../Models/SubmitAssignment');
-const {uploadImage} = require('../../../Utils/imageUpload');
+const Class = require('../../../Models/Class');
+const { uploadImage } = require('../../../Utils/imageUpload');
+const { getIO } = require('../../../socket');
 require('dotenv').config();
 
 exports.editSubmimtedAss = async (req, res) => {
@@ -42,7 +44,7 @@ exports.editSubmimtedAss = async (req, res) => {
             });
         }
 
-        if(Date.now() > assDetails.dueDate && assDetails.acceptAfterDue === false) {
+        if (Date.now() > assDetails.dueDate && assDetails.acceptAfterDue === false) {
             return res.status(401).json({
                 success: false,
                 message: "Assignment Due Date Over"
@@ -51,7 +53,7 @@ exports.editSubmimtedAss = async (req, res) => {
 
         let currSubmitted = await SubmitAssignment.findById(submitedID);
 
-        if(!overwrite && currSubmitted){
+        if (!overwrite && currSubmitted) {
             return res.status(409).json({
                 success: false,
                 overwriteRequired: true,
@@ -66,16 +68,25 @@ exports.editSubmimtedAss = async (req, res) => {
             });
         }
 
-        //* IF ASSIGNMENT IS ALREDAY SUBMITTED
+        //* IF ASSIGNMENT IS ALREADY SUBMITTED
         if (currSubmitted && overwrite) {
             if (file) {
-                const image = await uploadImage(file , process.env.FOLDER_NAME);
+                const image = await uploadImage(file, process.env.FOLDER_NAME);
                 file = image.secure_url;
             }
-            const updatedSubmission = await SubmitAssignment.findByIdAndUpdate(submitedID , {
+            const updatedSubmission = await SubmitAssignment.findByIdAndUpdate(submitedID, {
                 data,
                 file,
             }, { new: true });
+
+            const classForAss = await Class.findOne({ addedAssignment: assId });
+            if (classForAss) {
+                getIO().to(`room:${classForAss._id.toString()}`).emit('assignment:submission_updated', {
+                    data: updatedSubmission,
+                    assId,
+                    studentId: req.user.id
+                });
+            }
 
             return res.status(200).json({
                 success: true,
@@ -86,8 +97,8 @@ exports.editSubmimtedAss = async (req, res) => {
         }
 
         return res.status(401).json({
-            status : false,
-            message : "Not Found",
+            status: false,
+            message: "Not Found",
         })
 
     } catch (err) {

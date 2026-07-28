@@ -1,19 +1,21 @@
 const Assignment = require('../../Models/Assignment');
 const User = require('../../Models/User');
 const Category = require('../../Models/Category');
-const {uploadImage} = require('../../Utils/imageUpload');
+const Class = require('../../Models/Class');
+const { uploadImage } = require('../../Utils/imageUpload');
+const { getIO } = require('../../socket');
 require('dotenv').config();
 
-exports.editAss = async (req , res) => {
-    try{
+exports.editAss = async (req, res) => {
+    try {
 
-        const assId = req.params.id; 
+        const assId = req.params.id;
 
-        const{
-            name ,
-            description ,
-            category ,
-            dueDate ,
+        const {
+            name,
+            description,
+            category,
+            dueDate,
         } = req.body;
 
         let file = req?.files?.file;
@@ -84,6 +86,11 @@ exports.editAss = async (req , res) => {
         findAss.dueDate = dueDate || findAss.dueDate;
 
         await findAss.save();
+
+        const classForAss = await Class.findOne({ addedAssignment: assId });
+        if (classForAss) {
+            getIO().to(`room:${classForAss._id.toString()}`).emit('assignment:updated', { data: findAss });
+        }
 
         return res.status(200).json({
             success: true,

@@ -1,7 +1,9 @@
 const User = require('../../../Models/User');
 const Assignment = require('../../../Models/Assignment');
 const SubmitAssignment = require('../../../Models/SubmitAssignment');
+const Class = require('../../../Models/Class');
 const { uploadImage } = require('../../../Utils/imageUpload');
+const { getIO } = require('../../../socket');
 require('dotenv').config();
 
 exports.submitAss = async (req, res) => {
@@ -90,6 +92,17 @@ exports.submitAss = async (req, res) => {
             $push: { submission: newSubmission.id },
             $pull: { pendingStudent: req.user.id }
         });
+
+        const classForAss = await Class.findOne({ addedAssignment: assId });
+        if (classForAss) {
+            getIO().to(`room:${classForAss._id.toString()}`).emit('assignment:submitted', {
+                data: {
+                    assignment: assDetails,
+                    submission: newSubmission,
+                    studentId: req.user.id
+                }
+            });
+        }
 
         return res.status(200).json({
             success: true,

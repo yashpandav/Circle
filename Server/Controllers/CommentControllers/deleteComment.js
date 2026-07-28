@@ -1,6 +1,8 @@
 const Comment = require('../../Models/Comment');
 const Post = require('../../Models/Post');
 const Assignment = require('../../Models/Assignment');
+const Class = require('../../Models/Class');
+const { getIO } = require('../../socket');
 
 exports.deleteComment = async (req, res) => {
     try {
@@ -53,6 +55,11 @@ exports.deleteComment = async (req, res) => {
         await Comment.findByIdAndDelete(commentId);
         commentOnWhich.comment.pull(commentId);
         await commentOnWhich.save();
+
+        const classForComment = await Class.findOne({ $or: [{ addedPost: id }, { addedAssignment: id }] });
+        if (classForComment) {
+            getIO().to(`room:${classForComment._id.toString()}`).emit('comment:deleted', { commentId, parentId: id, commentOn });
+        }
 
         return res.status(200).json({
             success: true,

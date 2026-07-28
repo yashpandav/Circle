@@ -1,4 +1,8 @@
 const Comment = require('../../Models/Comment');
+const Post = require('../../Models/Post');
+const Assignment = require('../../Models/Assignment');
+const Class = require('../../Models/Class');
+const { getIO } = require('../../socket');
 
 exports.editComment = async (req, res) => {
     try {
@@ -31,13 +35,20 @@ exports.editComment = async (req, res) => {
         }
 
         findComment.commentBody = commentBody || findComment.commentBody;
-
         await findComment.save();
+
+        const { id, commentOn } = req.body;
+        if (id && commentOn) {
+            const classForComment = await Class.findOne({ $or: [{ addedPost: id }, { addedAssignment: id }] });
+            if (classForComment) {
+                getIO().to(`room:${classForComment._id.toString()}`).emit('comment:updated', { data: findComment, parentId: id, commentOn });
+            }
+        }
 
         return res.status(200).json({
             success: true,
             message: "Comment edited",
-            data : findComment
+            data: findComment
         });
 
     } catch (err) {

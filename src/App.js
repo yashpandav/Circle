@@ -17,6 +17,7 @@ import ScrollToTop from './components/Helper/scrollToTop';
 import ForgotPassword from './components/AuthPages/ForgotPassword';
 import People from './components/People/People';
 import AssignmentDetails from './components/MainCircle/AssignmentDetails/AssignmentDetails';
+import SocketProvider from './socket/SocketProvider';
 import './App.css';
 
 const App = () => {
@@ -36,26 +37,28 @@ const App = () => {
   }, [user, dispatch, navigate]);
 
   return (
-    <><Routes>
-      <Route path="/" element={<MainHomePage />} />
-      <Route path="/auth/signup" element={login ? <Navigate to="/workarea/home" /> : <Signup />} />
-      <Route path="/auth/login" element={login ? <Navigate to="/workarea/home" /> : <Login />} />
-      <Route path="/auth/forgot-password" element={login ? <Navigate to="/workarea/home" /> : <ForgotPassword />} />
-      <Route path="/auth/otp" element={<OtpPage />} />
-      <Route path="/workarea" element={<WorkArea />}>
-        <Route path="" element={<Navigate to="home" />} />
-        <Route path="home" element={<HomeCircle />} />
-        <Route path="circle/:id" element={<MainCurrCircle />}>
-          <Route path="" element={<Navigate to="stream" replace />} />
-          <Route path="stream" element={<MainCircle />} />
-          <Route path="people" element={<People />} />
-          <Route path="assignment/:assignmentId" element={<AssignmentDetails />} />
+    <SocketProvider>
+      <><Routes>
+        <Route path="/" element={<MainHomePage />} />
+        <Route path="/auth/signup" element={login ? <Navigate to="/workarea/home" /> : <Signup />} />
+        <Route path="/auth/login" element={login ? <Navigate to="/workarea/home" /> : <Login />} />
+        <Route path="/auth/forgot-password" element={login ? <Navigate to="/workarea/home" /> : <ForgotPassword />} />
+        <Route path="/auth/otp" element={<OtpPage />} />
+        <Route path="/workarea" element={<WorkArea />}>
+          <Route path="" element={<Navigate to="home" />} />
+          <Route path="home" element={<HomeCircle />} />
+          <Route path="circle/:id" element={<MainCurrCircle />}>
+            <Route path="" element={<Navigate to="stream" replace />} />
+            <Route path="stream" element={<MainCircle />} />
+            <Route path="people" element={<People />} />
+            <Route path="assignment/:assignmentId" element={<AssignmentDetails />} />
+          </Route>
+          <Route path="review" element={<Review />} />
+          <Route path="todo" element={<Todo />} />
         </Route>
-        <Route path="review" element={<Review />} />
-        <Route path="todo" element={<Todo />} />
-      </Route>
-      <Route path="*" element={<MainHomePage />} />
-    </Routes><ScrollToTop /></>
+        <Route path="*" element={<MainHomePage />} />
+      </Routes><ScrollToTop /></>
+    </SocketProvider>
   );
 };
 

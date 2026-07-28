@@ -1,5 +1,6 @@
 const Class = require('../../Models/Class');
 const User = require('../../Models/User');
+const { getIO } = require('../../socket');
 
 exports.leftClass = async (req, res) => {
     try {
@@ -36,10 +37,12 @@ exports.leftClass = async (req, res) => {
 
         await Promise.all([userDetails.save(), classDetails.save()]);
 
+        getIO().to(`room:${classId}`).emit('class:member_left', { userId: userId });
+
         return res.status(200).json({
             success: true,
             message: "Class left successfully",
-            data : {
+            data: {
                 classDetails,
                 userDetails
             }

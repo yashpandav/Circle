@@ -11,6 +11,7 @@ import { createComment } from "../../../Api/apiCaller/commentapicaller";
 import { deletePost } from "../../../Api/apiCaller/postapicaller";
 import { LoaderComponent } from "../../Helper/Loaders/loader";
 import { setLoading } from "../../../Slices/loadingSlice";
+import socket from "../../../socket/socket";
 
 export default function PostContainer({ post }) {
     const [comments, setComments] = useState(post.comment || []);
@@ -23,6 +24,28 @@ export default function PostContainer({ post }) {
     useEffect(() => {
         setAnnouncer(currUser?._id === post?.teacher?._id);
     }, [post, currUser]);
+
+    useEffect(() => {
+        const handleNewComment = ({ data, parentId }) => {
+            if (parentId === post._id) {
+                setComments(prev => [...prev, data]);
+            }
+        };
+
+        const handleDeletedComment = ({ commentId, parentId }) => {
+            if (parentId === post._id) {
+                setComments(prev => prev.filter(c => c._id !== commentId));
+            }
+        };
+
+        socket.on('comment:new', handleNewComment);
+        socket.on('comment:deleted', handleDeletedComment);
+
+        return () => {
+            socket.off('comment:new', handleNewComment);
+            socket.off('comment:deleted', handleDeletedComment);
+        };
+    }, [post._id]);
 
     const removeFileSuffix = (fileName) => {
         if (!fileName) return "";

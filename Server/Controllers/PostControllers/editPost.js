@@ -1,7 +1,9 @@
 const Post = require('../../Models/Post');
 const User = require('../../Models/User');
 const Category = require('../../Models/Category');
+const Class = require('../../Models/Class');
 const { uploadImage } = require('../../Utils/imageUpload');
+const { getIO } = require('../../socket');
 require('dotenv').config();
 
 exports.editPost = async (req, res) => {
@@ -63,10 +65,15 @@ exports.editPost = async (req, res) => {
         findPost.postFile = postFile || findPost.postFile;
         await findPost.save();
 
+        const classForPost = await Class.findOne({ addedPost: postId });
+        if (classForPost) {
+            getIO().to(`room:${classForPost._id.toString()}`).emit('post:updated', { data: findPost });
+        }
+
         return res.status(200).json({
             success: true,
             message: "Post edited successfully",
-            data : findPost,
+            data: findPost,
         });
     } catch (err) {
         console.error(err);

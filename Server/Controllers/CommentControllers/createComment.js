@@ -1,10 +1,12 @@
 const Comment = require('../../Models/Comment');
 const Post = require('../../Models/Post');
 const Assignment = require('../../Models/Assignment');
+const Class = require('../../Models/Class');
+const { getIO } = require('../../socket');
 
 exports.createComment = async (req, res) => {
     try {
-        const { 
+        const {
             commentBody,
             commentOn,
             id
@@ -45,12 +47,17 @@ exports.createComment = async (req, res) => {
         commentOnWhich.comment.push(createdComment.id);
         await commentOnWhich.save();
 
-        const populatedComment = await Comment.findById(createdComment.id).populate('user' , 'firstName lastName image'); 
+        const populatedComment = await Comment.findById(createdComment.id).populate('user', 'firstName lastName image');
+
+        const classForComment = await Class.findOne({ $or: [{ addedPost: id }, { addedAssignment: id }] });
+        if (classForComment) {
+            getIO().to(`room:${classForComment._id.toString()}`).emit('comment:new', { data: populatedComment, parentId: id, commentOn });
+        }
 
         return res.status(201).json({
             success: true,
             message: "Comment added",
-            data : populatedComment
+            data: populatedComment
         });
 
     } catch (err) {

@@ -3,6 +3,7 @@ const User = require("../../Models/User");
 const Class = require("../../Models/Class");
 const Category = require("../../Models/Category");
 const Comment = require("../../Models/Comment");
+const { getIO } = require("../../socket");
 
 exports.deletePost = async (req, res) => {
     try {
@@ -22,7 +23,7 @@ exports.deletePost = async (req, res) => {
             });
         }
         const classId = findClass._id;
-        
+
         const findPost = await Post.findById(postId);
         if (!findPost) {
             return res.status(404).json({
@@ -59,10 +60,12 @@ exports.deletePost = async (req, res) => {
         //* Delete the post
         const response = await Post.findByIdAndDelete(postId);
 
+        getIO().to(`room:${classId.toString()}`).emit('post:deleted', { postId });
+
         return res.status(200).json({
             success: true,
             message: "Post deleted successfully",
-            data : response,
+            data: response,
         });
     } catch (err) {
         console.error(err);

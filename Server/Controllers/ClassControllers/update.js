@@ -1,5 +1,6 @@
 const Class = require('../../Models/Class');
 const { uploadImage } = require('../../Utils/imageUpload');
+const { getIO } = require('../../socket');
 require('dotenv').config();
 
 exports.updateClass = async (req, res) => {
@@ -47,6 +48,8 @@ exports.updateClass = async (req, res) => {
         }, { new: true });
 
         console.log(updatedClass);
+
+        getIO().to(`room:${id}`).emit('class:updated', { data: updatedClass });
 
         return res.status(200).json({
             success: true,

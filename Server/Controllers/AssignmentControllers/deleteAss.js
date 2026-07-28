@@ -4,6 +4,7 @@ const Class = require('../../Models/Class');
 const Category = require('../../Models/Category');
 const Comment = require('../../Models/Comment');
 const submittedAss = require('../../Models/SubmitAssignment');
+const { getIO } = require('../../socket');
 
 exports.deleteAss = async (req, res) => {
     try {
@@ -67,6 +68,8 @@ exports.deleteAss = async (req, res) => {
 
         //* Finally, delete the assignment
         await Assignment.findByIdAndDelete(assId);
+
+        getIO().to(`room:${classId.toString()}`).emit('assignment:deleted', { assignmentId: assId });
 
         return res.status(200).json({
             success: true,
