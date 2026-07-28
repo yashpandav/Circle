@@ -27,4 +27,7 @@ const {resetEntryCode, toggleEntryCode} = require('../Controllers/ClassControlle
 router.post('/reset-code/:id' , auth , resetEntryCode);
 router.post('/toggle-code/:id', auth, toggleEntryCode);
 
+const { addTeacher } = require('../Controllers/ClassControllers/addTeacher');
+router.post('/add-teacher', auth, addTeacher);
+
 module.exports = router;

@@ -18,6 +18,23 @@ exports.createPost = async (req, res) => {
             });
         }
 
+        const currClass = await Class.findById(currClassId);
+        if (!currClass) {
+            return res.status(404).json({ success: false, message: "Class not found" });
+        }
+
+        const isTeacherOrAdmin = (currClass.admin && currClass.admin.toString() === req.user.id) || 
+                                 (currClass.teacher && currClass.teacher.some(t => t.toString() === req.user.id));
+        const isStudent = currClass.student && currClass.student.some(s => s.toString() === req.user.id);
+
+        if (!isTeacherOrAdmin && !isStudent) {
+            return res.status(403).json({ success: false, message: "You are not part of this class" });
+        }
+
+        if (isStudent && !isTeacherOrAdmin && currClass.studentCanPost === false) {
+            return res.status(403).json({ success: false, message: "Students are not allowed to post in this class" });
+        }
+
         let fileUrls = [];
         if (postFiles) {
             if (postFiles?.length > 0) {

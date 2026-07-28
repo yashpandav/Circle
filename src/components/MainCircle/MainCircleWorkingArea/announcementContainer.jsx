@@ -191,7 +191,8 @@ const AnnouncementWriter = ({
     handleLinkSubmit,
     handleYouTubeLinkSubmit,
     handleRemoveLink,
-    handleRemoveYouTubeLink
+    handleRemoveYouTubeLink,
+    isTeacherOrAdmin
 }) => {
     const currClass = useSelector((state) => state.classes.currClass);
     const [showUploadOptions, setShowUploadOptions] = useState(false);
@@ -227,9 +228,11 @@ const AnnouncementWriter = ({
 
     return (
         <div className="announcement-writer">
-            <div className="toggle-container">
-                <ToggleSwitch isPost={isPost} setIsPost={toggleWriteAssignment} />
-            </div>
+            {isTeacherOrAdmin && (
+                <div className="toggle-container">
+                    <ToggleSwitch isPost={isPost} setIsPost={toggleWriteAssignment} />
+                </div>
+            )}
             <div className="announcement-editor">
                 <TextField
                     placeholder="Post Title"
@@ -393,6 +396,12 @@ const AnnouncementWriter = ({
 
 export default function AnnouncementContainer() {
     const currClass = useSelector((state) => state.classes.currClass);
+    const currUser = useSelector((state) => state.auth.user);
+    
+    const isTeacherOrAdmin = (currClass?.admin && currClass.admin._id === currUser?._id) || 
+                             (currClass?.teacher && currClass.teacher.some(t => t._id === currUser?._id));
+    const isStudent = currClass?.student && currClass.student.some(s => s._id === currUser?._id);
+
     const [writeAssignment, setWriteAssignment] = useState(false);
     const [isPost, setIsPost] = useState(true);
     const dispatch = useDispatch();
@@ -560,13 +569,18 @@ export default function AnnouncementContainer() {
         return <LoaderComponent />
     }
 
+    if (isStudent && currClass.studentCanPost === false) {
+        return null; // Hide the announcement box completely
+    }
+
     return (
         <div className="main-announcement-container">
             <div className="announce-something-container">
                 <UserAnnouncementHeader setWriteAssignment={setWriteAssignment} />
                 {writeAssignment && (
                     <AnnouncementWriter
-                        isPost={isPost}
+                        isTeacherOrAdmin={isTeacherOrAdmin}
+                        isPost={isTeacherOrAdmin ? isPost : true}
                         title={data.title}
                         announcement={data.text}
                         dueDate={data.dueDate}

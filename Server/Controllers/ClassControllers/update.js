@@ -5,7 +5,7 @@ require('dotenv').config();
 exports.updateClass = async (req, res) => {
     try {
         const id = req.params.id;
-        let { name, description, subject, classTheme } = req.body;
+        let { name, description, subject, classTheme, studentCanPost } = req.body;
         let thumbnail = req.files?.thumbnail;
 
         if (!id) {
@@ -42,7 +42,8 @@ exports.updateClass = async (req, res) => {
             description: description || findClass.description,
             subject: subject || findClass.subject,
             classTheme: classTheme || findClass.classTheme,
-            thumbnail: thumbnail || findClass.thumbnail
+            thumbnail: thumbnail || findClass.thumbnail,
+            studentCanPost: studentCanPost !== undefined ? studentCanPost : findClass.studentCanPost
         }, { new: true });
 
         console.log(updatedClass);

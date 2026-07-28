@@ -4,19 +4,12 @@ const { sendMail } = require('../../Utils/mailSender');
 
 exports.joinClass = async (req, res) => {
     try {
-        const { entryCode, entryUrl, joinAs } = req.body;
+        const { entryCode, entryUrl } = req.body;
 
         if (!entryCode && !entryUrl) {
             return res.status(400).json({
                 success: false,
                 message: "Entry code or URL is required"
-            });
-        }
-
-        if(joinAs !== "Teacher" && joinAs !== "Student"){
-            return res.status(401).json({
-                success: false,
-                message: "Invalid Join As"
             });
         }
 
@@ -38,20 +31,21 @@ exports.joinClass = async (req, res) => {
 
         const user = await User.findById(req.user.id);
 
-        if (user.createdClasses.includes(findClass.id) || user.joinedClassAsAteacher.includes(findClass.id) || user.joinedClassAsStudent.includes(findClass.id)) {
+        const alreadyEnrolled = 
+            user.createdClasses.some(id => id.toString() === findClass.id) || 
+            user.joinedClassAsAteacher.some(id => id.toString() === findClass.id) || 
+            user.joinedClassAsStudent.some(id => id.toString() === findClass.id);
+
+        if (alreadyEnrolled) {
             return res.status(400).json({
                 success: false,
                 message: "You are already enrolled in this class"
             });
         }
 
-        if (joinAs === "Teacher") {
-            findClass.teacher.push(user.id);
-            user.joinedClassAsAteacher.push(findClass.id);
-        } else if (joinAs === "Student") {
-            findClass.student.push(user.id);
-            user.joinedClassAsStudent.push(findClass.id);
-        }
+        // Add to class and user as Student
+        findClass.student.push(user.id);
+        user.joinedClassAsStudent.push(findClass.id);
 
         await Promise.all([findClass.save(), user.save()]);
 

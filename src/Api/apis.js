@@ -31,7 +31,8 @@ export const CLASS_API_URL = {
     UPDATE_CLASS_API: `${BASE_URL}/class/update`,
     LEFT_CLASS_API: `${BASE_URL}/class/left`,
     CHANGE_ENTRY_CODE: `${BASE_URL}/class/reset-code`,
-    TOGGLE_ENTRY_CODE: `${BASE_URL}/class/toggle-code`
+    TOGGLE_ENTRY_CODE: `${BASE_URL}/class/toggle-code`,
+    ADD_TEACHER_API: `${BASE_URL}/class/add-teacher`
 };
 
 //* ASSIGNMENT API URL

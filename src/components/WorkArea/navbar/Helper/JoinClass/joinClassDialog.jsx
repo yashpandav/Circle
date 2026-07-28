@@ -7,8 +7,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { TextField, Box, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { joinClass } from '../../../../../Api/apiCaller/classapicaller';
+import { joinedClass } from '../../../../../Api/apiCaller/userapicaller';
 import toast from 'react-hot-toast';
 
 const JoinClassDialog = ({ setJoinDialog }) => {
@@ -17,15 +18,12 @@ const JoinClassDialog = ({ setJoinDialog }) => {
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
     const user = useSelector((state) => state.auth.user);
-    const [role, setRole] = useState(undefined);
-    const [classCode, setClassCode] = useState(null);
+    const dispatch = useDispatch();
+    const [classCode, setClassCode] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const handleClose = () => {
         setJoinDialog(false);
-    };
-
-    const handleRoleChange = (event) => {
-        setRole(event.target.value);
     };
 
     const handleClassCodeChange = (event) => {
@@ -34,21 +32,21 @@ const JoinClassDialog = ({ setJoinDialog }) => {
 
     const handleSubmit = async () => {
         if (!classCode) {
-            toast.error('Enter circle code')
+            toast.error('Enter circle code');
             return;
         }
-        if (role) {
-            const formData = {
-                joinAs: role,
-                entryCode: classCode
-            };
-            console.log(JSON.stringify(formData, null, 2));
+        
+        const formData = {
+            entryCode: classCode
+        };
+        
+        setLoading(true);
+        const success = await joinClass(formData);
+        if (success) {
+            await dispatch(joinedClass({ dispatch }));
             setJoinDialog(false);
-            await joinClass(formData);
         }
-        else {
-            toast.error('Select your role')
-        }
+        setLoading(false);
     };
 
     return (
@@ -78,20 +76,6 @@ const JoinClassDialog = ({ setJoinDialog }) => {
                         required
                         style={{ marginBottom: '1.5rem' }}
                     />
-                    <FormControl component="fieldset" style={{ marginBlock: '1rem' }}>
-                        <FormLabel component="legend" style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#1e293b' }}>Join As</FormLabel>
-                        <RadioGroup
-                            aria-label="role"
-                            name="role"
-                            value={role}
-                            onChange={handleRoleChange}
-                            row
-                            required
-                        >
-                            <FormControlLabel value="Student" style={{ marginRight: '1.5rem' }} control={<Radio color="primary" />} label="Student" />
-                            <FormControlLabel value="Teacher" control={<Radio color="primary" />} label="Teacher" />
-                        </RadioGroup>
-                    </FormControl>
                     <p style={{ fontSize: '0.9rem', color: '#1e293b', fontWeight: 'bold', marginTop: '1rem', marginBottom: '0.2rem' }}>To sign in with a class code</p>
                     <p style={{ fontSize: '0.9rem', color: '#64748b', marginTop: '0' }}>
                         Use an authorized account... currently <span style={{ color: '#00a896', fontWeight: 'bold', backgroundColor: '#e6f6f4', padding: '0.2rem 0.6rem', borderRadius: '4px' }}>{user.email}</span>
@@ -101,11 +85,11 @@ const JoinClassDialog = ({ setJoinDialog }) => {
                 </Box>
             </DialogContent>
             <DialogActions className="global-dialog-actions">
-                <Button variant="outlined" className="global-dialog-btn-cancel" onClick={handleClose}>
+                <Button variant="outlined" className="global-dialog-btn-cancel" onClick={handleClose} disabled={loading}>
                     Cancel
                 </Button>
-                <Button variant="contained" className="global-dialog-btn-submit" onClick={handleSubmit}>
-                    Join
+                <Button variant="contained" className="global-dialog-btn-submit" onClick={handleSubmit} disabled={loading}>
+                    {loading ? 'Joining...' : 'Join'}
                 </Button>
             </DialogActions>
         </MuiDialog>

@@ -22,7 +22,7 @@ exports.leftClass = async (req, res) => {
             });
         }
 
-        if (userDetails.createdClasses.includes(classId)) {
+        if (userDetails.createdClasses.some(id => id.toString() === classId)) {
             return res.status(403).json({
                 success: false,
                 message: "Admin cannot leave the class"

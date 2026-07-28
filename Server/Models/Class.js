@@ -37,6 +37,10 @@ const ClassSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    studentCanPost: {
+        type: Boolean,
+        default: true
+    },
 	student: [
 		{
 			type: mongoose.Schema.Types.ObjectId,

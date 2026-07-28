@@ -12,7 +12,8 @@ const {
     UPDATE_CLASS_API,
     LEFT_CLASS_API,
     CHANGE_ENTRY_CODE,
-    TOGGLE_ENTRY_CODE
+    TOGGLE_ENTRY_CODE,
+    ADD_TEACHER_API
 } = CLASS_API_URL;
 
 export const fetchAllClasses = async () => {
@@ -59,17 +60,23 @@ export const joinClass = async (data) => {
         const response = await apiConnector('POST', JOIN_CLASS_API, data);
         console.log("API RESPONSE ", response);
         toast.success('Successfully Joined Circle');
+        return true;
     } catch (err) {
         if (err.response.status === 404) {
             toast.error('Circle Not Found');
-            return;
+            return false;
         }
         if (err.response.status === 400) {
             toast.error('You are already enrolled in this Circle');
-            return;
+            return false;
+        }
+        if (err.response.status === 403) {
+            toast.error('Invitations for this class have been turned off by the admin.');
+            return false;
         }
         console.log("SOMETHING WENT WRONG WHILE CALLING JOIN CLASS API ", err);
-        return err.response ? err.response : err.message;
+        toast.error('Failed to join circle');
+        return false;
     }
 }
 
@@ -134,6 +141,23 @@ export const updateClassDetails = createAsyncThunk(
         } catch (err) {
             console.log("SOMETHING WENT WRONG WHILE CALLING UPDATE CLASS DETAILS API", err);
             return err.response ? err.response : err.message;
+        }
+    }
+);
+
+export const addTeacherToClass = createAsyncThunk(
+    'addTeacherToClass',
+    async ({ classId, email, dispatch }) => {
+        try {
+            const response = await apiConnector('POST', ADD_TEACHER_API, { classId, email });
+            // Re-fetch fully populated class to get the new teacher's name and image
+            await dispatch(getClass({ id: classId, dispatch })).unwrap();
+            toast.success(response.data.message);
+            return true;
+        } catch (err) {
+            console.log("SOMETHING WENT WRONG WHILE CALLING ADD TEACHER API", err);
+            toast.error(err.response?.data?.message || "Failed to add teacher");
+            return false;
         }
     }
 );
