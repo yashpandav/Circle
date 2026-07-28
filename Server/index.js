@@ -9,7 +9,6 @@ const { auth } = require('./Middleware/auth');
 require('dotenv').config();
 
 //* DATABASE & CLOUDINARY CONNECTION
-dbConnect();
 cloudinaryConnect();
 
 //* MIDDLEWARE
@@ -80,9 +79,11 @@ app.use('/category', categoryRoutes);
 
 //* PORT AND LISTEN
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`App is running on ${PORT}`);
-})
+dbConnect().then(() => {
+    app.listen(PORT, () => {
+        console.log(`App is running on ${PORT}`);
+    });
+});
 
 app.get('/', (req, res) => {
     res.send({

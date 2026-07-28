@@ -9,6 +9,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 import CircularProgress from '@mui/material/CircularProgress';
+import { Select, MenuItem, FormControl } from '@mui/material';
 import { createClass } from "../../../../../Api/apiCaller/classapicaller";
 import { joinedClass } from "../../../../../Api/apiCaller/userapicaller";
 import ColorSelector from "../../../../Helper/colorSelector";
@@ -22,18 +23,19 @@ const NewClassFormDialog = ({ open, handleClose }) => {
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
     const [selectedColor, setselectedColor] = useState('#4285f4');
+    const [studentCanPost, setStudentCanPost] = useState(true);
 
     const onSubmit = async (data) => {
         setLoading(true);
-        const submitData = { ...data, color: selectedColor };
+        const submitData = { ...data, color: selectedColor, studentCanPost };
         console.log(submitData);
-        try{
-            const success = await createClass({data: submitData});
+        try {
+            const success = await createClass({ data: submitData });
             if (success) {
-                await dispatch(joinedClass({dispatch}));
+                await dispatch(joinedClass({ dispatch }));
                 handleClose();
             }
-        }catch(err){
+        } catch (err) {
             console.log(err);
             console.log("SOMETHING WENT WRONG WHILE SENDING API FUNCTION");
         }
@@ -94,6 +96,18 @@ const NewClassFormDialog = ({ open, handleClose }) => {
                         <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#1e293b', marginBottom: '8px' }}>Select Circle Theme:</p>
                         <ColorSelector setselectedColor={setselectedColor} selectedColor={selectedColor} />
                     </div>
+                    <div style={{ marginTop: '16px', marginBottom: '8px' }}>
+                        <p style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#1e293b', marginBottom: '8px' }}>Stream Settings:</p>
+                        <FormControl fullWidth size="small">
+                            <Select
+                                value={studentCanPost}
+                                onChange={(e) => setStudentCanPost(e.target.value)}
+                            >
+                                <MenuItem value={true}>Students can post information</MenuItem>
+                                <MenuItem value={false}>Only teachers can post information</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </div>
                     <div style={{ marginTop: '8px' }}>
                         <TextField
                             {...register("banner")}
@@ -110,7 +124,7 @@ const NewClassFormDialog = ({ open, handleClose }) => {
                         Cancel
                     </Button>
                     <Button type="submit" variant='contained' className="global-dialog-btn-submit" disabled={loading}>
-                        {loading ? <CircularProgress size={24} style={{color: 'white'}} /> : "Create"}
+                        {loading ? <CircularProgress size={24} style={{ color: 'white' }} /> : "Create"}
                     </Button>
                 </DialogActions>
             </form>

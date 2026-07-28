@@ -6,7 +6,7 @@ const { sendMail } = require('../../Utils/mailSender');
 const bannerURL = require('../../Data/banerUrl');
 exports.createClass = async (req, res) => {
     try {
-        const { name, description, subject } = req?.body;
+        const { name, description, subject, studentCanPost } = req?.body;
         const banner = req?.files?.banner;
         console.log("BANNER , ", banner)
         if (!name || !description) {
@@ -34,6 +34,7 @@ exports.createClass = async (req, res) => {
             classTheme: color,
             thumbnail: uploadResponse?.secure_url || bannerURL[(Math.floor(Math.random() * bannerURL.length))],
             admin: req.user.id,
+            studentCanPost: studentCanPost !== undefined ? (studentCanPost === 'true' || studentCanPost === true) : true,
             entryCode: randomstring.generate(8),
             entryUrl: `${process.env.BASE_URL}/class/${randomstring.generate(15).toLowerCase()}`
         });

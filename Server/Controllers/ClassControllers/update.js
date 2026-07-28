@@ -43,7 +43,7 @@ exports.updateClass = async (req, res) => {
             subject: subject || findClass.subject,
             classTheme: classTheme || findClass.classTheme,
             thumbnail: thumbnail || findClass.thumbnail,
-            studentCanPost: studentCanPost !== undefined ? studentCanPost : findClass.studentCanPost
+            studentCanPost: studentCanPost !== undefined ? (studentCanPost === 'true' || studentCanPost === true) : findClass.studentCanPost
         }, { new: true });
 
         console.log(updatedClass);

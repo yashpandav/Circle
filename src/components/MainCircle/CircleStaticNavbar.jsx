@@ -5,7 +5,7 @@ import "./circleStaticNav.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { updateClassDetails, deleteClassAction, leaveClassAction, changeEntryCode } from "../../Api/apiCaller/classapicaller";
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, IconButton } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, IconButton, Select, MenuItem, FormControl } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
 export default function CircleStaticNavbar() {
@@ -16,7 +16,7 @@ export default function CircleStaticNavbar() {
     const [isAdmin, setAdmin] = useState(false);
     const [isStudent, setIsStudent] = useState(false);
     const [openSettings, setOpenSettings] = useState(false);
-    const [editData, setEditData] = useState({ name: "", subject: "" });
+    const [editData, setEditData] = useState({ name: "", subject: "", studentCanPost: true });
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -27,7 +27,7 @@ export default function CircleStaticNavbar() {
             if (currClass.student.some(s => s._id === currUser._id)) {
                 setIsStudent(true);
             }
-            setEditData({ name: currClass.name || "", subject: currClass.subject || "" });
+            setEditData({ name: currClass.name || "", subject: currClass.subject || "", studentCanPost: currClass.studentCanPost !== false });
         }
     }, [currUser, currClass]);
 
@@ -143,6 +143,20 @@ export default function CircleStaticNavbar() {
                                 {isActive && (
                                     <Button variant="outlined" onClick={handleResetCode} style={{ borderColor: 'var(--class-theme, #1967d2)', color: 'var(--class-theme, #1967d2)', borderRadius: '24px', textTransform: 'none', fontWeight: 600, padding: '6px 20px' }}>Reset Code</Button>
                                 )}
+                            </div>
+                            
+                            <h3 style={{ marginTop: '32px', fontWeight: 600, color: 'var(--class-theme, #1967d2)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Stream Settings</h3>
+                            <div style={{ marginBottom: '8px', padding: '16px', backgroundColor: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                                <FormControl fullWidth size="small">
+                                    <Select
+                                        value={editData.studentCanPost}
+                                        onChange={(e) => setEditData({ ...editData, studentCanPost: e.target.value })}
+                                        style={{ backgroundColor: 'white' }}
+                                    >
+                                        <MenuItem value={true}>Students can post information</MenuItem>
+                                        <MenuItem value={false}>Only teachers can post information</MenuItem>
+                                    </Select>
+                                </FormControl>
                             </div>
                                     </>
                                 );
