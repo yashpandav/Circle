@@ -12,6 +12,7 @@ import { deletePost } from "../../../Api/apiCaller/postapicaller";
 import { LoaderComponent } from "../../Helper/Loaders/loader";
 import { setLoading } from "../../../Slices/loadingSlice";
 import socket from "../../../socket/socket";
+import ConfirmationDialog from "../../Helper/ConfirmationDialog";
 
 export default function PostContainer({ post }) {
     const [comments, setComments] = useState(post.comment || []);
@@ -20,6 +21,7 @@ export default function PostContainer({ post }) {
     const dispatch = useDispatch();
     const [isAnnouncer, setAnnouncer] = useState(false);
     const loading = useSelector((state) => state.loading.loading);
+    const [confirmDelete, setConfirmDelete] = useState(false);
 
     useEffect(() => {
         setAnnouncer(currUser?._id === post?.teacher?._id);
@@ -92,8 +94,13 @@ export default function PostContainer({ post }) {
         setAnchorEl(null);
     };
 
-    const handleDelete = async () => {
+    const handleDelete = () => {
         handleMenuClose();
+        setConfirmDelete(true);
+    };
+
+    const confirmDeleteAction = async () => {
+        setConfirmDelete(false);
         setLoading(true);
         try {
             await dispatch(deletePost(post._id));
@@ -254,6 +261,15 @@ export default function PostContainer({ post }) {
             <Divider />
             <CommentController comments={comments} />
             <AddCommentController addComment={addComment} />
+            <ConfirmationDialog 
+                open={confirmDelete}
+                title="Delete Post"
+                content="Are you sure you want to delete this post? This action cannot be undone."
+                confirmText="Delete"
+                confirmColor="error"
+                onConfirm={confirmDeleteAction}
+                onCancel={() => setConfirmDelete(false)}
+            />
         </div>
     );
 }

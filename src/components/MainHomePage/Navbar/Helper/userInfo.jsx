@@ -7,10 +7,11 @@ import { logOut } from '../../../../Api/apiCaller/authapicaller';
 
 import { useNavigate } from "react-router-dom";
 import './userInfo.css';
+import ConfirmationDialog from "../../../Helper/ConfirmationDialog";
 
 export default function UserInfo() {
     const [showDialog, setDialog] = useState(false);
-
+    const [confirmLogout, setConfirmLogout] = useState(false);
     const dispatch = useDispatch();
     const user = useSelector((state) => state.auth.user);
     const navigate = useNavigate();
@@ -19,14 +20,16 @@ export default function UserInfo() {
         setDialog(!showDialog);
     }
 
-    async function logoutHandler() {
-        if (window.confirm("Are you sure you want to log out?")) {
-            console.log("SENDING API")
-            try {
-                await dispatch(logOut({ dispatch, navigate })).unwrap();
-            } catch (error) {
-                console.error("Logout failed", error);
-            }
+    function logoutHandler() {
+        setConfirmLogout(true);
+    }
+
+    async function handleConfirmLogout() {
+        setConfirmLogout(false);
+        try {
+            await dispatch(logOut({ dispatch, navigate })).unwrap();
+        } catch (error) {
+            console.error("Logout failed", error);
         }
     }
 
@@ -70,6 +73,15 @@ export default function UserInfo() {
                     </div>
                 </div>
             )}
+            <ConfirmationDialog 
+                open={confirmLogout}
+                title="Log Out"
+                content="Are you sure you want to log out of your account?"
+                confirmText="Log Out"
+                confirmColor="error"
+                onConfirm={handleConfirmLogout}
+                onCancel={() => setConfirmLogout(false)}
+            />
         </div>
     )
 }

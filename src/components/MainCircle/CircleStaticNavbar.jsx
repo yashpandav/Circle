@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { updateClassDetails, deleteClassAction, leaveClassAction, changeEntryCode } from "../../Api/apiCaller/classapicaller";
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, IconButton, Select, MenuItem, FormControl } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import ConfirmationDialog from "../Helper/ConfirmationDialog";
 
 export default function CircleStaticNavbar() {
     const currClass = useSelector((state) => state.classes.currClass);
@@ -17,6 +18,7 @@ export default function CircleStaticNavbar() {
     const [isStudent, setIsStudent] = useState(false);
     const [openSettings, setOpenSettings] = useState(false);
     const [editData, setEditData] = useState({ name: "", subject: "", studentCanPost: true });
+    const [confirmConfig, setConfirmConfig] = useState({ open: false, title: '', content: '', action: null, confirmColor: 'primary', confirmText: 'Confirm' });
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -52,24 +54,48 @@ export default function CircleStaticNavbar() {
         setOpenSettings(false);
     };
 
-    const handleDelete = async () => {
-        if (window.confirm("Are you sure you want to permanently delete this class?")) {
-            await dispatch(deleteClassAction({ id: currClass._id, navigate })).unwrap();
-            setOpenSettings(false);
-        }
+    const handleDelete = () => {
+        setConfirmConfig({
+            open: true,
+            title: "Delete Class",
+            content: "Are you sure you want to permanently delete this class? This action cannot be undone.",
+            confirmText: "Delete",
+            confirmColor: "error",
+            action: async () => {
+                await dispatch(deleteClassAction({ id: currClass._id, navigate })).unwrap();
+                setOpenSettings(false);
+                setConfirmConfig({ ...confirmConfig, open: false });
+            }
+        });
     };
 
-    const handleLeave = async () => {
-        if (window.confirm("Are you sure you want to leave this class?")) {
-            await dispatch(leaveClassAction({ classId: currClass._id, navigate })).unwrap();
-            setOpenSettings(false);
-        }
+    const handleLeave = () => {
+        setConfirmConfig({
+            open: true,
+            title: "Leave Class",
+            content: "Are you sure you want to leave this class?",
+            confirmText: "Leave",
+            confirmColor: "error",
+            action: async () => {
+                await dispatch(leaveClassAction({ classId: currClass._id, navigate })).unwrap();
+                setOpenSettings(false);
+                setConfirmConfig({ ...confirmConfig, open: false });
+            }
+        });
     };
 
-    const handleResetCode = async () => {
-        if (window.confirm("Reset entry code? Old code will no longer work.")) {
-            await dispatch(changeEntryCode({ id: currClass._id, dispatch })).unwrap();
-        }
+    const handleResetCode = () => {
+        setConfirmConfig({
+            open: true,
+            title: "Reset Code",
+            content: "Reset entry code? Old code will no longer work.",
+            confirmText: "Reset",
+            confirmColor: "primary",
+            action: async () => {
+                await dispatch(changeEntryCode({ id: currClass._id, dispatch })).unwrap();
+                setConfirmConfig({ ...confirmConfig, open: false });
+            }
+        });
     };
 
     return (
@@ -181,6 +207,17 @@ export default function CircleStaticNavbar() {
                     </DialogActions>
                 )}
             </Dialog>
+
+            <ConfirmationDialog 
+                open={confirmConfig.open}
+                title={confirmConfig.title}
+                content={confirmConfig.content}
+                confirmText={confirmConfig.confirmText}
+                confirmColor={confirmConfig.confirmColor}
+                onConfirm={confirmConfig.action}
+                onCancel={() => setConfirmConfig({ ...confirmConfig, open: false })}
+            />
+
         </div>
     );
 }

@@ -15,6 +15,7 @@ import { LoaderComponent } from "../../Helper/Loaders/loader";
 import { setLoading } from "../../../Slices/loadingSlice";
 import { toast } from "react-hot-toast";
 import socket from "../../../socket/socket";
+import ConfirmationDialog from "../../Helper/ConfirmationDialog";
 
 export default function AssignmentContainer({ assignment }) {
     const [comments, setComments] = useState(assignment.comment || []);
@@ -25,6 +26,7 @@ export default function AssignmentContainer({ assignment }) {
     const navigate = useNavigate();
     const [isAnnouncer, setAnnouncer] = useState(false);
     const loading = useSelector((state) => state.loading.loading);
+    const [confirmDelete, setConfirmDelete] = useState(false);
 
     useEffect(() => {
         setAnnouncer(currUser?._id === assignment?.teacher?._id);
@@ -91,8 +93,13 @@ export default function AssignmentContainer({ assignment }) {
         setAnchorEl(null);
     };
 
-    const handleDelete = async () => {
+    const handleDelete = () => {
         handleMenuClose();
+        setConfirmDelete(true);
+    };
+
+    const confirmDeleteAction = async () => {
+        setConfirmDelete(false);
         setLoading(true);
         try {
             await dispatch(deleteAssignment(assignment._id)).unwrap();
@@ -222,6 +229,15 @@ export default function AssignmentContainer({ assignment }) {
             <Divider />
             <CommentController comments={comments} />
             <AddCommentController addComment={addComment} />
+            <ConfirmationDialog 
+                open={confirmDelete}
+                title="Delete Assignment"
+                content="Are you sure you want to delete this assignment? All student submissions will also be deleted."
+                confirmText="Delete"
+                confirmColor="error"
+                onConfirm={confirmDeleteAction}
+                onCancel={() => setConfirmDelete(false)}
+            />
         </div>
     );
 }

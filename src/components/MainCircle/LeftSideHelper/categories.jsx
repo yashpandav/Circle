@@ -7,6 +7,7 @@ import { IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import "./categories.css";
+import ConfirmationDialog from "../../Helper/ConfirmationDialog";
 
 export default function CategoriesComponent() {
     const dispatch = useDispatch();
@@ -17,6 +18,7 @@ export default function CategoriesComponent() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const activeTopicId = searchParams.get("topic");
+    const [confirmConfig, setConfirmConfig] = useState({ open: false, topicId: null });
 
     if (!currClass) return null;
 
@@ -35,11 +37,15 @@ export default function CategoriesComponent() {
         dispatch(getClass({ id: currClass._id, dispatch }));
     };
 
-    const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this topic?")) {
-            await dispatch(deleteCategory({ id, classId: currClass._id })).unwrap();
-            // Refresh class details to remove topic
+    const handleDelete = (id) => {
+        setConfirmConfig({ open: true, topicId: id });
+    };
+
+    const confirmDelete = async () => {
+        if (confirmConfig.topicId) {
+            await dispatch(deleteCategory({ id: confirmConfig.topicId, classId: currClass._id })).unwrap();
             dispatch(getClass({ id: currClass._id, dispatch }));
+            setConfirmConfig({ open: false, topicId: null });
         }
     };
 
@@ -93,6 +99,16 @@ export default function CategoriesComponent() {
                     ))}
                 </ul>
             )}
+
+            <ConfirmationDialog 
+                open={confirmConfig.open}
+                title="Delete Topic"
+                content="Are you sure you want to delete this topic? Posts and assignments inside will not be deleted, but they will lose this category."
+                confirmText="Delete"
+                confirmColor="error"
+                onConfirm={confirmDelete}
+                onCancel={() => setConfirmConfig({ open: false, topicId: null })}
+            />
         </div>
     );
 }
