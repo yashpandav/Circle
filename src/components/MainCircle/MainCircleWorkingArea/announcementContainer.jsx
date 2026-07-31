@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { TextField, IconButton, Button } from "@mui/material";
 import { useSelector } from "react-redux";
 import { IoIosSend } from "react-icons/io";
@@ -23,6 +23,7 @@ import { useDispatch } from "react-redux";
 import { LoaderComponent } from "../../Helper/Loaders/loader";
 import { setLoading } from "../../../Slices/loadingSlice";
 import { createAssignment } from "../../../Api/apiCaller/assignmentapicaller";
+import toast from "react-hot-toast";
 
 const UserAnnouncementHeader = ({ setWriteAssignment }) => {
     const user = useSelector((state) => state?.auth?.user);
@@ -69,9 +70,9 @@ const FilePreview = ({ file, onDelete }) => {
             {isMediaFile ? (
                 <>
                     <img src={file.url} alt="Preview" />
-                    <IconButton className="delete-prev-btn" onClick={() => onDelete(file.name)} color="secondary">
+                    <div className="delete-prev-btn" onClick={() => onDelete(file.name)}>
                         <Delete />
-                    </IconButton>
+                    </div>
                 </>
             ) : (
                 <div className="unsupported-files">
@@ -110,16 +111,16 @@ const LinkInput = ({ onSubmit, onCancel }) => {
                     type="url"
                     value={linkUrl}
                     onChange={(e) => setLinkUrl(e.target.value)}
-                    placeholder="Enter URL"
+                    placeholder="Enter URL (e.g., https://example.com)"
                     required
                     className="link-input"
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
                 />
-                <IconButton type="button" onClick={onCancel} className="close-link-btn" title="Cancel">
-                    <CloseIcon className="icon" style={{ color: 'grey' }} />
+                <IconButton type="button" onClick={onCancel} size="small" className="close-link-btn" title="Cancel" style={{ marginRight: '5px' }}>
+                    <CloseIcon style={{ color: '#94a3b8', fontSize: '20px' }} />
                 </IconButton>
-                <Button variant="outlined" type="submit" className="add-link-btn">
+                <Button variant="contained" type="submit" size="small" style={{ backgroundColor: 'var(--class-theme, #1967d2)', color: 'white', textTransform: 'none', boxShadow: 'none' }}>
                     Add
                 </Button>
             </div>
@@ -140,30 +141,21 @@ const YouTubeLinkInput = ({ onSubmit, onCancel }) => {
 
     return (
         <form onSubmit={handleSubmit}>
-            <div className="link-input-container"
-                style={{
-                    border: isFocused ? `1px solid red` : `1px solid #276e7e`
-                }}>
+            <div className={`link-input-container ${isFocused ? 'focused-youtube' : ''}`} style={{ borderColor: isFocused ? '#ef4444' : '#cbd5e1' }}>
                 <input
                     type="url"
                     value={youtubeUrl}
                     onChange={(e) => setYoutubeUrl(e.target.value)}
-                    placeholder="Enter YouTube URL"
+                    placeholder="Enter YouTube URL (e.g., https://youtube.com/watch?v=...)"
                     required
                     className="link-input"
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
                 />
-                <IconButton type="button" onClick={onCancel} className="close-link-btn" title="Cancel">
-                    <CloseIcon className="icon" style={{
-                        color: 'grey',
-                    }} />
+                <IconButton type="button" onClick={onCancel} size="small" className="close-link-btn" title="Cancel" style={{ marginRight: '5px' }}>
+                    <CloseIcon style={{ color: '#94a3b8', fontSize: '20px' }} />
                 </IconButton>
-                <Button variant="outlined" type="submit" style={{
-                    backgroundColor: 'red',
-                    color: 'white',
-                    border: 'none'
-                }}>
+                <Button variant="contained" type="submit" size="small" style={{ backgroundColor: '#ef4444', color: 'white', textTransform: 'none', boxShadow: 'none' }}>
                     Add
                 </Button>
             </div>
@@ -200,6 +192,12 @@ const AnnouncementWriter = ({
     const [showYouTubeInput, setShowYouTubeInput] = useState(false);
     const announcementRef = useRef(null);
 
+    useEffect(() => {
+        if (announcementRef.current && announcement === "") {
+            announcementRef.current.innerHTML = "";
+        }
+    }, [announcement]);
+
     const applyFormatting = (command) => {
         document.execCommand(command, false, null);
     };
@@ -208,7 +206,6 @@ const AnnouncementWriter = ({
         const htmlContent = announcementRef.current.innerHTML;
         handleAnnouncementChange({ target: { value: htmlContent } });
     };
-
 
     const handleUploadOption = (option) => {
         setShowUploadOptions(false);
@@ -240,11 +237,14 @@ const AnnouncementWriter = ({
                     variant="standard"
                     value={title}
                     onChange={handleTitleChange}
-                    className="announcement-textfield"
-                    id="header-textfield"
+                    className="header-textfield"
                     InputProps={{
                         style: {
                             caretColor: 'var(--class-theme)',
+                            color: '#1e293b',
+                            fontSize: '21.5px',
+                            fontWeight: 600,
+                            padding: '0 5px'
                         },
                         disableUnderline: true,
                     }}
@@ -253,21 +253,31 @@ const AnnouncementWriter = ({
                     <TextField
                         type="datetime-local"
                         label="Due Date"
-                        variant="standard"
+                        variant="outlined"
+                        size="small"
                         InputLabelProps={{ shrink: true }}
                         value={dueDate}
                         onChange={handleDueDateChange}
-                        className="announcement-textfield"
-                        style={{ marginTop: '10px' }}
+                        style={{ marginTop: '15px', width: '250px' }}
                     />
                 )}
-                
+
                 {currClass.addedCategory && currClass.addedCategory.length > 0 && (
                     <select
                         value={categoryId}
                         onChange={handleCategoryChange}
-                        className="announcement-textfield"
-                        style={{ marginTop: '10px', padding: '5px', border: 'none', borderBottom: '1px solid rgba(0, 0, 0, 0.42)', outline: 'none', backgroundColor: 'transparent' }}
+                        style={{
+                            marginTop: '15px',
+                            padding: '8px 12px',
+                            border: '1px solid #cbd5e1',
+                            borderRadius: '6px',
+                            outline: 'none',
+                            backgroundColor: '#f8fafc',
+                            color: '#475569',
+                            fontSize: '14px',
+                            cursor: 'pointer',
+                            width: '250px'
+                        }}
                     >
                         <option value="">No topic</option>
                         {currClass.addedCategory.map(cat => (
@@ -275,14 +285,14 @@ const AnnouncementWriter = ({
                         ))}
                     </select>
                 )}
-                
+
                 <div
                     ref={announcementRef}
                     contentEditable
                     className="announcement-textfield content-editable"
                     onInput={handleAnnouncementChangeInternal}
                     style={{
-                        caretColor: 'var(--class-theme)',
+                        marginTop: '5px'
                     }}
                     dir="ltr"
                 ></div>
@@ -296,10 +306,10 @@ const AnnouncementWriter = ({
                     ))}
                 </div>
                 <div className="youtube-links-for-post uploader-post-side">
-                    {youtubeLinks.map((url, index) => (
-                        <div key={index} className="youtube-preview">
+                    {youtubeLinks.map((url) => (
+                        <div key={url} className="youtube-preview">
                             <iframe
-                                key={index}
+                                key={url}
                                 width="340"
                                 height="200"
                                 src={`https://www.youtube.com/embed/${url}`}
@@ -308,19 +318,25 @@ const AnnouncementWriter = ({
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 allowFullScreen
                             ></iframe>
-                            <IconButton onClick={() => handleRemoveYouTubeLink(url)} color="secondary">
-                                <Delete />
+                            <IconButton onClick={() => handleRemoveYouTubeLink(url)} color="error" size="small">
+                                <Delete fontSize="small" />
                             </IconButton>
                         </div>
                     ))}
                 </div>
                 <div className="links-for-post">
-                    {links.map((link, index) => (
-                        <div key={index} className="link-preview">
-                            <a href={link} target="_blank" rel="noreferrer">{link}</a>
-                            <IconButton onClick={() => handleRemoveLink(link)} color="secondary">
-                                <Delete />
-                            </IconButton>
+                    {links.map((link) => (
+                        <div key={link} className="unsupported-files link-preview-item">
+                            <div className="unsupported-file-first-div">
+                                <Link />
+                                <div className="vertical-line"></div>
+                            </div>
+                            <a className="file-preview-name link-text" href={link} target="_blank" rel="noreferrer" title={link}>{link}</a>
+                            <div className="unsupported-file-last-div">
+                                <div className="unsupported-delete-icon" onClick={() => handleRemoveLink(link)}>
+                                    <CloseIcon />
+                                </div>
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -397,9 +413,9 @@ const AnnouncementWriter = ({
 export default function AnnouncementContainer() {
     const currClass = useSelector((state) => state.classes.currClass);
     const currUser = useSelector((state) => state.auth.user);
-    
-    const isTeacherOrAdmin = (currClass?.admin && currClass.admin._id === currUser?._id) || 
-                             (currClass?.teacher && currClass.teacher.some(t => t._id === currUser?._id));
+
+    const isTeacherOrAdmin = (currClass?.admin && currClass.admin._id === currUser?._id) ||
+        (currClass?.teacher && currClass.teacher.some(t => t._id === currUser?._id));
     const isStudent = currClass?.student && currClass.student.some(s => s._id === currUser?._id);
 
     const [writeAssignment, setWriteAssignment] = useState(false);
@@ -453,9 +469,10 @@ export default function AnnouncementContainer() {
     const loading = useSelector((state) => state.loading.loading);
 
     const handlePost = async () => {
-        setLoading(true);
+        dispatch(setLoading(true));
         try {
             const formData = new FormData();
+
             if (isPost) {
                 data.files.forEach((file) => {
                     formData.append("files", file.file);
@@ -475,6 +492,20 @@ export default function AnnouncementContainer() {
 
                 const response = await dispatch(createPost(formData)).unwrap();
                 console.log("API RESPONSE ", response);
+                
+                if (response && response.success) {
+                    setdata((prev) => ({
+                        ...prev,
+                        title: "",
+                        text: "",
+                        links: [],
+                        files: [],
+                        youtubeLinks: [],
+                        dueDate: "",
+                        categoryId: ""
+                    }));
+                    setWriteAssignment(false);
+                }
             } else {
                 if (data.files.length > 0) formData.append("file", data.files[0].file);
                 formData.append('name', data.title);
@@ -495,22 +526,25 @@ export default function AnnouncementContainer() {
 
                 const response = await dispatch(createAssignment(formData)).unwrap();
                 console.log("API RESPONSE ", response);
+                
+                if (response && response.success) {
+                    setdata((prev) => ({
+                        ...prev,
+                        title: "",
+                        text: "",
+                        links: [],
+                        files: [],
+                        youtubeLinks: [],
+                        dueDate: "",
+                        categoryId: ""
+                    }));
+                    setWriteAssignment(false);
+                }
             }
         } catch (err) {
-            console.error("Error During Posting Announcement");
+            console.error("Error During Posting Announcement", err);
         }
-        setdata((prev) => ({
-            ...prev,
-            title: "",
-            text: "",
-            links: [],
-            files: [],
-            youtubeLinks: [],
-            dueDate: "",
-            categoryId: ""
-        }));
-        setLoading(false);
-        setWriteAssignment(false);
+        dispatch(setLoading(false));
     };
 
     const handleRemoveYouTubeLink = (urlToRemove) => {
@@ -535,10 +569,19 @@ export default function AnnouncementContainer() {
             url: URL.createObjectURL(file),
         }));
 
-        setdata(prev => ({
-            ...prev,
-            files: [...prev.files, ...newFiles]
-        }));
+        setdata(prev => {
+            const existingNames = new Set(prev.files.map(f => f.name));
+            const filteredNewFiles = newFiles.filter(f => !existingNames.has(f.name));
+            
+            if (filteredNewFiles.length < newFiles.length) {
+                toast.error("Duplicate files not allowed");
+            }
+            
+            return {
+                ...prev,
+                files: [...prev.files, ...filteredNewFiles]
+            };
+        });
     };
 
     const handleDeleteFile = (fileName) => {
@@ -549,19 +592,48 @@ export default function AnnouncementContainer() {
     };
 
     const handleLinkSubmit = (url) => {
-        setdata(prev => ({
-            ...prev,
-            links: [...prev.links, url]
-        }));
+        setdata(prev => {
+            if (prev.links.includes(url)) {
+                toast.error("Duplicate links not allowed");
+                return prev;
+            }
+            return {
+                ...prev,
+                links: [...prev.links, url]
+            };
+        });
     };
 
     const handleYouTubeLinkSubmit = (url) => {
-        const videoId = new URL(url).searchParams.get("v");
+        let videoId = null;
+        try {
+            const parsedUrl = new URL(url);
+            if (parsedUrl.hostname === 'youtu.be') {
+                videoId = parsedUrl.pathname.slice(1);
+            } else if (parsedUrl.hostname.includes('youtube.com')) {
+                if (parsedUrl.pathname.startsWith('/embed/')) {
+                    videoId = parsedUrl.pathname.split('/')[2];
+                } else if (parsedUrl.pathname.startsWith('/shorts/')) {
+                    videoId = parsedUrl.pathname.split('/')[2];
+                } else {
+                    videoId = parsedUrl.searchParams.get("v");
+                }
+            }
+        } catch (e) {
+            console.error("Invalid YouTube URL");
+        }
+        
         if (videoId) {
-            setdata(prev => ({
-                ...prev,
-                youtubeLinks: [...prev.youtubeLinks, videoId]
-            }));
+            setdata(prev => {
+                if (prev.youtubeLinks.includes(videoId)) {
+                    toast.error("Duplicate YouTube videos not allowed");
+                    return prev;
+                }
+                return {
+                    ...prev,
+                    youtubeLinks: [...prev.youtubeLinks, videoId]
+                };
+            });
         }
     };
 
