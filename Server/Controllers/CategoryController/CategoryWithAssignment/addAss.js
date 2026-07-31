@@ -2,7 +2,7 @@ const Category = require('../../../Models/Category');
 const Assignment = require('../../../Models/Assignment');
 const Class = require('../../../Models/Class');
 
-exports.addAssIntoCategory = async (req, res) => {
+exports.addAssIntoCategory = async (req, res, next) => {
     try {
         const { name, assId, classId } = req.body;
 
@@ -68,11 +68,6 @@ exports.addAssIntoCategory = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Error while adding assignment to category",
-            error: err.message
-        });
+        next(err);
     }
 };

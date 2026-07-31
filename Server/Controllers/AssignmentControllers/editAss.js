@@ -6,7 +6,7 @@ const { uploadImage } = require('../../Utils/imageUpload');
 const { getIO } = require('../../socket');
 require('dotenv').config();
 
-exports.editAss = async (req, res) => {
+exports.editAss = async (req, res, next) => {
     try {
 
         const assId = req.params.id;
@@ -98,10 +98,6 @@ exports.editAss = async (req, res) => {
             data: findAss,
         });
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Something went wrong while editing the assignment",
-        });
+        next(err);
     }
 };

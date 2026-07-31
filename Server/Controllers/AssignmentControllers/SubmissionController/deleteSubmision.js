@@ -4,7 +4,7 @@ const SubmitAssignment = require('../../../Models/SubmitAssignment');
 const Class = require('../../../Models/Class');
 const { getIO } = require('../../../socket');
 
-exports.deleteSubmittedAss = async (req, res) => {
+exports.deleteSubmittedAss = async (req, res, next) => {
     try {
         const { assId, submittedID } = req.body;
 
@@ -76,10 +76,6 @@ exports.deleteSubmittedAss = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Error While Deleting Assignment"
-        });
+        next(err);
     }
 };

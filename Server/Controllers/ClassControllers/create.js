@@ -4,7 +4,7 @@ const { uploadImage } = require('../../Utils/imageUpload');
 const randomstring = require('randomstring');
 const { sendMail } = require('../../Utils/mailSender');
 const bannerURL = require('../../Data/banerUrl');
-exports.createClass = async (req, res) => {
+exports.createClass = async (req, res, next) => {
     try {
         const { name, description, subject, studentCanPost } = req?.body;
         const banner = req?.files?.banner;
@@ -62,11 +62,6 @@ exports.createClass = async (req, res) => {
             data: newClass
         });
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Error while creating class",
-            error: err.message
-        });
+        next(err);
     }
 };

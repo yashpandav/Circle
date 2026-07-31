@@ -6,7 +6,7 @@ const Category = require('../../Models/Category');
 const { getIO } = require('../../socket');
 require('dotenv').config();
 
-exports.createAss = async (req, res) => {
+exports.createAss = async (req, res, next) => {
     try {
         const {
             currClassId,
@@ -114,10 +114,6 @@ exports.createAss = async (req, res) => {
         }
 
     } catch (err) {
-        console.log(err);
-        return res.status(400).json({
-            success: false,
-            message: err.message
-        })
+        next(err);
     }
 }

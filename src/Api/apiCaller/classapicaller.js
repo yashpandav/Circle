@@ -63,7 +63,7 @@ export const joinClass = async (data) => {
         return true;
     } catch (err) {
         if (err.response.status === 404) {
-            toast.error('Circle Not Found');
+            toast.error(err?.response?.data?.message || "Circle Not Found");
             return false;
         }
         if (err.response.status === 400) {
@@ -121,7 +121,7 @@ export const toggleEntryCodeStatus = createAsyncThunk(
             return response.data;
         } catch (err) {
             console.log("SOMETHING WENT WRONG WHILE CALLING TOGGLE ENTRY CODE API ", err);
-            toast.error("Failed to toggle invitations");
+            toast.error(err?.response?.data?.message || "Failed to toggle invitations");
             return err.response ? err.response : err.message;
         }
     }
@@ -171,7 +171,7 @@ export const deleteClassAction = createAsyncThunk(
             navigate('/workarea/home');
             return response.data;
         } catch (err) {
-            toast.error("Failed to delete class");
+            toast.error(err?.response?.data?.message || "Failed to delete class");
             return err.response ? err.response.data : err.message;
         }
     }
@@ -186,7 +186,7 @@ export const leaveClassAction = createAsyncThunk(
             navigate('/workarea/home');
             return response.data;
         } catch (err) {
-            toast.error("Failed to leave class");
+            toast.error(err?.response?.data?.message || "Failed to leave class");
             return err.response ? err.response.data : err.message;
         }
     }

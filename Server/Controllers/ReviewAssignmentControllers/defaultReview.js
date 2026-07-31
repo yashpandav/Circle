@@ -31,7 +31,7 @@ async function fetchAssignmentReview(classId, user) {
 }
 
 
-exports.pendingReview = async (req, res) => {
+exports.pendingReview = async (req, res, next) => {
     try {
         const userId = req.user.id;
 
@@ -87,10 +87,6 @@ exports.pendingReview = async (req, res) => {
             data: reviewData.filter(data => data !== null)
         });
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Something went wrong while fetching review data"
-        });
+        next(err);
     }
 };

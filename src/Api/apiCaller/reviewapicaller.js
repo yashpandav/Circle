@@ -11,7 +11,7 @@ export const getPendingReviews = createAsyncThunk(
             const response = await apiConnector('POST', url);
             return response.data;
         } catch (err) {
-            toast.error("Failed to load reviews");
+            toast.error(err?.response?.data?.message || "Failed to load reviews");
             return err.response ? err.response.data : err.message;
         }
     }
@@ -25,7 +25,7 @@ export const addIntoReviewed = createAsyncThunk(
             toast.success("Marked as reviewed");
             return response.data;
         } catch (err) {
-            toast.error("Failed to mark as reviewed");
+            toast.error(err?.response?.data?.message || "Failed to mark as reviewed");
             return err.response ? err.response.data : err.message;
         }
     }
@@ -39,7 +39,7 @@ export const removeFromReviewed = createAsyncThunk(
             toast.success("Removed from reviewed");
             return response.data;
         } catch (err) {
-            toast.error("Failed to remove from reviewed");
+            toast.error(err?.response?.data?.message || "Failed to remove from reviewed");
             return err.response ? err.response.data : err.message;
         }
     }

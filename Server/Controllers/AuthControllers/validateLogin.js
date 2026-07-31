@@ -2,7 +2,7 @@ const JWT = require('jsonwebtoken');
 const User = require('../../Models/User');
 require('dotenv').config();
 
-exports.validateLogin = async (req , res) => {
+exports.validateLogin = async (req, res, next) => {
     try{
         const { email , id} = req?.user;
 
@@ -48,10 +48,6 @@ exports.validateLogin = async (req , res) => {
         });
     
     }catch(err){
-        res.status(500).json({
-            success : false,
-            message : "Login Failed",
-            err : err.message
-        })
+        next(err);
     }
 }

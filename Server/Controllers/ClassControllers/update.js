@@ -3,7 +3,7 @@ const { uploadImage } = require('../../Utils/imageUpload');
 const { getIO } = require('../../socket');
 require('dotenv').config();
 
-exports.updateClass = async (req, res) => {
+exports.updateClass = async (req, res, next) => {
     try {
         const id = req.params.id;
         let { name, description, subject, classTheme, studentCanPost } = req.body;
@@ -58,11 +58,6 @@ exports.updateClass = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Error while updating class",
-            error: err.message
-        });
+        next(err);
     }
 };

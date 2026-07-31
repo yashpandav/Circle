@@ -2,7 +2,7 @@ const User = require('../../Models/User');
 const Class = require('../../Models/Class');
 
 
-exports.cretedByUser = async (req , res) => {
+exports.cretedByUser = async (req, res, next) => {
     try{
         const id = req.user.id;
         if(!id){
@@ -26,10 +26,6 @@ exports.cretedByUser = async (req , res) => {
         })
 
     }catch(err){
-        console.log(err);
-        return res.status(500).json({
-            success: false,
-            message: "Something went wrong while getting class created by this user"
-        })
+        next(err);
     }
 }

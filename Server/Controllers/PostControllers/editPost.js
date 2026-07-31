@@ -6,7 +6,7 @@ const { uploadImage } = require('../../Utils/imageUpload');
 const { getIO } = require('../../socket');
 require('dotenv').config();
 
-exports.editPost = async (req, res) => {
+exports.editPost = async (req, res, next) => {
     try {
         const postId = req.params.id;
         const { title, postBody, category } = req.body;
@@ -76,10 +76,6 @@ exports.editPost = async (req, res) => {
             data: findPost,
         });
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Something went wrong while editing the post",
-        });
+        next(err);
     }
 };

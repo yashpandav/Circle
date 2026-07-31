@@ -1,7 +1,7 @@
 const User = require('../../Models/User');
 const Class = require('../../Models/Class');
 
-exports.joinedByUser = async (req, res) => {
+exports.joinedByUser = async (req, res, next) => {
     try {
         const id = req.user.id;
         if (!id) {
@@ -48,10 +48,6 @@ exports.joinedByUser = async (req, res) => {
             message: "Classes joined by this user"
         });
     } catch (err) {
-        console.log(err);
-        return res.status(500).json({
-            success: false,
-            message: "Something went wrong while getting classes joined by this user"
-        });
+        next(err);
     }
 };

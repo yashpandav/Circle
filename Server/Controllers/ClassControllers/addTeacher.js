@@ -2,7 +2,7 @@ const Class = require('../../Models/Class');
 const User = require('../../Models/User');
 const { getIO } = require('../../socket');
 
-exports.addTeacher = async (req, res) => {
+exports.addTeacher = async (req, res, next) => {
     try {
         const { classId, email } = req.body;
 
@@ -67,11 +67,6 @@ exports.addTeacher = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Error while adding teacher",
-            error: err.message
-        });
+        next(err);
     }
 };

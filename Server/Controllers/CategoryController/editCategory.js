@@ -1,7 +1,7 @@
 const Category = require('../../Models/Category');
 const Class = require('../../Models/Class');
 
-exports.editCategory = async (req, res) => {
+exports.editCategory = async (req, res, next) => {
     try {
         const { name, classId, categoryId } = req.body;
 
@@ -46,11 +46,6 @@ exports.editCategory = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Error while editing category",
-            error: err.message
-        });
+        next(err);
     }
 };

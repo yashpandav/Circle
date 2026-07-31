@@ -1,7 +1,7 @@
 const Class = require('../../Models/Class');
 const Category = require('../../Models/Category');
 
-exports.createCategory = async (req, res) => {
+exports.createCategory = async (req, res, next) => {
     try {
         const { name, classId } = req.body;
 
@@ -49,11 +49,6 @@ exports.createCategory = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Error while creating Category",
-            error: err.message
-        });
+        next(err);
     }
 };

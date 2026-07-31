@@ -1,7 +1,7 @@
 const User = require('../../Models/User');
 const bcrypt = require('bcrypt');
 
-exports.changePassword = async (req, res) => {
+exports.changePassword = async (req, res, next) => {
     try {
         if (!req.user) {
             return res.status(401).json({
@@ -56,11 +56,6 @@ exports.changePassword = async (req, res) => {
             date :updatedUser
         });
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Error while changing password",
-            error: err.message
-        });
+        next(err);
     }
 };

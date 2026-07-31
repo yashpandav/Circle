@@ -23,6 +23,7 @@ import { useDispatch } from "react-redux";
 import { LoaderComponent } from "../../Helper/Loaders/loader";
 import { setLoading } from "../../../Slices/loadingSlice";
 import { createAssignment } from "../../../Api/apiCaller/assignmentapicaller";
+import { updateCurrClass } from "../../../Slices/classSlice";
 import toast from "react-hot-toast";
 
 const UserAnnouncementHeader = ({ setWriteAssignment }) => {
@@ -184,6 +185,7 @@ const AnnouncementWriter = ({
     handleYouTubeLinkSubmit,
     handleRemoveLink,
     handleRemoveYouTubeLink,
+    loading,
     isTeacherOrAdmin
 }) => {
     const currClass = useSelector((state) => state.classes.currClass);
@@ -385,11 +387,11 @@ const AnnouncementWriter = ({
                         </div>
                     </div>
                     <div className="right-side-controllers">
-                        <button className="button-cancel" onClick={handleClose}>
+                        <button className="button-cancel" onClick={handleClose} disabled={loading}>
                             Cancel
                         </button>
-                        <button className="button-post" onClick={handlePost}>
-                            Post <IoIosSend />
+                        <button className="button-post" onClick={handlePost} disabled={loading}>
+                            {loading ? "Posting..." : <>Post <IoIosSend /></>}
                         </button>
                     </div>
                 </div>
@@ -492,8 +494,13 @@ export default function AnnouncementContainer() {
 
                 const response = await dispatch(createPost(formData)).unwrap();
                 console.log("API RESPONSE ", response);
-                
+
                 if (response && response.success) {
+                    if (response.data) {
+                        dispatch(updateCurrClass({
+                            addedPost: [response.data, ...(currClass.addedPost || [])]
+                        }));
+                    }
                     setdata((prev) => ({
                         ...prev,
                         title: "",
@@ -526,8 +533,14 @@ export default function AnnouncementContainer() {
 
                 const response = await dispatch(createAssignment(formData)).unwrap();
                 console.log("API RESPONSE ", response);
-                
+
                 if (response && response.success) {
+                    const newAssignment = response.newAss || response.data;
+                    if (newAssignment) {
+                        dispatch(updateCurrClass({
+                            addedAssignment: [newAssignment, ...(currClass.addedAssignment || [])]
+                        }));
+                    }
                     setdata((prev) => ({
                         ...prev,
                         title: "",
@@ -572,11 +585,11 @@ export default function AnnouncementContainer() {
         setdata(prev => {
             const existingNames = new Set(prev.files.map(f => f.name));
             const filteredNewFiles = newFiles.filter(f => !existingNames.has(f.name));
-            
+
             if (filteredNewFiles.length < newFiles.length) {
                 toast.error("Duplicate files not allowed");
             }
-            
+
             return {
                 ...prev,
                 files: [...prev.files, ...filteredNewFiles]
@@ -622,7 +635,7 @@ export default function AnnouncementContainer() {
         } catch (e) {
             console.error("Invalid YouTube URL");
         }
-        
+
         if (videoId) {
             setdata(prev => {
                 if (prev.youtubeLinks.includes(videoId)) {
@@ -637,9 +650,6 @@ export default function AnnouncementContainer() {
         }
     };
 
-    if (loading) {
-        return <LoaderComponent />
-    }
 
     if (isStudent && currClass.studentCanPost === false) {
         return null; // Hide the announcement box completely
@@ -673,6 +683,7 @@ export default function AnnouncementContainer() {
                         handleYouTubeLinkSubmit={handleYouTubeLinkSubmit}
                         handleRemoveYouTubeLink={handleRemoveYouTubeLink}
                         handleRemoveLink={handleRemoveLink}
+                        loading={loading}
                     />
                 )}
             </div>

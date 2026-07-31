@@ -1,5 +1,5 @@
 const Class = require('../../Models/Class');
-exports.getAllClass = async (req, res) => {
+exports.getAllClass = async (req, res, next) => {
     try {
 
         const classes = await Class.find({}, 'student teacher admin');
@@ -23,11 +23,6 @@ exports.getAllClass = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: err.message
-        });
+        next(err);
     }
 };

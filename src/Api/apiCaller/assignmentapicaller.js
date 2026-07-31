@@ -21,7 +21,7 @@ export const createAssignment = createAsyncThunk(
             toast.success("Assignment Created Successfully");
             return response.data;
         } catch (err) {
-            toast.error("Failed to Create Assignment");
+            toast.error(err?.response?.data?.message || "Failed to Create Assignment");
             return err.response ? err.response : err.message;
         }
     }
@@ -35,7 +35,7 @@ export const editAssignment = createAsyncThunk(
             toast.success("Assignment Edited Successfully");
             return response.data;
         } catch (err) {
-            toast.error("Failed to Edit Assignment");
+            toast.error(err?.response?.data?.message || "Failed to Edit Assignment");
             return err.response ? err.response : err.message;
         }
     }
@@ -48,7 +48,7 @@ export const getAssignmentDetails = createAsyncThunk(
             const response = await apiConnector('GET', `${GET_ASSIGNMENT_API}/${assId}`);
             return response.data;
         } catch (err) {
-            toast.error("Failed to Get Assignment Details");
+            toast.error(err?.response?.data?.message || "Failed to Get Assignment Details");
             return err.response ? err.response : err.message;
         }
     }
@@ -62,7 +62,7 @@ export const deleteAssignment = createAsyncThunk(
             toast.success("Assignment Deleted Successfully");
             return response.data;
         } catch (err) {
-            toast.error("Failed to Delete Assignment");
+            toast.error(err?.response?.data?.message || "Failed to Delete Assignment");
             return err.response ? err.response : err.message;
         }
     }
@@ -136,7 +136,7 @@ export const deleteSubmittedAssignment = createAsyncThunk(
             toast.success("Assignment Submission Deleted Successfully");
             return response.data;
         } catch (err) {
-            toast.error("Failed to Delete Submission");
+            toast.error(err?.response?.data?.message || "Failed to Delete Submission");
             return err.response ? err.response : err.message;
         }
     }

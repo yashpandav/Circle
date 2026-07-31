@@ -4,7 +4,7 @@ const Class = require('../../Models/Class');
 const ToDo = require('../../Models/ToDo');
 const Review = require('../../Models/review');
 
-exports.deleteUser = async (req, res) => {
+exports.deleteUser = async (req, res, next) => {
     try {
         const id = req.user.id;
         const user = await User.findById(id);
@@ -41,11 +41,6 @@ exports.deleteUser = async (req, res) => {
         });
 
     } catch (err) {
-        console.log(err);
-        return res.status(500).json({
-            success: false,
-            message: err.message,
-            data: "Something went wrong while deleting user"
-        });
+        next(err);
     }
 };

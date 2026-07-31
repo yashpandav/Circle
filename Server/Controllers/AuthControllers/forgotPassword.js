@@ -2,7 +2,7 @@ const User = require('../../Models/User');
 const bcrypt = require('bcrypt');
 const OTP = require('../../Models/OTP');
 
-exports.forgotPassword = async (req, res) => {
+exports.forgotPassword = async (req, res, next) => {
     try {
         const { otp, newPassword, confirmNewPassword, email } = req.body;
 
@@ -77,12 +77,6 @@ exports.forgotPassword = async (req, res) => {
         });
 
     } catch (err) {
-        console.error("Error occurred during forgotPassword process:", err);
-
-        return res.status(500).json({
-            success: false,
-            message: "An error occurred while processing your request.",
-            error: err.message,
-        });
+        next(err);
     }
 };

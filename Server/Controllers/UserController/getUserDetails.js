@@ -7,7 +7,7 @@ const Post = require('../../Models/Post');
 const TODO = require('../../Models/ToDo');
 const reviewList = require('../../Models/review');
 
-exports.getProfile = async (req , res) => {
+exports.getProfile = async (req, res, next) => {
     try{
         const user = await User.findById(req.user.id)
                     ?.populate("additionalDetails")
@@ -27,10 +27,6 @@ exports.getProfile = async (req , res) => {
             message: "User Not Found"
         });
     }catch(err){
-        console.log(err);
-        return res.status(500).json({
-            success: false,
-            message: err.message
-        });
+        next(err);
     }
 }

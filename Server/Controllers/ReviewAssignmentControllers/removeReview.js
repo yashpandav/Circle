@@ -1,7 +1,7 @@
 const User = require('../../Models/User');
 const Review = require('../../Models/review');
 
-exports.removeFromReviewed = async (req, res) => {
+exports.removeFromReviewed = async (req, res, next) => {
     try {
         const userId = req.user.id;
         const assId = req.body.assId;
@@ -62,10 +62,6 @@ exports.removeFromReviewed = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Something went wrong while removing from reviewed"
-        });
+        next(err);
     }
 };

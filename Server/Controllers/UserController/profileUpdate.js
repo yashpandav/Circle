@@ -3,7 +3,7 @@ const Profile = require('../../Models/Profile');
 const { uploadImage } = require('../../Utils/imageUpload');
 require('dotenv').config();
 
-exports.updateProfile = async (req, res) => {
+exports.updateProfile = async (req, res, next) => {
     try {
         const {
             firstName,
@@ -58,11 +58,6 @@ exports.updateProfile = async (req, res) => {
             data: currUser
         });
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: err.message
-        });
+        next(err);
     }
 }

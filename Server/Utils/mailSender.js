@@ -17,6 +17,6 @@ exports.sendMail = async (email , title ,body) => {
 
     } catch (err) {
         console.error("Something went wrong while generating mail", err);
-            
+        throw err;
     }
 };

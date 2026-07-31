@@ -2,7 +2,7 @@ const Class = require('../../Models/Class');
 const User = require('../../Models/User');
 const { getIO } = require('../../socket');
 
-exports.deleteClass = async (req, res) => {
+exports.deleteClass = async (req, res, next) => {
     try {
         const classId = req.params.id;
 
@@ -57,11 +57,6 @@ exports.deleteClass = async (req, res) => {
             response
         })
     } catch (err) {
-        console.log(err);
-        return res.status(500).json({
-            success: false,
-            message: err.message,
-            data: "Something went wrong While Deleting Class"
-        })
+        next(err);
     }
 }   

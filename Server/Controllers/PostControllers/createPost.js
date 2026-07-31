@@ -5,7 +5,7 @@ const Category = require("../../Models/Category");
 const { getIO } = require("../../socket");
 require("dotenv").config();
 
-exports.createPost = async (req, res) => {
+exports.createPost = async (req, res, next) => {
     try {
         const { currClassId, title, category, status, links, youtubeLinks } = req.body;
         const postBody = req.body.text;
@@ -83,7 +83,6 @@ exports.createPost = async (req, res) => {
 
         return res.status(200).json({ success: true, message: "Post Created Successfully", data: populatedPost });
     } catch (err) {
-        console.error(err);
-        return res.status(400).json({ success: false, message: "Something went wrong while posting" });
+        next(err);
     }
 };

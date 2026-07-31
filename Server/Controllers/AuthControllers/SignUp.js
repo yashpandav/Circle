@@ -4,7 +4,7 @@ const Profile = require('../../Models/Profile');
 const { sendMail } = require('../../Utils/mailSender');
 const { successSignUp } = require('../../Mail/successAccount');
 const bcrypt = require('bcrypt');
-exports.signUp = async (req, res) => {
+exports.signUp = async (req, res, next) => {
     try {
         const {
             firstName,
@@ -94,11 +94,6 @@ exports.signUp = async (req, res) => {
         });
 
     } catch (err) {
-        console.error("Error during sign-up:", err);
-        return res.status(500).json({
-            success: false,
-            message: "Error during sign-up",
-            error: err.message,
-        });
+        next(err);
     }
 };

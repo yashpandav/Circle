@@ -3,7 +3,7 @@ const Assignment = require('../../Models/Assignment');
 const User = require('../../Models/User');
 const Post = require('../../Models/Post');
 
-exports.getClass = async (req, res) => {
+exports.getClass = async (req, res, next) => {
     try {
         const id = req.params.id;
 
@@ -82,11 +82,6 @@ exports.getClass = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: err.message
-        });
+        next(err);
     }
 };

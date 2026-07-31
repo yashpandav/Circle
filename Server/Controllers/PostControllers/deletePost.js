@@ -5,7 +5,7 @@ const Category = require("../../Models/Category");
 const Comment = require("../../Models/Comment");
 const { getIO } = require("../../socket");
 
-exports.deletePost = async (req, res) => {
+exports.deletePost = async (req, res, next) => {
     try {
         const postId = req.params.id;
         if (!postId) {
@@ -68,10 +68,6 @@ exports.deletePost = async (req, res) => {
             data: response,
         });
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Something went wrong while deleting the post",
-        });
+        next(err);
     }
 };

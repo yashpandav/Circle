@@ -2,7 +2,7 @@ const Category = require('../../../Models/Category');
 const Assignment = require('../../../Models/Assignment');
 const Class = require('../../../Models/Class');
 
-exports.deleteAssFromCategory = async (req, res) => {
+exports.deleteAssFromCategory = async (req, res, next) => {
     try {
         const assId = req.params.id;
         const { categoryId, classId } = req.body;
@@ -63,11 +63,6 @@ exports.deleteAssFromCategory = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Error while deleting assignment from category",
-            error: err.message
-        });
+        next(err);
     }
 };

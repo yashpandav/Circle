@@ -20,7 +20,7 @@ export const createPost = createAsyncThunk(
             return response.data;
         } catch (err) {
             console.log("Error During Creating Post ", err);
-            toast.error('Something Went Wrong While Creating Post');
+            toast.error(err?.response?.data?.message || "Something Went Wrong While Creating Post");
             return err.response ? err.response : err.message;
         }
     }
@@ -34,7 +34,7 @@ export const deletePost = createAsyncThunk(
             toast.success('Post deleted successfully!');
             return response.data;
         } catch (err) {
-            toast.error('Failed to delete post');
+            toast.error(err?.response?.data?.message || "Failed to delete post");
             return err.response ? err.response : err.message;
         }
     }
@@ -48,7 +48,7 @@ export const editPost = createAsyncThunk(
             toast.success('Post edited successfully!');
             return response.data;
         } catch (err) {
-            toast.error('Failed to edit post');
+            toast.error(err?.response?.data?.message || "Failed to edit post");
             return err.response ? err.response : err.message;
         }
     }

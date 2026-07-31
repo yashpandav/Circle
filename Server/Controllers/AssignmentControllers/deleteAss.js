@@ -6,7 +6,7 @@ const Comment = require('../../Models/Comment');
 const submittedAss = require('../../Models/SubmitAssignment');
 const { getIO } = require('../../socket');
 
-exports.deleteAss = async (req, res) => {
+exports.deleteAss = async (req, res, next) => {
     try {
         const assId = req.params.id;
         if (!assId) {
@@ -77,10 +77,6 @@ exports.deleteAss = async (req, res) => {
             data: assignment
         });
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Something went wrong while deleting the assignment",
-        });
+        next(err);
     }
 };

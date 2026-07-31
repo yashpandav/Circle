@@ -2,7 +2,7 @@ const Category = require('../../../Models/Category');
 const Post = require('../../../Models/Post');
 const Class = require('../../../Models/Class');
 
-exports.addPostIntoCategory = async (req, res) => {
+exports.addPostIntoCategory = async (req, res, next) => {
     try {
         const { name, postId, classId } = req.body;
 
@@ -69,11 +69,6 @@ exports.addPostIntoCategory = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Error while adding post to category",
-            error: err.message
-        });
+        next(err);
     }
 };

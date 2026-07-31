@@ -52,7 +52,7 @@ export const signUp = createAsyncThunk(
             toast.success("User Successfully Registered")
             return response;
         } catch (err) {
-            toast.error("INVALID OTP");
+            toast.error(err?.response?.data?.message || "INVALID OTP");
             // console.log("response error: " , err.response);
             return err.response ? err.response : err.message;
         }
@@ -85,7 +85,7 @@ export const logIn = createAsyncThunk(
             console.log(err);
             // console.log(err.response);
             if (err.response.status === 400) {
-                toast.error("Invalid Email , User Not Found");
+                toast.error(err?.response?.data?.message || "Invalid Email , User Not Found");
             }
             else toast.error("Wrong Password");
             return err.response ? err.response : err.message;
@@ -107,7 +107,7 @@ export const logOut = createAsyncThunk(
             return response;
         } catch (err) {
             console.log(err);
-            toast.error('Failed to log out');
+            toast.error(err?.response?.data?.message || "Failed to log out");
             return err.response ? err.response : err.message;
         }
     }
@@ -143,7 +143,7 @@ export const validateEmail = async (email) => {
         return response.data;
     } catch (err) {
         if (err?.response?.status === 400) {
-            toast.error("Email ID is required");
+            toast.error(err?.response?.data?.message || "Email ID is required");
         }
         if (err?.response?.status === 404) {
             toast.error("Enter your registered email address");
@@ -172,7 +172,7 @@ export const forgotPassword = async (
         return response.data;
     } catch (err) {
         if (err?.response?.status === 400) {
-            toast.error("The new password cannot be the same as the old password");
+            toast.error(err?.response?.data?.message || "The new password cannot be the same as the old password");
         }   
         if (err?.response?.status === 404) {
             toast.error("No user found");

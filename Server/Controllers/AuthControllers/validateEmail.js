@@ -20,12 +20,11 @@ const generateOtp = async (email) => {
         const finalOTP = await OTP.create({ email, otp });
         return { success: true, otp: finalOTP };
     } catch (err) {
-        console.error(err);
-        return { success: false, error: err.message };
+        next(err);
     }
 };
 
-exports.validateEmail = async (req, res) => {
+exports.validateEmail = async (req, res, next) => {
     try {
         const { email } = req.body;
 
@@ -60,11 +59,6 @@ exports.validateEmail = async (req, res) => {
             });
         }
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error while validating email",
-            error: err.message,
-        });
+        next(err);
     }
 };

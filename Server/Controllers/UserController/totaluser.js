@@ -1,6 +1,6 @@
 const User = require('../../Models/User');
 
-exports.totalUser = async (req , res) => {
+exports.totalUser = async (req, res, next) => {
     try{
         const userCount = await User.countDocuments({});
 
@@ -10,10 +10,6 @@ exports.totalUser = async (req , res) => {
             data: userCount
         })
     }catch(err){
-        console.log(err);
-        return res.status(500).json({
-            success: false,
-            message: "Something went wrong while getting all the users"
-        })
+        next(err);
     }
 }

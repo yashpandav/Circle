@@ -1,3 +1,10 @@
+// Handle Uncaught Exceptions
+process.on('uncaughtException', (err) => {
+    console.error(`[Process] Uncaught Exception: ${err.message}`);
+    console.error(err.stack);
+    process.exit(1);
+});
+
 //* IMPORT
 const express = require('express');
 const app = express();
@@ -7,6 +14,7 @@ const { cloudinaryConnect } = require('./Config/cloudinaryConnection');
 const cookieParser = require('cookie-parser');
 const fileUpload = require('express-fileupload');
 const socketModule = require('./socket');
+const errorHandler = require('./Middleware/errorHandler');
 require('dotenv').config();
 
 //* CLOUDINARY CONNECTION
@@ -18,6 +26,14 @@ app.use(cookieParser());
 app.use(fileUpload({
     useTempFiles: true,
     tempFileDir: '/tmp',
+    limits: { fileSize: 100 * 1024 * 1024 }, // 100MB Limit
+    abortOnLimit: true,
+    limitHandler: (req, res, next) => {
+        return res.status(413).json({
+            success: false,
+            message: "File size limit exceeded. Maximum allowed size is 100MB."
+        });
+    }
 }));
 
 //* CORS
@@ -108,10 +124,22 @@ app.get('/', (req, res) => {
     res.send({ message: 'Welcome to CIRCLE' });
 });
 
+//* GLOBAL ERROR HANDLER
+app.use(errorHandler);
+
 //* PORT AND LISTEN — Start only after DB is connected
 const PORT = process.env.PORT || 5000;
-dbConnect().then(() => {
-    httpServer.listen(PORT, () => {
-        console.log(`App is running on ${PORT}`);
+const server = httpServer.listen(PORT, async () => {
+    await dbConnect();
+    console.log(`App is running on ${PORT}`);
+});
+
+// Handle Unhandled Promise Rejections
+process.on('unhandledRejection', (err) => {
+    console.error(`[Process] Unhandled Rejection: ${err.message}`);
+    console.error(err.stack);
+    // Graceful shutdown
+    server.close(() => {
+        process.exit(1);
     });
 });

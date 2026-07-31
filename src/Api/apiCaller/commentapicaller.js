@@ -19,7 +19,7 @@ export const createComment = (data) => {
             return response.data;
         } catch (err) {
             console.log("Error during creating comment", err);
-            toast.error("Something went wrong while creating comment");
+            toast.error(err?.response?.data?.message || "Something went wrong while creating comment");
             return err.response? err.response : err.message;
         }
     };
@@ -33,7 +33,7 @@ export const deleteComment = (commentId, data) => {
             return response.data;
         } catch (err) {
             console.log("Error during deleting comment", err);
-            toast.error("Something went wrong while deleting comment");
+            toast.error(err?.response?.data?.message || "Something went wrong while deleting comment");
             return err.response ? err.response : err.message;
         }
     };
@@ -47,7 +47,7 @@ export const editComment = (commentId, data) => {
             return response.data;
         } catch (err) {
             console.log("Error during editing comment", err);
-            toast.error("Something went wrong while editing comment");
+            toast.error(err?.response?.data?.message || "Something went wrong while editing comment");
             return err.response ? err.response : err.message;
         }
     };

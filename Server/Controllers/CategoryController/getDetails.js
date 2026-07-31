@@ -2,7 +2,7 @@ const Category = require('../../Models/Category');
 const Assignment = require('../../Models/Assignment');
 const Post = require('../../Models/Post');
 
-exports.getDetails = async (req, res) => {
+exports.getDetails = async (req, res, next) => {
     try {
         const categoryId = req.params.id;
 
@@ -49,10 +49,6 @@ exports.getDetails = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Something went wrong while getting details"
-        });
+        next(err);
     }
 };

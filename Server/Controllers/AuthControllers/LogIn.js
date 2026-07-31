@@ -4,7 +4,7 @@ const { sendMail } = require('../../Utils/mailSender');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 
-exports.LogIn = async (req, res) => {
+exports.LogIn = async (req, res, next) => {
     try {
         const { email, password } = req.body;
 
@@ -68,11 +68,6 @@ exports.LogIn = async (req, res) => {
             console.error("Login mail error:", mailError.message);
         } */
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Login Failed",
-            error: err.message
-        });
+        next(err);
     }
 };

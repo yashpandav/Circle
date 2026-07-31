@@ -4,7 +4,7 @@ const Assignment = require('../../Models/Assignment');
 const Class = require('../../Models/Class');
 const { getIO } = require('../../socket');
 
-exports.editComment = async (req, res) => {
+exports.editComment = async (req, res, next) => {
     try {
         const commentId = req.params.id;
 
@@ -52,11 +52,6 @@ exports.editComment = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Something went wrong while editing the comment",
-            error: err.message
-        });
+        next(err);
     }
 };

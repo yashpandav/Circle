@@ -3,7 +3,7 @@ const Class = require('../../Models/Class');
 const Assignment = require('../../Models/Assignment');
 const Post = require('../../Models/Post');
 
-exports.deleteCategory = async (req, res) => {
+exports.deleteCategory = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { classId } = req.body;
@@ -64,10 +64,6 @@ exports.deleteCategory = async (req, res) => {
             message: "Category deleted successfully"
         });
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Something went wrong while deleting the category"
-        });
+        next(err);
     }
 };

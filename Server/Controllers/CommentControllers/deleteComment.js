@@ -4,7 +4,7 @@ const Assignment = require('../../Models/Assignment');
 const Class = require('../../Models/Class');
 const { getIO } = require('../../socket');
 
-exports.deleteComment = async (req, res) => {
+exports.deleteComment = async (req, res, next) => {
     try {
         const commentId = req.params.id;
         const { commentOn, id } = req.body;
@@ -67,11 +67,6 @@ exports.deleteComment = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Something went wrong while deleting the comment",
-            error: err.message
-        });
+        next(err);
     }
 };

@@ -3,7 +3,7 @@ const User = require('../../Models/User');
 const { sendMail } = require('../../Utils/mailSender');
 const { getIO } = require('../../socket');
 
-exports.joinClass = async (req, res) => {
+exports.joinClass = async (req, res, next) => {
     try {
         const { entryCode, entryUrl } = req.body;
 
@@ -14,7 +14,7 @@ exports.joinClass = async (req, res) => {
             });
         }
 
-        let findClass = await Class.findOne({ entryCode }) || await Class.findOne({ entryUrl });
+        let findClass = (await Class.findOne({ entryCode })) || (await Class.findOne({ entryUrl }));
 
         if (!findClass) {
             return res.status(404).json({
@@ -67,11 +67,6 @@ exports.joinClass = async (req, res) => {
             user
         });
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Error while joining class",
-            error: err.message
-        });
+        next(err);
     }
 };

@@ -2,7 +2,7 @@ const Category = require('../../../Models/Category');
 const Post = require('../../../Models/Post');
 const Class = require('../../../Models/Class'); 
 
-exports.deletePostFromCategory = async (req, res) => {
+exports.deletePostFromCategory = async (req, res, next) => {
     try {
         const postId = req.params.id;
         const { categoryId, classId } = req.body;
@@ -62,11 +62,6 @@ exports.deletePostFromCategory = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Error while deleting post from category",
-            error: err.message
-        });
+        next(err);
     }
 };

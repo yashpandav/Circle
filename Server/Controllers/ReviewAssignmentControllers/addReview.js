@@ -1,7 +1,7 @@
 const User = require('../../Models/User');
 const Review = require('../../Models/review');
 
-exports.addIntoReviewd = async (req, res) => {
+exports.addIntoReviewd = async (req, res, next) => {
     try {
         const userId = req.user.id;
         const assId = req.body.addId;
@@ -54,10 +54,6 @@ exports.addIntoReviewd = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Something went wrong while adding into reviewed"
-        });
+        next(err);
     }
 };

@@ -99,11 +99,7 @@ async function updateToDo(req, res) {
             data: populatedToDo
         });
     } catch (err) {
-        console.log(err);
-        return res.status(500).json({
-            success: false,
-            message: "Something went wrong while updating the todo"
-        });
+        next(err);
     }
 }
 
@@ -129,7 +125,7 @@ cron.schedule('0 0 * * *', async () => {
             await updateToDo(req, res);
         }
     } catch (err) {
-        console.error('Error updating ToDo lists in cron job:', err);
+        next(err);
     }
 });
 

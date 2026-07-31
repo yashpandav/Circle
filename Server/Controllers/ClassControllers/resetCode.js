@@ -2,7 +2,7 @@ const Class = require('../../Models/Class');
 const randomstring = require('randomstring');
 const { getIO } = require('../../socket');
 
-exports.resetEntryCode = async (req, res) => {
+exports.resetEntryCode = async (req, res, next) => {
     try {
         const id = req.params.id;
         let currClass = await Class.findById(id);
@@ -32,16 +32,11 @@ exports.resetEntryCode = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Error while resetting entry code",
-            error: err.message
-        });
+        next(err);
     }
 }
 
-exports.toggleEntryCode = async (req, res) => {
+exports.toggleEntryCode = async (req, res, next) => {
     try {
         const id = req.params.id;
         let currClass = await Class.findById(id);
@@ -72,11 +67,6 @@ exports.toggleEntryCode = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Error while toggling entry code",
-            error: err.message
-        });
+        next(err);
     }
 }

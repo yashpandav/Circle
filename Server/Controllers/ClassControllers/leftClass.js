@@ -2,7 +2,7 @@ const Class = require('../../Models/Class');
 const User = require('../../Models/User');
 const { getIO } = require('../../socket');
 
-exports.leftClass = async (req, res) => {
+exports.leftClass = async (req, res, next) => {
     try {
         const userId = req.user.id;
         const { classId } = req.body;
@@ -48,11 +48,6 @@ exports.leftClass = async (req, res) => {
             }
         });
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Error while leaving class",
-            error: err.message
-        });
+        next(err);
     }
 };

@@ -4,7 +4,7 @@ const Assignment = require('../../Models/Assignment');
 const Class = require('../../Models/Class');
 const { getIO } = require('../../socket');
 
-exports.createComment = async (req, res) => {
+exports.createComment = async (req, res, next) => {
     try {
         const {
             commentBody,
@@ -61,11 +61,6 @@ exports.createComment = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Something went wrong while creating the comment",
-            error: err.message
-        });
+        next(err);
     }
 };

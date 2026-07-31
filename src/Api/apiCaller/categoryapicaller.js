@@ -17,7 +17,7 @@ export const createCategory = createAsyncThunk(
             toast.success("Topic created successfully");
             return response.data;
         } catch (err) {
-            toast.error("Failed to create topic");
+            toast.error(err?.response?.data?.message || "Failed to create topic");
             return err.response ? err.response.data : err.message;
         }
     }
@@ -31,7 +31,7 @@ export const deleteCategory = createAsyncThunk(
             toast.success("Topic deleted");
             return response.data;
         } catch (err) {
-            toast.error("Failed to delete topic");
+            toast.error(err?.response?.data?.message || "Failed to delete topic");
             return err.response ? err.response.data : err.message;
         }
     }
@@ -45,7 +45,7 @@ export const editCategory = createAsyncThunk(
             toast.success("Topic edited successfully");
             return response.data;
         } catch (err) {
-            toast.error("Failed to edit topic");
+            toast.error(err?.response?.data?.message || "Failed to edit topic");
             return err.response ? err.response.data : err.message;
         }
     }

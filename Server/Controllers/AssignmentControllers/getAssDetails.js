@@ -1,6 +1,6 @@
 const Assignment = require('../../Models/Assignment');
 
-exports.getAssDetails = async (req, res) => {
+exports.getAssDetails = async (req, res, next) => {
     try {
         const id = req.params.id;
 
@@ -31,10 +31,6 @@ exports.getAssDetails = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Error while getting details of assignment"
-        });
+        next(err);
     }
 }

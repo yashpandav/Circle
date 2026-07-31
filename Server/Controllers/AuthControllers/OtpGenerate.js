@@ -2,7 +2,7 @@ const User = require('../../Models/User');
 const otpgenerator = require('otp-generator');
 const OTP = require('../../Models/OTP');
 
-exports.genrateOtp = async (req, res) => {
+exports.genrateOtp = async (req, res, next) => {
     try {
         const email = req.body.email;
 
@@ -42,11 +42,6 @@ exports.genrateOtp = async (req, res) => {
         });
 
     } catch (err) {
-        console.error("Error while generating OTP:", err);
-        return res.status(500).json({
-            success: false,
-            message: "Error while generating OTP",
-            error: err.message
-        });
+        next(err);
     }
 };

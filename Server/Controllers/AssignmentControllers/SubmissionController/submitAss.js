@@ -6,7 +6,7 @@ const { uploadImage } = require('../../../Utils/imageUpload');
 const { getIO } = require('../../../socket');
 require('dotenv').config();
 
-exports.submitAss = async (req, res) => {
+exports.submitAss = async (req, res, next) => {
     try {
         const assId = req.params.id;
         const { data, submittedID, overwrite } = req.body;
@@ -114,10 +114,6 @@ exports.submitAss = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Error while submitting assignment"
-        });
+        next(err);
     }
 }

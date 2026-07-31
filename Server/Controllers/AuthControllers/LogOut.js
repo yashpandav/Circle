@@ -1,4 +1,4 @@
-exports.LogOut = async (req, res) => {
+exports.LogOut = async (req, res, next) => {
     try {
         console.log("LOG OUT API HEATED");
         // console.log("COOKIE 1 ");
@@ -16,10 +16,6 @@ exports.LogOut = async (req, res) => {
         res.end();
     }
     catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Something went wrong Logging out",
-        });
+        next(err);
     }
 }

@@ -1,6 +1,6 @@
 const Post = require('../../Models/Post');
 
-exports.getPostDetails = async (req, res) => {
+exports.getPostDetails = async (req, res, next) => {
     try {
         const postId = req.params.id;
 
@@ -49,10 +49,6 @@ exports.getPostDetails = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Error while getting details of post",
-        });
+        next(err);
     }
 };

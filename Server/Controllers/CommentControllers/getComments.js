@@ -1,7 +1,7 @@
 const Post = require('../../Models/Post');
 const Assignment = require('../../Models/Assignment');
 
-exports.getAllComment = async (req, res) => {
+exports.getAllComment = async (req, res, next) => {
     try {
         const { commentOn } = req.query;
         const id = req.params.id;
@@ -42,11 +42,6 @@ exports.getAllComment = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            message: "Error during getting all comments",
-            error: err.message
-        });
+        next(err);
     }
 };
