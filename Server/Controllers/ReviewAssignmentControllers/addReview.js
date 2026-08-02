@@ -4,7 +4,7 @@ const Review = require('../../Models/review');
 exports.addIntoReviewd = async (req, res, next) => {
     try {
         const userId = req.user.id;
-        const assId = req.body.addId;
+        const assId = req.body.addId || req.body.assId;
 
         if (!assId) {
             return res.status(400).json({
@@ -50,7 +50,7 @@ exports.addIntoReviewd = async (req, res, next) => {
         return res.status(200).json({
             success: true,
             message: "Added into reviewed",
-            date : reviewList
+            data: reviewList
         });
 
     } catch (err) {

@@ -5,15 +5,14 @@ import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
 import Divider from "@mui/material/Divider";
-import { Menu, MenuItem, IconButton } from "@mui/material";
+import { Menu, MenuItem, IconButton, CircularProgress } from "@mui/material";
 import "./postContainer.css";
 import "./uploadFile.css";
 import { CommentController, AddCommentController } from "./commentController";
 import { useDispatch, useSelector } from "react-redux";
-import { createComment } from "../../../Api/apiCaller/commentapicaller";
+import { createComment, deleteComment } from "../../../Api/apiCaller/commentapicaller";
 import { deletePost } from "../../../Api/apiCaller/postapicaller";
-import { LoaderComponent } from "../../Helper/Loaders/loader";
-import { setLoading } from "../../../Slices/loadingSlice";
+import { updateCurrClass } from "../../../Slices/classSlice";
 import socket from "../../../socket/socket";
 import ConfirmationDialog from "../../Helper/ConfirmationDialog";
 import EditPostModal from "./EditPostModal";
@@ -25,8 +24,8 @@ export default function PostContainer({ post }) {
     const currClass = useSelector((state) => state.classes.currClass);
     const dispatch = useDispatch();
     const [isAnnouncer, setAnnouncer] = useState(false);
-    const loading = useSelector((state) => state.loading.loading);
     const [confirmDelete, setConfirmDelete] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     // Controlled Height & Text Clamping
@@ -88,27 +87,24 @@ export default function PostContainer({ post }) {
             commentOn: "Post",
             id: post._id,
         };
-        setLoading(true);
-        await dispatch(createComment(data))
-            .then(async (response) => {
-                if (response && response.data) {
-                    const { commentBody, user } = response.data;
-                    const newComment = {
-                        commentBody: commentBody,
-                        user: {
-                            firstName: user.firstName,
-                            lastName: user.lastName,
-                            image: user.image,
-                        },
-                        _id: response.data._id,
-                    };
-                    setComments((prevComments) => [...prevComments, newComment]);
-                }
-            })
-            .catch((error) => {
-                console.error("Error adding comment:", error);
-            });
-        setLoading(false);
+        try {
+            const response = await dispatch(createComment(data));
+            if (response && response.data) {
+                const { commentBody, user } = response.data;
+                const newComment = {
+                    commentBody: commentBody,
+                    user: {
+                        firstName: user?.firstName,
+                        lastName: user?.lastName,
+                        image: user?.image,
+                    },
+                    _id: response.data._id,
+                };
+                setComments((prevComments) => [...prevComments, newComment]);
+            }
+        } catch (error) {
+            console.error("Error adding comment:", error);
+        }
     };
 
     const handleMenuOpen = (event) => {
@@ -131,13 +127,22 @@ export default function PostContainer({ post }) {
 
     const confirmDeleteAction = async () => {
         setConfirmDelete(false);
-        setLoading(true);
+        setIsDeleting(true);
         try {
-            await dispatch(deletePost(post._id));
+            const resultAction = await dispatch(deletePost(post._id));
+            if (deletePost.fulfilled.match(resultAction)) {
+                if (currClass?.addedPost) {
+                    const updatedPosts = currClass.addedPost.filter(
+                        (p) => (p._id || p) !== post._id
+                    );
+                    dispatch(updateCurrClass({ addedPost: updatedPosts }));
+                }
+            }
         } catch (err) {
             console.error("Failed to delete post", err);
+        } finally {
+            setIsDeleting(false);
         }
-        setLoading(false);
     };
 
     const getYouTubeEmbedUrl = (link) => {
@@ -152,9 +157,28 @@ export default function PostContainer({ post }) {
         return `https://www.youtube.com/embed/${link}`;
     };
 
-    if (loading) {
-        return <LoaderComponent />
+    if (isDeleting) {
+        return (
+            <div className="post-container" style={{ padding: "30px", textAlign: "center", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <CircularProgress size={28} />
+            </div>
+        );
     }
+
+    const handleDeleteComment = async (commentId) => {
+        try {
+            const data = {
+                commentOn: "Post",
+                id: post._id,
+            };
+            const response = await dispatch(deleteComment(commentId, data));
+            if (response && response.success) {
+                setComments((prevComments) => prevComments.filter((c) => c._id !== commentId));
+            }
+        } catch (error) {
+            console.error("Error deleting comment:", error);
+        }
+    };
 
     return (
         <div className="post-container" key={post._id}>
@@ -335,7 +359,7 @@ export default function PostContainer({ post }) {
                 )}
             </div>
             <Divider />
-            <CommentController comments={comments} />
+            <CommentController comments={comments} onDeleteComment={handleDeleteComment} />
             <AddCommentController addComment={addComment} />
             <ConfirmationDialog 
                 open={confirmDelete}

@@ -30,7 +30,9 @@ exports.deleteAssFromCategory = async (req, res, next) => {
             });
         }
 
-        const isAuthorized = findClass.admin.toString() === req.user.id || findAss.teacher.toString() === req.user.id;
+        const isAuthorized = (findClass.admin && findClass.admin.toString() === req.user.id) || 
+                             findAss.teacher.toString() === req.user.id ||
+                             findClass.teacher.some(t => t.toString() === req.user.id);
         if (!isAuthorized) {
             return res.status(403).json({
                 success: false,
@@ -46,7 +48,6 @@ exports.deleteAssFromCategory = async (req, res, next) => {
             });
         }
 
-
         //* Remove assignment from category
         await Category.findByIdAndUpdate(categoryId, {
             $pull: { assignment: assId }
@@ -54,7 +55,7 @@ exports.deleteAssFromCategory = async (req, res, next) => {
 
         //* Remove category from assignment
         await Assignment.findByIdAndUpdate(assId, {
-            $pull: { category: categoryId }
+            $set: { category: null }
         });
 
         return res.status(200).json({

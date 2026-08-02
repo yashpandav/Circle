@@ -20,7 +20,7 @@ const generateOtp = async (email) => {
         const finalOTP = await OTP.create({ email, otp });
         return { success: true, otp: finalOTP };
     } catch (err) {
-        next(err);
+        return { success: false, error: err.message };
     }
 };
 

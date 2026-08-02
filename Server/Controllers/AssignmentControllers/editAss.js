@@ -35,8 +35,13 @@ exports.editAss = async (req, res, next) => {
             });
         }
 
-        //* Authorizing teacher
-        const isAuthorized = findAss.teacher.toString() === req.user.id;
+        const parentClass = await Class.findOne({ addedAssignment: assId });
+
+        //* Authorizing teacher or admin
+        const isAuthorized = findAss.teacher.toString() === req.user.id ||
+            (parentClass && parentClass.admin && parentClass.admin.toString() === req.user.id) ||
+            (parentClass && parentClass.teacher && parentClass.teacher.some(t => t.toString() === req.user.id));
+
         if (!isAuthorized) {
             return res.status(403).json({
                 success: false,

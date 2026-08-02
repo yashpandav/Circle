@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Assignment = require('../../Models/Assignment');
 const User = require('../../Models/User');
 const Class = require('../../Models/Class');
@@ -9,23 +10,16 @@ const { getIO } = require('../../socket');
 exports.deleteAss = async (req, res, next) => {
     try {
         const assId = req.params.id;
-        if (!assId) {
+
+        // 1. Validate Assignment ID format
+        if (!assId || !mongoose.Types.ObjectId.isValid(assId)) {
             return res.status(400).json({
                 success: false,
-                message: "Assignment ID is required",
+                message: "Valid Assignment ID is required",
             });
         }
 
-        //* AUTHORIZING TEACHER || ADMIN
-        const currClass = await Class.findOne({ addedAssignment: assId });
-        if (!currClass) {
-            return res.status(404).json({
-                success: false,
-                message: "Class not found for this assignment",
-            });
-        }
-        const classId = currClass._id;
-
+        // 2. Find assignment first
         const assignment = await Assignment.findById(assId);
         if (!assignment) {
             return res.status(404).json({
@@ -34,47 +28,58 @@ exports.deleteAss = async (req, res, next) => {
             });
         }
 
-        const isAuthorized = (currClass.admin && currClass.admin.toString() === req.user.id) || (assignment.teacher && assignment.teacher.toString() === req.user.id);
-        if (!isAuthorized) {
+        // 3. Find the associated class
+        const currClass = await Class.findOne({ addedAssignment: assId });
+
+        // 4. Authorization check: Author, Class Admin, or Class Teacher
+        const isOwner = assignment.teacher && assignment.teacher.toString() === req.user.id;
+        const isClassAdmin = currClass?.admin && currClass.admin.toString() === req.user.id;
+        const isClassTeacher = currClass?.teacher && currClass.teacher.some(t => t.toString() === req.user.id);
+
+        if (!isOwner && !isClassAdmin && !isClassTeacher) {
             return res.status(403).json({
                 success: false,
                 message: "You are not authorized to delete this assignment",
             });
         }
 
-        //* Remove the assignment from the class
-        await Class.findByIdAndUpdate(classId, {
-            $pull: { addedAssignment: assId },
-        });
+        // 5. Remove the assignment from the class
+        if (currClass) {
+            await Class.findByIdAndUpdate(currClass._id, {
+                $pull: { addedAssignment: assId },
+            });
+        }
 
-        //* Remove the assignment from all categories
-        await Category.updateMany({}, {
-            $pull: { assignment: assId },
-        });
+        // 6. Remove assignment from any categories
+        await Category.updateMany(
+            { assignment: assId },
+            { $pull: { assignment: assId } }
+        );
 
-        //* Delete the assignment and its submissions
+        // 7. Batch delete submissions
         if (assignment.submission && assignment.submission.length > 0) {
-            await Promise.all(assignment.submission.map(async submittedId => (
-                await submittedAss.findByIdAndDelete(submittedId)
-            )));
+            await submittedAss.deleteMany({ _id: { $in: assignment.submission } });
         }
+        await submittedAss.deleteMany({ assignmentId: assId });
 
-        //* Delete the assignment and its comments
+        // 8. Batch delete comments
         if (assignment.comment && assignment.comment.length > 0) {
-            await Promise.all(assignment.comment.map(async commentId => (
-                await Comment.findByIdAndDelete(commentId)
-            )));
+            await Comment.deleteMany({ _id: { $in: assignment.comment } });
         }
+        await Comment.deleteMany({ commentOn: "Assignment", id: assId });
 
-        //* Finally, delete the assignment
-        await Assignment.findByIdAndDelete(assId);
+        // 9. Delete the assignment document
+        const deletedAssignment = await Assignment.findByIdAndDelete(assId);
 
-        getIO().to(`room:${classId.toString()}`).emit('assignment:deleted', { assignmentId: assId });
+        // 10. Broadcast deletion event via Socket.IO
+        if (currClass) {
+            getIO().to(`room:${currClass._id.toString()}`).emit('assignment:deleted', { assignmentId: assId });
+        }
 
         return res.status(200).json({
             success: true,
             message: "Assignment deleted successfully",
-            data: assignment
+            data: deletedAssignment,
         });
     } catch (err) {
         next(err);

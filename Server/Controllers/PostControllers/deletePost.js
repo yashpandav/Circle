@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Post = require("../../Models/Post");
 const User = require("../../Models/User");
 const Class = require("../../Models/Class");
@@ -8,22 +9,16 @@ const { getIO } = require("../../socket");
 exports.deletePost = async (req, res, next) => {
     try {
         const postId = req.params.id;
-        if (!postId) {
+
+        // 1. Validate Post ID format
+        if (!postId || !mongoose.Types.ObjectId.isValid(postId)) {
             return res.status(400).json({
                 success: false,
-                message: "postId is required",
+                message: "Valid Post ID is required",
             });
         }
 
-        const findClass = await Class.findOne({ addedPost: postId });
-        if (!findClass) {
-            return res.status(404).json({
-                success: false,
-                message: "Class not found for this post",
-            });
-        }
-        const classId = findClass._id;
-
+        // 2. Find the post first
         const findPost = await Post.findById(postId);
         if (!findPost) {
             return res.status(404).json({
@@ -32,40 +27,53 @@ exports.deletePost = async (req, res, next) => {
             });
         }
 
-        const isAuthorized = (findClass.admin && findClass.admin.toString() === req.user.id) || (findPost.teacher && findPost.teacher.toString() === req.user.id);
-        if (!isAuthorized) {
+        // 3. Find the associated class
+        const findClass = await Class.findOne({ addedPost: postId });
+
+        // 4. Authorization check: Author, Class Admin, or Class Teacher
+        const isOwner = findPost.teacher && findPost.teacher.toString() === req.user.id;
+        const isClassAdmin = findClass?.admin && findClass.admin.toString() === req.user.id;
+        const isClassTeacher = findClass?.teacher && findClass.teacher.some(t => t.toString() === req.user.id);
+
+        if (!isOwner && !isClassAdmin && !isClassTeacher) {
             return res.status(403).json({
                 success: false,
                 message: "You are not authorized to delete this post",
             });
         }
 
-        //* Remove the post from the class
-        await Class.findByIdAndUpdate(classId, {
-            $pull: { addedPost: postId },
-        });
-
-        //* Remove the post from all categories
-        await Category.updateMany({}, {
-            $pull: { post: postId },
-        });
-
-        //* Delete associated comments
-        if (findPost.comment && findPost.comment.length > 0) {
-            await Promise.all(findPost.comment.map(async commentId => (
-                await Comment.findByIdAndDelete(commentId)
-            )));
+        // 5. Remove the post reference from the class if class exists
+        if (findClass) {
+            await Class.findByIdAndUpdate(findClass._id, {
+                $pull: { addedPost: postId },
+            });
         }
 
-        //* Delete the post
-        const response = await Post.findByIdAndDelete(postId);
+        // 6. Remove post reference from any categories
+        await Category.updateMany(
+            { post: postId },
+            { $pull: { post: postId } }
+        );
 
-        getIO().to(`room:${classId.toString()}`).emit('post:deleted', { postId });
+        // 7. Batch delete associated comments
+        if (findPost.comment && findPost.comment.length > 0) {
+            await Comment.deleteMany({ _id: { $in: findPost.comment } });
+        }
+        // Also cleanup comments tagged with this post
+        await Comment.deleteMany({ commentOn: "Post", id: postId });
+
+        // 8. Delete the post document
+        const deletedPost = await Post.findByIdAndDelete(postId);
+
+        // 9. Broadcast deletion event to circle members via Socket.IO
+        if (findClass) {
+            getIO().to(`room:${findClass._id.toString()}`).emit('post:deleted', { postId });
+        }
 
         return res.status(200).json({
             success: true,
             message: "Post deleted successfully",
-            data: response,
+            data: deletedPost,
         });
     } catch (err) {
         next(err);

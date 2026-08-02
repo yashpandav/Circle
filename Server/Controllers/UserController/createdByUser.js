@@ -2,7 +2,7 @@ const User = require('../../Models/User');
 const Class = require('../../Models/Class');
 
 
-exports.cretedByUser = async (req, res, next) => {
+const createdByUser = async (req, res, next) => {
     try{
         const id = req.user.id;
         if(!id){
@@ -29,3 +29,6 @@ exports.cretedByUser = async (req, res, next) => {
         next(err);
     }
 }
+
+exports.createdByUser = createdByUser;
+exports.cretedByUser = createdByUser;

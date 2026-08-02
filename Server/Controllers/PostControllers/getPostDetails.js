@@ -12,9 +12,15 @@ exports.getPostDetails = async (req, res, next) => {
         }
 
         const currPost = await Post.findById(postId)
-            ?.populate("teacher")
-            .populate("category")
-            .populate("comment");
+            .populate("teacher", "firstName lastName image email")
+            .populate("category", "name")
+            .populate({
+                path: "comment",
+                populate: {
+                    path: "user",
+                    select: "firstName lastName image"
+                }
+            });
 
         if (!currPost) {
             return res.status(404).json({
@@ -31,9 +37,9 @@ exports.getPostDetails = async (req, res, next) => {
             });
         }
 
-        const isAuthorized = parentClass.admin.toString() === req.user.id || 
-                             parentClass.teacher.includes(req.user.id) || 
-                             parentClass.student.includes(req.user.id);
+        const isAuthorized = (parentClass.admin && parentClass.admin.toString() === req.user.id) || 
+                             parentClass.teacher?.some(t => t.toString() === req.user.id) || 
+                             parentClass.student?.some(s => s.toString() === req.user.id);
         
         if (!isAuthorized) {
             return res.status(403).json({

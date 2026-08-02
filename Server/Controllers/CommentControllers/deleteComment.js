@@ -44,8 +44,12 @@ exports.deleteComment = async (req, res, next) => {
             });
         }
 
-        const isAuthorized = comment.user.toString() === req.user.id;
-        if (!isAuthorized) {
+        const classForComment = await Class.findOne({ $or: [{ addedPost: id }, { addedAssignment: id }] });
+        const isOwner = comment.user.toString() === req.user.id;
+        const isClassAdmin = classForComment?.admin && classForComment.admin.toString() === req.user.id;
+        const isClassTeacher = classForComment?.teacher && classForComment.teacher.some(t => t.toString() === req.user.id);
+
+        if (!isOwner && !isClassAdmin && !isClassTeacher) {
             return res.status(403).json({
                 success: false,
                 message: "You are not authorized to delete this comment"
@@ -56,7 +60,6 @@ exports.deleteComment = async (req, res, next) => {
         commentOnWhich.comment.pull(commentId);
         await commentOnWhich.save();
 
-        const classForComment = await Class.findOne({ $or: [{ addedPost: id }, { addedAssignment: id }] });
         if (classForComment) {
             getIO().to(`room:${classForComment._id.toString()}`).emit('comment:deleted', { commentId, parentId: id, commentOn });
         }

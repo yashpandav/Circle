@@ -30,7 +30,9 @@ exports.deletePostFromCategory = async (req, res, next) => {
             });
         }
 
-        const isAuthorized = findClass.admin.toString() === req.user.id || findPost.teacher.toString() === req.user.id;
+        const isAuthorized = (findClass.admin && findClass.admin.toString() === req.user.id) || 
+                             findPost.teacher.toString() === req.user.id ||
+                             findClass.teacher.some(t => t.toString() === req.user.id);
         if (!isAuthorized) {
             return res.status(403).json({
                 success: false,
@@ -53,7 +55,7 @@ exports.deletePostFromCategory = async (req, res, next) => {
 
         //* Remove category from post
         await Post.findByIdAndUpdate(postId, {
-            $pull: { category: categoryId }
+            $set: { category: null }
         });
 
         return res.status(200).json({

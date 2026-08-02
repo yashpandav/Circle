@@ -12,7 +12,7 @@ exports.createPost = async (req, res, next) => {
         const postFiles = req.files?.files;
 
         if (!currClassId || !title || !postBody) {
-            return res.status(401).json({ success: false, message: "All Fields are Required" });
+            return res.status(400).json({ success: false, message: "All Fields are Required" });
         }
 
         const currClass = await Class.findById(currClassId);

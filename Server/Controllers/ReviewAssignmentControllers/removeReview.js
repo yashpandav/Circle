@@ -4,7 +4,7 @@ const Review = require('../../Models/review');
 exports.removeFromReviewed = async (req, res, next) => {
     try {
         const userId = req.user.id;
-        const assId = req.body.assId;
+        const assId = req.body.assId || req.body.addId;
 
         if (!userId) {
             return res.status(400).json({

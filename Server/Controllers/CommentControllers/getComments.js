@@ -26,7 +26,13 @@ exports.getAllComment = async (req, res, next) => {
         }
 
         const response = await tempModel[commentOn].findById(id)
-                        ?.populate('comment')
+                        ?.populate({
+                            path: 'comment',
+                            populate: {
+                                path: 'user',
+                                select: 'firstName lastName image email'
+                            }
+                        })
                         .exec();
 
         if (!response) {

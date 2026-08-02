@@ -14,7 +14,8 @@ exports.joinClass = async (req, res, next) => {
             });
         }
 
-        let findClass = (await Class.findOne({ entryCode })) || (await Class.findOne({ entryUrl }));
+        const query = entryCode ? { entryCode } : { entryUrl };
+        const findClass = await Class.findOne(query);
 
         if (!findClass) {
             return res.status(404).json({

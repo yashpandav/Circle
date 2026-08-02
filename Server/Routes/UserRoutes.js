@@ -12,8 +12,8 @@ router.delete('/deleteuser' , auth , asyncHandler(deleteUser))
 const {getProfile} = require('../Controllers/UserController/getUserDetails');
 router.get('/getuser', auth , asyncHandler(getProfile));
 
-const {cretedByUser} = require('../Controllers/UserController/createdByUser')
-router.get('/created', auth , asyncHandler(cretedByUser));
+const {createdByUser} = require('../Controllers/UserController/createdByUser')
+router.get('/created', auth , asyncHandler(createdByUser));
 
 const {joinedByUser} = require('../Controllers/UserController/joinedByUser')
 router.get('/joined', auth , asyncHandler(joinedByUser));

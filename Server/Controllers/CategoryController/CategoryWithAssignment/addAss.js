@@ -29,7 +29,9 @@ exports.addAssIntoCategory = async (req, res, next) => {
             });
         }
 
-        const isAuthorized = findAss.teacher.toString() === req.user.id || findClass.admin.toString() === req.user.id;
+        const isAuthorized = findAss.teacher.toString() === req.user.id || 
+                             (findClass.admin && findClass.admin.toString() === req.user.id) ||
+                             findClass.teacher.some(t => t.toString() === req.user.id);
         if (!isAuthorized) {
             return res.status(403).json({
                 success: false,
@@ -37,7 +39,7 @@ exports.addAssIntoCategory = async (req, res, next) => {
             });
         }
 
-        let findCategory = await Category.findOne({ name });
+        let findCategory = await Category.findOne({ name, classId });
         if (!findCategory) {
             return res.status(404).json({
                 success: false,
@@ -45,10 +47,16 @@ exports.addAssIntoCategory = async (req, res, next) => {
             });
         }
 
-        if (findCategory.assignment.includes(assId)) {
+        if (findCategory.assignment.some(id => id.toString() === assId.toString())) {
             return res.status(400).json({
                 success: false,
                 message: "Assignment already exists in the category"
+            });
+        }
+
+        if (findAss.category && findAss.category.toString() !== findCategory._id.toString()) {
+            await Category.findByIdAndUpdate(findAss.category, {
+                $pull: { assignment: assId }
             });
         }
 

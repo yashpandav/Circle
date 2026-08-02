@@ -34,6 +34,12 @@ exports.changePassword = async (req, res, next) => {
         }
 
         const userDetails = await User.findById(req.user.id);
+        if (!userDetails) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
 
         const isPasswordMatch = await bcrypt.compare(oldPassword, userDetails.password);
         if (!isPasswordMatch) {
@@ -50,10 +56,12 @@ exports.changePassword = async (req, res, next) => {
                 password: hashedPassword 
             }, { new: true });
 
+        updatedUser.password = undefined;
+
         return res.status(200).json({
             success: true,
             message: "Password updated successfully",
-            date :updatedUser
+            data: updatedUser
         });
     } catch (err) {
         next(err);

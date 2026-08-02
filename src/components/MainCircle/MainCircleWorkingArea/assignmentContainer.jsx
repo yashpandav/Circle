@@ -4,17 +4,16 @@ import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
 import Divider from "@mui/material/Divider";
-import { Menu, MenuItem, IconButton } from "@mui/material";
+import { Menu, MenuItem, IconButton, CircularProgress } from "@mui/material";
 import { Assignment as AssignmentIcon } from "@mui/icons-material";
 import "./postContainer.css";
 import "./uploadFile.css";
 import { CommentController, AddCommentController } from "./commentController";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { createComment } from "../../../Api/apiCaller/commentapicaller";
+import { createComment, deleteComment } from "../../../Api/apiCaller/commentapicaller";
 import { deleteAssignment } from "../../../Api/apiCaller/assignmentapicaller";
-import { LoaderComponent } from "../../Helper/Loaders/loader";
-import { setLoading } from "../../../Slices/loadingSlice";
+import { updateCurrClass } from "../../../Slices/classSlice";
 import { toast } from "react-hot-toast";
 import socket from "../../../socket/socket";
 import ConfirmationDialog from "../../Helper/ConfirmationDialog";
@@ -27,8 +26,8 @@ export default function AssignmentContainer({ assignment }) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [isAnnouncer, setAnnouncer] = useState(false);
-    const loading = useSelector((state) => state.loading.loading);
     const [confirmDelete, setConfirmDelete] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     // Controlled Height & Text Clamping
     const [isExpanded, setIsExpanded] = useState(false);
@@ -36,8 +35,14 @@ export default function AssignmentContainer({ assignment }) {
     const contentRef = useRef(null);
 
     useEffect(() => {
-        setAnnouncer(currUser?._id === assignment?.teacher?._id);
-    }, [assignment, currUser]);
+        const isOwner = currUser?._id && (currUser._id === assignment?.teacher?._id || currUser._id === assignment?.teacher);
+        const isClassAdmin = currClass?.admin && (currClass.admin._id === currUser?._id || currClass.admin === currUser?._id);
+        const isClassTeacher = currClass?.teacher && Array.isArray(currClass.teacher) && currClass.teacher.some(
+            t => (t._id === currUser?._id || t === currUser?._id || t.id === currUser?._id)
+        );
+
+        setAnnouncer(Boolean(isOwner || isClassAdmin || isClassTeacher));
+    }, [assignment, currUser, currClass]);
 
     useEffect(() => {
         if (contentRef.current) {
@@ -74,27 +79,24 @@ export default function AssignmentContainer({ assignment }) {
             commentOn: "Assignment",
             id: assignment._id,
         };
-        setLoading(true);
-        await dispatch(createComment(data))
-            .then(async (response) => {
-                if (response && response.data) {
-                    const { commentBody, user } = response.data;
-                    const newComment = {
-                        commentBody: commentBody,
-                        user: {
-                            firstName: user.firstName,
-                            lastName: user.lastName,
-                            image: user.image,
-                        },
-                        _id: response.data._id,
-                    };
-                    setComments((prevComments) => [...prevComments, newComment]);
-                }
-            })
-            .catch((error) => {
-                console.error("Error adding comment:", error);
-            });
-        setLoading(false);
+        try {
+            const response = await dispatch(createComment(data));
+            if (response && response.data) {
+                const { commentBody, user } = response.data;
+                const newComment = {
+                    commentBody: commentBody,
+                    user: {
+                        firstName: user?.firstName,
+                        lastName: user?.lastName,
+                        image: user?.image,
+                    },
+                    _id: response.data._id,
+                };
+                setComments((prevComments) => [...prevComments, newComment]);
+            }
+        } catch (error) {
+            console.error("Error adding comment:", error);
+        }
     };
 
     const handleMenuOpen = (event) => {
@@ -112,13 +114,22 @@ export default function AssignmentContainer({ assignment }) {
 
     const confirmDeleteAction = async () => {
         setConfirmDelete(false);
-        setLoading(true);
+        setIsDeleting(true);
         try {
-            await dispatch(deleteAssignment(assignment._id)).unwrap();
+            const resultAction = await dispatch(deleteAssignment(assignment._id));
+            if (deleteAssignment.fulfilled.match(resultAction)) {
+                if (currClass?.addedAssignment) {
+                    const updatedAssignments = currClass.addedAssignment.filter(
+                        (a) => (a._id || a) !== assignment._id
+                    );
+                    dispatch(updateCurrClass({ addedAssignment: updatedAssignments }));
+                }
+            }
         } catch (err) {
             console.error("Failed to delete assignment", err);
+        } finally {
+            setIsDeleting(false);
         }
-        setLoading(false);
     };
 
     const handleEdit = () => {
@@ -126,9 +137,28 @@ export default function AssignmentContainer({ assignment }) {
         toast("Editing assignment feature coming soon!");
     };
 
-    if (loading) {
-        return <LoaderComponent />
+    if (isDeleting) {
+        return (
+            <div className="post-container assignment-post-container" style={{ padding: "30px", textAlign: "center", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <CircularProgress size={28} />
+            </div>
+        );
     }
+
+    const handleDeleteComment = async (commentId) => {
+        try {
+            const data = {
+                commentOn: "Assignment",
+                id: assignment._id,
+            };
+            const response = await dispatch(deleteComment(commentId, data));
+            if (response && response.success) {
+                setComments((prevComments) => prevComments.filter((c) => c._id !== commentId));
+            }
+        } catch (error) {
+            console.error("Error deleting comment:", error);
+        }
+    };
 
     return (
         <div className="post-container assignment-post-container" key={assignment._id}>
@@ -263,7 +293,7 @@ export default function AssignmentContainer({ assignment }) {
                 )}
             </div>
             <Divider />
-            <CommentController comments={comments} />
+            <CommentController comments={comments} onDeleteComment={handleDeleteComment} />
             <AddCommentController addComment={addComment} />
             <ConfirmationDialog 
                 open={confirmDelete}

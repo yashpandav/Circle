@@ -32,9 +32,9 @@ exports.getDetails = async (req, res, next) => {
             });
         }
 
-        const isAuthorized = parentClass.admin.toString() === req.user.id || 
-                             parentClass.teacher.includes(req.user.id) || 
-                             parentClass.student.includes(req.user.id);
+        const isAuthorized = (parentClass.admin && parentClass.admin.toString() === req.user.id) || 
+                             parentClass.teacher?.some(t => t.toString() === req.user.id) || 
+                             parentClass.student?.some(s => s.toString() === req.user.id);
         
         if (!isAuthorized) {
             return res.status(403).json({

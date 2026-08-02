@@ -20,7 +20,7 @@ exports.createAss = async (req, res, next) => {
         } = req.body;
 
         if (dueDate && new Date(dueDate).getTime() < Date.now()) {
-            return res.status(401).json({
+            return res.status(400).json({
                 success: false,
                 message: "Due Date should be greater than current date"
             })
@@ -29,7 +29,7 @@ exports.createAss = async (req, res, next) => {
         let file = req.files?.file;
 
         if (!currClassId || !name || !description) {
-            return res.status(401).json({
+            return res.status(400).json({
                 success: false,
                 message: "All Fields are Required"
             })
@@ -37,7 +37,7 @@ exports.createAss = async (req, res, next) => {
 
         let currClass = await Class.findById(currClassId);
         if (!currClass) {
-            return res.status(401).json({
+            return res.status(404).json({
                 success: false,
                 message: "Class Not Found"
             })
@@ -99,16 +99,18 @@ exports.createAss = async (req, res, next) => {
             }
             await newAss.save();
             getIO().to(`room:${currClassId}`).emit('assignment:new', { data: newAss });
-            return res.status(200).json({
+            return res.status(201).json({
                 success: true,
                 message: "Assignment Created Successfully",
-                newAss
+                newAss,
+                data: newAss
             })
         }
         else {
-            return res.status(200).json({
+            return res.status(201).json({
                 success: true,
                 message: "Assignment Drafted Successfully",
+                newAss,
                 data: newAss
             })
         }

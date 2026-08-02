@@ -29,7 +29,9 @@ exports.addPostIntoCategory = async (req, res, next) => {
             });
         }
 
-        const isAuthorized = findPost.teacher.toString() === req.user.id || findClass.admin.toString() === req.user.id;
+        const isAuthorized = findPost.teacher.toString() === req.user.id || 
+                             (findClass.admin && findClass.admin.toString() === req.user.id) ||
+                             findClass.teacher.some(t => t.toString() === req.user.id);
 
         if (!isAuthorized) {
             return res.status(403).json({
@@ -38,7 +40,7 @@ exports.addPostIntoCategory = async (req, res, next) => {
             });
         }
 
-        const findCategory = await Category.findOne({ name });
+        const findCategory = await Category.findOne({ name, classId });
         if (!findCategory) {
             return res.status(404).json({
                 success: false,
@@ -46,10 +48,16 @@ exports.addPostIntoCategory = async (req, res, next) => {
             });
         }
 
-        if (findCategory.post.includes(postId)) {
+        if (findCategory.post.some(id => id.toString() === postId.toString())) {
             return res.status(400).json({
                 success: false,
                 message: "Post already exists in the category"
+            });
+        }
+
+        if (findPost.category && findPost.category.toString() !== findCategory._id.toString()) {
+            await Category.findByIdAndUpdate(findPost.category, {
+                $pull: { post: postId }
             });
         }
 

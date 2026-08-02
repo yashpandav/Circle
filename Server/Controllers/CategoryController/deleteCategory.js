@@ -31,7 +31,7 @@ exports.deleteCategory = async (req, res, next) => {
             });
         }
 
-        const isAuthorized = (findClass.admin && findClass.admin.toString() === req.user.id) || findClass.teacher.includes(req.user.id);
+        const isAuthorized = (findClass.admin && findClass.admin.toString() === req.user.id) || findClass.teacher.some(t => t.toString() === req.user.id);
         if (!isAuthorized) {
             return res.status(403).json({
                 success: false,
@@ -47,13 +47,13 @@ exports.deleteCategory = async (req, res, next) => {
         //* Remove the category from assignments
         await Assignment.updateMany(
             { category: id },
-            { $pull: { category: id } }
+            { $set: { category: null } }
         );
 
         //* Remove the category from posts
         await Post.updateMany(
             { category: id },
-            { $pull: { category: id } }
+            { $set: { category: null } }
         );
 
         //* Delete the category

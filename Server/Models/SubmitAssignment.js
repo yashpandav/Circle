@@ -13,8 +13,12 @@ const SumitAssignmentSchema = new mongoose.Schema({
     },
     submitDate : {
         type : Date,
-        default : Date.now()
+        default : Date.now
     }
-    }
-);
-module.exports = mongoose.model("SumitAssignment", SumitAssignmentSchema);
+});
+
+const SubmitAssignment = mongoose.models.SubmitAssignment || mongoose.model("SubmitAssignment", SumitAssignmentSchema);
+if (!mongoose.models.SumitAssignment) {
+    mongoose.model("SumitAssignment", SumitAssignmentSchema);
+}
+module.exports = SubmitAssignment;

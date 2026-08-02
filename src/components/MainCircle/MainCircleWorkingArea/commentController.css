@@ -66,10 +66,14 @@
 /* Comment adder */
 .add-comment-controller {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 12px;
     margin-inline: 20px;
-    margin-block: 14px;
+    margin-block: 16px;
+}
+
+.add-comment-controller .commenter-image {
+    margin-top: 4px; /* Align image slightly down to match first line of text */
 }
 
 .add-comment-form {
@@ -78,34 +82,38 @@
     flex-grow: 1;
     background-color: #f8fafc;
     border: 1px solid #e2e8f0;
-    border-radius: 24px;
-    padding: 2px 8px 2px 14px;
+    border-radius: 20px;
+    padding: 4px 8px 4px 14px;
     transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .add-comment-form:focus-within {
     background-color: #ffffff;
-    border-color: #94a3b8;
-    box-shadow: 0 0 0 2px rgba(25, 103, 210, 0.1);
+    border-color: #1967d2;
+    box-shadow: 0 0 0 1px #1967d2;
 }
 
 .add-comment-input {
     width: 100%;
-    font-size: 0.9rem;
-    color: #1e293b;
 }
 
-.add-comment-input input,
+/* Material UI override for compact multiline */
+.add-comment-input .MuiInputBase-root {
+    padding: 4px 0 !important;
+}
+
 .add-comment-input textarea {
-    padding: 6px 0 !important;
-    font-size: 0.9rem !important;
+    padding: 0 !important;
+    font-size: 0.95rem !important;
     color: #1e293b !important;
+    line-height: 1.4 !important;
+    margin: 4px 0 !important;
 }
 
 .send-comment-icon-btn {
     color: var(--class-theme, #1967d2) !important;
     padding: 6px !important;
-    transition: transform 0.15s ease;
+    transition: transform 0.15s ease, color 0.2s ease !important;
 }
 
 .send-comment-icon-btn:disabled {
@@ -114,4 +122,5 @@
 
 .send-comment-icon-btn:not(:disabled):hover {
     transform: scale(1.1);
+    color: #1557b0 !important;
 }

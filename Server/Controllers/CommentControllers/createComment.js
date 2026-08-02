@@ -12,10 +12,10 @@ exports.createComment = async (req, res, next) => {
             id
         } = req?.body;
 
-        if (!commentBody) {
+        if (!commentBody || !id || !commentOn) {
             return res.status(400).json({
                 success: false,
-                message: "commentBody is required",
+                message: "commentBody, commentOn, and target id are required",
             });
         }
 
@@ -39,6 +39,19 @@ exports.createComment = async (req, res, next) => {
             });
         }
 
+        const classForComment = await Class.findOne({ $or: [{ addedPost: id }, { addedAssignment: id }] });
+        if (classForComment) {
+            const isAuthorized = (classForComment.admin && classForComment.admin.toString() === req.user.id) ||
+                classForComment.teacher?.some(t => t.toString() === req.user.id) ||
+                classForComment.student?.some(s => s.toString() === req.user.id);
+            if (!isAuthorized) {
+                return res.status(403).json({
+                    success: false,
+                    message: "You are not authorized to comment in this class"
+                });
+            }
+        }
+
         const createdComment = await Comment.create({
             commentBody,
             user: req.user.id
@@ -49,7 +62,6 @@ exports.createComment = async (req, res, next) => {
 
         const populatedComment = await Comment.findById(createdComment.id).populate('user', 'firstName lastName image');
 
-        const classForComment = await Class.findOne({ $or: [{ addedPost: id }, { addedAssignment: id }] });
         if (classForComment) {
             getIO().to(`room:${classForComment._id.toString()}`).emit('comment:new', { data: populatedComment, parentId: id, commentOn });
         }

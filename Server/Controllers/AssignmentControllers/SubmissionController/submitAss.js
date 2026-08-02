@@ -49,7 +49,15 @@ exports.submitAss = async (req, res, next) => {
             });
         }
 
-        let currSubmitted = await SubmitAssignment.findById(submittedID);
+        let currSubmitted = null;
+        if (submittedID) {
+            currSubmitted = await SubmitAssignment.findById(submittedID);
+        } else if (assDetails.submission && assDetails.submission.length > 0) {
+            currSubmitted = await SubmitAssignment.findOne({
+                _id: { $in: assDetails.submission },
+                student: req.user.id
+            });
+        }
 
         //* IF ASSIGNMENT IS ALREADY SUBMITTED
         if (currSubmitted) {

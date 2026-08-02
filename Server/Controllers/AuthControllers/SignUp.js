@@ -63,9 +63,8 @@ exports.signUp = async (req, res, next) => {
         //* Create profile
         const profile = new Profile({
             gender: null,
-            dateOfBirth: null,
+            dob: null,
             about: null,
-            contactNumber: null,
         });
         const savedProfile = await profile.save();
 
@@ -81,13 +80,19 @@ exports.signUp = async (req, res, next) => {
         const savedUser = await newUser.save();
 
         //* Send success email
-        await sendMail(
-            savedUser.email,
-            "Account Created Successfully",
-            successSignUp(savedUser.firstName, savedUser.lastName)
-        );
+        try {
+            await sendMail(
+                savedUser.email,
+                "Account Created Successfully",
+                successSignUp(savedUser.firstName, savedUser.lastName)
+            );
+        } catch (mailErr) {
+            console.error("Failed to send signup email:", mailErr);
+        }
 
-        return res.status(200).json({
+        savedUser.password = undefined;
+
+        return res.status(201).json({
             success: true,
             message: "Sign-up completed successfully",
             data: savedUser,

@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import PostContainer from "./postContainer";
 import AssignmentContainer from "./assignmentContainer";
 import socket from "../../../socket/socket";
+import { updateCurrClass } from "../../../Slices/classSlice";
 import './showPost.css';
 
 export default function ShowPostMain() {
+    const dispatch = useDispatch();
     const currClass = useSelector((state) => state.classes.currClass);
     const currUser = useSelector((state) => state.auth.user);
     const [streamItems, setStreamItems] = useState([]);
@@ -45,32 +47,62 @@ export default function ShowPostMain() {
     const handleNewPost = useCallback(({ data }) => {
         const newItem = { ...data, itemType: 'post' };
         setStreamItems(prev => [newItem, ...prev]);
-    }, []);
+        if (currClass?.addedPost) {
+            dispatch(updateCurrClass({
+                addedPost: [data, ...currClass.addedPost.filter(p => (p._id || p) !== data._id)]
+            }));
+        }
+    }, [currClass, dispatch]);
 
     const handlePostDeleted = useCallback(({ postId }) => {
         setStreamItems(prev => prev.filter(item => item._id !== postId));
-    }, []);
+        if (currClass?.addedPost) {
+            dispatch(updateCurrClass({
+                addedPost: currClass.addedPost.filter(p => (p._id || p) !== postId)
+            }));
+        }
+    }, [currClass, dispatch]);
 
     const handlePostUpdated = useCallback(({ data }) => {
         setStreamItems(prev => prev.map(item =>
             item._id === data._id ? { ...data, itemType: 'post' } : item
         ));
-    }, []);
+        if (currClass?.addedPost) {
+            dispatch(updateCurrClass({
+                addedPost: currClass.addedPost.map(p => (p._id === data._id ? { ...p, ...data } : p))
+            }));
+        }
+    }, [currClass, dispatch]);
 
     const handleNewAssignment = useCallback(({ data }) => {
         const newItem = { ...data, itemType: 'assignment' };
         setStreamItems(prev => [newItem, ...prev]);
-    }, []);
+        if (currClass?.addedAssignment) {
+            dispatch(updateCurrClass({
+                addedAssignment: [data, ...currClass.addedAssignment.filter(a => (a._id || a) !== data._id)]
+            }));
+        }
+    }, [currClass, dispatch]);
 
     const handleAssignmentDeleted = useCallback(({ assignmentId }) => {
         setStreamItems(prev => prev.filter(item => item._id !== assignmentId));
-    }, []);
+        if (currClass?.addedAssignment) {
+            dispatch(updateCurrClass({
+                addedAssignment: currClass.addedAssignment.filter(a => (a._id || a) !== assignmentId)
+            }));
+        }
+    }, [currClass, dispatch]);
 
     const handleAssignmentUpdated = useCallback(({ data }) => {
         setStreamItems(prev => prev.map(item =>
             item._id === data._id ? { ...data, itemType: 'assignment' } : item
         ));
-    }, []);
+        if (currClass?.addedAssignment) {
+            dispatch(updateCurrClass({
+                addedAssignment: currClass.addedAssignment.map(a => (a._id === data._id ? { ...a, ...data } : a))
+            }));
+        }
+    }, [currClass, dispatch]);
 
     useEffect(() => {
         socket.on('post:new', handleNewPost);

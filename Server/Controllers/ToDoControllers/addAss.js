@@ -34,7 +34,7 @@ async function fetchClassAssignments(classId, userId) {
     return { classId, assigned, missing, completed };
 }
 
-async function updateToDo(req, res) {
+async function updateToDo(req, res, next) {
     try {
         const userId = req.user.id;
 
@@ -87,7 +87,7 @@ async function updateToDo(req, res) {
         await user.save();
 
         const populatedToDo = await ToDo.findById(toDo._id)
-            .populate('byClass.classId', 'name className classTheme')
+            .populate('byClass.classId', 'name subject classTheme')
             .populate('byClass.assigned', 'name dueDate category')
             .populate('byClass.missing', 'name dueDate category')
             .populate('byClass.completed', 'name dueDate category')
@@ -99,7 +99,11 @@ async function updateToDo(req, res) {
             data: populatedToDo
         });
     } catch (err) {
-        next(err);
+        if (typeof next === 'function') {
+            next(err);
+        } else {
+            console.error("Error in updateToDo:", err);
+        }
     }
 }
 
@@ -122,10 +126,12 @@ cron.schedule('0 0 * * *', async () => {
                     json: (data) => console.log(`Status: ${code}, Data: ${JSON.stringify(data)}`)
                 })
             };
-            await updateToDo(req, res);
+            await updateToDo(req, res, (err) => {
+                if (err) console.error("Cron updateToDo error for user:", user._id, err);
+            });
         }
     } catch (err) {
-        next(err);
+        console.error("Cron schedule error in ToDo:", err);
     }
 });
 

@@ -27,7 +27,7 @@ const AssignmentSchema = new mongoose.Schema({
     ],
 	uploadDate: {
 		type: Date,
-		default : Date.now()
+		default : Date.now
 	},
 	dueDate: {
 		type: Date,
@@ -36,7 +36,7 @@ const AssignmentSchema = new mongoose.Schema({
 	submission : [
 		{
 			type: mongoose.Schema.Types.ObjectId,
-            ref: "SumitAssignment",
+            ref: "SubmitAssignment",
 		}
 	],
 	pendingStudent: [
