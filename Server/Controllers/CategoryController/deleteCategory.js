@@ -2,6 +2,7 @@ const Category = require('../../Models/Category');
 const Class = require('../../Models/Class');
 const Assignment = require('../../Models/Assignment');
 const Post = require('../../Models/Post');
+const { getIO } = require('../../socket');
 
 exports.deleteCategory = async (req, res, next) => {
     try {
@@ -58,6 +59,8 @@ exports.deleteCategory = async (req, res, next) => {
 
         //* Delete the category
         await Category.findByIdAndDelete(id);
+
+        getIO().to(`room:${classId}`).emit('category:deleted', { categoryId: id, classId });
 
         return res.status(200).json({
             success: true,

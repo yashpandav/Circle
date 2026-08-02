@@ -47,8 +47,67 @@ const classSlice = createSlice({
                 }
             }
         },
+        updateClassMember(state, action) {
+            if (state.currClass) {
+                const { user } = action.payload;
+                if (state.currClass.admin && (state.currClass.admin._id === user._id || state.currClass.admin === user._id)) {
+                    state.currClass.admin = { ...state.currClass.admin, ...user };
+                }
+                if (state.currClass.teacher) {
+                    state.currClass.teacher = state.currClass.teacher.map(t =>
+                        (t._id === user._id || t === user._id) ? { ...t, ...user } : t
+                    );
+                }
+                if (state.currClass.student) {
+                    state.currClass.student = state.currClass.student.map(s =>
+                        (s._id === user._id || s === user._id) ? { ...s, ...user } : s
+                    );
+                }
+            }
+        },
+        addCategory(state, action) {
+            if (state.currClass) {
+                const category = action.payload?.data || action.payload;
+                if (!state.currClass.addedCategory) {
+                    state.currClass.addedCategory = [];
+                }
+                const exists = state.currClass.addedCategory.some(c => (c._id || c) === (category._id || category));
+                if (!exists) {
+                    state.currClass.addedCategory.push(category);
+                }
+            }
+        },
+        removeCategory(state, action) {
+            if (state.currClass && state.currClass.addedCategory) {
+                const categoryId = action.payload?.categoryId || action.payload;
+                state.currClass.addedCategory = state.currClass.addedCategory.filter(
+                    c => (c._id || c) !== categoryId
+                );
+            }
+        },
+        updateCategory(state, action) {
+            if (state.currClass && state.currClass.addedCategory) {
+                const updatedCategory = action.payload?.data || action.payload;
+                state.currClass.addedCategory = state.currClass.addedCategory.map(c =>
+                    (c._id === updatedCategory._id || c === updatedCategory._id) ? { ...c, ...updatedCategory } : c
+                );
+            }
+        },
     }
 });
 
-export const { setJoinedClassTeacher, setJoinedClassStudent, setCreatedClass, setCurrClass, updateCurrClass, addClassMember, removeClassMember } = classSlice.actions;
+export const {
+    setJoinedClassTeacher,
+    setJoinedClassStudent,
+    setCreatedClass,
+    setCurrClass,
+    updateCurrClass,
+    addClassMember,
+    removeClassMember,
+    updateClassMember,
+    addCategory,
+    removeCategory,
+    updateCategory
+} = classSlice.actions;
 export default classSlice.reducer;
+

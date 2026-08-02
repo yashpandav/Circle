@@ -1,8 +1,17 @@
-import React, { useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import socket from './socket';
-import { updateCurrClass, setCurrClass, addClassMember, removeClassMember } from '../Slices/classSlice';
+import {
+    updateCurrClass,
+    setCurrClass,
+    addClassMember,
+    removeClassMember,
+    updateClassMember,
+    addCategory,
+    removeCategory,
+    updateCategory
+} from '../Slices/classSlice';
 
 /**
  * SocketProvider — sits inside the app tree and manages the socket lifecycle.
@@ -55,6 +64,10 @@ export default function SocketProvider({ children }) {
         dispatch(removeClassMember({ userId }));
     }, [dispatch]);
 
+    const handleMemberUpdated = useCallback(({ user }) => {
+        dispatch(updateClassMember({ user }));
+    }, [dispatch]);
+
     const handleCodeReset = useCallback(({ entryCode }) => {
         dispatch(updateCurrClass({ entryCode }));
     }, [dispatch]);
@@ -71,28 +84,52 @@ export default function SocketProvider({ children }) {
         dispatch(addClassMember({ type: 'student', user }));
     }, [dispatch]);
 
+    const handleCategoryCreated = useCallback(({ data }) => {
+        dispatch(addCategory(data));
+    }, [dispatch]);
+
+    const handleCategoryDeleted = useCallback(({ categoryId }) => {
+        dispatch(removeCategory(categoryId));
+    }, [dispatch]);
+
+    const handleCategoryUpdated = useCallback(({ data }) => {
+        dispatch(updateCategory(data));
+    }, [dispatch]);
+
     useEffect(() => {
         // Class events
         socket.on('class:updated', handleClassUpdated);
         socket.on('class:deleted', handleClassDeleted);
         socket.on('class:member_left', handleMemberLeft);
+        socket.on('class:member_updated', handleMemberUpdated);
         socket.on('class:code_reset', handleCodeReset);
         socket.on('class:code_toggled', handleCodeToggled);
         socket.on('class:teacher_added', handleTeacherAdded);
         socket.on('class:member_joined', handleMemberJoined);
 
+        // Category events
+        socket.on('category:created', handleCategoryCreated);
+        socket.on('category:deleted', handleCategoryDeleted);
+        socket.on('category:updated', handleCategoryUpdated);
+
         return () => {
             socket.off('class:updated', handleClassUpdated);
             socket.off('class:deleted', handleClassDeleted);
             socket.off('class:member_left', handleMemberLeft);
+            socket.off('class:member_updated', handleMemberUpdated);
             socket.off('class:code_reset', handleCodeReset);
             socket.off('class:code_toggled', handleCodeToggled);
             socket.off('class:teacher_added', handleTeacherAdded);
             socket.off('class:member_joined', handleMemberJoined);
+
+            socket.off('category:created', handleCategoryCreated);
+            socket.off('category:deleted', handleCategoryDeleted);
+            socket.off('category:updated', handleCategoryUpdated);
         };
     }, [
-        handleClassUpdated, handleClassDeleted, handleMemberLeft,
-        handleCodeReset, handleCodeToggled, handleTeacherAdded, handleMemberJoined
+        handleClassUpdated, handleClassDeleted, handleMemberLeft, handleMemberUpdated,
+        handleCodeReset, handleCodeToggled, handleTeacherAdded, handleMemberJoined,
+        handleCategoryCreated, handleCategoryDeleted, handleCategoryUpdated
     ]);
 
     return children;

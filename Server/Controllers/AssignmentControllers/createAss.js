@@ -97,20 +97,22 @@ exports.createAss = async (req, res, next) => {
                 }
             }
             await newAss.save();
-            getIO().to(`room:${currClassId}`).emit('assignment:new', { data: newAss });
+            const populatedAss = await Assignment.findById(newAss.id).populate('teacher', 'firstName lastName image');
+            getIO().to(`room:${currClassId}`).emit('assignment:new', { data: populatedAss });
             return res.status(201).json({
                 success: true,
                 message: "Assignment Created Successfully",
-                newAss,
-                data: newAss
+                newAss: populatedAss,
+                data: populatedAss
             })
         }
         else {
+            const populatedAss = await Assignment.findById(newAss.id).populate('teacher', 'firstName lastName image');
             return res.status(201).json({
                 success: true,
                 message: "Assignment Drafted Successfully",
-                newAss,
-                data: newAss
+                newAss: populatedAss,
+                data: populatedAss
             })
         }
 

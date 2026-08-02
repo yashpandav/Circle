@@ -1,5 +1,6 @@
 const Class = require('../../Models/Class');
 const Category = require('../../Models/Category');
+const { getIO } = require('../../socket');
 
 exports.createCategory = async (req, res, next) => {
     try {
@@ -41,6 +42,8 @@ exports.createCategory = async (req, res, next) => {
 
         findClass.addedCategory.push(newCategory.id);
         await findClass.save();
+
+        getIO().to(`room:${classId}`).emit('category:created', { data: newCategory, classId });
 
         return res.status(201).json({
             success: true,

@@ -1,6 +1,7 @@
 const User = require('../../Models/User');
 const Profile = require('../../Models/Profile');
 const { uploadImage } = require('../../Utils/imageUpload');
+const { getIO } = require('../../socket');
 require('dotenv').config();
 
 exports.updateProfile = async (req, res, next) => {
@@ -52,6 +53,19 @@ exports.updateProfile = async (req, res, next) => {
         currUser.image = image || currUser.image;
         await currUser.save();
 
+        const populatedUser = await User.findById(id).select('firstName lastName email image');
+        const userClasses = [
+            ...(currUser.createdClasses || []),
+            ...(currUser.joinedClassAsAteacher || []),
+            ...(currUser.joinedClassAsStudent || [])
+        ];
+
+        userClasses.forEach(classId => {
+            if (classId) {
+                getIO().to(`room:${classId.toString()}`).emit('class:member_updated', { user: populatedUser });
+            }
+        });
+
         return res.status(200).json({
             success: true,
             message: "Profile Updated Successfully",
@@ -61,3 +75,4 @@ exports.updateProfile = async (req, res, next) => {
         next(err);
     }
 }
+

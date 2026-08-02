@@ -3,6 +3,7 @@ const Profile = require('../../Models/Profile');
 const Class = require('../../Models/Class');
 const ToDo = require('../../Models/ToDo');
 const Review = require('../../Models/review');
+const { getIO } = require('../../socket');
 
 exports.deleteUser = async (req, res, next) => {
     try {
@@ -25,12 +26,23 @@ exports.deleteUser = async (req, res, next) => {
         const allClasses = await Class.find({});
 
         await Promise.all(allClasses.map(async (classes) => {
+            let wasMember = false;
             if(classes.admin && classes.admin.toString() === user.id){
                 classes.admin = null;
+                wasMember = true;
             }
-            classes.teacher.pull(user.id);
-            classes.student.pull(user.id);
-            await classes.save();
+            if (classes.teacher.some(t => t.toString() === user.id)) {
+                classes.teacher.pull(user.id);
+                wasMember = true;
+            }
+            if (classes.student.some(s => s.toString() === user.id)) {
+                classes.student.pull(user.id);
+                wasMember = true;
+            }
+            if (wasMember) {
+                await classes.save();
+                getIO().to(`room:${classes._id.toString()}`).emit('class:member_left', { userId: user.id });
+            }
         }));
 
         await User.findByIdAndDelete(id);

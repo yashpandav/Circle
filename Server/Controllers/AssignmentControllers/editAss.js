@@ -92,15 +92,17 @@ exports.editAss = async (req, res, next) => {
 
         await findAss.save();
 
+        const populatedAss = await Assignment.findById(findAss._id).populate('teacher', 'firstName lastName image');
+
         const classForAss = await Class.findOne({ addedAssignment: assId });
         if (classForAss) {
-            getIO().to(`room:${classForAss._id.toString()}`).emit('assignment:updated', { data: findAss });
+            getIO().to(`room:${classForAss._id.toString()}`).emit('assignment:updated', { data: populatedAss });
         }
 
         return res.status(200).json({
             success: true,
             message: "Assignment edited successfully",
-            data: findAss,
+            data: populatedAss,
         });
     } catch (err) {
         next(err);

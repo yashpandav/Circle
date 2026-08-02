@@ -1,5 +1,6 @@
 const Category = require('../../Models/Category');
 const Class = require('../../Models/Class');
+const { getIO } = require('../../socket');
 
 exports.editCategory = async (req, res, next) => {
     try {
@@ -39,6 +40,8 @@ exports.editCategory = async (req, res, next) => {
             });
         }
 
+        getIO().to(`room:${classId}`).emit('category:updated', { data: findCategory, classId });
+
         return res.status(200).json({
             success: true,
             message: "Category edited successfully",
@@ -49,3 +52,4 @@ exports.editCategory = async (req, res, next) => {
         next(err);
     }
 };
+
