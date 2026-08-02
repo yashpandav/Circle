@@ -11,7 +11,7 @@ import "./uploadFile.css";
 import { CommentController, AddCommentController } from "./commentController";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { createComment, deleteComment } from "../../../Api/apiCaller/commentapicaller";
+import { createComment, deleteComment, editComment } from "../../../Api/apiCaller/commentapicaller";
 import { deleteAssignment } from "../../../Api/apiCaller/assignmentapicaller";
 import { updateCurrClass } from "../../../Slices/classSlice";
 import { toast } from "react-hot-toast";
@@ -64,12 +64,20 @@ export default function AssignmentContainer({ assignment }) {
             }
         };
 
+        const handleUpdatedComment = ({ data, parentId }) => {
+            if (parentId === assignment._id) {
+                setComments(prev => prev.map(c => c._id === data._id ? { ...c, commentBody: data.commentBody } : c));
+            }
+        };
+
         socket.on('comment:new', handleNewComment);
         socket.on('comment:deleted', handleDeletedComment);
+        socket.on('comment:updated', handleUpdatedComment);
 
         return () => {
             socket.off('comment:new', handleNewComment);
             socket.off('comment:deleted', handleDeletedComment);
+            socket.off('comment:updated', handleUpdatedComment);
         };
     }, [assignment._id]);
 
@@ -82,17 +90,7 @@ export default function AssignmentContainer({ assignment }) {
         try {
             const response = await dispatch(createComment(data));
             if (response && response.data) {
-                const { commentBody, user } = response.data;
-                const newComment = {
-                    commentBody: commentBody,
-                    user: {
-                        firstName: user?.firstName,
-                        lastName: user?.lastName,
-                        image: user?.image,
-                    },
-                    _id: response.data._id,
-                };
-                setComments((prevComments) => [...prevComments, newComment]);
+                setComments((prevComments) => [...prevComments, response.data]);
             }
         } catch (error) {
             console.error("Error adding comment:", error);
@@ -157,6 +155,22 @@ export default function AssignmentContainer({ assignment }) {
             }
         } catch (error) {
             console.error("Error deleting comment:", error);
+        }
+    };
+
+    const handleEditComment = async (commentId, newText) => {
+        try {
+            const data = {
+                commentBody: newText,
+                commentOn: "Assignment",
+                id: assignment._id,
+            };
+            const response = await dispatch(editComment(commentId, data));
+            if (response && response.success) {
+                setComments((prevComments) => prevComments.map((c) => c._id === commentId ? { ...c, commentBody: newText } : c));
+            }
+        } catch (error) {
+            console.error("Error editing comment:", error);
         }
     };
 
@@ -293,7 +307,7 @@ export default function AssignmentContainer({ assignment }) {
                 )}
             </div>
             <Divider />
-            <CommentController comments={comments} onDeleteComment={handleDeleteComment} />
+            <CommentController comments={comments} onDeleteComment={handleDeleteComment} onEditComment={handleEditComment} />
             <AddCommentController addComment={addComment} />
             <ConfirmationDialog 
                 open={confirmDelete}
