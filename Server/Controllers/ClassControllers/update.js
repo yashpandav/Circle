@@ -47,7 +47,6 @@ exports.updateClass = async (req, res, next) => {
             studentCanPost: studentCanPost !== undefined ? (studentCanPost === 'true' || studentCanPost === true) : findClass.studentCanPost
         }, { new: true });
 
-        console.log(updatedClass);
 
         getIO().to(`room:${id}`).emit('class:updated', { data: updatedClass });
 

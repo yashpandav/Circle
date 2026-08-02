@@ -15,7 +15,6 @@ exports.signUp = async (req, res, next) => {
             otp,
         } = req.body;
 
-        console.log("ENTERD API IN", firstName, lastName, email, password, confirmPassword, otp);
 
         if (!firstName || !lastName || !email || !password || !confirmPassword || !otp) {
             return res.status(400).json({

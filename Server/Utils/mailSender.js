@@ -12,11 +12,9 @@ exports.sendMail = async (email , title ,body) => {
             html: body,
         };
 
-        let mailResponse = await transporter.sendMail(mailOptions);
-        console.log("MAIL RESPONSE", mailResponse);
-
+        await transporter.sendMail(mailOptions);
     } catch (err) {
-        console.error("Something went wrong while generating mail", err);
+        console.error('[Mail] Failed to send email:', err.message);
         throw err;
     }
 };

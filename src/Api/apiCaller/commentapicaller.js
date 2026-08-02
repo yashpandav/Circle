@@ -2,10 +2,7 @@ import { COMMENTS_API_URL } from "../apis";
 import { apiConnector } from "../apiconfig";
 import toast from 'react-hot-toast';
 
-
-const {
-    CREATE_COMMENT_API
-} = COMMENTS_API_URL;
+const { CREATE_COMMENT_API } = COMMENTS_API_URL;
 
 export const createComment = (data) => {
     return async (dispatch) => {
@@ -18,9 +15,8 @@ export const createComment = (data) => {
             });
             return response.data;
         } catch (err) {
-            console.log("Error during creating comment", err);
             toast.error(err?.response?.data?.message || "Something went wrong while creating comment");
-            return err.response? err.response : err.message;
+            return err.response ? err.response : err.message;
         }
     };
 };
@@ -32,7 +28,6 @@ export const deleteComment = (commentId, data) => {
             toast.success("Comment deleted!");
             return response.data;
         } catch (err) {
-            console.log("Error during deleting comment", err);
             toast.error(err?.response?.data?.message || "Something went wrong while deleting comment");
             return err.response ? err.response : err.message;
         }
@@ -46,7 +41,6 @@ export const editComment = (commentId, data) => {
             toast.success("Comment edited!");
             return response.data;
         } catch (err) {
-            console.log("Error during editing comment", err);
             toast.error(err?.response?.data?.message || "Something went wrong while editing comment");
             return err.response ? err.response : err.message;
         }

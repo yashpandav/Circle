@@ -21,15 +21,9 @@ export default function SocketProvider({ children }) {
     // ─── 1. Connect / Disconnect based on auth state ─────────────────────────
     useEffect(() => {
         if (user) {
-            if (!socket.connected) {
-                socket.connect();
-                console.log('[Socket] Connected');
-            }
+            if (!socket.connected) socket.connect();
         } else {
-            if (socket.connected) {
-                socket.disconnect();
-                console.log('[Socket] Disconnected');
-            }
+            if (socket.connected) socket.disconnect();
         }
     }, [user]);
 
@@ -39,11 +33,9 @@ export default function SocketProvider({ children }) {
         const roomId = currClass._id;
 
         socket.emit('join:room', roomId);
-        console.log(`[Socket] Joined room: ${roomId}`);
 
         return () => {
             socket.emit('leave:room', roomId);
-            console.log(`[Socket] Left room: ${roomId}`);
         };
     }, [currClass?._id]);
 

@@ -1,6 +1,5 @@
 const User = require('../../Models/User');
 const JWT = require('jsonwebtoken');
-const { sendMail } = require('../../Utils/mailSender');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 
@@ -48,7 +47,8 @@ exports.LogIn = async (req, res, next) => {
 
         const options = {
             expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day cookie expiry
-            httpOnly: false,
+            httpOnly: true,   // JS cannot access the cookie
+            secure: process.env.NODE_ENV === 'production', // HTTPS-only in prod
             sameSite: 'lax',
             path: '/',
         };
@@ -62,16 +62,6 @@ exports.LogIn = async (req, res, next) => {
             message: "Logged In Successfully",
         });
 
-        /* try {
-            await sendMail(
-                findUser.email,
-                "LogIn Successfully",
-                `Hello ${findUser.firstName} ${findUser.lastName}, Your account has been logged in successfully`
-            );
-            console.log("Login mail sent successfully");
-        } catch (mailError) {
-            console.error("Login mail error:", mailError.message);
-        } */
     } catch (err) {
         next(err);
     }

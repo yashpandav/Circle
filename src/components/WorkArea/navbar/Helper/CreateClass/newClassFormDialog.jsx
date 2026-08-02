@@ -28,7 +28,6 @@ const NewClassFormDialog = ({ open, handleClose }) => {
     const onSubmit = async (data) => {
         setLoading(true);
         const submitData = { ...data, color: selectedColor, studentCanPost };
-        console.log(submitData);
         try {
             const success = await createClass({ data: submitData });
             if (success) {
@@ -36,8 +35,7 @@ const NewClassFormDialog = ({ open, handleClose }) => {
                 handleClose();
             }
         } catch (err) {
-            console.log(err);
-            console.log("SOMETHING WENT WRONG WHILE SENDING API FUNCTION");
+            // error already surfaced via toast in createClass
         }
         setLoading(false);
     };

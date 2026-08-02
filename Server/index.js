@@ -17,11 +17,23 @@ const socketModule = require('./socket');
 const errorHandler = require('./Middleware/errorHandler');
 require('dotenv').config();
 
+//* SECURITY
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xssClean = require('xss-clean');
+const hpp = require('hpp');
+const { generalLimiter } = require('./Middleware/rateLimiter');
+const { sanitizeBody, sanitizeParams } = require('./Middleware/sanitize');
+
 //* CLOUDINARY CONNECTION
 cloudinaryConnect();
 
+//* SECURITY HEADERS (Helmet)
+app.use(helmet());
+
 //* MIDDLEWARE
-app.use(express.json());
+app.use(express.json({ limit: '2mb' }));   // Prevent oversized JSON payloads
+app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 app.use(cookieParser());
 app.use(fileUpload({
     useTempFiles: true,
@@ -35,6 +47,30 @@ app.use(fileUpload({
         });
     }
 }));
+
+//* NoSQL INJECTION PREVENTION – strip $ and . from request data
+app.use(mongoSanitize());
+
+//* XSS PROTECTION – sanitise HTML tags from req.body, params, query
+app.use(xssClean());
+
+//* HTTP PARAMETER POLLUTION PREVENTION
+app.use(hpp());
+
+//* CUSTOM DEEP SANITISATION (trims, length-caps, blocks Mongo operators)
+app.use(sanitizeBody);
+app.use(sanitizeParams);
+
+//* GLOBAL RATE LIMITER – 100 requests / minute per IP across all API endpoints
+app.use('/auth', generalLimiter);
+app.use('/class', generalLimiter);
+app.use('/user', generalLimiter);
+app.use('/assignment', generalLimiter);
+app.use('/comment', generalLimiter);
+app.use('/post', generalLimiter);
+app.use('/todos', generalLimiter);
+app.use('/category', generalLimiter);
+app.use('/reviews', generalLimiter);
 
 //* CORS
 const cors = require("cors");
@@ -65,22 +101,14 @@ const io = socketModule.init(httpServer, {
 
 //* SOCKET.IO — ROOM MANAGEMENT
 io.on('connection', (socket) => {
-    console.log(`[Socket] Client connected: ${socket.id}`);
-
     // Client joins a classroom room when they open a class page
     socket.on('join:room', (classId) => {
         socket.join(`room:${classId}`);
-        console.log(`[Socket] ${socket.id} joined room:${classId}`);
     });
 
     // Client leaves a classroom room
     socket.on('leave:room', (classId) => {
         socket.leave(`room:${classId}`);
-        console.log(`[Socket] ${socket.id} left room:${classId}`);
-    });
-
-    socket.on('disconnect', () => {
-        console.log(`[Socket] Client disconnected: ${socket.id}`);
     });
 });
 

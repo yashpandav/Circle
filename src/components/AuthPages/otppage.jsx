@@ -47,7 +47,6 @@ export default function OtpPage() {
             })).unwrap();
             // Loading is handled globally or we can set it to false if needed, but signup typically redirects.
         } catch (err) {
-            console.log("failed to create a user", err);
             toast.error("Something went wrong while creating user", {
                 position: 'top-right'
             });

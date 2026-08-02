@@ -20,7 +20,6 @@ export const joinedClass = createAsyncThunk(
             dispatch(setLoading(false));
             return response.data;
         } catch (err) {
-            console.log("ERROR DURING FETCHING USER JOINED API =>", err);
             return err.response ? err.response : err.message;
         }
     }

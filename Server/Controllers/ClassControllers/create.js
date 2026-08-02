@@ -8,7 +8,6 @@ exports.createClass = async (req, res, next) => {
     try {
         const { name, description, subject, studentCanPost } = req?.body;
         const banner = req?.files?.banner;
-        console.log("BANNER , ", banner)
         if (!name || !description) {
             return res.status(400).json({
                 success: false,
@@ -19,9 +18,6 @@ exports.createClass = async (req, res, next) => {
         let uploadResponse;
         if (banner) {
             uploadResponse = await uploadImage(banner, process.env.FOLDER_NAME);
-            if (uploadResponse) {
-                console.log("Banner Uploaded => ", uploadResponse);
-            }
         }
         //* Extract class theme color
         let color = req.body.color || '#4285f4';
@@ -55,7 +51,6 @@ exports.createClass = async (req, res, next) => {
             `Your Class has been created. Your Class Code is ${newClass.entryCode} and your Class URL is ${newClass.entryUrl}`
         ); */
 
-        console.log("Created Class => ", newClass);
         return res.status(200).json({
             success: true,
             message: "Class Added",

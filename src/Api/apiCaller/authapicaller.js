@@ -3,31 +3,19 @@ import { apiConnector } from '../apiconfig';
 import { AUTH_API_URL } from '../apis';
 import Cookies from 'js-cookie';
 import toast from 'react-hot-toast';
-import { setUser } from '../../Slices/authSlice';
-import { setLoggedIn } from '../../Slices/authSlice';
-import { setToken } from '../../Slices/authSlice';
+import { setUser, setLoggedIn, setToken } from '../../Slices/authSlice';
+
 const { SEND_OTP_API, SIGNUP_API, LOGIN_API, LOGOUT_API, VALIDATE_API, VALIDATE_EMAIL, FORGOT_PASSSWORD_API } = AUTH_API_URL;
 
 export const sendOTP = createAsyncThunk(
     'sendOTP',
     async ({ email, navigate }) => {
         try {
-            // console.log(email);
             const response = await apiConnector('POST', SEND_OTP_API, { email });
-            // console.log(response);
-            // console.log(response.status);
-            // if (!response || !response.success) {
-            //     throw new Error('Failed to send OTP');
-            // }
             navigate('/auth/otp');
             return response;
         } catch (err) {
-            // if(err.response.status === 409){
-            //     <Alert severity="error">Email already exists</Alert>
-            // }
-            toast.error("USER ALREADY EXISTS", {
-                position: 'top-right'
-            });
+            toast.error("USER ALREADY EXISTS", { position: 'top-right' });
             return err.response ? err.response : err.message;
         }
     }
@@ -37,7 +25,6 @@ export const signUp = createAsyncThunk(
     'singup',
     async ({ firstName, lastName, email, password, confirmPassword, otp, navigate }) => {
         try {
-            // console.log(`${firstName} ${lastName} ${email} ${password} ${confirmPassword} ${otp}`);
             const response = await apiConnector('POST', SIGNUP_API, {
                 firstName,
                 lastName,
@@ -46,14 +33,11 @@ export const signUp = createAsyncThunk(
                 confirmPassword,
                 otp,
             });
-            // console.log(response);
-            // console.log(response.status);
             navigate('/auth/login');
-            toast.success("User Successfully Registered")
+            toast.success("User Successfully Registered");
             return response;
         } catch (err) {
             toast.error(err?.response?.data?.message || "INVALID OTP");
-            // console.log("response error: " , err.response);
             return err.response ? err.response : err.message;
         }
     }
@@ -63,26 +47,15 @@ export const logIn = createAsyncThunk(
     'login',
     async ({ email, password, navigate, dispatch }) => {
         try {
-            // console.log("email " , email  , "password " , password);
-            const response = await apiConnector('POST', LOGIN_API, {
-                email,
-                password
-            });
-            // console.log(response.data.data);
+            const response = await apiConnector('POST', LOGIN_API, { email, password });
             dispatch(setUser(response.data.data));
             dispatch(setLoggedIn(true));
             dispatch(setToken(response.data.token));
-            // const dispatch = useDispatch();
-            // const { setUser } = useSelector((state) => state.auth);
-            // dispatch(setUser(response.data.data));
-            // console.log(setUser);
-            // console.log(response.data.data);
             navigate('/');
             Cookies.set('token', response.data.token, { expires: 1, path: '/' });
             toast.success('LogIn Success');
             return response;
         } catch (err) {
-            console.log(err);
             if (err?.response?.status === 400 || err?.response?.status === 404) {
                 toast.error(err?.response?.data?.message || "Invalid Email, User Not Found");
             } else if (err?.response?.status === 403) {
@@ -99,7 +72,6 @@ export const logOut = createAsyncThunk(
     'logOut',
     async ({ dispatch, navigate }) => {
         try {
-            console.log('LogOut Function');
             const response = await apiConnector('POST', LOGOUT_API);
             dispatch(setLoggedIn(false));
             dispatch(setUser(null));
@@ -109,7 +81,6 @@ export const logOut = createAsyncThunk(
             toast.success('LogOut Success');
             return response;
         } catch (err) {
-            console.log(err);
             dispatch(setLoggedIn(false));
             dispatch(setUser(null));
             dispatch(setToken(null));
@@ -123,20 +94,14 @@ export const logOut = createAsyncThunk(
 
 export const validateLogin = createAsyncThunk(
     'validateLogin',
-    async ({ dispatch, navigate }) => {
+    async ({ dispatch }) => {
         try {
-            console.log('Validate Login Function');
             const response = await apiConnector('POST', VALIDATE_API);
-            console.log(response);
             dispatch(setUser(response.data.data));
             dispatch(setLoggedIn(true));
             dispatch(setToken(response.data.token));
-            Cookies.set('token', response.data.token, {
-                expires: 1,
-                path: '/'
-            });
+            Cookies.set('token', response.data.token, { expires: 1, path: '/' });
         } catch (err) {
-            console.error("Auto-login validation failed:", err);
             dispatch(setLoggedIn(false));
             dispatch(setUser(null));
             dispatch(setToken(null));
@@ -166,10 +131,9 @@ export const validateEmail = async (email) => {
         }
         return err.response ? err.response : err.message;
     }
-}
+};
 
-export const forgotPassword = async (
-    { email, newPassword, confirmNewPassword, otp, navigate }) => {
+export const forgotPassword = async ({ email, newPassword, confirmNewPassword, otp, navigate }) => {
     try {
         const response = await apiConnector('POST', FORGOT_PASSSWORD_API, {
             email,
@@ -177,13 +141,13 @@ export const forgotPassword = async (
             confirmNewPassword,
             otp
         });
-        toast.success('Password Reset Success')
-        navigate('/auth/login')
+        toast.success('Password Reset Success');
+        navigate('/auth/login');
         return response.data;
     } catch (err) {
         if (err?.response?.status === 400) {
             toast.error(err?.response?.data?.message || "The new password cannot be the same as the old password");
-        }   
+        }
         if (err?.response?.status === 404) {
             toast.error("No user found");
         }
@@ -195,4 +159,4 @@ export const forgotPassword = async (
         }
         return err.response ? err.response : err.message;
     }
-}
+};

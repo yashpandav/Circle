@@ -122,9 +122,7 @@ cron.schedule('0 0 * * *', async () => {
                 }
             };
             const res = {
-                status: (code) => ({
-                    json: (data) => console.log(`Status: ${code}, Data: ${JSON.stringify(data)}`)
-                })
+                status: () => ({ json: () => {} })
             };
             await updateToDo(req, res, (err) => {
                 if (err) console.error("Cron updateToDo error for user:", user._id, err);

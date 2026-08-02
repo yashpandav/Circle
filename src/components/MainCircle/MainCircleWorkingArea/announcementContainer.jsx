@@ -493,7 +493,6 @@ export default function AnnouncementContainer() {
                 }
 
                 const response = await dispatch(createPost(formData)).unwrap();
-                console.log("API RESPONSE ", response);
 
                 if (response && response.success) {
                     if (response.data) {
@@ -532,7 +531,6 @@ export default function AnnouncementContainer() {
                 }
 
                 const response = await dispatch(createAssignment(formData)).unwrap();
-                console.log("API RESPONSE ", response);
 
                 if (response && response.success) {
                     const newAssignment = response.newAss || response.data;
@@ -633,7 +631,7 @@ export default function AnnouncementContainer() {
                 }
             }
         } catch (e) {
-            console.error("Invalid YouTube URL");
+            toast.error("Invalid YouTube URL. Please paste a valid YouTube link.");
         }
 
         if (videoId) {

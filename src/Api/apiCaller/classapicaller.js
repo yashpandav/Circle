@@ -3,6 +3,7 @@ import { apiConnector } from '../apiconfig';
 import toast from 'react-hot-toast';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { setCurrClass } from '../../Slices/classSlice';
+
 const {
     CREATE_CLASS_API,
     JOIN_CLASS_API,
@@ -18,17 +19,10 @@ const {
 
 export const fetchAllClasses = async () => {
     try {
-        // console.log('Fetching all classes' , GET_ALL_CLASS_API);
         const response = await apiConnector('GET', GET_ALL_CLASS_API);
-        if (!response) {
-            // console.log(response);
-            throw new Error('API FETCHED BUT SOMETHING WENT WRONG WITH A RESPONSE');
+        if (!response || !response.data.success) {
+            throw new Error('Failed to fetch classes');
         }
-
-        if (!response.data.success) {
-            throw new Error("RESPONSE failed , FALSE")
-        }
-
         return response.data;
     } catch (err) {
         throw err;
@@ -38,47 +32,36 @@ export const fetchAllClasses = async () => {
 export const createClass = async ({ data }) => {
     try {
         let { banner } = data;
-        data = {
-            ...data,
-            banner: banner[0]
-        }
-        const response = await apiConnector('POST', CREATE_CLASS_API, data, {
+        data = { ...data, banner: banner[0] };
+        await apiConnector('POST', CREATE_CLASS_API, data, {
             "Content-Type": "multipart/form-data",
         });
-        console.log("API RESPONSE ", response);
         toast.success('Successfully created new Circle');
         return true;
     } catch (err) {
-        console.log("SOMETHING WENT WRONG WHILE CALLING CREATE CLASS API ", err);
+        toast.error(err?.response?.data?.message || "Failed to create Circle");
         return false;
     }
-}
+};
 
 export const joinClass = async (data) => {
     try {
-        console.log(data);
-        const response = await apiConnector('POST', JOIN_CLASS_API, data);
-        console.log("API RESPONSE ", response);
+        await apiConnector('POST', JOIN_CLASS_API, data);
         toast.success('Successfully Joined Circle');
         return true;
     } catch (err) {
-        if (err.response.status === 404) {
+        if (err.response?.status === 404) {
             toast.error(err?.response?.data?.message || "Circle Not Found");
-            return false;
-        }
-        if (err.response.status === 400) {
+        } else if (err.response?.status === 400) {
             toast.error('You are already enrolled in this Circle');
-            return false;
-        }
-        if (err.response.status === 403) {
+        } else if (err.response?.status === 403) {
             toast.error('Invitations for this class have been turned off by the admin.');
-            return false;
+        } else {
+            toast.error('Failed to join circle');
         }
-        console.log("SOMETHING WENT WRONG WHILE CALLING JOIN CLASS API ", err);
-        toast.error('Failed to join circle');
         return false;
     }
-}
+};
 
 export const getClass = createAsyncThunk(
     'getClass',
@@ -91,11 +74,10 @@ export const getClass = createAsyncThunk(
             }
             return response.data;
         } catch (err) {
-            console.log("SOMETHING WENT WRONG WHILE CALLING GET CLASS API ", err);
             return err.response ? err.response : err.message;
         }
     }
-)
+);
 
 export const changeEntryCode = createAsyncThunk(
     'changeEntryCode',
@@ -105,11 +87,10 @@ export const changeEntryCode = createAsyncThunk(
             dispatch(setCurrClass(response.data.data));
             return response.data;
         } catch (err) {
-            console.log("SOMETHING WENT WRONG WHILE CALLING CHANGE ENTRY CODE API ", err);
             return err.response ? err.response : err.message;
         }
     }
-)
+);
 
 export const toggleEntryCodeStatus = createAsyncThunk(
     'toggleEntryCodeStatus',
@@ -120,26 +101,22 @@ export const toggleEntryCodeStatus = createAsyncThunk(
             toast.success(response.data.message);
             return response.data;
         } catch (err) {
-            console.log("SOMETHING WENT WRONG WHILE CALLING TOGGLE ENTRY CODE API ", err);
             toast.error(err?.response?.data?.message || "Failed to toggle invitations");
             return err.response ? err.response : err.message;
         }
     }
-)
+);
 
 export const updateClassDetails = createAsyncThunk(
     'updateClass',
     async ({ id, data, dispatch }) => {
-        console.log("API Called with ID:", id, "Data:", data);
         try {
             const response = await apiConnector('POST', `${UPDATE_CLASS_API}/${id}`, data);
-            console.log("API Response:", response);
-            // Re-fetch the fully populated class rather than trusting the shallow update
             await dispatch(getClass({ id, dispatch })).unwrap();
             toast.success("Circle updated successfully");
             return response.data;
         } catch (err) {
-            console.log("SOMETHING WENT WRONG WHILE CALLING UPDATE CLASS DETAILS API", err);
+            toast.error(err?.response?.data?.message || "Failed to update Circle");
             return err.response ? err.response : err.message;
         }
     }
@@ -150,12 +127,10 @@ export const addTeacherToClass = createAsyncThunk(
     async ({ classId, email, dispatch }) => {
         try {
             const response = await apiConnector('POST', ADD_TEACHER_API, { classId, email });
-            // Re-fetch fully populated class to get the new teacher's name and image
             await dispatch(getClass({ id: classId, dispatch })).unwrap();
             toast.success(response.data.message);
             return true;
         } catch (err) {
-            console.log("SOMETHING WENT WRONG WHILE CALLING ADD TEACHER API", err);
             toast.error(err.response?.data?.message || "Failed to add teacher");
             return false;
         }

@@ -60,7 +60,6 @@ exports.createAss = async (req, res, next) => {
         }
 
         const teacher = req.user.id;
-        console.log("TEACHER => ", teacher);
 
         //* ADDED ASSIGNMENT 
         const newAss = new Assignment({
