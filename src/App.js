@@ -2,7 +2,10 @@ import React, { useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
+import toast from 'react-hot-toast';
 import { validateLogin } from './Api/apiCaller/authapicaller';
+import { resetAuth } from './Slices/authSlice';
+import { isTokenValid } from './Api/apiconfig';
 import MainHomePage from './components/MainHomePage/MainHomePage';
 import Signup from './components/AuthPages/signup';
 import Login from './components/AuthPages/login';
@@ -25,16 +28,58 @@ const App = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // 1. Auto-login validation on load or token expiry check
   useEffect(() => {
     const relogin = () => {
       const token = Cookies.get('token');
-      if (token && !user) {
-        //* CALL API FOR AUTO LOGIN
-        dispatch(validateLogin({ dispatch, navigate }));
+      if (token) {
+        if (!isTokenValid(token)) {
+          Cookies.remove('token', { path: '/' });
+          dispatch(resetAuth());
+          navigate('/auth/login');
+          toast.error("Session expired after 1 day. Please login again.", { id: 'session-expired-toast' });
+          return;
+        }
+        if (!user) {
+          //* CALL API FOR AUTO LOGIN
+          dispatch(validateLogin({ dispatch, navigate }));
+        }
+      } else if (login) {
+        dispatch(resetAuth());
       }
     };
     relogin();
-  }, [user, dispatch, navigate]);
+  }, [user, login, dispatch, navigate]);
+
+  // 2. Global session expired event listener from API interceptor
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      dispatch(resetAuth());
+      navigate('/auth/login');
+      toast.error("Session expired. Please login again.", { id: 'session-expired-toast' });
+    };
+
+    window.addEventListener('circle:session_expired', handleSessionExpired);
+    return () => {
+      window.removeEventListener('circle:session_expired', handleSessionExpired);
+    };
+  }, [dispatch, navigate]);
+
+  // 3. Periodic session expiration check (every 60 seconds) for idle tabs
+  useEffect(() => {
+    const checkTokenPeriodically = () => {
+      const token = Cookies.get('token');
+      if (token && !isTokenValid(token)) {
+        Cookies.remove('token', { path: '/' });
+        dispatch(resetAuth());
+        navigate('/auth/login');
+        toast.error("Session expired after 1 day of inactivity. Please login again.", { id: 'session-expired-toast' });
+      }
+    };
+
+    const interval = setInterval(checkTokenPeriodically, 60000);
+    return () => clearInterval(interval);
+  }, [dispatch, navigate]);
 
   return (
     <SocketProvider>

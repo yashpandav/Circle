@@ -1,0 +1,299 @@
+/* ==========================================================================
+   EDIT POST MODAL STYLING
+   ========================================================================== */
+
+.edit-post-dialog .MuiDialog-paper {
+    border-radius: 16px;
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    background: #ffffff;
+    overflow: hidden;
+    max-width: 680px;
+    width: 95%;
+}
+
+.edit-post-modal-container {
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+    background: #ffffff;
+}
+
+/* Modal Header */
+.edit-post-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #fafbfc;
+}
+
+.edit-post-modal-header h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.edit-post-modal-header .close-btn {
+    color: #64748b;
+    transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.edit-post-modal-header .close-btn:hover {
+    color: #0f172a;
+    transform: scale(1.05);
+}
+
+/* Modal Body */
+.edit-post-modal-body {
+    padding: 20px 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.edit-post-title-input input {
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    color: #0f172a !important;
+    padding: 10px 14px !important;
+}
+
+.edit-post-category-select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    outline: none;
+    background-color: #f8fafc;
+    color: #334155;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+.edit-post-category-select:focus {
+    border-color: var(--class-theme, #1967d2);
+    background-color: #ffffff;
+}
+
+/* Content Editable Textfield */
+.edit-post-content-editor {
+    min-height: 140px;
+    max-height: 320px;
+    overflow-y: auto;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #1e293b;
+    background: #ffffff;
+    outline: none;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.edit-post-content-editor:focus {
+    border-color: var(--class-theme, #1967d2);
+    box-shadow: 0 0 0 3px rgba(25, 103, 210, 0.1);
+}
+
+.edit-post-content-editor[placeholder]:empty:before {
+    content: attr(placeholder);
+    color: #94a3b8;
+    cursor: text;
+}
+
+/* Toolbar */
+.edit-post-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 4px 8px;
+}
+
+.edit-post-toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.edit-post-toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.edit-post-toolbar button {
+    color: #475569;
+    padding: 6px;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+}
+
+.edit-post-toolbar button:hover {
+    color: #0f172a;
+    background: #e2e8f0;
+}
+
+/* Attachments & Previews */
+.edit-post-section-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    margin-top: 6px;
+    margin-bottom: 2px;
+}
+
+.edit-post-attachments-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.edit-post-file-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 6px 10px;
+    gap: 8px;
+    max-width: 100%;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+.edit-post-file-card:hover {
+    border-color: #cbd5e1;
+    background: #f1f5f9;
+}
+
+.edit-post-file-thumb {
+    width: 44px;
+    height: 44px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+}
+
+.edit-post-file-name {
+    font-size: 0.85rem;
+    color: #334155;
+    font-weight: 500;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.edit-post-file-remove {
+    cursor: pointer;
+    color: #94a3b8;
+    padding: 4px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s, background-color 0.15s;
+}
+
+.edit-post-file-remove:hover {
+    color: #ef4444;
+    background: #fee2e2;
+}
+
+/* YouTube & Link Preview Items */
+.edit-post-link-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 6px 12px;
+    gap: 10px;
+}
+
+.edit-post-link-item a {
+    color: #1967d2;
+    font-size: 0.85rem;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+}
+
+.edit-post-link-item a:hover {
+    text-decoration: underline;
+}
+
+/* Modal Footer */
+.edit-post-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid #e2e8f0;
+    background: #fafbfc;
+}
+
+.edit-post-btn-cancel {
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #475569;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.edit-post-btn-cancel:hover:not(:disabled) {
+    background: #f1f5f9;
+    color: #1e293b;
+    border-color: #94a3b8;
+}
+
+.edit-post-btn-save {
+    padding: 8px 22px;
+    border-radius: 8px;
+    border: none;
+    background: var(--class-theme, #1967d2);
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.edit-post-btn-save:hover:not(:disabled) {
+    filter: brightness(1.08);
+    box-shadow: 0 4px 10px rgba(25, 103, 210, 0.25);
+}
+
+.edit-post-btn-save:disabled,
+.edit-post-btn-cancel:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

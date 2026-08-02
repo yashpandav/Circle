@@ -16,16 +16,24 @@ exports.auth = async (req, res, next) => {
 
         const verifyToken = JWT.verify(token, process.env.JWT_SECRET);
 
-        console.log("verifyToken ", verifyToken); 
-
         req.user = verifyToken;
 
         next();
     } catch (err) {
-        res.status(400).json({
+        res.clearCookie("token", { path: '/' });
+
+        if (err.name === "TokenExpiredError") {
+            return res.status(401).json({
+                success: false,
+                isExpired: true,
+                message: "Session expired. Please login again.",
+            });
+        }
+
+        return res.status(401).json({
             success: false,
-            message: err.message,
-            data: "Error during auth"
+            message: "Authentication failed. Invalid token.",
+            error: err.message
         });
     }
 };

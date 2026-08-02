@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
+import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
+import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
+import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
 import Divider from "@mui/material/Divider";
 import { Menu, MenuItem, IconButton } from "@mui/material";
 import "./postContainer.css";
@@ -13,19 +16,41 @@ import { LoaderComponent } from "../../Helper/Loaders/loader";
 import { setLoading } from "../../../Slices/loadingSlice";
 import socket from "../../../socket/socket";
 import ConfirmationDialog from "../../Helper/ConfirmationDialog";
+import EditPostModal from "./EditPostModal";
 
 export default function PostContainer({ post }) {
     const [comments, setComments] = useState(post.comment || []);
     const [anchorEl, setAnchorEl] = useState(null);
     const currUser = useSelector((state) => state.auth.user);
+    const currClass = useSelector((state) => state.classes.currClass);
     const dispatch = useDispatch();
     const [isAnnouncer, setAnnouncer] = useState(false);
     const loading = useSelector((state) => state.loading.loading);
     const [confirmDelete, setConfirmDelete] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+    // Controlled Height & Text Clamping
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [isOverflowing, setIsOverflowing] = useState(false);
+    const contentRef = useRef(null);
 
     useEffect(() => {
-        setAnnouncer(currUser?._id === post?.teacher?._id);
-    }, [post, currUser]);
+        const isOwner = currUser?._id && (currUser._id === post?.teacher?._id || currUser._id === post?.teacher);
+        const isClassAdmin = currClass?.admin && (currClass.admin._id === currUser?._id || currClass.admin === currUser?._id);
+        const isClassTeacher = currClass?.teacher && Array.isArray(currClass.teacher) && currClass.teacher.some(
+            t => (t._id === currUser?._id || t === currUser?._id || t.id === currUser?._id)
+        );
+
+        setAnnouncer(Boolean(isOwner || isClassAdmin || isClassTeacher));
+    }, [post, currUser, currClass]);
+
+    useEffect(() => {
+        if (contentRef.current) {
+            // Check if post text/body exceeds balanced container height
+            const hasOverflow = contentRef.current.scrollHeight > 240;
+            setIsOverflowing(hasOverflow);
+        }
+    }, [post?.postBody]);
 
     useEffect(() => {
         const handleNewComment = ({ data, parentId }) => {
@@ -94,6 +119,11 @@ export default function PostContainer({ post }) {
         setAnchorEl(null);
     };
 
+    const handleEdit = () => {
+        handleMenuClose();
+        setIsEditModalOpen(true);
+    };
+
     const handleDelete = () => {
         handleMenuClose();
         setConfirmDelete(true);
@@ -108,6 +138,18 @@ export default function PostContainer({ post }) {
             console.error("Failed to delete post", err);
         }
         setLoading(false);
+    };
+
+    const getYouTubeEmbedUrl = (link) => {
+        if (!link) return "";
+        if (link.includes("youtube.com") || link.includes("youtu.be")) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = link.match(regExp);
+            if (match && match[2].length === 11) {
+                return `https://www.youtube.com/embed/${match[2]}`;
+            }
+        }
+        return `https://www.youtube.com/embed/${link}`;
     };
 
     if (loading) {
@@ -153,7 +195,7 @@ export default function PostContainer({ post }) {
                         onClose={handleMenuClose}
                     >
                         <MenuItem
-                            onClick={handleMenuClose}
+                            onClick={handleEdit}
                             sx={{
                                 fontFamily: "Roboto, Arial, sans-serif",
                                 fontSize: "15px",
@@ -181,12 +223,36 @@ export default function PostContainer({ post }) {
                     </Menu>
                 </div>
                 <Divider />
-                <h1 className="post-title">{post.title}</h1>
-                <p
-                    className="post-content"
-                    dangerouslySetInnerHTML={{ __html: post.postBody }}
-                ></p>
 
+                {/* Post Title */}
+                {post.title && <h1 className="post-title">{post.title}</h1>}
+
+                {/* Clamped Post Body with Wrapped Content */}
+                <div 
+                    ref={contentRef}
+                    className={`post-content-wrapper ${isExpanded ? "expanded" : isOverflowing ? "clamped" : ""}`}
+                >
+                    <div
+                        className="post-content"
+                        dangerouslySetInnerHTML={{ __html: post.postBody }}
+                    />
+                </div>
+
+                {isOverflowing && (
+                    <button
+                        type="button"
+                        className="post-read-more-btn"
+                        onClick={() => setIsExpanded(!isExpanded)}
+                    >
+                        {isExpanded ? (
+                            <>Show less <ExpandLessRoundedIcon fontSize="small" /></>
+                        ) : (
+                            <>Read more <ExpandMoreRoundedIcon fontSize="small" /></>
+                        )}
+                    </button>
+                )}
+
+                {/* Attachments */}
                 {post.postFiles && post.postFiles.length > 0 && (
                     <div className="post-attachments">
                         {post.postFiles.map((file) => {
@@ -219,6 +285,7 @@ export default function PostContainer({ post }) {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         key={file.fileName}
+                                        className="post-image-link"
                                     >
                                         <img
                                             src={file.fileUrl}
@@ -232,27 +299,36 @@ export default function PostContainer({ post }) {
                     </div>
                 )}
 
+                {/* YouTube Video Embeds */}
                 {post.youtubeLinks && post.youtubeLinks.length > 0 && (
                     <div className="youtube-links-for-post user-post-side">
                         {post.youtubeLinks.map((link, index) => (
-                            <iframe
-                                key={index}
-                                width="340"
-                                height="200"
-                                src={`https://www.youtube.com/embed/${link}`}
-                                title="YouTube video player"
-                                frameBorder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                            ></iframe>
+                            <div className="youtube-video-container" key={index}>
+                                <iframe
+                                    src={getYouTubeEmbedUrl(link)}
+                                    title="YouTube video player"
+                                    frameBorder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                ></iframe>
+                            </div>
                         ))}
                     </div>
                 )}
+
+                {/* Links */}
                 {post.links && post.links.length > 0 && (
                     <div className="links-for-post user-post-side">
-                        {post.links.map((link) => (
-                            <a href={link} target="_blank" rel="noreferrer" key={link}>
-                                {link}
+                        {post.links.map((link, idx) => (
+                            <a 
+                                href={link.startsWith("http") ? link : `https://${link}`} 
+                                target="_blank" 
+                                rel="noreferrer" 
+                                key={idx}
+                                className="post-link-card"
+                            >
+                                <LinkRoundedIcon className="post-link-icon" />
+                                <span className="post-link-text">{link}</span>
                             </a>
                         ))}
                     </div>
@@ -269,6 +345,11 @@ export default function PostContainer({ post }) {
                 confirmColor="error"
                 onConfirm={confirmDeleteAction}
                 onCancel={() => setConfirmDelete(false)}
+            />
+            <EditPostModal
+                open={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                post={post}
             />
         </div>
     );

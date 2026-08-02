@@ -78,20 +78,22 @@ export const logIn = createAsyncThunk(
             // console.log(setUser);
             // console.log(response.data.data);
             navigate('/');
-            Cookies.set('token', response.data.token, { expires: 2 });
+            Cookies.set('token', response.data.token, { expires: 1, path: '/' });
             toast.success('LogIn Success');
             return response;
         } catch (err) {
             console.log(err);
-            // console.log(err.response);
-            if (err.response.status === 400) {
-                toast.error(err?.response?.data?.message || "Invalid Email , User Not Found");
+            if (err?.response?.status === 400 || err?.response?.status === 404) {
+                toast.error(err?.response?.data?.message || "Invalid Email, User Not Found");
+            } else if (err?.response?.status === 403) {
+                toast.error(err?.response?.data?.message || "Incorrect Password");
+            } else {
+                toast.error(err?.response?.data?.message || "Failed to log in");
             }
-            else toast.error("Wrong Password");
             return err.response ? err.response : err.message;
         }
     }
-)
+);
 
 export const logOut = createAsyncThunk(
     'logOut',
@@ -101,12 +103,18 @@ export const logOut = createAsyncThunk(
             const response = await apiConnector('POST', LOGOUT_API);
             dispatch(setLoggedIn(false));
             dispatch(setUser(null));
+            dispatch(setToken(null));
+            Cookies.remove('token', { path: '/' });
             navigate('/');
-            Cookies.remove('token');
             toast.success('LogOut Success');
             return response;
         } catch (err) {
             console.log(err);
+            dispatch(setLoggedIn(false));
+            dispatch(setUser(null));
+            dispatch(setToken(null));
+            Cookies.remove('token', { path: '/' });
+            navigate('/');
             toast.error(err?.response?.data?.message || "Failed to log out");
             return err.response ? err.response : err.message;
         }
@@ -124,17 +132,19 @@ export const validateLogin = createAsyncThunk(
             dispatch(setLoggedIn(true));
             dispatch(setToken(response.data.token));
             Cookies.set('token', response.data.token, {
-                expires: 2
+                expires: 1,
+                path: '/'
             });
         } catch (err) {
             console.error("Auto-login validation failed:", err);
             dispatch(setLoggedIn(false));
             dispatch(setUser(null));
-            Cookies.remove('token');
+            dispatch(setToken(null));
+            Cookies.remove('token', { path: '/' });
             return err.response ? err.response : err.message;
         }
     }
-)
+);
 
 export const validateEmail = async (email) => {
     try {

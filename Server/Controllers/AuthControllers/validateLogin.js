@@ -29,7 +29,7 @@ exports.validateLogin = async (req, res, next) => {
             },
             process.env.JWT_SECRET,
             {
-                expiresIn : "48h"
+                expiresIn : "24h" // 1 day session expiry
             }
         );
 
@@ -37,8 +37,13 @@ exports.validateLogin = async (req, res, next) => {
         await user.save();
 
         const options = {
-            expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+            expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day cookie expiry
+            httpOnly: false,
+            sameSite: 'lax',
+            path: '/',
         };
+
+        user.password = undefined;
 
         res.cookie("token", token, options).status(200).json({
             success: true,
