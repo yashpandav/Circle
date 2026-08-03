@@ -42,7 +42,7 @@ import socket from "../../../socket/socket";
 import ConfirmationDialog from "../../Helper/ConfirmationDialog";
 import CreateAssignmentModal from "./CreateAssignmentModal";
 import EditAssignmentModal from "../MainCircleWorkingArea/EditAssignmentModal";
-import ClassworkTopicsDropdown from "./ClassworkTopicsDropdown";
+import TopicDropdown from "../../Helper/TopicDropdown";
 import toast from "react-hot-toast";
 import "./Classwork.css";
 
@@ -532,15 +532,13 @@ export default function Classwork() {
 
                 <div className="classwork-toolbar-right">
                     {/* Topic Filter Dropdown */}
-                    <ClassworkTopicsDropdown
-                        categories={categories}
+                    <TopicDropdown
                         selectedTopic={selectedTopic}
-                        onSelectTopic={setSelectedTopic}
-                        isTeacher={isTeacher}
-                        currClassId={currClass?._id}
-                        assignments={assignments}
-                        categorizedAssignments={categorizedAssignments}
-                        themeColor={themeColor}
+                        onSelectTopic={(topicId) => setSelectedTopic(topicId || "ALL")}
+                        defaultLabel="All topics"
+                        emptyValue="ALL"
+                        allowCreate={isTeacher}
+                        allowDelete={isTeacher}
                     />
 
                     {/* Search Input Box */}

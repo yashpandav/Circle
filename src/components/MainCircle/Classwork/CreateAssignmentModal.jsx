@@ -23,8 +23,7 @@ import {
 import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
 import { useDispatch, useSelector } from "react-redux";
 import { createAssignment } from "../../../Api/apiCaller/assignmentapicaller";
-import { createCategory } from "../../../Api/apiCaller/categoryapicaller";
-import { updateCurrClass } from "../../../Slices/classSlice";
+import TopicDropdown from "../../Helper/TopicDropdown";
 import toast from "react-hot-toast";
 import "../MainCircleWorkingArea/editAssignmentModal.css";
 
@@ -294,66 +293,18 @@ export default function CreateAssignmentModal({ open, onClose, defaultCategoryId
 
                         {/* Topic Selector */}
                         <div className="meta-field">
-                            {category !== "CREATE_NEW" ? (
-                                <FormControl size="small" fullWidth>
-                                    <InputLabel id="create-ass-topic-label">Topic</InputLabel>
-                                    <Select
-                                        labelId="create-ass-topic-label"
-                                        id="create-ass-topic-select"
-                                        value={category}
-                                        label="Topic"
-                                        onChange={(e) => setCategory(e.target.value)}
-                                        disabled={isSaving}
-                                        sx={{ backgroundColor: '#fff' }}
-                                    >
-                                        <MenuItem value="">
-                                            <em>No topic</em>
-                                        </MenuItem>
-                                        {currClass?.addedCategory && currClass.addedCategory.map((cat) => (
-                                            <MenuItem key={cat._id} value={cat._id}>
-                                                {cat.name}
-                                            </MenuItem>
-                                        ))}
-                                        <MenuItem value="CREATE_NEW" sx={{ color: currClass?.classTheme || '#00a896', fontWeight: 600 }}>
-                                            + Create new topic
-                                        </MenuItem>
-                                    </Select>
-                                </FormControl>
-                            ) : (
-                                <div className="inline-topic-input-container">
-                                    <input
-                                        type="text"
-                                        placeholder="New topic name..."
-                                        id="create-ass-inline-topic"
-                                        autoFocus
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                e.preventDefault();
-                                                const input = document.getElementById("create-ass-inline-topic");
-                                                if (input?.value.trim()) {
-                                                    handleCreateInlineTopic(input.value.trim());
-                                                }
-                                            }
-                                        }}
-                                    />
-                                    <Button
-                                        variant="contained"
-                                        size="small"
-                                        style={{ backgroundColor: currClass?.classTheme || '#00a896' }}
-                                        onClick={() => {
-                                            const input = document.getElementById("create-ass-inline-topic");
-                                            if (input?.value.trim()) {
-                                                handleCreateInlineTopic(input.value.trim());
-                                            }
-                                        }}
-                                    >
-                                        Save
-                                    </Button>
-                                    <IconButton size="small" onClick={() => setCategory("")}>
-                                        <CloseIcon fontSize="small" />
-                                    </IconButton>
-                                </div>
-                            )}
+                            <label className="meta-label">Topic</label>
+                            <TopicDropdown
+                                selectedTopic={category}
+                                onSelectTopic={(topicId) => setCategory(topicId)}
+                                defaultLabel="No topic"
+                                emptyValue=""
+                                allowCreate={true}
+                                allowDelete={false}
+                                disabled={isSaving}
+                                style={{ width: "100%" }}
+                                triggerStyle={{ width: "100%", height: "40px", backgroundColor: "#fff" }}
+                            />
                         </div>
 
                         {/* Status Selector */}
