@@ -4,51 +4,68 @@ const User = require('../../Models/User');
 const Class = require('../../Models/Class');
 const cron = require('node-cron');
 
+/**
+ * Fetch and categorize all assignments for a user in a given class.
+ */
 async function fetchClassAssignments(classId, userId) {
-    const currClass = await Class.findById(classId).populate({
-        path: "addedAssignment",
-        populate: [
-            { path: "category", select: "name" },
-            { path: "teacher", select: "firstName lastName image email" },
-            { path: "submission", select: "_id student submitDate data file" }
-        ]
-    }).exec();
+    try {
+        const currClass = await Class.findById(classId).populate({
+            path: "addedAssignment",
+            populate: [
+                { path: "category", select: "name" },
+                { path: "teacher", select: "firstName lastName image email" },
+                { path: "submission", select: "_id student submitDate data file" }
+            ]
+        }).exec();
 
-    if (!currClass || !currClass.addedAssignment) return null;
+        if (!currClass || !currClass.addedAssignment) return null;
 
-    const assigned = [];
-    const missing = [];
-    const completed = [];
+        const assigned = [];
+        const missing = [];
+        const completed = [];
 
-    currClass.addedAssignment.forEach((currAssignment) => {
-        if (!currAssignment || currAssignment.status === 'Draft') return;
+        currClass.addedAssignment.forEach((currAssignment) => {
+            if (!currAssignment || currAssignment.status === 'Draft') return;
 
-        const submission = currAssignment.submission?.find(sub => {
-            if (!sub) return false;
-            if (sub.student && sub.student._id) return sub.student._id.toString() === userId.toString();
-            if (sub.student) return sub.student.toString() === userId.toString();
-            return sub.toString() === userId.toString();
+            const submission = currAssignment.submission?.find(sub => {
+                if (!sub) return false;
+                if (sub.student && sub.student._id) return sub.student._id.toString() === userId.toString();
+                if (sub.student) return sub.student.toString() === userId.toString();
+                return sub.toString() === userId.toString();
+            });
+
+            if (submission) {
+                completed.push(currAssignment._id);
+            } else {
+                if (!currAssignment.dueDate || new Date(currAssignment.dueDate).toString() === 'Invalid Date') {
+                    assigned.push(currAssignment._id);
+                } else if (new Date(currAssignment.dueDate).getTime() >= Date.now()) {
+                    assigned.push(currAssignment._id);
+                } else {
+                    missing.push(currAssignment._id);
+                }
+            }
         });
 
-        if (submission) {
-            completed.push(currAssignment._id);
-        } else {
-            if (!currAssignment.dueDate || new Date(currAssignment.dueDate).toString() === 'Invalid Date') {
-                assigned.push(currAssignment._id);
-            } else if (new Date(currAssignment.dueDate).getTime() >= Date.now()) {
-                assigned.push(currAssignment._id);
-            } else {
-                missing.push(currAssignment._id);
-            }
-        }
-    });
-
-    return { classId, assigned, missing, completed };
+        return { classId, assigned, missing, completed };
+    } catch (err) {
+        console.error(`Error in fetchClassAssignments for class ${classId}:`, err);
+        return null;
+    }
 }
 
+/**
+ * Controller to fetch/update To-Do list for the authenticated student.
+ */
 async function updateToDo(req, res, next) {
     try {
-        const userId = req.user.id;
+        const userId = req.user?.id || req.user?._id;
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized: User identification missing"
+            });
+        }
 
         let user = await User.findById(userId).populate('todo').exec();
         if (!user) {
@@ -58,7 +75,7 @@ async function updateToDo(req, res, next) {
             });
         }
 
-        const claId = req.params.classId || req.query.classId || 'all';
+        const claId = req.params?.classId || req.query?.classId || req.body?.classId || 'all';
 
         // Collect all classes the student is enrolled in
         const joinedClasses = user.joinedClassAsStudent ? user.joinedClassAsStudent.map(c => c.toString()) : [];
@@ -114,26 +131,29 @@ async function updateToDo(req, res, next) {
                 path: 'byClass.assigned',
                 populate: [
                     { path: 'category', select: 'name' },
-                    { path: 'teacher', select: 'firstName lastName image email' }
+                    { path: 'teacher', select: 'firstName lastName image email' },
+                    { path: 'submission', select: '_id student submitDate data file' }
                 ]
             })
             .populate({
                 path: 'byClass.missing',
                 populate: [
                     { path: 'category', select: 'name' },
-                    { path: 'teacher', select: 'firstName lastName image email' }
+                    { path: 'teacher', select: 'firstName lastName image email' },
+                    { path: 'submission', select: '_id student submitDate data file' }
                 ]
             })
             .populate({
                 path: 'byClass.completed',
                 populate: [
                     { path: 'category', select: 'name' },
-                    { path: 'teacher', select: 'firstName lastName image email' }
+                    { path: 'teacher', select: 'firstName lastName image email' },
+                    { path: 'submission', select: '_id student submitDate data file' }
                 ]
             })
             .exec();
 
-        // If specific classId requested, optionally filter the response byClass array
+        // If specific classId requested, filter the response byClass array
         let responseData = populatedToDo;
         if (claId && claId !== 'all' && populatedToDo && populatedToDo.byClass) {
             const filteredByClass = populatedToDo.byClass.filter(
@@ -151,29 +171,33 @@ async function updateToDo(req, res, next) {
             data: responseData
         });
     } catch (err) {
-        if (typeof next === 'function') {
-            next(err);
-        } else {
-            console.error("Error in updateToDo:", err);
-        }
+        console.error("Error in updateToDo:", err);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error updating To-Do list",
+            error: err.message
+        });
     }
 }
 
+// Nightly cron job to refresh ToDos for all users
 cron.schedule('0 0 * * *', async () => {
     try {
-        const users = await User.find({}).exec();
+        const users = await User.find({}).select('_id email').exec();
         for (const user of users) {
             const req = {
                 user: {
-                    id: user.id,
+                    id: user._id,
                     email: user.email
                 },
                 params: {
                     classId: 'all'
-                }
+                },
+                query: {},
+                body: {}
             };
             const res = {
-                status: () => ({ json: () => {} })
+                status: () => ({ json: () => { } })
             };
             await updateToDo(req, res, (err) => {
                 if (err) console.error("Cron updateToDo error for user:", user._id, err);

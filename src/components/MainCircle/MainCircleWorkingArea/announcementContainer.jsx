@@ -232,7 +232,7 @@ const AnnouncementWriter = ({
             )}
             <div className="announcement-editor">
                 <TextField
-                    placeholder="Post Title"
+                    placeholder={isPost ? "Post Title" : "Assignment Title"}
                     autoFocus
                     variant="standard"
                     value={title}
@@ -273,6 +273,7 @@ const AnnouncementWriter = ({
                         marginTop: '5px'
                     }}
                     dir="ltr"
+                    data-placeholder={isPost ? "Announce Here..." : "Assignment details..."}
                 ></div>
                 <div className="preview-of-upload-container">
                     {files.map((file) => (

@@ -11,6 +11,14 @@ exports.editAss = async (req, res, next) => {
     try {
         const assId = req.params.id;
 
+        const userId = req.user?.id || req.user?._id;
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized: User identification missing"
+            });
+        }
+
         const {
             name,
             description,
@@ -46,16 +54,16 @@ exports.editAss = async (req, res, next) => {
         if (!parentClass) {
             parentClass = await Class.findOne({
                 $or: [
-                    { admin: req.user.id },
-                    { teacher: req.user.id }
+                    { admin: userId },
+                    { teacher: userId }
                 ]
             });
         }
 
         //* Authorizing teacher or admin
-        const isAuthorized = (findAss.teacher && findAss.teacher.toString() === req.user.id) ||
-            (parentClass && parentClass.admin && parentClass.admin.toString() === req.user.id) ||
-            (parentClass && parentClass.teacher && parentClass.teacher.some(t => t.toString() === req.user.id));
+        const isAuthorized = (findAss.teacher && findAss.teacher.toString() === userId.toString()) ||
+            (parentClass && parentClass.admin && parentClass.admin.toString() === userId.toString()) ||
+            (parentClass && parentClass.teacher && parentClass.teacher.some(t => t.toString() === userId.toString()));
 
         if (!isAuthorized) {
             return res.status(403).json({
@@ -65,20 +73,24 @@ exports.editAss = async (req, res, next) => {
         }
 
         //* Validating due date if provided
-        if (dueDate) {
-            const parsedDueDate = new Date(dueDate);
-            if (isNaN(parsedDueDate.getTime())) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Invalid due date format",
-                });
+        if (dueDate !== undefined) {
+            if (dueDate && typeof dueDate === 'string' && dueDate.trim() !== '' && dueDate !== 'null') {
+                const parsedDueDate = new Date(dueDate);
+                if (isNaN(parsedDueDate.getTime())) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "Invalid due date format",
+                    });
+                }
+                findAss.dueDate = parsedDueDate;
+            } else if (dueDate === null || dueDate === '' || dueDate === 'null') {
+                findAss.dueDate = undefined;
             }
-            findAss.dueDate = parsedDueDate;
         }
 
         //* Updating category if provided or cleared
         if (category !== undefined) {
-            if (category && category !== "" && mongoose.Types.ObjectId.isValid(category)) {
+            if (category && category !== "" && category !== "null" && mongoose.Types.ObjectId.isValid(category)) {
                 let currCategory = await Category.findById(category);
                 if (currCategory) {
                     if (findAss.category && findAss.category.toString() !== category.toString()) {
@@ -94,7 +106,7 @@ exports.editAss = async (req, res, next) => {
                     }
                     findAss.category = currCategory._id;
                 }
-            } else if (category === "" || category === null) {
+            } else if (category === "" || category === null || category === "null") {
                 if (findAss.category) {
                     let prevCategory = await Category.findById(findAss.category);
                     if (prevCategory) {

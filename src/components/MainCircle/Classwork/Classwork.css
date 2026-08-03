@@ -1,0 +1,679 @@
+/* ==========================================================================
+   Modern Premium Classwork Dashboard CSS
+   ========================================================================== */
+
+.classwork-page-container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 20px 80px 20px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #1e293b;
+}
+
+/* --------------------------------------------------------------------------
+   Top Action & Filter Toolbar
+   -------------------------------------------------------------------------- */
+.classwork-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+
+.classwork-toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.classwork-toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Teacher + Create Button */
+.classwork-create-btn {
+    border-radius: 12px !important;
+    height: 46px !important;
+    padding: 0 20px !important;
+    text-transform: none !important;
+    font-weight: 600 !important;
+    font-size: 14.5px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.classwork-create-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Search Box */
+.classwork-search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 0 14px;
+    height: 44px;
+    width: 250px;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.classwork-search-box:hover {
+    background: #f8fafc;
+    border-color: var(--class-theme, #00a896);
+    color: var(--class-theme, #00a896);
+}
+
+.classwork-search-box:focus-within {
+    background: #f8fafc;
+    border-color: var(--class-theme, #00a896);
+    color: var(--class-theme, #00a896);
+}
+
+.classwork-search-box input {
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    font-size: 14px;
+    color: #1e293b;
+    font-family: inherit;
+    font-weight: 500;
+}
+
+.classwork-search-box input::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
+}
+
+/* --------------------------------------------------------------------------
+   Main Content Stream & Topic Grouping
+   -------------------------------------------------------------------------- */
+.classwork-content-area {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+}
+
+.classwork-topics-list {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.topic-group-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.topic-group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+}
+
+.topic-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.topic-title {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+}
+
+.topic-count-tag {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 600;
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.topic-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.topic-del-btn {
+    color: #94a3b8 !important;
+    transition: all 0.15s ease !important;
+}
+
+.topic-del-btn:hover {
+    color: #ef4444 !important;
+    background: #fee2e2 !important;
+}
+
+.topic-assignments-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Inline empty notice when specific topic has 0 assignments */
+.empty-topic-inline {
+    background: #ffffff;
+    border: 1px dashed #cbd5e1;
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+}
+
+.empty-topic-inline p {
+    margin: 0;
+    font-size: 14.5px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   Assignment Item Card
+   -------------------------------------------------------------------------- */
+.classwork-assignment-card {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.classwork-assignment-card:hover {
+    border-color: rgba(0, 0, 0, 0.12);
+    box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+}
+
+.classwork-assignment-card.expanded {
+    border-color: rgba(0, 0, 0, 0.12);
+    box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.1);
+    transform: none;
+}
+
+.card-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    cursor: pointer;
+    user-select: none;
+    gap: 16px;
+}
+
+.left-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+    min-width: 0;
+}
+
+.assignment-type-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.title-and-date {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.assignment-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: -0.01em;
+}
+
+.assignment-post-time {
+    font-size: 12.5px;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.right-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+/* Due Date Badge */
+.due-date-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.due-date-badge.past-due {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.no-due-text {
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+/* Status for Students */
+.status-tag {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 12px;
+    letter-spacing: 0.02em;
+}
+
+.status-tag.done {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.status-tag.assigned {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.status-tag.missing {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+/* Stats for Teachers */
+.teacher-quick-stats {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f8fafc;
+    border: 1px solid rgba(0,0,0,0.04);
+    padding: 4px 10px;
+    border-radius: 10px;
+    font-size: 12.5px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.stat-count {
+    font-weight: 700;
+}
+
+.stat-count.done {
+    color: #059669;
+}
+
+.stat-count.pending {
+    color: #64748b;
+}
+
+.stat-sep {
+    color: #cbd5e1;
+}
+
+.item-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.expand-chevron {
+    color: #64748b;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Card Body Preview (Expanded)
+   -------------------------------------------------------------------------- */
+.card-body-preview {
+    padding: 20px 24px;
+    border-top: 1px solid rgba(0,0,0,0.04);
+    background: #fafbfc;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    animation: fadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.preview-instructions {
+    font-size: 14px;
+    line-height: 1.65;
+    color: #334155;
+    max-height: 160px;
+    overflow-y: auto;
+}
+
+.preview-instructions p {
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.preview-attachment-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.preview-file-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 8px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.preview-file-chip:hover {
+    border-color: var(--class-theme, #00a896);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
+}
+
+.preview-footer-row {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 8px;
+    border-top: 1px solid rgba(0,0,0,0.04);
+}
+
+/* --------------------------------------------------------------------------
+   Clean Empty States
+   -------------------------------------------------------------------------- */
+.classwork-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 24px;
+    text-align: center;
+    background: transparent;
+}
+
+.empty-icon-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.classwork-empty-state h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+}
+
+.classwork-empty-state p {
+    margin: 0 0 24px 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #64748b;
+    max-width: 460px;
+}
+
+.classwork-search-empty {
+    padding: 60px 20px;
+    text-align: center;
+    background: transparent;
+}
+
+.classwork-search-empty p {
+    margin: 0 0 12px 0;
+    font-size: 15px;
+    color: #64748b;
+}
+
+/* --------------------------------------------------------------------------
+   Student "Your Work" Dialog
+   -------------------------------------------------------------------------- */
+.student-work-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 24px;
+    background: #ffffff;
+}
+
+.user-profile-summary {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.up-summary-text h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+}
+
+.up-summary-text p {
+    margin: 4px 0 0 0;
+    font-size: 13.5px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.sw-close-btn {
+    background: #f1f5f9 !important;
+    color: #64748b !important;
+    transition: all 0.2s ease !important;
+}
+
+.sw-close-btn:hover {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+    transform: rotate(90deg);
+}
+
+.student-work-modal-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    padding: 0 24px 20px 24px;
+    background: #ffffff;
+}
+
+.sw-stat-pill {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 16px 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: none;
+}
+
+.sw-stat-pill .sw-count {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1;
+}
+
+.sw-stat-pill .sw-lbl {
+    font-size: 11.5px;
+    color: #64748b;
+    margin-top: 6px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.student-work-modal-list {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 16px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #fafbfc;
+}
+
+.sw-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sw-list-item:hover {
+    border-color: rgba(0,0,0,0.12);
+    box-shadow: 0 4px 12px -4px rgba(0,0,0,0.05);
+    transform: translateY(-1px);
+}
+
+.sw-item-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.sw-item-left h4 {
+    margin: 0;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: #1e293b;
+    letter-spacing: -0.01em;
+}
+
+.sw-item-left .sw-due {
+    font-size: 12.5px;
+    color: #64748b;
+    margin-top: 2px;
+    display: block;
+}
+
+.sw-badge {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 10px;
+}
+
+.sw-badge.done {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.sw-badge.assigned {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.sw-badge.missing {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.sw-empty-message {
+    padding: 32px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Breakpoints
+   -------------------------------------------------------------------------- */
+@media (max-width: 680px) {
+    .classwork-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .classwork-toolbar-left,
+    .classwork-toolbar-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .classwork-search-box {
+        width: 100%;
+    }
+
+    .classwork-topics-btn {
+        width: 100%;
+    }
+
+    .card-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .right-meta {
+        width: 100%;
+        justify-content: space-between;
+        margin-top: 12px;
+    }
+}

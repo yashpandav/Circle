@@ -30,6 +30,7 @@ import {
 import {
     getAssignmentDetails,
     submitAssignment,
+    editSubmittedAssignment,
     deleteSubmittedAssignment,
     deleteAssignment
 } from '../../../Api/apiCaller/assignmentapicaller';
@@ -61,6 +62,12 @@ export default function AssignmentDetails() {
     const [isUnsubmitting, setIsUnsubmitting] = useState(false);
     const [showOverwriteModal, setShowOverwriteModal] = useState(false);
     const [showUnsubmitConfirm, setShowUnsubmitConfirm] = useState(false);
+
+    // Student Edit Submission State
+    const [isEditingSubmission, setIsEditingSubmission] = useState(false);
+    const [editNote, setEditNote] = useState("");
+    const [editFile, setEditFile] = useState(null);
+    const [isSavingEdit, setIsSavingEdit] = useState(false);
 
     // Teacher Management State
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -227,11 +234,49 @@ export default function AssignmentDetails() {
                 submittedID: userSubmission?._id
             })).unwrap();
             setShowUnsubmitConfirm(false);
+            setIsEditingSubmission(false);
             fetchDetails();
         } catch (err) {
             console.error("Unsubmit error:", err);
         } finally {
             setIsUnsubmitting(false);
+        }
+    };
+
+    // Student Edit Submission Handlers
+    const handleStartEditSubmission = () => {
+        setEditNote(userSubmission?.data || "");
+        setEditFile(null);
+        setIsEditingSubmission(true);
+    };
+
+    const handleCancelEditSubmission = () => {
+        setIsEditingSubmission(false);
+        setEditNote("");
+        setEditFile(null);
+    };
+
+    const handleSaveEditSubmission = async () => {
+        if (!userSubmission?._id) return;
+        setIsSavingEdit(true);
+        try {
+            const res = await dispatch(editSubmittedAssignment({
+                assId: assignmentId,
+                submittedID: userSubmission._id,
+                data: editNote.trim(),
+                file: editFile
+            })).unwrap();
+
+            if (res?.success) {
+                setIsEditingSubmission(false);
+                setEditFile(null);
+                setEditNote("");
+                fetchDetails();
+            }
+        } catch (err) {
+            console.error("Error updating submission:", err);
+        } finally {
+            setIsSavingEdit(false);
         }
     };
 
@@ -507,37 +552,130 @@ export default function AssignmentDetails() {
                                         </div>
                                     </div>
 
-                                    {userSubmission.file && (
-                                        <a
-                                            href={userSubmission.file}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="submitted-file-attachment"
-                                        >
-                                            <AttachFileIcon sx={{ color: themeColor }} />
-                                            <span className="filename">Your Submitted File</span>
-                                            <OpenInNewIcon fontSize="small" className="ext-icon" />
-                                        </a>
-                                    )}
+                                    {!isEditingSubmission ? (
+                                        <>
+                                            {userSubmission.file && (
+                                                <a
+                                                    href={userSubmission.file}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="submitted-file-attachment"
+                                                >
+                                                    <AttachFileIcon sx={{ color: themeColor }} />
+                                                    <span className="filename">Your Submitted File</span>
+                                                    <OpenInNewIcon fontSize="small" className="ext-icon" />
+                                                </a>
+                                            )}
 
-                                    {userSubmission.data && (
-                                        <div className="submitted-note-box">
-                                            <span className="note-label">Private Note:</span>
-                                            <p>{userSubmission.data}</p>
+                                            {userSubmission.data && (
+                                                <div className="submitted-note-box">
+                                                    <span className="note-label">Private Note:</span>
+                                                    <p>{userSubmission.data}</p>
+                                                </div>
+                                            )}
+
+                                            <div className="submission-actions-row">
+                                                <Button
+                                                    variant="outlined"
+                                                    startIcon={<EditIcon fontSize="small" />}
+                                                    disabled={isPastDue && !canSubmitLate}
+                                                    onClick={handleStartEditSubmission}
+                                                    className="edit-submission-btn"
+                                                    sx={{
+                                                        borderColor: themeColor,
+                                                        color: themeColor,
+                                                        textTransform: 'none',
+                                                        fontWeight: 600,
+                                                        borderRadius: '8px',
+                                                        flex: 1,
+                                                        '&:hover': { borderColor: themeColor, backgroundColor: '#f0fdfa' }
+                                                    }}
+                                                >
+                                                    Edit
+                                                </Button>
+                                                <Button
+                                                    variant="outlined"
+                                                    color="inherit"
+                                                    disabled={isUnsubmitting || (isPastDue && !canSubmitLate)}
+                                                    onClick={() => setShowUnsubmitConfirm(true)}
+                                                    className="unsubmit-action-btn"
+                                                    sx={{ flex: 1 }}
+                                                >
+                                                    {isUnsubmitting ? <CircularProgress size={20} /> : "Unsubmit"}
+                                                </Button>
+                                            </div>
+                                            <p className="unsubmit-hint">Edit your note or attachment, or unsubmit to start over.</p>
+                                        </>
+                                    ) : (
+                                        /* EDIT SUBMISSION FORM */
+                                        <div className="edit-submission-form">
+                                            {/* Existing file notification */}
+                                            {userSubmission.file && !editFile && (
+                                                <div className="edit-current-file-badge">
+                                                    <AttachFileIcon fontSize="small" sx={{ color: themeColor }} />
+                                                    <span>Current: {userSubmission.file.split('/').pop() || 'Submitted File'}</span>
+                                                </div>
+                                            )}
+
+                                            {/* Replacement file picker */}
+                                            {editFile ? (
+                                                <div className="selected-upload-card">
+                                                    <div className="selected-upload-info">
+                                                        <AttachFileIcon sx={{ color: themeColor }} />
+                                                        <span className="selected-filename">{editFile.name}</span>
+                                                    </div>
+                                                    <IconButton size="small" onClick={() => setEditFile(null)}>
+                                                        ✕
+                                                    </IconButton>
+                                                </div>
+                                            ) : (
+                                                <label className="upload-file-trigger" style={{ borderColor: themeColor, padding: '12px 10px' }}>
+                                                    <CloudUploadIcon sx={{ color: themeColor, fontSize: 22 }} />
+                                                    <span style={{ fontSize: '13px' }}>
+                                                        {userSubmission.file ? "Replace attached file" : "Add attached file"}
+                                                    </span>
+                                                    <input
+                                                        type="file"
+                                                        style={{ display: 'none' }}
+                                                        onChange={(e) => {
+                                                            if (e.target.files?.[0]) setEditFile(e.target.files[0]);
+                                                        }}
+                                                    />
+                                                </label>
+                                            )}
+
+                                            {/* Edit note textarea */}
+                                            <textarea
+                                                placeholder="Private note to teacher..."
+                                                value={editNote}
+                                                onChange={(e) => setEditNote(e.target.value)}
+                                                className="student-note-textarea"
+                                                rows={3}
+                                            />
+
+                                            <div className="edit-submission-actions-row">
+                                                <Button
+                                                    variant="outlined"
+                                                    size="small"
+                                                    onClick={handleCancelEditSubmission}
+                                                    disabled={isSavingEdit}
+                                                    sx={{ textTransform: 'none', borderRadius: '8px', color: '#64748b', borderColor: '#cbd5e1' }}
+                                                >
+                                                    Cancel
+                                                </Button>
+                                                <Button
+                                                    variant="contained"
+                                                    size="small"
+                                                    onClick={handleSaveEditSubmission}
+                                                    disabled={isSavingEdit}
+                                                    style={{ backgroundColor: themeColor }}
+                                                    sx={{ textTransform: 'none', borderRadius: '8px', fontWeight: 600 }}
+                                                >
+                                                    {isSavingEdit ? <CircularProgress size={18} color="inherit" /> : "Save Changes"}
+                                                </Button>
+                                            </div>
                                         </div>
                                     )}
-
-                                    <Button
-                                        variant="outlined"
-                                        color="inherit"
-                                        fullWidth
-                                        disabled={isUnsubmitting || (isPastDue && !canSubmitLate)}
-                                        onClick={() => setShowUnsubmitConfirm(true)}
-                                        className="unsubmit-action-btn"
-                                    >
-                                        {isUnsubmitting ? <CircularProgress size={20} /> : "Unsubmit"}
-                                    </Button>
-                                    <p className="unsubmit-hint">Unsubmit to add or change your attachments.</p>
                                 </div>
                             ) : (
                                 /* NOT SUBMITTED STATE */

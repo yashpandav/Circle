@@ -2,6 +2,12 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getTodoAssignments } from "../../../../Api/apiCaller/todoapicaller";
+import {
+    setSelectedClassId,
+    setActiveTab,
+    setGroupBy,
+    setSearchQuery
+} from "../../../../Slices/todoSlice";
 import { LoaderComponent } from "../../../Helper/Loaders/loader";
 import socket from "../../../../socket/socket";
 import {
@@ -11,71 +17,161 @@ import {
     FilterList as FilterListIcon,
     AccessTime as AccessTimeIcon,
     FolderOutlined as FolderOutlinedIcon,
-    ChevronRight as ChevronRightIcon
+    ChevronRight as ChevronRightIcon,
+    Search as SearchIcon,
+    Close as CloseIcon,
+    CalendarMonth as CalendarMonthIcon,
+    ClassOutlined as ClassOutlinedIcon,
+    ExpandMore as ExpandMoreIcon,
+    ExpandLess as ExpandLessIcon,
+    School as SchoolIcon,
+    CheckCircle as CheckCircleIcon,
+    TrendingUp as TrendingUpIcon,
+    Refresh as RefreshIcon,
+    OpenInNew as OpenInNewIcon
 } from "@mui/icons-material";
-import Divider from "@mui/material/Divider";
+import {
+    Divider,
+    IconButton,
+    Tooltip,
+    LinearProgress,
+    Chip,
+    Button
+} from "@mui/material";
 import "./todo.css";
+
+// Helper for formatting time and relative due dates
+const formatDueDate = (dateStr) => {
+    if (!dateStr) return { text: "No due date", isUrgent: false, isOverdue: false };
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return { text: "No due date", isUrgent: false, isOverdue: false };
+
+    const now = new Date();
+    const diffMs = date.getTime() - now.getTime();
+    const diffHours = Math.round(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+
+    const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const isToday = date.toDateString() === now.toDateString();
+
+    const tomorrow = new Date();
+    tomorrow.setDate(now.getDate() + 1);
+    const isTomorrow = date.toDateString() === tomorrow.toDateString();
+
+    const yesterday = new Date();
+    yesterday.setDate(now.getDate() - 1);
+    const isYesterday = date.toDateString() === yesterday.toDateString();
+
+    if (diffMs < 0) {
+        // Overdue
+        if (isYesterday) return { text: `Due yesterday at ${timeStr}`, isUrgent: true, isOverdue: true };
+        if (Math.abs(diffDays) === 0) return { text: `Overdue (was due ${timeStr})`, isUrgent: true, isOverdue: true };
+        return { text: `Overdue by ${Math.abs(diffDays)} ${Math.abs(diffDays) === 1 ? 'day' : 'days'}`, isUrgent: true, isOverdue: true };
+    }
+
+    if (isToday) {
+        return { text: `Due today at ${timeStr}`, isUrgent: true, isOverdue: false };
+    }
+    if (isTomorrow) {
+        return { text: `Due tomorrow at ${timeStr}`, isUrgent: diffHours <= 36, isOverdue: false };
+    }
+
+    return {
+        text: `Due ${date.toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "short",
+            year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined
+        })} at ${timeStr}`,
+        isUrgent: false,
+        isOverdue: false
+    };
+};
+
+// Categorize assignment into date buckets
+const getDateBucket = (dateStr, tabType) => {
+    if (!dateStr || isNaN(new Date(dateStr).getTime())) {
+        return "No due date";
+    }
+
+    const date = new Date(dateStr);
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    const diffDays = Math.floor((date.getTime() - startOfToday.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (tabType === "Assigned") {
+        if (diffDays <= 7) return "This week";
+        if (diffDays <= 14) return "Next week";
+        return "Later";
+    } else {
+        // For Missing or Done
+        if (diffDays >= -7) return "This week";
+        if (diffDays >= -14) return "Last week";
+        return "Earlier";
+    }
+};
 
 export default function ToDo() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const [todoData, setTodoData] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState("Assigned"); // "Assigned" | "Missing" | "Done"
-    const [selectedClassId, setSelectedClassId] = useState("all");
+    // Redux State
+    const todoData = useSelector((state) => state.todo?.todoData) || [];
+    const selectedClassId = useSelector((state) => state.todo?.selectedClassId) || 'all';
+    const activeTab = useSelector((state) => state.todo?.activeTab) || 'Assigned';
+    const groupBy = useSelector((state) => state.todo?.groupBy) || 'time';
+    const searchQuery = useSelector((state) => state.todo?.searchQuery) || '';
+    const loading = useSelector((state) => state.todo?.loading) || false;
+    const isRefreshing = useSelector((state) => state.todo?.isRefreshing) || false;
 
-    const joinedClasses = useSelector(state => state.classes.joinedClassesAsStudent) || [];
+    const joinedClasses = useSelector((state) => state.classes?.joinedClassesAsStudent) || [];
 
-    const fetchTodos = useCallback(async (isSilent = false) => {
-        if (!isSilent) setLoading(true);
-        try {
-            const res = await dispatch(getTodoAssignments(selectedClassId)).unwrap();
-            if (res && res.data && res.data.byClass) {
-                setTodoData(res.data.byClass);
-            } else if (res && res.byClass) {
-                setTodoData(res.byClass);
-            } else {
-                setTodoData([]);
-            }
-        } catch (err) {
-            console.error("Failed to fetch todos", err);
-        } finally {
-            if (!isSilent) setLoading(false);
-        }
+    // Local Collapsible Sections State
+    const [collapsedSections, setCollapsedSections] = useState({});
+
+    const toggleSection = (sectionKey) => {
+        setCollapsedSections(prev => ({
+            ...prev,
+            [sectionKey]: !prev[sectionKey]
+        }));
+    };
+
+    // Fetch todos action
+    const fetchTodos = useCallback((isSilent = false) => {
+        dispatch(getTodoAssignments({ classId: selectedClassId, isSilent }));
     }, [dispatch, selectedClassId]);
 
     // Initial fetch on mount or class filter change
     useEffect(() => {
-        fetchTodos();
+        fetchTodos(false);
     }, [fetchTodos]);
 
-    // Real-Time Socket Listeners for dynamic synchronization
+    // Live Socket.IO Synchronization
     useEffect(() => {
-        const handleTodoUpdate = () => {
+        const handleLiveUpdate = () => {
             fetchTodos(true);
         };
 
-        socket.on("todo:updated", handleTodoUpdate);
-        socket.on("assignment:new", handleTodoUpdate);
-        socket.on("assignment:updated", handleTodoUpdate);
-        socket.on("assignment:deleted", handleTodoUpdate);
-        socket.on("assignment:submitted", handleTodoUpdate);
-        socket.on("assignment:submission_updated", handleTodoUpdate);
-        socket.on("assignment:submission_deleted", handleTodoUpdate);
+        socket.on("todo:updated", handleLiveUpdate);
+        socket.on("assignment:new", handleLiveUpdate);
+        socket.on("assignment:updated", handleLiveUpdate);
+        socket.on("assignment:deleted", handleLiveUpdate);
+        socket.on("assignment:submitted", handleLiveUpdate);
+        socket.on("assignment:submission_updated", handleLiveUpdate);
+        socket.on("assignment:submission_deleted", handleLiveUpdate);
 
         return () => {
-            socket.off("todo:updated", handleTodoUpdate);
-            socket.off("assignment:new", handleTodoUpdate);
-            socket.off("assignment:updated", handleTodoUpdate);
-            socket.off("assignment:deleted", handleTodoUpdate);
-            socket.off("assignment:submitted", handleTodoUpdate);
-            socket.off("assignment:submission_updated", handleTodoUpdate);
-            socket.off("assignment:submission_deleted", handleTodoUpdate);
+            socket.off("todo:updated", handleLiveUpdate);
+            socket.off("assignment:new", handleLiveUpdate);
+            socket.off("assignment:updated", handleLiveUpdate);
+            socket.off("assignment:deleted", handleLiveUpdate);
+            socket.off("assignment:submitted", handleLiveUpdate);
+            socket.off("assignment:submission_updated", handleLiveUpdate);
+            socket.off("assignment:submission_deleted", handleLiveUpdate);
         };
     }, [fetchTodos]);
 
-    // Calculate dynamic counts for tab badges
+    // Calculate dynamic counts for badges and stats
     const { assignedCount, missingCount, doneCount } = useMemo(() => {
         let assigned = 0;
         let missing = 0;
@@ -90,210 +186,394 @@ export default function ToDo() {
         return { assignedCount: assigned, missingCount: missing, doneCount: done };
     }, [todoData]);
 
-    const formatDueDate = (dateStr) => {
-        if (!dateStr) return "No due date";
-        const date = new Date(dateStr);
-        if (isNaN(date.getTime())) return "No due date";
+    // Filter assignments according to search and active tab
+    const filteredAssignments = useMemo(() => {
+        const query = searchQuery.toLowerCase().trim();
+        const items = [];
 
-        const now = new Date();
-        const tomorrow = new Date();
-        tomorrow.setDate(now.getDate() + 1);
-
-        const isToday = date.toDateString() === now.toDateString();
-        const isTomorrow = date.toDateString() === tomorrow.toDateString();
-
-        const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-        if (isToday) return `Due today at ${timeStr}`;
-        if (isTomorrow) return `Due tomorrow at ${timeStr}`;
-
-        return `Due ${date.toLocaleDateString("en-GB", {
-            day: "numeric",
-            month: "short",
-            year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined
-        })} at ${timeStr}`;
-    };
-
-    const renderAssignmentList = () => {
-        if (!todoData || todoData.length === 0) {
-            return (
-                <div className="empty-todo-state">
-                    <CheckCircleOutlineIcon className="empty-state-icon done" />
-                    <h2>No circles found with assigned work.</h2>
-                    <p>When teachers post assignments in your enrolled circles, they will appear here.</p>
-                </div>
-            );
-        }
-
-        const sections = [];
-
-        todoData.forEach(classData => {
+        todoData.forEach((classData) => {
             let list = [];
             if (activeTab === "Assigned") list = classData.assigned || [];
             else if (activeTab === "Missing") list = classData.missing || [];
             else if (activeTab === "Done") list = classData.completed || [];
 
-            if (list.length > 0) {
-                const classThemeColor = classData.classId?.classTheme || "#1967d2";
-                const classTitle = classData.classId?.name || "Class";
-                const sectionName = classData.classId?.className || classData.classId?.subject || "";
+            list.forEach((ass) => {
+                if (!ass || typeof ass !== 'object') return;
 
-                sections.push(
-                    <div key={classData.classId?._id || Math.random()} className="todo-class-section">
-                        <div className="todo-class-header" style={{ borderLeft: `5px solid ${classThemeColor}` }}>
-                            <div className="todo-class-info">
-                                <h3 className="todo-class-title">{classTitle}</h3>
-                                {sectionName && <span className="todo-class-subtitle">{sectionName}</span>}
-                            </div>
-                            <span className="todo-count-badge">
-                                {list.length} {list.length === 1 ? 'assignment' : 'assignments'}
-                            </span>
-                        </div>
-                        <Divider />
-                        <div className="todo-items-list">
-                            {list.map(ass => (
-                                <div
-                                    key={ass._id}
-                                    className="todo-assignment-item"
-                                    onClick={() => navigate(`/workarea/circle/${classData.classId?._id}/assignment/${ass._id}`)}
-                                >
-                                    <div className="todo-item-left">
-                                        <div
-                                            className={`todo-icon-wrapper ${activeTab === 'Missing' ? 'missing-icon' : activeTab === 'Done' ? 'done-icon' : ''}`}
-                                            style={activeTab === 'Assigned' ? { backgroundColor: classThemeColor } : {}}
-                                        >
-                                            {activeTab === 'Done' ? (
-                                                <CheckCircleOutlineIcon />
-                                            ) : activeTab === 'Missing' ? (
-                                                <WarningAmberIcon />
-                                            ) : (
-                                                <AssignmentIcon />
-                                            )}
-                                        </div>
-                                        <div className="todo-item-details">
-                                            <h4 className="todo-assignment-name">{ass.name}</h4>
-                                            <div className="todo-meta-row">
-                                                {ass.category?.name && (
-                                                    <span className="todo-category-tag">
-                                                        <FolderOutlinedIcon className="tag-icon" />
-                                                        {ass.category.name}
-                                                    </span>
-                                                )}
-                                                {ass.teacher && (
-                                                    <span className="todo-teacher-tag">
-                                                        {ass.teacher.firstName} {ass.teacher.lastName}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="todo-item-right">
-                                        <div className="due-date-wrapper">
-                                            <AccessTimeIcon className="time-icon" />
-                                            <span className={`todo-due-date ${activeTab === 'Missing' ? 'missing-text' : activeTab === 'Done' ? 'done-text' : ''}`}>
-                                                {activeTab === 'Done' ? 'Completed' : formatDueDate(ass.dueDate)}
-                                            </span>
-                                        </div>
-                                        <ChevronRightIcon className="todo-arrow-icon" />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                );
-            }
+                const nameMatch = ass.name?.toLowerCase().includes(query);
+                const descMatch = ass.description?.toLowerCase().includes(query);
+                const catMatch = ass.category?.name?.toLowerCase().includes(query);
+                const classNameMatch = classData.classId?.name?.toLowerCase().includes(query);
+                const teacherMatch = ass.teacher && `${ass.teacher.firstName || ''} ${ass.teacher.lastName || ''}`.toLowerCase().includes(query);
+
+                if (!query || nameMatch || descMatch || catMatch || classNameMatch || teacherMatch) {
+                    items.push({
+                        ...ass,
+                        classInfo: classData.classId || {}
+                    });
+                }
+            });
         });
 
-        if (sections.length === 0) {
-            return (
-                <div className="empty-todo-state">
-                    {activeTab === "Missing" ? (
-                        <>
-                            <CheckCircleOutlineIcon className="empty-state-icon done" />
-                            <h2>No missing assignments!</h2>
-                            <p>Great job staying on top of your deadlines.</p>
-                        </>
-                    ) : activeTab === "Done" ? (
-                        <>
-                            <AssignmentIcon className="empty-state-icon assigned" />
-                            <h2>No completed assignments yet.</h2>
-                            <p>Turn in your work to see your completed submissions here.</p>
-                        </>
-                    ) : (
-                        <>
-                            <CheckCircleOutlineIcon className="empty-state-icon done" />
-                            <h2>Hooray! No pending work.</h2>
-                            <p>You have submitted all your active assignments.</p>
-                        </>
-                    )}
-                </div>
-            );
-        }
+        return items;
+    }, [todoData, activeTab, searchQuery]);
 
-        return sections;
-    };
+    // Grouping by Date or Circle
+    const groupedSections = useMemo(() => {
+        if (groupBy === 'circle') {
+            const classMap = {};
+            filteredAssignments.forEach((ass) => {
+                const classId = ass.classInfo?._id || 'unknown';
+                if (!classMap[classId]) {
+                    classMap[classId] = {
+                        title: ass.classInfo?.name || "Circle",
+                        subtitle: ass.classInfo?.className || ass.classInfo?.subject || "",
+                        color: ass.classInfo?.classTheme || "#00a896",
+                        items: []
+                    };
+                }
+                classMap[classId].items.push(ass);
+            });
+            return Object.entries(classMap).map(([key, val]) => ({ key, ...val }));
+        } else {
+            // Group by Time Bucket
+            const bucketOrder = activeTab === "Assigned"
+                ? ["No due date", "This week", "Next week", "Later"]
+                : ["This week", "Last week", "Earlier", "No due date"];
+
+            const bucketMap = {};
+            bucketOrder.forEach(b => {
+                bucketMap[b] = [];
+            });
+
+            filteredAssignments.forEach((ass) => {
+                const bucket = getDateBucket(ass.dueDate, activeTab);
+                if (!bucketMap[bucket]) {
+                    bucketMap[bucket] = [];
+                }
+                bucketMap[bucket].push(ass);
+            });
+
+            return bucketOrder
+                .filter(bucket => (bucketMap[bucket] && bucketMap[bucket].length > 0))
+                .map(bucket => ({
+                    key: bucket,
+                    title: bucket,
+                    subtitle: `${bucketMap[bucket].length} ${bucketMap[bucket].length === 1 ? 'assignment' : 'assignments'}`,
+                    color: activeTab === 'Missing' ? '#ef4444' : activeTab === 'Done' ? '#10b981' : '#00a896',
+                    items: bucketMap[bucket]
+                }));
+        }
+    }, [filteredAssignments, groupBy, activeTab]);
 
     return (
         <div className="todo-dashboard-container">
-            <div className="todo-header">
-                <div className="todo-header-title-block">
-                    <h1>To-do</h1>
-                    <p className="todo-subtitle">Keep track of your assignments and submission deadlines across all Circles.</p>
-                </div>
+            {/* Silent Background Refresh Progress Bar */}
+            {isRefreshing && <LinearProgress color="primary" sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999, height: 3 }} />}
 
-                <div className="todo-filter-container">
-                    <FilterListIcon className="filter-icon" />
-                    <select
-                        className="todo-class-select"
-                        value={selectedClassId}
-                        onChange={(e) => setSelectedClassId(e.target.value)}
-                    >
-                        <option value="all">All Circles</option>
-                        {joinedClasses.map((c) => (
-                            <option key={c._id} value={c._id}>
-                                {c.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            </div>
-
-            <div className="todo-tabs-wrapper">
-                <div className="todo-tabs">
-                    <button
-                        type="button"
-                        className={`todo-tab ${activeTab === "Assigned" ? "active" : ""}`}
-                        onClick={() => setActiveTab("Assigned")}
-                    >
-                        Assigned
-                        {assignedCount > 0 && <span className="tab-badge">{assignedCount}</span>}
-                    </button>
-                    <button
-                        type="button"
-                        className={`todo-tab ${activeTab === "Missing" ? "active" : ""}`}
-                        onClick={() => setActiveTab("Missing")}
-                    >
-                        Missing
-                        {missingCount > 0 && <span className="tab-badge missing">{missingCount}</span>}
-                    </button>
-                    <button
-                        type="button"
-                        className={`todo-tab ${activeTab === "Done" ? "active" : ""}`}
-                        onClick={() => setActiveTab("Done")}
-                    >
-                        Done
-                        {doneCount > 0 && <span className="tab-badge done">{doneCount}</span>}
-                    </button>
-                </div>
-            </div>
-
-            <div className="todo-content-area">
-                {loading ? (
-                    <div className="todo-loader-wrapper">
-                        <LoaderComponent />
+            {/* Top Header & Stats */}
+            <div className="todo-hero-header">
+                <div className="todo-title-row">
+                    <div>
+                        <h1 className="todo-main-title">To-do</h1>
+                        <p className="todo-main-subtitle">
+                            Organize, track, and submit your Circle assignments on time.
+                        </p>
                     </div>
+
+                    <div className="todo-header-actions">
+                        <Tooltip title="Refresh To-Dos">
+                            <IconButton onClick={() => fetchTodos(false)} className="refresh-btn" size="small">
+                                <RefreshIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                    </div>
+                </div>
+
+                {/* 3 Interactive Stat Cards */}
+                <div className="todo-metrics-grid">
+                    <div
+                        className={`metric-card assigned ${activeTab === 'Assigned' ? 'selected' : ''}`}
+                        onClick={() => dispatch(setActiveTab('Assigned'))}
+                    >
+                        <div className="metric-icon-wrap assigned">
+                            <AssignmentIcon />
+                        </div>
+                        <div className="metric-details">
+                            <span className="metric-number">{assignedCount}</span>
+                            <span className="metric-label">Assigned Work</span>
+                        </div>
+                    </div>
+
+                    <div
+                        className={`metric-card missing ${activeTab === 'Missing' ? 'selected' : ''}`}
+                        onClick={() => dispatch(setActiveTab('Missing'))}
+                    >
+                        <div className="metric-icon-wrap missing">
+                            <WarningAmberIcon />
+                        </div>
+                        <div className="metric-details">
+                            <span className="metric-number">{missingCount}</span>
+                            <span className="metric-label">Missing / Overdue</span>
+                        </div>
+                    </div>
+
+                    <div
+                        className={`metric-card done ${activeTab === 'Done' ? 'selected' : ''}`}
+                        onClick={() => dispatch(setActiveTab('Done'))}
+                    >
+                        <div className="metric-icon-wrap done">
+                            <CheckCircleIcon />
+                        </div>
+                        <div className="metric-details">
+                            <span className="metric-number">{doneCount}</span>
+                            <span className="metric-label">Completed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Controls Bar: Tabs, Filter & Grouping */}
+            <div className="todo-controls-bar">
+                {/* Main Tabs */}
+                <div className="todo-tab-pills">
+                    <button
+                        type="button"
+                        className={`tab-pill-btn ${activeTab === 'Assigned' ? 'active assigned' : ''}`}
+                        onClick={() => dispatch(setActiveTab('Assigned'))}
+                    >
+                        <span>Assigned</span>
+                        <span className="pill-badge">{assignedCount}</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        className={`tab-pill-btn ${activeTab === 'Missing' ? 'active missing' : ''}`}
+                        onClick={() => dispatch(setActiveTab('Missing'))}
+                    >
+                        <span>Missing</span>
+                        <span className="pill-badge">{missingCount}</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        className={`tab-pill-btn ${activeTab === 'Done' ? 'active done' : ''}`}
+                        onClick={() => dispatch(setActiveTab('Done'))}
+                    >
+                        <span>Done</span>
+                        <span className="pill-badge">{doneCount}</span>
+                    </button>
+                </div>
+
+                {/* Filter and View Controls */}
+                <div className="todo-secondary-controls">
+                    {/* Search Box */}
+                    <div className="todo-search-field">
+                        <SearchIcon fontSize="small" sx={{ color: '#94a3b8' }} />
+                        <input
+                            type="text"
+                            placeholder="Search assignments..."
+                            value={searchQuery}
+                            onChange={(e) => dispatch(setSearchQuery(e.target.value))}
+                        />
+                        {searchQuery && (
+                            <IconButton size="small" onClick={() => dispatch(setSearchQuery(''))}>
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        )}
+                    </div>
+
+                    {/* Circle Filter Dropdown */}
+                    <div className="todo-class-dropdown-wrapper">
+                        <FilterListIcon fontSize="small" sx={{ color: '#64748b' }} />
+                        <select
+                            className="todo-class-select-input"
+                            value={selectedClassId}
+                            onChange={(e) => dispatch(setSelectedClassId(e.target.value))}
+                        >
+                            <option value="all">All Circles</option>
+                            {joinedClasses.map((c) => (
+                                <option key={c._id} value={c._id}>
+                                    {c.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Group By Toggle */}
+                    <div className="todo-view-toggle">
+                        <Tooltip title="Group by Due Date">
+                            <button
+                                type="button"
+                                className={`toggle-btn ${groupBy === 'time' ? 'active' : ''}`}
+                                onClick={() => dispatch(setGroupBy('time'))}
+                            >
+                                <CalendarMonthIcon fontSize="small" />
+                            </button>
+                        </Tooltip>
+                        <Tooltip title="Group by Circle">
+                            <button
+                                type="button"
+                                className={`toggle-btn ${groupBy === 'circle' ? 'active' : ''}`}
+                                onClick={() => dispatch(setGroupBy('circle'))}
+                            >
+                                <ClassOutlinedIcon fontSize="small" />
+                            </button>
+                        </Tooltip>
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Content Stream */}
+            <div className="todo-content-stream">
+                {loading ? (
+                    <div className="todo-loading-state">
+                        <LoaderComponent />
+                        <p>Loading assignments...</p>
+                    </div>
+                ) : groupedSections.length > 0 ? (
+                    groupedSections.map((section) => {
+                        const isCollapsed = Boolean(collapsedSections[section.key]);
+
+                        return (
+                            <div key={section.key} className="todo-group-card">
+                                {/* Section Header */}
+                                <div
+                                    className="todo-group-card-header"
+                                    onClick={() => toggleSection(section.key)}
+                                    style={{ borderLeftColor: section.color }}
+                                >
+                                    <div className="group-header-info">
+                                        <h3 className="group-title">{section.title}</h3>
+                                        {section.subtitle && <span className="group-subtitle">{section.subtitle}</span>}
+                                    </div>
+                                    <div className="group-header-right">
+                                        <span className="group-count-pill">{section.items.length}</span>
+                                        <IconButton size="small" className="collapse-btn">
+                                            {isCollapsed ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+                                        </IconButton>
+                                    </div>
+                                </div>
+
+                                {/* Items List */}
+                                {!isCollapsed && (
+                                    <div className="todo-card-items-list">
+                                        {section.items.map((ass) => {
+                                            const classTheme = ass.classInfo?.classTheme || "#00a896";
+                                            const dueInfo = formatDueDate(ass.dueDate);
+                                            const studentSubmission = ass.submission?.[0];
+
+                                            return (
+                                                <div
+                                                    key={ass._id}
+                                                    className="todo-assignment-row"
+                                                    onClick={() => navigate(`/workarea/circle/${ass.classInfo?._id}/assignment/${ass._id}`)}
+                                                >
+                                                    <div className="row-left">
+                                                        <div
+                                                            className={`assignment-avatar-pill ${activeTab === 'Missing' ? 'missing' : activeTab === 'Done' ? 'done' : 'assigned'}`}
+                                                            style={activeTab === 'Assigned' ? { backgroundColor: classTheme } : {}}
+                                                        >
+                                                            {activeTab === 'Done' ? (
+                                                                <CheckCircleOutlineIcon fontSize="small" />
+                                                            ) : activeTab === 'Missing' ? (
+                                                                <WarningAmberIcon fontSize="small" />
+                                                            ) : (
+                                                                <AssignmentIcon fontSize="small" />
+                                                            )}
+                                                        </div>
+
+                                                        <div className="assignment-meta-block">
+                                                            <h4 className="assignment-title-text">{ass.name}</h4>
+                                                            <div className="assignment-chips-row">
+                                                                <span
+                                                                    className="class-chip"
+                                                                    style={{ borderColor: `${classTheme}40`, color: classTheme, backgroundColor: `${classTheme}10` }}
+                                                                >
+                                                                    {ass.classInfo?.name || "Circle"}
+                                                                </span>
+
+                                                                {ass.category?.name && (
+                                                                    <span className="topic-chip">
+                                                                        <FolderOutlinedIcon fontSize="inherit" />
+                                                                        {ass.category.name}
+                                                                    </span>
+                                                                )}
+
+                                                                {ass.teacher && (
+                                                                    <span className="teacher-chip">
+                                                                        {ass.teacher.firstName} {ass.teacher.lastName}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="row-right">
+                                                        <div className={`due-info-tag ${dueInfo.isOverdue ? 'overdue' : dueInfo.isUrgent ? 'urgent' : activeTab === 'Done' ? 'done' : ''}`}>
+                                                            <AccessTimeIcon fontSize="inherit" />
+                                                            <span>
+                                                                {activeTab === 'Done'
+                                                                    ? (studentSubmission?.submitDate
+                                                                        ? `Turned in ${new Date(studentSubmission.submitDate).toLocaleDateString("en-GB", { month: "short", day: "numeric" })}`
+                                                                        : "Turned In")
+                                                                    : dueInfo.text}
+                                                            </span>
+                                                        </div>
+                                                        <ChevronRightIcon className="row-chevron" />
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })
                 ) : (
-                    renderAssignmentList()
+                    /* Clean Empty State */
+                    <div className="todo-empty-state-card">
+                        <div className={`empty-state-icon-circle ${activeTab === 'Missing' ? 'missing' : activeTab === 'Done' ? 'done' : 'assigned'}`}>
+                            {activeTab === 'Missing' ? (
+                                <CheckCircleOutlineIcon fontSize="large" sx={{ color: '#10b981' }} />
+                            ) : activeTab === 'Done' ? (
+                                <AssignmentIcon fontSize="large" sx={{ color: '#00a896' }} />
+                            ) : (
+                                <CheckCircleOutlineIcon fontSize="large" sx={{ color: '#10b981' }} />
+                            )}
+                        </div>
+
+                        <h2>
+                            {searchQuery
+                                ? "No matching assignments found"
+                                : activeTab === 'Missing'
+                                    ? "No missing assignments!"
+                                    : activeTab === 'Done'
+                                        ? "No completed assignments yet"
+                                        : "All caught up! No pending work"}
+                        </h2>
+
+                        <p>
+                            {searchQuery
+                                ? "Try adjusting your search keywords or clear the filter."
+                                : activeTab === 'Missing'
+                                    ? "Awesome job! You have submitted all assignments on time."
+                                    : activeTab === 'Done'
+                                        ? "Turn in your assignments to view your completion history here."
+                                        : "You have no active assignments due right now. Enjoy your free time!"}
+                        </p>
+
+                        {searchQuery && (
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                onClick={() => dispatch(setSearchQuery(''))}
+                                sx={{ mt: 2, textTransform: 'none', borderRadius: '8px' }}
+                            >
+                                Clear search
+                            </Button>
+                        )}
+                    </div>
                 )}
             </div>
         </div>

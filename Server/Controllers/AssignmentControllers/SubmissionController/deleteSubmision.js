@@ -10,6 +10,14 @@ exports.deleteSubmittedAss = async (req, res, next) => {
         const assId = req.body.assId || req.query.assId || req.params.id;
         const submittedID = req.body.submittedID || req.query.submittedID;
 
+        const userId = req.user?.id || req.user?._id;
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized: User identification missing"
+            });
+        }
+
         if (!assId || !mongoose.Types.ObjectId.isValid(assId)) {
             return res.status(400).json({
                 success: false,
@@ -39,7 +47,7 @@ exports.deleteSubmittedAss = async (req, res, next) => {
         } else {
             currSubmitted = await SubmitAssignment.findOne({
                 assignment: assId,
-                student: req.user.id
+                student: userId
             });
         }
 
@@ -53,9 +61,9 @@ exports.deleteSubmittedAss = async (req, res, next) => {
         const classForAss = await Class.findOne({ addedAssignment: assId });
 
         // Authorization check: Submitter OR Class Admin / Teacher
-        const isOwner = currSubmitted.student.toString() === req.user.id;
-        const isClassAdmin = classForAss?.admin && classForAss.admin.toString() === req.user.id;
-        const isClassTeacher = classForAss?.teacher && classForAss.teacher.some(t => t.toString() === req.user.id);
+        const isOwner = currSubmitted.student.toString() === userId.toString();
+        const isClassAdmin = classForAss?.admin && classForAss.admin.toString() === userId.toString();
+        const isClassTeacher = classForAss?.teacher && classForAss.teacher.some(t => t.toString() === userId.toString());
 
         if (!isOwner && !isClassAdmin && !isClassTeacher) {
             return res.status(403).json({

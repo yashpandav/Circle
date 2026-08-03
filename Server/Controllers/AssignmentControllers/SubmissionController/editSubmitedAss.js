@@ -14,6 +14,14 @@ exports.editSubmimtedAss = async (req, res, next) => {
         let file = req.files?.file;
         const submissionTargetId = submitedID || submittedID;
 
+        const userId = req.user?.id || req.user?._id;
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized: User identification missing"
+            });
+        }
+
         if (!assId || !mongoose.Types.ObjectId.isValid(assId)) {
             return res.status(400).json({
                 success: false,
@@ -43,7 +51,7 @@ exports.editSubmimtedAss = async (req, res, next) => {
         } else {
             currSubmitted = await SubmitAssignment.findOne({
                 assignment: assId,
-                student: req.user.id
+                student: userId
             });
         }
 
@@ -54,7 +62,7 @@ exports.editSubmimtedAss = async (req, res, next) => {
             });
         }
 
-        if (currSubmitted.student.toString() !== req.user.id) {
+        if (currSubmitted.student.toString() !== userId.toString()) {
             return res.status(403).json({
                 success: false,
                 message: "You are not authorized to edit this submission"
@@ -76,7 +84,7 @@ exports.editSubmimtedAss = async (req, res, next) => {
         // Ensure assignment references are clean
         await Assignment.findByIdAndUpdate(assId, {
             $addToSet: { submission: currSubmitted._id },
-            $pull: { pendingStudent: req.user.id }
+            $pull: { pendingStudent: userId }
         });
 
         const updatedSubmission = await SubmitAssignment.findById(currSubmitted._id)
@@ -87,18 +95,18 @@ exports.editSubmimtedAss = async (req, res, next) => {
             getIO().to(`room:${classForAss._id.toString()}`).emit('assignment:submission_updated', {
                 data: updatedSubmission,
                 assId,
-                studentId: req.user.id
+                studentId: userId.toString()
             });
             getIO().to(`room:${classForAss._id.toString()}`).emit('todo:updated', {
                 classId: classForAss._id.toString(),
                 assId,
-                studentId: req.user.id
+                studentId: userId.toString()
             });
         }
-        getIO().to(`user:${req.user.id}`).emit('todo:updated', {
+        getIO().to(`user:${userId.toString()}`).emit('todo:updated', {
             classId: classForAss?._id?.toString(),
             assId,
-            studentId: req.user.id
+            studentId: userId.toString()
         });
 
         return res.status(200).json({

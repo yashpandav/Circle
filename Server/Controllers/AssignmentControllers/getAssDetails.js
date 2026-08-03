@@ -6,6 +6,14 @@ exports.getAssDetails = async (req, res, next) => {
     try {
         const id = req.params.id;
 
+        const userId = req.user?.id || req.user?._id;
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized: User identification missing"
+            });
+        }
+
         if (!id || !mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
                 success: false,
@@ -41,15 +49,25 @@ exports.getAssDetails = async (req, res, next) => {
 
         const parentClass = await Class.findOne({ addedAssignment: id });
         if (parentClass) {
-            const isAuthorized = (parentClass.admin && parentClass.admin.toString() === req.user.id) ||
-                (parentClass.teacher && parentClass.teacher.some(t => t.toString() === req.user.id)) ||
-                (parentClass.student && parentClass.student.some(s => s.toString() === req.user.id)) ||
-                (currAss.teacher && currAss.teacher._id.toString() === req.user.id);
+            const isTeacher = currAss.teacher && currAss.teacher._id.toString() === userId.toString();
+            const isClassAdmin = parentClass.admin && parentClass.admin.toString() === userId.toString();
+            const isClassTeacher = parentClass.teacher && parentClass.teacher.some(t => t.toString() === userId.toString());
+            const isEnrolledStudent = parentClass.student && parentClass.student.some(s => s.toString() === userId.toString());
+
+            const isAuthorized = isTeacher || isClassAdmin || isClassTeacher || isEnrolledStudent;
 
             if (!isAuthorized) {
                 return res.status(403).json({
                     success: false,
                     message: "You are not authorized to view this assignment"
+                });
+            }
+
+            // If assignment is still a Draft, only teachers/admins can view it
+            if (currAss.status === 'Draft' && !isTeacher && !isClassAdmin && !isClassTeacher) {
+                return res.status(403).json({
+                    success: false,
+                    message: "This assignment is currently in draft mode and not available to students."
                 });
             }
         }

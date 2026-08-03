@@ -11,6 +11,14 @@ exports.deleteAss = async (req, res, next) => {
     try {
         const assId = req.params.id;
 
+        const userId = req.user?.id || req.user?._id;
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized: User identification missing"
+            });
+        }
+
         // 1. Validate Assignment ID format
         if (!assId || !mongoose.Types.ObjectId.isValid(assId)) {
             return res.status(400).json({
@@ -32,9 +40,9 @@ exports.deleteAss = async (req, res, next) => {
         const currClass = await Class.findOne({ addedAssignment: assId });
 
         // 4. Authorization check: Author, Class Admin, or Class Teacher
-        const isOwner = assignment.teacher && assignment.teacher.toString() === req.user.id;
-        const isClassAdmin = currClass?.admin && currClass.admin.toString() === req.user.id;
-        const isClassTeacher = currClass?.teacher && currClass.teacher.some(t => t.toString() === req.user.id);
+        const isOwner = assignment.teacher && assignment.teacher.toString() === userId.toString();
+        const isClassAdmin = currClass?.admin && currClass.admin.toString() === userId.toString();
+        const isClassTeacher = currClass?.teacher && currClass.teacher.some(t => t.toString() === userId.toString());
 
         if (!isOwner && !isClassAdmin && !isClassTeacher) {
             return res.status(403).json({

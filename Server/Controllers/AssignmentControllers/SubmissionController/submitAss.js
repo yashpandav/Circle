@@ -13,6 +13,14 @@ exports.submitAss = async (req, res, next) => {
         const { data, submittedID, overwrite } = req.body;
         let file = req.files?.file;
 
+        const userId = req.user?.id || req.user?._id;
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized: User identification missing"
+            });
+        }
+
         if (!assId || !mongoose.Types.ObjectId.isValid(assId)) {
             return res.status(400).json({
                 success: false,
@@ -27,7 +35,7 @@ exports.submitAss = async (req, res, next) => {
             });
         }
 
-        const user = await User.findById(req.user.id);
+        const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -41,6 +49,20 @@ exports.submitAss = async (req, res, next) => {
                 success: false,
                 message: "Assignment not found"
             });
+        }
+
+        const classForAss = await Class.findOne({ addedAssignment: assId });
+        if (classForAss) {
+            const isStudentEnrolled = classForAss.student && classForAss.student.some(s => s.toString() === userId.toString());
+            const isClassAdmin = classForAss.admin && classForAss.admin.toString() === userId.toString();
+            const isClassTeacher = classForAss.teacher && classForAss.teacher.some(t => t.toString() === userId.toString());
+
+            if (!isStudentEnrolled && !isClassAdmin && !isClassTeacher) {
+                return res.status(403).json({
+                    success: false,
+                    message: "You are not enrolled in this Circle to submit assignments."
+                });
+            }
         }
 
         // Check due date & late submission policy
@@ -58,7 +80,7 @@ exports.submitAss = async (req, res, next) => {
         } else {
             currSubmitted = await SubmitAssignment.findOne({
                 assignment: assId,
-                student: req.user.id
+                student: userId
             });
         }
 
@@ -66,7 +88,7 @@ exports.submitAss = async (req, res, next) => {
 
         //* If assignment was already submitted
         if (currSubmitted) {
-            if (currSubmitted.student.toString() !== req.user.id) {
+            if (currSubmitted.student.toString() !== userId.toString()) {
                 return res.status(403).json({
                     success: false,
                     message: "You are not authorized to modify this submission"
@@ -94,31 +116,30 @@ exports.submitAss = async (req, res, next) => {
 
             const updatedAssignment = await Assignment.findByIdAndUpdate(assId, {
                 $addToSet: { submission: currSubmitted._id },
-                $pull: { pendingStudent: req.user.id }
+                $pull: { pendingStudent: userId }
             }, { new: true });
 
             const populatedSubmission = await SubmitAssignment.findById(currSubmitted._id)
                 .populate('student', 'firstName lastName image email');
 
-            const classForAss = await Class.findOne({ addedAssignment: assId });
             if (classForAss) {
                 getIO().to(`room:${classForAss._id.toString()}`).emit('assignment:submitted', {
                     data: {
                         assignmentId: assId,
                         submission: populatedSubmission,
-                        studentId: req.user.id
+                        studentId: userId.toString()
                     }
                 });
                 getIO().to(`room:${classForAss._id.toString()}`).emit('todo:updated', {
                     classId: classForAss._id.toString(),
                     assignmentId: assId,
-                    studentId: req.user.id
+                    studentId: userId.toString()
                 });
             }
-            getIO().to(`user:${req.user.id}`).emit('todo:updated', {
+            getIO().to(`user:${userId.toString()}`).emit('todo:updated', {
                 classId: classForAss?._id?.toString(),
                 assignmentId: assId,
-                studentId: req.user.id
+                studentId: userId.toString()
             });
 
             return res.status(200).json({
@@ -141,7 +162,7 @@ exports.submitAss = async (req, res, next) => {
         const newSubmission = new SubmitAssignment({
             data: data || '',
             file: fileUrl,
-            student: req.user.id,
+            student: userId,
             assignment: assId,
             submitDate: Date.now()
         });
@@ -150,31 +171,30 @@ exports.submitAss = async (req, res, next) => {
 
         const updatedAssignment = await Assignment.findByIdAndUpdate(assId, {
             $addToSet: { submission: newSubmission._id },
-            $pull: { pendingStudent: req.user.id }
+            $pull: { pendingStudent: userId }
         }, { new: true });
 
         const populatedSubmission = await SubmitAssignment.findById(newSubmission._id)
             .populate('student', 'firstName lastName image email');
 
-        const classForAss = await Class.findOne({ addedAssignment: assId });
         if (classForAss) {
             getIO().to(`room:${classForAss._id.toString()}`).emit('assignment:submitted', {
                 data: {
                     assignmentId: assId,
                     submission: populatedSubmission,
-                    studentId: req.user.id
+                    studentId: userId.toString()
                 }
             });
             getIO().to(`room:${classForAss._id.toString()}`).emit('todo:updated', {
                 classId: classForAss._id.toString(),
                 assignmentId: assId,
-                studentId: req.user.id
+                studentId: userId.toString()
             });
         }
-        getIO().to(`user:${req.user.id}`).emit('todo:updated', {
+        getIO().to(`user:${userId.toString()}`).emit('todo:updated', {
             classId: classForAss?._id?.toString(),
             assignmentId: assId,
-            studentId: req.user.id
+            studentId: userId.toString()
         });
 
         return res.status(200).json({

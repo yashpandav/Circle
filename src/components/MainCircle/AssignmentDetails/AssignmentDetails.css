@@ -410,6 +410,49 @@
     color: #334155;
 }
 
+.submission-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.edit-submission-btn {
+    border-radius: 8px !important;
+    padding: 7px 12px !important;
+}
+
+.edit-submission-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 6px;
+    animation: fadeIn 0.2s ease;
+}
+
+.edit-current-file-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #334155;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.edit-submission-actions-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 4px;
+}
+
 .unsubmit-action-btn {
     border-color: #cbd5e1 !important;
     color: #475569 !important;

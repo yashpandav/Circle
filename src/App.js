@@ -19,6 +19,7 @@ import MainCircle from './components/MainCircle/mainCircle';
 import ScrollToTop from './components/Helper/scrollToTop';
 import ForgotPassword from './components/AuthPages/ForgotPassword';
 import People from './components/People/People';
+import Classwork from './components/MainCircle/Classwork/Classwork';
 import AssignmentDetails from './components/MainCircle/AssignmentDetails/AssignmentDetails';
 import SocketProvider from './socket/SocketProvider';
 import './App.css';
@@ -95,6 +96,7 @@ const App = () => {
           <Route path="circle/:id" element={<MainCurrCircle />}>
             <Route path="" element={<Navigate to="stream" replace />} />
             <Route path="stream" element={<MainCircle />} />
+            <Route path="classwork" element={<Classwork />} />
             <Route path="people" element={<People />} />
             <Route path="assignment/:assignmentId" element={<AssignmentDetails />} />
           </Route>

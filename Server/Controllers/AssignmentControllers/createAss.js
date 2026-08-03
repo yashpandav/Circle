@@ -19,14 +19,29 @@ exports.createAss = async (req, res, next) => {
             acceptAfterDue
         } = req.body;
 
-        if (!currClassId || !name || !description) {
-            return res.status(400).json({
+        const userId = req.user?.id || req.user?._id;
+        if (!userId) {
+            return res.status(401).json({
                 success: false,
-                message: "All fields are required"
+                message: "Unauthorized: User identification missing"
             });
         }
 
-        if (dueDate) {
+        if (!currClassId || !name || !description) {
+            return res.status(400).json({
+                success: false,
+                message: "Class ID, Assignment Title, and Description are required"
+            });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(currClassId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Class ID format"
+            });
+        }
+
+        if (dueDate && typeof dueDate === 'string' && dueDate.trim() !== '' && dueDate !== 'null') {
             const dueTime = new Date(dueDate).getTime();
             if (isNaN(dueTime)) {
                 return res.status(400).json({
@@ -46,18 +61,18 @@ exports.createAss = async (req, res, next) => {
         if (!currClass) {
             return res.status(404).json({
                 success: false,
-                message: "Class Not Found"
+                message: "Class not found"
             });
         }
 
         //* Authorizing teacher or admin
-        const isTeacherOrAdmin = (currClass.admin && currClass.admin.toString() === req.user.id) ||
-            (currClass.teacher && currClass.teacher.some(t => t.toString() === req.user.id));
+        const isTeacherOrAdmin = (currClass.admin && currClass.admin.toString() === userId.toString()) ||
+            (currClass.teacher && currClass.teacher.some(t => t.toString() === userId.toString()));
 
         if (!isTeacherOrAdmin) {
             return res.status(403).json({
                 success: false,
-                message: "Only teachers and admins are authorized to add assignments in this class"
+                message: "Only teachers and admins are authorized to create assignments in this class"
             });
         }
 
@@ -68,8 +83,19 @@ exports.createAss = async (req, res, next) => {
             fileUrl = uploaded.secure_url;
         }
 
-        const teacher = req.user.id;
+        const teacher = userId;
         const allowLate = acceptAfterDue === 'true' || acceptAfterDue === true || acceptAfterDue === 'on';
+
+        //* Validate category if supplied
+        let validCategoryId = null;
+        if (category && category !== '' && category !== 'null') {
+            if (mongoose.Types.ObjectId.isValid(category)) {
+                const checkCategory = await Category.findById(category);
+                if (checkCategory) {
+                    validCategoryId = checkCategory._id;
+                }
+            }
+        }
 
         //* Gather all enrolled students for pendingStudent list
         const studentsFromUsers = await User.find({ joinedClassAsStudent: currClassId }).select('_id');
@@ -79,14 +105,18 @@ exports.createAss = async (req, res, next) => {
         }
         const pendingStudentIds = Array.from(studentIdSet);
 
+        const parsedDueDate = (dueDate && typeof dueDate === 'string' && dueDate.trim() !== '' && dueDate !== 'null' && !isNaN(new Date(dueDate).getTime()))
+            ? new Date(dueDate)
+            : undefined;
+
         //* Create Assignment
         const newAss = new Assignment({
-            name,
-            description,
+            name: name.trim(),
+            description: description.trim(),
             file: fileUrl,
             teacher,
-            category: category || null,
-            dueDate: dueDate ? new Date(dueDate) : undefined,
+            category: validCategoryId,
+            dueDate: parsedDueDate,
             status,
             acceptAfterDue: allowLate,
             pendingStudent: pendingStudentIds,
@@ -104,15 +134,12 @@ exports.createAss = async (req, res, next) => {
             });
 
             //* Add to category if provided
-            if (category) {
-                const currCategory = await Category.findById(category);
-                if (currCategory) {
-                    await Category.findByIdAndUpdate(currCategory._id, {
-                        $addToSet: {
-                            assignment: newAss._id
-                        }
-                    });
-                }
+            if (validCategoryId) {
+                await Category.findByIdAndUpdate(validCategoryId, {
+                    $addToSet: {
+                        assignment: newAss._id
+                    }
+                });
             }
         }
 
