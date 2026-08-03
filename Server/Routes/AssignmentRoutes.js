@@ -21,6 +21,7 @@ router.post('/submit/:id', auth, uploadLimiter, validateFiles, asyncHandler(subm
 
 const { deleteSubmittedAss } = require('../Controllers/AssignmentControllers/SubmissionController/deleteSubmision');
 router.delete('/deletesubmission', auth, asyncHandler(deleteSubmittedAss));
+router.delete('/deletesubmission/:id', auth, asyncHandler(deleteSubmittedAss));
 
 const { editSubmimtedAss } = require('../Controllers/AssignmentControllers/SubmissionController/editSubmitedAss');
 router.put('/editsubmitted/:id', auth, uploadLimiter, validateFiles, asyncHandler(editSubmimtedAss));

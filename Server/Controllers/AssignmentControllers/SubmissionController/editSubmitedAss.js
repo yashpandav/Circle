@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('../../../Models/User');
 const Assignment = require('../../../Models/Assignment');
 const SubmitAssignment = require('../../../Models/SubmitAssignment');
@@ -6,33 +7,17 @@ const { uploadImage } = require('../../../Utils/imageUpload');
 const { getIO } = require('../../../socket');
 require('dotenv').config();
 
-const editSubmittedAss = async (req, res, next) => {
+exports.editSubmimtedAss = async (req, res, next) => {
     try {
         const assId = req.params.id;
-        const data = req.body.data;
-        let file = req?.files?.file;
-        const submitedID = req.body.submittedID;
-        const overwrite = req.body.overwrite === 'true' || req.body.overwrite === true;
+        const { submitedID, submittedID, data } = req.body;
+        let file = req.files?.file;
+        const submissionTargetId = submitedID || submittedID;
 
-        if (!file && !data) {
+        if (!assId || !mongoose.Types.ObjectId.isValid(assId)) {
             return res.status(400).json({
                 success: false,
-                message: "File or Data required"
-            });
-        }
-
-        if (!assId || !submitedID) {
-            return res.status(400).json({
-                success: false,
-                message: "Assignment ID and Submission ID are required"
-            });
-        }
-
-        const user = await User.findById(req.user.id);
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "User Not Found"
+                message: "Valid Assignment ID is required"
             });
         }
 
@@ -40,22 +25,32 @@ const editSubmittedAss = async (req, res, next) => {
         if (!assDetails) {
             return res.status(404).json({
                 success: false,
-                message: "Assignment Not Found"
+                message: "Assignment not found"
             });
         }
 
-        if (Date.now() > new Date(assDetails.dueDate) && assDetails.acceptAfterDue === false) {
+        // Check due date and late submission policy
+        if (assDetails.dueDate && Date.now() > new Date(assDetails.dueDate).getTime() && !assDetails.acceptAfterDue) {
             return res.status(403).json({
                 success: false,
-                message: "Assignment Due Date Over"
+                message: "Assignment due date has passed. Late edits are not allowed."
             });
         }
 
-        let currSubmitted = await SubmitAssignment.findById(submitedID);
+        let currSubmitted = null;
+        if (submissionTargetId && mongoose.Types.ObjectId.isValid(submissionTargetId)) {
+            currSubmitted = await SubmitAssignment.findById(submissionTargetId);
+        } else {
+            currSubmitted = await SubmitAssignment.findOne({
+                assignment: assId,
+                student: req.user.id
+            });
+        }
+
         if (!currSubmitted) {
             return res.status(404).json({
                 success: false,
-                message: "Submission Not Found"
+                message: "Submission not found"
             });
         }
 
@@ -66,23 +61,26 @@ const editSubmittedAss = async (req, res, next) => {
             });
         }
 
-        if (!overwrite) {
-            return res.status(409).json({
-                success: false,
-                overwriteRequired: true,
-                message: "Assignment Already Submitted. Do you want to overwrite?"
-            });
+        if (file) {
+            const uploaded = await uploadImage(file, process.env.FOLDER_NAME);
+            currSubmitted.file = uploaded.secure_url;
         }
 
-        //* IF ASSIGNMENT IS ALREADY SUBMITTED AND OVERWRITE CONFIRMED
-        if (file) {
-            const image = await uploadImage(file, process.env.FOLDER_NAME);
-            file = image.secure_url;
+        if (data !== undefined) {
+            currSubmitted.data = data;
         }
-        const updatedSubmission = await SubmitAssignment.findByIdAndUpdate(submitedID, {
-            data,
-            file,
-        }, { new: true });
+
+        currSubmitted.submitDate = Date.now();
+        await currSubmitted.save();
+
+        // Ensure assignment references are clean
+        await Assignment.findByIdAndUpdate(assId, {
+            $addToSet: { submission: currSubmitted._id },
+            $pull: { pendingStudent: req.user.id }
+        });
+
+        const updatedSubmission = await SubmitAssignment.findById(currSubmitted._id)
+            .populate('student', 'firstName lastName image email');
 
         const classForAss = await Class.findOne({ addedAssignment: assId });
         if (classForAss) {
@@ -91,12 +89,21 @@ const editSubmittedAss = async (req, res, next) => {
                 assId,
                 studentId: req.user.id
             });
+            getIO().to(`room:${classForAss._id.toString()}`).emit('todo:updated', {
+                classId: classForAss._id.toString(),
+                assId,
+                studentId: req.user.id
+            });
         }
+        getIO().to(`user:${req.user.id}`).emit('todo:updated', {
+            classId: classForAss?._id?.toString(),
+            assId,
+            studentId: req.user.id
+        });
 
         return res.status(200).json({
             success: true,
             message: "Assignment Edited Successfully",
-            assDetails,
             data: updatedSubmission
         });
 
@@ -104,6 +111,3 @@ const editSubmittedAss = async (req, res, next) => {
         next(err);
     }
 };
-
-exports.editSubmittedAss = editSubmittedAss;
-exports.editSubmimtedAss = editSubmittedAss;

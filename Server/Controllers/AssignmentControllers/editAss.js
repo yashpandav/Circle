@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Assignment = require('../../Models/Assignment');
 const User = require('../../Models/User');
 const Category = require('../../Models/Category');
@@ -8,7 +9,6 @@ require('dotenv').config();
 
 exports.editAss = async (req, res, next) => {
     try {
-
         const assId = req.params.id;
 
         const {
@@ -16,14 +16,18 @@ exports.editAss = async (req, res, next) => {
             description,
             category,
             dueDate,
+            acceptAfterDue,
+            status,
+            removeFile,
+            currClassId
         } = req.body;
 
         let file = req?.files?.file;
 
-        if (!assId) {
+        if (!assId || !mongoose.Types.ObjectId.isValid(assId)) {
             return res.status(400).json({
                 success: false,
-                message: "Assignment ID is required",
+                message: "Valid Assignment ID is required",
             });
         }
 
@@ -35,10 +39,21 @@ exports.editAss = async (req, res, next) => {
             });
         }
 
-        const parentClass = await Class.findOne({ addedAssignment: assId });
+        let parentClass = await Class.findOne({ addedAssignment: assId });
+        if (!parentClass && currClassId && mongoose.Types.ObjectId.isValid(currClassId)) {
+            parentClass = await Class.findById(currClassId);
+        }
+        if (!parentClass) {
+            parentClass = await Class.findOne({
+                $or: [
+                    { admin: req.user.id },
+                    { teacher: req.user.id }
+                ]
+            });
+        }
 
         //* Authorizing teacher or admin
-        const isAuthorized = findAss.teacher.toString() === req.user.id ||
+        const isAuthorized = (findAss.teacher && findAss.teacher.toString() === req.user.id) ||
             (parentClass && parentClass.admin && parentClass.admin.toString() === req.user.id) ||
             (parentClass && parentClass.teacher && parentClass.teacher.some(t => t.toString() === req.user.id));
 
@@ -49,54 +64,109 @@ exports.editAss = async (req, res, next) => {
             });
         }
 
-        //* Validating due date
-        if (dueDate && new Date(dueDate) < new Date(findAss.uploadDate)) {
-            return res.status(400).json({
-                success: false,
-                message: "Due date should be greater than upload date",
-            });
-        }
-
-        //* Updating category if provided
-        if (category) {
-            let currCategory = await Category.findById(category);
-            if (!currCategory) {
-                return res.status(404).json({
+        //* Validating due date if provided
+        if (dueDate) {
+            const parsedDueDate = new Date(dueDate);
+            if (isNaN(parsedDueDate.getTime())) {
+                return res.status(400).json({
                     success: false,
-                    message: "Category not found",
+                    message: "Invalid due date format",
                 });
             }
-            if (findAss.category) {
-                let prevCategory = await Category.findById(findAss.category);
-                if (prevCategory) {
-                    prevCategory.assignment.pull(assId);
-                    await prevCategory.save();
+            findAss.dueDate = parsedDueDate;
+        }
+
+        //* Updating category if provided or cleared
+        if (category !== undefined) {
+            if (category && category !== "" && mongoose.Types.ObjectId.isValid(category)) {
+                let currCategory = await Category.findById(category);
+                if (currCategory) {
+                    if (findAss.category && findAss.category.toString() !== category.toString()) {
+                        let prevCategory = await Category.findById(findAss.category);
+                        if (prevCategory) {
+                            prevCategory.assignment.pull(assId);
+                            await prevCategory.save();
+                        }
+                    }
+                    if (!currCategory.assignment.includes(assId)) {
+                        currCategory.assignment.push(assId);
+                        await currCategory.save();
+                    }
+                    findAss.category = currCategory._id;
+                }
+            } else if (category === "" || category === null) {
+                if (findAss.category) {
+                    let prevCategory = await Category.findById(findAss.category);
+                    if (prevCategory) {
+                        prevCategory.assignment.pull(assId);
+                        await prevCategory.save();
+                    }
+                    findAss.category = null;
                 }
             }
-            currCategory.assignment.push(assId);
-            await currCategory.save();
-            findAss.category = currCategory.id;
         }
 
-        //* Uploading new file if provided
+        //* Uploading new file or removing existing
         if (file) {
             const image = await uploadImage(file, process.env.FOLDER_NAME);
-            file = image.secure_url;
-            findAss.file = file;
+            findAss.file = image.secure_url;
+        } else if (removeFile === 'true' || removeFile === true) {
+            findAss.file = '';
         }
 
-        //* Updating other fields
-        findAss.name = name || findAss.name;
-        findAss.description = description || findAss.description;
-        findAss.dueDate = dueDate || findAss.dueDate;
+        //* Updating standard fields
+        if (name !== undefined && name.trim()) findAss.name = name.trim();
+        if (description !== undefined) findAss.description = description;
+        if (acceptAfterDue !== undefined) {
+            findAss.acceptAfterDue = (acceptAfterDue === 'true' || acceptAfterDue === true || acceptAfterDue === 'on');
+        }
+
+        const wasDraft = findAss.status === 'Draft';
+        if (status !== undefined) findAss.status = status;
+
+        //* If status changed from Draft to Published, ensure class references and pending students are synced
+        if (wasDraft && findAss.status === 'Published' && parentClass) {
+            await Class.findByIdAndUpdate(parentClass._id, {
+                $addToSet: { addedAssignment: findAss._id }
+            });
+
+            if (!findAss.pendingStudent || findAss.pendingStudent.length === 0) {
+                const studentsFromUsers = await User.find({ joinedClassAsStudent: parentClass._id }).select('_id');
+                const studentIdSet = new Set(studentsFromUsers.map(s => s._id.toString()));
+                if (parentClass.student && Array.isArray(parentClass.student)) {
+                    parentClass.student.forEach(s => studentIdSet.add(s.toString()));
+                }
+                findAss.pendingStudent = Array.from(studentIdSet);
+            }
+        }
 
         await findAss.save();
 
-        const populatedAss = await Assignment.findById(findAss._id).populate('teacher', 'firstName lastName image');
+        const populatedAss = await Assignment.findById(findAss._id)
+            .populate('teacher', 'firstName lastName image email')
+            .populate('category', 'name')
+            .populate('pendingStudent', 'firstName lastName image email')
+            .populate({
+                path: 'submission',
+                populate: {
+                    path: 'student',
+                    select: 'firstName lastName image email'
+                }
+            })
+            .populate({
+                path: 'comment',
+                populate: {
+                    path: 'user',
+                    select: 'firstName lastName image'
+                }
+            });
 
-        const classForAss = await Class.findOne({ addedAssignment: assId });
-        if (classForAss) {
-            getIO().to(`room:${classForAss._id.toString()}`).emit('assignment:updated', { data: populatedAss });
+        if (parentClass) {
+            getIO().to(`room:${parentClass._id.toString()}`).emit('assignment:updated', { data: populatedAss });
+            getIO().to(`room:${parentClass._id.toString()}`).emit('todo:updated', { classId: parentClass._id.toString(), assignmentId: findAss._id });
+            if (wasDraft && findAss.status === 'Published') {
+                getIO().to(`room:${parentClass._id.toString()}`).emit('assignment:new', { data: populatedAss });
+            }
         }
 
         return res.status(200).json({

@@ -4,7 +4,6 @@ import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
 import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
-import Divider from "@mui/material/Divider";
 import { Menu, MenuItem, IconButton, CircularProgress } from "@mui/material";
 import "./postContainer.css";
 import "./uploadFile.css";
@@ -54,7 +53,10 @@ export default function PostContainer({ post }) {
     useEffect(() => {
         const handleNewComment = ({ data, parentId }) => {
             if (parentId === post._id) {
-                setComments(prev => [...prev, data]);
+                setComments(prev => {
+                    if (prev.some(c => c._id === data._id)) return prev;
+                    return [...prev, data];
+                });
             }
         };
 
@@ -260,7 +262,6 @@ export default function PostContainer({ post }) {
                         </MenuItem>
                     </Menu>
                 </div>
-                <Divider />
 
                 {/* Post Title */}
                 {post.title && <h1 className="post-title">{post.title}</h1>}
@@ -372,7 +373,7 @@ export default function PostContainer({ post }) {
                     </div>
                 )}
             </div>
-            <Divider />
+            <div className="post-card-divider" />
             <CommentController comments={comments} onDeleteComment={handleDeleteComment} onEditComment={handleEditComment} />
             <AddCommentController addComment={addComment} />
             <ConfirmationDialog 

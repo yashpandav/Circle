@@ -4,7 +4,7 @@ const User = require('../../Models/User');
 const Class = require('../../Models/Class');
 const Category = require('../../Models/Category');
 const Comment = require('../../Models/Comment');
-const submittedAss = require('../../Models/SubmitAssignment');
+const SubmitAssignment = require('../../Models/SubmitAssignment');
 const { getIO } = require('../../socket');
 
 exports.deleteAss = async (req, res, next) => {
@@ -56,24 +56,56 @@ exports.deleteAss = async (req, res, next) => {
             { $pull: { assignment: assId } }
         );
 
-        // 7. Batch delete submissions
-        if (assignment.submission && assignment.submission.length > 0) {
-            await submittedAss.deleteMany({ _id: { $in: assignment.submission } });
-        }
-        await submittedAss.deleteMany({ assignmentId: assId });
+        // 7. Batch delete all associated submissions
+        await SubmitAssignment.deleteMany({
+            $or: [
+                { assignment: assId },
+                { _id: { $in: assignment.submission || [] } }
+            ]
+        });
 
-        // 8. Batch delete comments
-        if (assignment.comment && assignment.comment.length > 0) {
-            await Comment.deleteMany({ _id: { $in: assignment.comment } });
-        }
-        await Comment.deleteMany({ commentOn: "Assignment", id: assId });
+        // 8. Batch delete all associated comments
+        await Comment.deleteMany({
+            $or: [
+                { _id: { $in: assignment.comment || [] } },
+                { commentOn: "Assignment", id: assId }
+            ]
+        });
 
-        // 9. Delete the assignment document
+        // 9. Clean up references in Review and ToDo models
+        try {
+            const Review = require('../../Models/review');
+            const ToDo = require('../../Models/ToDo');
+            await Review.updateMany(
+                {},
+                { 
+                    $pull: { 
+                        "byClass.$[].reviewdAss": assId,
+                        "byClass.$[].notReviedAss": assId
+                    } 
+                }
+            );
+            await ToDo.updateMany(
+                {},
+                {
+                    $pull: {
+                        "byClass.$[].assigned": assId,
+                        "byClass.$[].missing": assId,
+                        "byClass.$[].completed": assId
+                    }
+                }
+            );
+        } catch (cleanupErr) {
+            console.error("Non-fatal error cleaning up review/todo refs:", cleanupErr);
+        }
+
+        // 10. Delete the assignment document
         const deletedAssignment = await Assignment.findByIdAndDelete(assId);
 
-        // 10. Broadcast deletion event via Socket.IO
+        // 11. Broadcast deletion event via Socket.IO
         if (currClass) {
             getIO().to(`room:${currClass._id.toString()}`).emit('assignment:deleted', { assignmentId: assId });
+            getIO().to(`room:${currClass._id.toString()}`).emit('todo:updated', { classId: currClass._id.toString(), assignmentId: assId });
         }
 
         return res.status(200).json({

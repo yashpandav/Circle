@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('../../Models/User');
 const Review = require('../../Models/review');
 
@@ -6,17 +7,10 @@ exports.removeFromReviewed = async (req, res, next) => {
         const userId = req.user.id;
         const assId = req.body.assId || req.body.addId;
 
-        if (!userId) {
+        if (!assId || !mongoose.Types.ObjectId.isValid(assId)) {
             return res.status(400).json({
                 success: false,
-                message: "User ID is required"
-            });
-        }
-
-        if (!assId) {
-            return res.status(400).json({
-                success: false,
-                message: "Assignment ID is required"
+                message: "Valid Assignment ID is required"
             });
         }
 
@@ -37,19 +31,22 @@ exports.removeFromReviewed = async (req, res, next) => {
         }
 
         let found = false;
-
         reviewList.byClass.forEach(classReview => {
             if (classReview.reviewdAss.some(id => id.toString() === assId.toString())) {
-                classReview.notReviedAss.push(assId);
+                if (!classReview.notReviedAss.some(id => id.toString() === assId.toString())) {
+                    classReview.notReviedAss.push(assId);
+                }
                 classReview.reviewdAss.pull(assId);
                 found = true;
             }
         });
 
         if (!found) {
-            return res.status(404).json({
-                success: false,
-                message: "Assignment not found in reviewed list"
+            reviewList.byClass.forEach(classReview => {
+                if (!classReview.notReviedAss.some(id => id.toString() === assId.toString())) {
+                    classReview.notReviedAss.push(assId);
+                    found = true;
+                }
             });
         }
 

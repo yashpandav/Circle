@@ -27,13 +27,26 @@ export default function SocketProvider({ children }) {
     const user = useSelector((state) => state.auth.user);
     const currClass = useSelector((state) => state.classes.currClass);
 
-    // ─── 1. Connect / Disconnect based on auth state ─────────────────────────
+    // ─── 1. Connect / Disconnect & User Room based on auth state ────────────
     useEffect(() => {
         if (user) {
             if (!socket.connected) socket.connect();
+            const userId = user._id || user.id;
+            if (userId) {
+                socket.emit('join:user', userId);
+            }
         } else {
             if (socket.connected) socket.disconnect();
         }
+
+        return () => {
+            if (user) {
+                const userId = user._id || user.id;
+                if (userId) {
+                    socket.emit('leave:user', userId);
+                }
+            }
+        };
     }, [user]);
 
     // ─── 2. Join / Leave classroom room ──────────────────────────────────────

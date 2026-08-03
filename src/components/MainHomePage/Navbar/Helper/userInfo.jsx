@@ -15,6 +15,21 @@ export default function UserInfo() {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.auth.user);
     const navigate = useNavigate();
+    const dropdownRef = React.useRef(null);
+
+    React.useEffect(() => {
+        function handleClickOutside(event) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setDialog(false);
+            }
+        }
+        if (showDialog) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [showDialog]);
 
     function dialogHandler() {
         setDialog(!showDialog);
@@ -41,7 +56,7 @@ export default function UserInfo() {
     }
 
     return (
-        <div id="user" onMouseLeave={() => { setDialog(false) }}>
+        <div id="user" ref={dropdownRef}>
             <img src={user?.image} alt='user-img' id='user-img' onClick={dialogHandler} />
             {showDialog && (
                 <div id='user-dialog'>
@@ -49,31 +64,37 @@ export default function UserInfo() {
                         <img src={user?.image} alt='user-img' id='dialog-user-img' />
                         <div id='name-email'>
                             <h3>{user?.firstName} {user?.lastName}</h3>
-                            <pre>{user?.email}</pre>
+                            <p>{user?.email}</p>
                         </div>
                     </div>
+
+                    <div className="dropdown-divider"></div>
+
                     <div id='user-info'>
                         <div className="user-data">
-                            <ClassIcon />
-                            <p>Your Class</p>
+                            <div className="icon-container"><ClassIcon /></div>
+                            <p>Classes</p>
                         </div>
                         <div className="user-data">
-                            <FormatListBulletedIcon />
-                            <p>Your Todo</p>
+                            <div className="icon-container"><FormatListBulletedIcon /></div>
+                            <p>To-dos</p>
                         </div>
                         <div className="user-data">
-                            <GradingIcon />
-                            <p style={{ whiteSpace: 'nowrap' }}>Your Review List</p>
+                            <div className="icon-container"><GradingIcon /></div>
+                            <p>Reviews</p>
                         </div>
                     </div>
+
+                    <div className="dropdown-divider"></div>
+
                     <div id='last-div'>
-                        <p>WorkArea</p>
-                        <p>Dashboard</p>
-                        <p onClick={logoutHandler}>LogOut</p>
+                        <div className="dropdown-item">WorkArea</div>
+                        <div className="dropdown-item">Dashboard</div>
+                        <div className="dropdown-item logout" onClick={logoutHandler}>LogOut</div>
                     </div>
                 </div>
             )}
-            <ConfirmationDialog 
+            <ConfirmationDialog
                 open={confirmLogout}
                 title="Log Out"
                 content="Are you sure you want to log out of your account?"

@@ -1,24 +1,29 @@
 const mongoose = require("mongoose");
 
-const SumitAssignmentSchema = new mongoose.Schema({
-	data: { 
+const SubmitAssignmentSchema = new mongoose.Schema({
+    data: { 
         type: String 
     },
-	file: {
-        type : String
+    file: {
+        type: String
     },
-    student : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : "User"
+    student: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     },
-    submitDate : {
-        type : Date,
-        default : Date.now
+    assignment: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Assignment"
+    },
+    submitDate: {
+        type: Date,
+        default: Date.now
     }
 });
 
-const SubmitAssignment = mongoose.models.SubmitAssignment || mongoose.model("SubmitAssignment", SumitAssignmentSchema);
+const SubmitAssignment = mongoose.models.SubmitAssignment || mongoose.model("SubmitAssignment", SubmitAssignmentSchema);
 if (!mongoose.models.SumitAssignment) {
-    mongoose.model("SumitAssignment", SumitAssignmentSchema);
+    mongoose.model("SumitAssignment", SubmitAssignmentSchema);
 }
 module.exports = SubmitAssignment;

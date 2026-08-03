@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('../../../Models/User');
 const Assignment = require('../../../Models/Assignment');
 const SubmitAssignment = require('../../../Models/SubmitAssignment');
@@ -6,20 +7,13 @@ const { getIO } = require('../../../socket');
 
 exports.deleteSubmittedAss = async (req, res, next) => {
     try {
-        const { assId, submittedID } = req.body;
+        const assId = req.body.assId || req.query.assId || req.params.id;
+        const submittedID = req.body.submittedID || req.query.submittedID;
 
-        if (!assId || !submittedID) {
+        if (!assId || !mongoose.Types.ObjectId.isValid(assId)) {
             return res.status(400).json({
                 success: false,
-                message: "Assignment ID and Submission ID are required"
-            });
-        }
-
-        const user = await User.findById(req.user.id);
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "User Not Found"
+                message: "Valid Assignment ID is required"
             });
         }
 
@@ -27,51 +21,82 @@ exports.deleteSubmittedAss = async (req, res, next) => {
         if (!assDetails) {
             return res.status(404).json({
                 success: false,
-                message: "Assignment Not Found"
+                message: "Assignment not found"
             });
         }
 
-        if (Date.now() > assDetails.dueDate && !assDetails.acceptAfterDue) {
+        // Check due date and late policy
+        if (assDetails.dueDate && Date.now() > new Date(assDetails.dueDate).getTime() && !assDetails.acceptAfterDue) {
             return res.status(403).json({
                 success: false,
-                message: "Assignment Due Date Over, You can't make changes"
+                message: "Assignment due date has passed. Submissions cannot be unsubmitted."
             });
         }
 
-        const currSubmitted = await SubmitAssignment.findById(submittedID);
+        let currSubmitted = null;
+        if (submittedID && mongoose.Types.ObjectId.isValid(submittedID)) {
+            currSubmitted = await SubmitAssignment.findById(submittedID);
+        } else {
+            currSubmitted = await SubmitAssignment.findOne({
+                assignment: assId,
+                student: req.user.id
+            });
+        }
+
         if (!currSubmitted) {
             return res.status(404).json({
                 success: false,
-                message: "Submission Not Found"
+                message: "Submission not found"
             });
         }
-
-        if (currSubmitted.student.toString() !== req.user.id) {
-            return res.status(403).json({
-                success: false,
-                message: "You are not authorized to delete this submission"
-            });
-        }
-
-        await SubmitAssignment.findByIdAndDelete(submittedID);
-
-        await Assignment.findByIdAndUpdate(assId, {
-            $pull: { submission: submittedID },
-            $push: { pendingStudent: req.user.id }
-        });
 
         const classForAss = await Class.findOne({ addedAssignment: assId });
-        if (classForAss) {
-            getIO().to(`room:${classForAss._id.toString()}`).emit('assignment:submission_deleted', {
-                submittedID,
-                assId,
-                studentId: req.user.id
+
+        // Authorization check: Submitter OR Class Admin / Teacher
+        const isOwner = currSubmitted.student.toString() === req.user.id;
+        const isClassAdmin = classForAss?.admin && classForAss.admin.toString() === req.user.id;
+        const isClassTeacher = classForAss?.teacher && classForAss.teacher.some(t => t.toString() === req.user.id);
+
+        if (!isOwner && !isClassAdmin && !isClassTeacher) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not authorized to unsubmit this assignment"
             });
         }
+
+        const studentId = currSubmitted.student;
+        const submissionId = currSubmitted._id;
+
+        // Delete the submission document
+        await SubmitAssignment.findByIdAndDelete(submissionId);
+
+        // Update assignment document
+        await Assignment.findByIdAndUpdate(assId, {
+            $pull: { submission: submissionId },
+            $addToSet: { pendingStudent: studentId }
+        });
+
+        if (classForAss) {
+            getIO().to(`room:${classForAss._id.toString()}`).emit('assignment:submission_deleted', {
+                submittedID: submissionId,
+                assId,
+                studentId: studentId.toString()
+            });
+            getIO().to(`room:${classForAss._id.toString()}`).emit('todo:updated', {
+                classId: classForAss._id.toString(),
+                assId,
+                studentId: studentId.toString()
+            });
+        }
+        getIO().to(`user:${studentId.toString()}`).emit('todo:updated', {
+            classId: classForAss?._id?.toString(),
+            assId,
+            studentId: studentId.toString()
+        });
 
         return res.status(200).json({
             success: true,
-            message: "Assignment Deleted Successfully",
+            message: "Assignment unsubmitted successfully",
             data: currSubmitted
         });
 

@@ -357,4 +357,12 @@ h1.post-title {
 
 .more-vert-icon {
     color: #64748b !important;
-} 
+}
+
+/* Subtle, non-AI modern card divider */
+.post-card-divider {
+    height: 1px;
+    background: #f1f5f9;
+    margin: 8px 20px 2px 20px;
+    border: none;
+}

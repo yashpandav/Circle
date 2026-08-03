@@ -4,7 +4,11 @@ import {
     TextField,
     IconButton,
     CircularProgress,
-    Button
+    Button,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel
 } from "@mui/material";
 import {
     Close as CloseIcon,
@@ -64,6 +68,27 @@ export default function EditPostModal({ open, onClose, post, onPostUpdated }) {
             }
         }
     }, [open, post]);
+
+    useEffect(() => {
+        window.handleCreateInlineCategoryEditPost = async (name) => {
+            try {
+                // We need to import createCategory at the top
+                const { createCategory } = require("../../../Api/apiCaller/categoryapicaller");
+                const response = await dispatch(createCategory({ name, classId: currClass._id })).unwrap();
+                if (response && response.data) {
+                    dispatch(updateCurrClass({
+                        addedCategory: [...(currClass.addedCategory || []), response.data]
+                    }));
+                    setCategory(response.data._id);
+                }
+            } catch (err) {
+                console.error("Error creating inline topic", err);
+            }
+        };
+        return () => {
+            delete window.handleCreateInlineCategoryEditPost;
+        };
+    }, [currClass?._id, currClass?.addedCategory, dispatch]);
 
     const handleApplyFormatting = (command) => {
         document.execCommand(command, false, null);
@@ -256,22 +281,7 @@ export default function EditPostModal({ open, onClose, post, onPostUpdated }) {
                         disabled={isSaving}
                     />
 
-                    {/* Topic / Category Selector */}
-                    {currClass?.addedCategory && currClass.addedCategory.length > 0 && (
-                        <select
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value)}
-                            className="edit-post-category-select"
-                            disabled={isSaving}
-                        >
-                            <option value="">No topic</option>
-                            {currClass.addedCategory.map((cat) => (
-                                <option key={cat._id} value={cat._id}>
-                                    {cat.name}
-                                </option>
-                            ))}
-                        </select>
-                    )}
+
 
                     {/* Rich Content Editor */}
                     <div
@@ -330,6 +340,108 @@ export default function EditPostModal({ open, onClose, post, onPostUpdated }) {
                             >
                                 <CloudUpload fontSize="small" style={{ color: "#8b5cf6" }} />
                             </IconButton>
+
+                            {/* MUI Topic / Category Selector */}
+                            {currClass?.admin && (
+                                <div style={{ marginLeft: '4px', marginRight: '4px', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+                                    {category !== "CREATE_NEW" ? (
+                                        <FormControl size="small" sx={{ minWidth: 140 }}>
+                                            <InputLabel id="edit-topic-select-label">Topic</InputLabel>
+                                            <Select
+                                                labelId="edit-topic-select-label"
+                                                id="edit-topic-select"
+                                                value={category}
+                                                label="Topic"
+                                                onChange={(e) => setCategory(e.target.value)}
+                                                disabled={isSaving}
+                                                sx={{ 
+                                                    backgroundColor: '#fff',
+                                                    '& .MuiSelect-select': {
+                                                        paddingTop: '6px',
+                                                        paddingBottom: '6px',
+                                                        fontSize: '14px'
+                                                    }
+                                                }}
+                                            >
+                                                <MenuItem value="">
+                                                    <em>No topic</em>
+                                                </MenuItem>
+                                                {currClass?.addedCategory && currClass.addedCategory.map((cat) => (
+                                                    <MenuItem key={cat._id} value={cat._id}>
+                                                        {cat.name}
+                                                    </MenuItem>
+                                                ))}
+                                                <MenuItem value="CREATE_NEW" sx={{ color: 'var(--class-theme, #1967d2)', fontWeight: 'bold' }}>
+                                                    + Create new topic
+                                                </MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    ) : (
+                                        <div style={{ 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            gap: '6px', 
+                                            padding: '4px 6px',
+                                            border: '1px solid var(--class-theme, #1967d2)',
+                                            borderRadius: '4px',
+                                            backgroundColor: '#fff',
+                                        }}>
+                                            <input
+                                                type="text"
+                                                placeholder="New topic..."
+                                                id="edit-new-topic-input-inline"
+                                                autoFocus
+                                                style={{ 
+                                                    border: 'none',
+                                                    outline: 'none',
+                                                    fontSize: '14px',
+                                                    color: '#1e293b',
+                                                    width: '120px',
+                                                    backgroundColor: 'transparent'
+                                                }}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                        const input = document.getElementById("edit-new-topic-input-inline");
+                                                        if (input && input.value.trim() && window.handleCreateInlineCategoryEditPost) {
+                                                            window.handleCreateInlineCategoryEditPost(input.value.trim());
+                                                        }
+                                                    }
+                                                }}
+                                            />
+                                            <Button
+                                                variant="contained"
+                                                size="small"
+                                                style={{ 
+                                                    backgroundColor: 'var(--class-theme, #1967d2)', 
+                                                    color: '#fff',
+                                                    textTransform: 'none', 
+                                                    minWidth: 'auto',
+                                                    padding: '2px 10px',
+                                                    boxShadow: 'none',
+                                                    fontSize: '12px'
+                                                }}
+                                                onClick={async () => {
+                                                    const input = document.getElementById("edit-new-topic-input-inline");
+                                                    if (input && input.value.trim() && window.handleCreateInlineCategoryEditPost) {
+                                                        window.handleCreateInlineCategoryEditPost(input.value.trim());
+                                                    }
+                                                }}
+                                            >
+                                                Save
+                                            </Button>
+                                            <IconButton 
+                                                size="small" 
+                                                onClick={() => setCategory("")}
+                                                style={{ padding: '2px', color: '#64748b' }}
+                                                title="Cancel"
+                                            >
+                                                <CloseIcon fontSize="small" />
+                                            </IconButton>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                             <IconButton
                                 size="small"
                                 onClick={() => setShowYouTubeInput((prev) => !prev)}

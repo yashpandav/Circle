@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('../../../Models/User');
 const Assignment = require('../../../Models/Assignment');
 const SubmitAssignment = require('../../../Models/SubmitAssignment');
@@ -12,17 +13,17 @@ exports.submitAss = async (req, res, next) => {
         const { data, submittedID, overwrite } = req.body;
         let file = req.files?.file;
 
-        if (!file && !data) {
+        if (!assId || !mongoose.Types.ObjectId.isValid(assId)) {
             return res.status(400).json({
                 success: false,
-                message: "File or Data required"
+                message: "Valid Assignment ID is required"
             });
         }
 
-        if (!assId) {
+        if (!file && (!data || !data.trim())) {
             return res.status(400).json({
                 success: false,
-                message: "Assignment ID is required"
+                message: "A file attachment or text note is required to submit"
             });
         }
 
@@ -42,24 +43,28 @@ exports.submitAss = async (req, res, next) => {
             });
         }
 
-        if (Date.now() > new Date(assDetails.dueDate) && !assDetails.acceptAfterDue) {
-            return res.status(400).json({
+        // Check due date & late submission policy
+        if (assDetails.dueDate && Date.now() > new Date(assDetails.dueDate).getTime() && !assDetails.acceptAfterDue) {
+            return res.status(403).json({
                 success: false,
-                message: "Assignment due date over"
+                message: "Assignment due date has passed. Late submissions are not accepted."
             });
         }
 
+        // Find existing submission
         let currSubmitted = null;
-        if (submittedID) {
+        if (submittedID && mongoose.Types.ObjectId.isValid(submittedID)) {
             currSubmitted = await SubmitAssignment.findById(submittedID);
-        } else if (assDetails.submission && assDetails.submission.length > 0) {
+        } else {
             currSubmitted = await SubmitAssignment.findOne({
-                _id: { $in: assDetails.submission },
+                assignment: assId,
                 student: req.user.id
             });
         }
 
-        //* IF ASSIGNMENT IS ALREADY SUBMITTED
+        const isOverwriteConfirmed = overwrite === true || overwrite === 'true';
+
+        //* If assignment was already submitted
         if (currSubmitted) {
             if (currSubmitted.student.toString() !== req.user.id) {
                 return res.status(403).json({
@@ -68,60 +73,120 @@ exports.submitAss = async (req, res, next) => {
                 });
             }
 
-            if (!overwrite || overwrite === 'false') {
+            if (!isOverwriteConfirmed) {
                 return res.status(409).json({
                     success: false,
                     overwriteRequired: true,
                     message: "Assignment already submitted. Do you want to overwrite?"
                 });
             }
-            //? IF USER SAYS YES THEN CONTINUE
-            await SubmitAssignment.findByIdAndDelete(submittedID);
-            await Assignment.findByIdAndUpdate(assId, {
-                $pull: { submission: submittedID }
+
+            // Overwrite confirmed: update existing submission
+            if (file) {
+                const uploaded = await uploadImage(file, process.env.FOLDER_NAME);
+                currSubmitted.file = uploaded.secure_url;
+            }
+            if (data !== undefined) {
+                currSubmitted.data = data;
+            }
+            currSubmitted.submitDate = Date.now();
+            await currSubmitted.save();
+
+            const updatedAssignment = await Assignment.findByIdAndUpdate(assId, {
+                $addToSet: { submission: currSubmitted._id },
+                $pull: { pendingStudent: req.user.id }
+            }, { new: true });
+
+            const populatedSubmission = await SubmitAssignment.findById(currSubmitted._id)
+                .populate('student', 'firstName lastName image email');
+
+            const classForAss = await Class.findOne({ addedAssignment: assId });
+            if (classForAss) {
+                getIO().to(`room:${classForAss._id.toString()}`).emit('assignment:submitted', {
+                    data: {
+                        assignmentId: assId,
+                        submission: populatedSubmission,
+                        studentId: req.user.id
+                    }
+                });
+                getIO().to(`room:${classForAss._id.toString()}`).emit('todo:updated', {
+                    classId: classForAss._id.toString(),
+                    assignmentId: assId,
+                    studentId: req.user.id
+                });
+            }
+            getIO().to(`user:${req.user.id}`).emit('todo:updated', {
+                classId: classForAss?._id?.toString(),
+                assignmentId: assId,
+                studentId: req.user.id
+            });
+
+            return res.status(200).json({
+                success: true,
+                message: "Assignment submitted successfully",
+                data: {
+                    assignment: updatedAssignment,
+                    submission: populatedSubmission
+                }
             });
         }
 
+        // New Submission
+        let fileUrl = '';
         if (file) {
-            const image = await uploadImage(file, process.env.FOLDER_NAME);
-            file = image.secure_url;
+            const uploaded = await uploadImage(file, process.env.FOLDER_NAME);
+            fileUrl = uploaded.secure_url;
         }
 
         const newSubmission = new SubmitAssignment({
-            data,
-            file,
+            data: data || '',
+            file: fileUrl,
             student: req.user.id,
-            assignment: assId
+            assignment: assId,
+            submitDate: Date.now()
         });
 
         await newSubmission.save();
 
-        await Assignment.findByIdAndUpdate(assId, {
-            $push: { submission: newSubmission.id },
+        const updatedAssignment = await Assignment.findByIdAndUpdate(assId, {
+            $addToSet: { submission: newSubmission._id },
             $pull: { pendingStudent: req.user.id }
-        });
+        }, { new: true });
+
+        const populatedSubmission = await SubmitAssignment.findById(newSubmission._id)
+            .populate('student', 'firstName lastName image email');
 
         const classForAss = await Class.findOne({ addedAssignment: assId });
         if (classForAss) {
             getIO().to(`room:${classForAss._id.toString()}`).emit('assignment:submitted', {
                 data: {
-                    assignment: assDetails,
-                    submission: newSubmission,
+                    assignmentId: assId,
+                    submission: populatedSubmission,
                     studentId: req.user.id
                 }
             });
+            getIO().to(`room:${classForAss._id.toString()}`).emit('todo:updated', {
+                classId: classForAss._id.toString(),
+                assignmentId: assId,
+                studentId: req.user.id
+            });
         }
+        getIO().to(`user:${req.user.id}`).emit('todo:updated', {
+            classId: classForAss?._id?.toString(),
+            assignmentId: assId,
+            studentId: req.user.id
+        });
 
         return res.status(200).json({
             success: true,
             message: "Assignment submitted successfully",
             data: {
-                assignment: assDetails,
-                submission: newSubmission
+                assignment: updatedAssignment,
+                submission: populatedSubmission
             }
         });
 
     } catch (err) {
         next(err);
     }
-}
+};

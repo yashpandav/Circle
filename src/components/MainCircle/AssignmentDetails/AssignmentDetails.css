@@ -1,205 +1,762 @@
-.assignment-details-page {
+/* Modernized Assignment Details Page */
+
+.assignment-details-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 20px 60px 20px;
+    font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #1e293b;
+}
+
+/* Top Navigation Bar */
+.assignment-details-top-bar {
     display: flex;
-    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.assignment-details-top-bar .back-btn {
+    font-size: 14px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.assignment-details-top-bar .back-btn:hover {
+    background-color: #f1f5f9;
+}
+
+.teacher-actions-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Layout Grid */
+.assignment-details-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
     gap: 24px;
-    padding: 24px 48px;
-    margin-top: 60px; /* Leave space for the top nav */
-    color: #3c4043;
+    align-items: start;
 }
 
-.assignment-main-content {
-    flex: 3;
-    background: transparent;
+@media (max-width: 900px) {
+    .assignment-details-layout {
+        grid-template-columns: 1fr;
+    }
 }
 
-.assignment-right-sidebar {
-    flex: 1;
+/* Main Column */
+.assignment-details-main {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Hero Header Card */
+.assignment-hero-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-/* Left Content Styles */
-.assignment-header-details {
+.hero-top-row {
     display: flex;
     align-items: flex-start;
     gap: 16px;
-    border-bottom: 1px solid #e0e0e0;
-    padding-bottom: 16px;
-    margin-bottom: 24px;
 }
 
-.assignment-icon-wrapper {
+.hero-icon-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    color: white;
+    color: #ffffff;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0, 168, 150, 0.25);
 }
 
-.assignment-title-area h1 {
-    margin: 0;
-    font-size: 28px;
-    font-weight: 400;
-    color: #1967d2;
+.hero-info {
+    flex: 1;
+    min-width: 0;
 }
 
-.assignment-meta-info {
-    font-size: 14px;
-    color: #5f6368;
-    margin-top: 4px;
+.hero-title {
+    margin: 0 0 6px 0;
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.3;
 }
 
-.assignment-due-date {
-    margin-top: 4px;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.assignment-description-area {
-    font-size: 14px;
-    line-height: 1.5;
-    margin-bottom: 24px;
-}
-
-/* Right Sidebar / Your Work Styles */
-.your-work-card {
-    background: white;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 16px;
-    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
-}
-
-.your-work-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-}
-
-.your-work-header h2 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 400;
-}
-
-.work-status {
-    font-size: 14px;
-    font-weight: 500;
-    color: #1e8e3e; /* Green for Assigned/Turned in */
-}
-
-.work-status.missing {
-    color: #d93025; /* Red for missing */
-}
-
-.upload-work-button {
-    width: 100%;
+.hero-meta {
     display: flex;
     align-items: center;
-    justify-content: center;
+    flex-wrap: wrap;
     gap: 8px;
-    padding: 10px;
-    background-color: white;
-    border: 1px solid #dadce0;
-    border-radius: 4px;
-    color: #1967d2;
+    font-size: 13.5px;
+    color: #64748b;
+}
+
+.teacher-name {
+    font-weight: 600;
+    color: #334155;
+}
+
+.dot-sep {
+    color: #cbd5e1;
+}
+
+.topic-chip {
+    background-color: #f1f5f9 !important;
+    color: #475569 !important;
+    font-weight: 500 !important;
+    font-size: 12px !important;
+}
+
+.hero-due-badge-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid #f1f5f9;
+    flex-wrap: wrap;
+}
+
+.due-date-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
     font-weight: 500;
-    cursor: pointer;
+    color: #334155;
+}
+
+.due-date-pill.past-due {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #dc2626;
+}
+
+.late-policy-tag {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.late-policy-tag.late-allowed {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.late-policy-tag.late-closed {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+/* Instructions Card */
+.assignment-instructions-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.section-heading {
+    margin: 0 0 16px 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.instructions-content {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #334155;
+    word-break: break-word;
+}
+
+.instructions-content p {
+    margin-top: 0;
     margin-bottom: 12px;
 }
 
-.upload-work-button:hover {
-    background-color: #f8f9fa;
+.instructions-content p:last-child {
+    margin-bottom: 0;
 }
 
-.turn-in-button {
-    width: 100%;
-    padding: 10px;
-    background-color: #1967d2;
-    border: none;
-    border-radius: 4px;
-    color: white;
-    font-weight: 500;
-    cursor: pointer;
+/* Reference Material Attachment */
+.teacher-reference-attachment {
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid #f1f5f9;
 }
 
-.turn-in-button:disabled {
-    background-color: #e8eaed;
-    color: #9aa0a6;
-    cursor: not-allowed;
+.attachment-heading {
+    margin: 0 0 12px 0;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    color: #64748b;
 }
 
-.turn-in-button:hover:not(:disabled) {
-    background-color: #174ea6;
+.reference-file-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.2s ease;
 }
 
-.unsubmit-button {
-    width: 100%;
-    padding: 10px;
-    background-color: white;
-    border: 1px solid #dadce0;
-    border-radius: 4px;
-    color: #3c4043;
-    font-weight: 500;
-    cursor: pointer;
+.reference-file-card:hover {
+    background: #ffffff;
+    border-color: #00a896;
+    box-shadow: 0 4px 12px rgba(0, 168, 150, 0.1);
+    transform: translateY(-1px);
 }
 
-.unsubmit-button:hover {
-    background-color: #f8f9fa;
+.file-meta {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
-.file-preview-card {
+.file-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.file-subtitle {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.external-link-icon {
+    color: #94a3b8;
+}
+
+/* Comments Card */
+.assignment-comments-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.comments-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.comments-card-header h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+/* Right Sidebar / Student Work Card */
+.assignment-details-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.student-work-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.work-card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 8px 12px;
-    margin-bottom: 16px;
 }
 
-.file-preview-details {
+.work-card-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.submission-status-badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.status-turned-in {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.status-missing {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.status-assigned {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+/* Submitted State */
+.submitted-work-view {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.submitted-success-banner {
     display: flex;
     align-items: center;
-    gap: 12px;
-    overflow: hidden;
+    gap: 10px;
+    background: #ecfdf5;
+    padding: 12px;
+    border-radius: 10px;
 }
 
-.file-preview-name-text {
-    font-size: 14px;
-    white-space: nowrap;
+.submitted-success-banner h4 {
+    margin: 0 0 2px 0;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #065f46;
+}
+
+.submitted-success-banner p {
+    margin: 0;
+    font-size: 12px;
+    color: #047857;
+}
+
+.submitted-file-attachment {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #334155;
+    transition: all 0.15s ease;
+}
+
+.submitted-file-attachment:hover {
+    border-color: #00a896;
+    background: #ffffff;
+}
+
+.submitted-file-attachment .filename {
+    flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 150px;
+    white-space: nowrap;
 }
 
-.teacher-summary-card {
-    background: white;
-    border: 1px solid #e0e0e0;
+.submitted-file-attachment .ext-icon {
+    color: #94a3b8;
+}
+
+.submitted-note-box {
+    background: #f8fafc;
+    padding: 10px 12px;
     border-radius: 8px;
-    padding: 16px;
+    border: 1px solid #e2e8f0;
+}
+
+.submitted-note-box .note-label {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+.submitted-note-box p {
+    margin: 4px 0 0 0;
+    font-size: 13.5px;
+    color: #334155;
+}
+
+.unsubmit-action-btn {
+    border-color: #cbd5e1 !important;
+    color: #475569 !important;
+    text-transform: none !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    padding: 8px !important;
+}
+
+.unsubmit-action-btn:hover {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+}
+
+.unsubmit-hint {
+    margin: 0;
+    font-size: 11.5px;
+    color: #94a3b8;
     text-align: center;
 }
 
-.teacher-summary-stats {
+/* Unsubmitted Form */
+.unsubmitted-work-form {
     display: flex;
-    justify-content: space-around;
-    margin-top: 16px;
-    margin-bottom: 16px;
+    flex-direction: column;
+    gap: 14px;
 }
 
-.stat-item h3 {
-    margin: 0;
-    font-size: 32px;
-    font-weight: 400;
+.submissions-closed-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    color: #991b1b;
+    font-size: 13px;
+    line-height: 1.5;
 }
 
-.stat-item p {
+.submissions-closed-notice p {
     margin: 0;
+}
+
+.upload-file-trigger {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 20px 14px;
+    background: #fafbfc;
+    border: 2px dashed;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.upload-file-trigger:hover {
+    background: #f0fdfa;
+}
+
+.upload-file-trigger span {
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.upload-file-trigger .subtext {
     font-size: 12px;
-    color: #5f6368;
+    font-weight: 400;
+    color: #94a3b8;
+}
+
+.selected-upload-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: #f0fdfa;
+    border: 1px solid rgba(0, 168, 150, 0.3);
+    border-radius: 10px;
+}
+
+.selected-upload-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+}
+
+.selected-filename {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 190px;
+}
+
+.student-note-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 13.5px;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.student-note-textarea:focus {
+    border-color: #00a896;
+}
+
+.turn-in-action-btn {
+    padding: 10px !important;
+    border-radius: 10px !important;
+    text-transform: none !important;
+    font-size: 14.5px !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(0, 168, 150, 0.25) !important;
+    transition: all 0.2s ease !important;
+}
+
+.turn-in-action-btn:hover:not(:disabled) {
+    opacity: 0.92;
+    transform: translateY(-1px);
+}
+
+.turn-in-action-btn:disabled {
+    background-color: #e2e8f0 !important;
+    color: #94a3b8 !important;
+    box-shadow: none !important;
+}
+
+/* Teacher Workspace */
+.teacher-workspace-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.teacher-stats-box {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.teacher-stats-box h3 {
+    margin: 0 0 14px 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.stat-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-number {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.teacher-submissions-container {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.submission-filter-tabs {
+    border-bottom: 1px solid #f1f5f9;
+    background: #f8fafc;
+}
+
+.submissions-student-list {
+    max-height: 380px;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.student-submission-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #f1f5f9;
+    background: #ffffff;
+    transition: all 0.15s ease;
+}
+
+.student-submission-item:hover {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+.student-submission-item.done {
+    border-left: 3px solid #10b981;
+}
+
+.student-submission-item.pending {
+    border-left: 3px solid #cbd5e1;
+}
+
+.student-item-details {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.student-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.student-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+}
+
+.status-pill {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+
+.status-pill.done {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.status-pill.assigned {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.status-pill.missing {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.submission-time {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.student-file-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #00a896;
+    text-decoration: none;
+    margin-top: 4px;
+}
+
+.student-file-link:hover {
+    text-decoration: underline;
+}
+
+.student-note-preview {
+    margin: 4px 0 0 0;
+    font-size: 12px;
+    font-style: italic;
+    color: #64748b;
+}
+
+.no-students-message {
+    padding: 24px;
+    text-align: center;
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+/* Loading & Empty States */
+.assignment-details-loading-container,
+.assignment-not-found-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    gap: 16px;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.assignment-details-loading-container p {
+    font-size: 15px;
+    color: #64748b;
+}
+
+.assignment-not-found-container h2 {
+    margin: 0;
+    color: #1e293b;
+    font-size: 1.4rem;
+}
+
+.assignment-not-found-container p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+    max-width: 400px;
 }

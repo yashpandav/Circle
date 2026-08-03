@@ -15,55 +15,56 @@ const {
 
 export const createAssignment = createAsyncThunk(
     'createAssignment',
-    async (assignmentData) => {
+    async (assignmentData, { rejectWithValue }) => {
         try {
             const response = await apiConnector('POST', CREATE_ASSIGNMENT_API, assignmentData);
             toast.success("Assignment Created Successfully");
             return response.data;
         } catch (err) {
             toast.error(err?.response?.data?.message || "Failed to Create Assignment");
-            return err.response ? err.response : err.message;
+            return rejectWithValue(err.response ? err.response.data : err.message);
         }
     }
 );
 
 export const editAssignment = createAsyncThunk(
     'editAssignment',
-    async ({ assId, assignmentData }) => {
+    async ({ assId, assignmentData, data }, { rejectWithValue }) => {
         try {
-            const response = await apiConnector('PUT', `${EDIT_ASSIGNMENT_API}/${assId}`, assignmentData);
+            const payload = assignmentData || data;
+            const response = await apiConnector('PUT', `${EDIT_ASSIGNMENT_API}/${assId}`, payload);
             toast.success("Assignment Edited Successfully");
             return response.data;
         } catch (err) {
             toast.error(err?.response?.data?.message || "Failed to Edit Assignment");
-            return err.response ? err.response : err.message;
+            return rejectWithValue(err.response ? err.response.data : err.message);
         }
     }
 );
 
 export const getAssignmentDetails = createAsyncThunk(
     'getAssignmentDetails',
-    async (assId) => {
+    async (assId, { rejectWithValue }) => {
         try {
             const response = await apiConnector('GET', `${GET_ASSIGNMENT_API}/${assId}`);
             return response.data;
         } catch (err) {
             toast.error(err?.response?.data?.message || "Failed to Get Assignment Details");
-            return err.response ? err.response : err.message;
+            return rejectWithValue(err.response ? err.response.data : err.message);
         }
     }
 );
 
 export const deleteAssignment = createAsyncThunk(
     'deleteAssignment',
-    async (assId) => {
+    async (assId, { rejectWithValue }) => {
         try {
             const response = await apiConnector('DELETE', `${DELETE_ASSIGNMENT_API}/${assId}`);
             toast.success("Assignment Deleted Successfully");
             return response.data;
         } catch (err) {
             toast.error(err?.response?.data?.message || "Failed to Delete Assignment");
-            return err.response ? err.response : err.message;
+            return rejectWithValue(err.response ? err.response.data : err.message);
         }
     }
 );
@@ -130,14 +131,14 @@ export const editSubmittedAssignment = createAsyncThunk(
 
 export const deleteSubmittedAssignment = createAsyncThunk(
     'deleteSubmittedAssignment',
-    async ({ assId, submittedID }) => {
+    async ({ assId, submittedID }, { rejectWithValue }) => {
         try {
             const response = await apiConnector('DELETE', DELETED_SUBMITTED_ASSIGNMENT_API, { assId, submittedID });
             toast.success("Assignment Submission Deleted Successfully");
             return response.data;
         } catch (err) {
             toast.error(err?.response?.data?.message || "Failed to Delete Submission");
-            return err.response ? err.response : err.message;
+            return rejectWithValue(err.response ? err.response.data : err.message);
         }
     }
 );

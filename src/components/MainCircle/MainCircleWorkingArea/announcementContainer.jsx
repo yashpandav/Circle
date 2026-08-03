@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
-import { TextField, IconButton, Button } from "@mui/material";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { TextField, IconButton, Button, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import { useSelector } from "react-redux";
 import { IoIosSend } from "react-icons/io";
 import {
@@ -20,15 +20,14 @@ import "./announcementContainer.css";
 import './uploadFile.css';
 import { createPost } from "../../../Api/apiCaller/postapicaller";
 import { useDispatch } from "react-redux";
-import { LoaderComponent } from "../../Helper/Loaders/loader";
 import { setLoading } from "../../../Slices/loadingSlice";
 import { createAssignment } from "../../../Api/apiCaller/assignmentapicaller";
+import { createCategory } from "../../../Api/apiCaller/categoryapicaller";
 import { updateCurrClass } from "../../../Slices/classSlice";
 import toast from "react-hot-toast";
 
 const UserAnnouncementHeader = ({ setWriteAssignment }) => {
     const user = useSelector((state) => state?.auth?.user);
-    const currClass = useSelector((state) => state.classes.currClass);
 
     return (
         <div className="announcement-header" onClick={() => setWriteAssignment(true)}>
@@ -46,7 +45,6 @@ const UserAnnouncementHeader = ({ setWriteAssignment }) => {
 };
 
 const ToggleSwitch = ({ isPost, setIsPost }) => {
-    const currClass = useSelector((state) => state.classes.currClass);
     return (
         <div className="toggle-switch-container">
             {['Post', 'Assignment'].map((type) => (
@@ -264,29 +262,7 @@ const AnnouncementWriter = ({
                     />
                 )}
 
-                {currClass.addedCategory && currClass.addedCategory.length > 0 && (
-                    <select
-                        value={categoryId}
-                        onChange={handleCategoryChange}
-                        style={{
-                            marginTop: '15px',
-                            padding: '8px 12px',
-                            border: '1px solid #cbd5e1',
-                            borderRadius: '6px',
-                            outline: 'none',
-                            backgroundColor: '#f8fafc',
-                            color: '#475569',
-                            fontSize: '14px',
-                            cursor: 'pointer',
-                            width: '250px'
-                        }}
-                    >
-                        <option value="">No topic</option>
-                        {currClass.addedCategory.map(cat => (
-                            <option key={cat._id} value={cat._id}>{cat.name}</option>
-                        ))}
-                    </select>
-                )}
+
 
                 <div
                     ref={announcementRef}
@@ -385,6 +361,107 @@ const AnnouncementWriter = ({
                                 </div>
                             )}
                         </div>
+
+                        {/* MUI Topic / Category Selector */}
+                        {isTeacherOrAdmin && (
+                            <div style={{ marginLeft: '4px', marginRight: '4px', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+                                {categoryId !== "CREATE_NEW" ? (
+                                    <FormControl size="small" sx={{ minWidth: 140 }}>
+                                        <InputLabel id="topic-select-label">Topic</InputLabel>
+                                        <Select
+                                            labelId="topic-select-label"
+                                            id="topic-select"
+                                            value={categoryId}
+                                            label="Topic"
+                                            onChange={handleCategoryChange}
+                                            sx={{ 
+                                                backgroundColor: '#fff',
+                                                '& .MuiSelect-select': {
+                                                    paddingTop: '6px',
+                                                    paddingBottom: '6px',
+                                                    fontSize: '14px'
+                                                }
+                                            }}
+                                        >
+                                            <MenuItem value="">
+                                                <em>No topic</em>
+                                            </MenuItem>
+                                            {currClass?.addedCategory && currClass.addedCategory.map(cat => (
+                                                <MenuItem key={cat._id} value={cat._id}>{cat.name}</MenuItem>
+                                            ))}
+                                            <MenuItem value="CREATE_NEW" sx={{ color: 'var(--class-theme, #1967d2)', fontWeight: 'bold' }}>
+                                                + Create new topic
+                                            </MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                ) : (
+                                    <div style={{ 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        gap: '6px', 
+                                        padding: '4px 6px',
+                                        border: '1px solid var(--class-theme, #1967d2)',
+                                        borderRadius: '4px',
+                                        backgroundColor: '#fff',
+                                    }}>
+                                        <input
+                                            type="text"
+                                            placeholder="New topic..."
+                                            id="new-topic-input-inline"
+                                            autoFocus
+                                            style={{ 
+                                                border: 'none',
+                                                outline: 'none',
+                                                fontSize: '14px',
+                                                color: '#1e293b',
+                                                width: '120px',
+                                                backgroundColor: 'transparent'
+                                            }}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    const input = document.getElementById("new-topic-input-inline");
+                                                    if (input && input.value.trim() && window.handleCreateInlineCategory) {
+                                                        window.handleCreateInlineCategory(input.value.trim());
+                                                    }
+                                                }
+                                            }}
+                                        />
+                                        <Button
+                                            variant="contained"
+                                            size="small"
+                                            style={{ 
+                                                backgroundColor: 'var(--class-theme, #1967d2)', 
+                                                color: '#fff',
+                                                textTransform: 'none', 
+                                                minWidth: 'auto',
+                                                padding: '2px 10px',
+                                                boxShadow: 'none',
+                                                fontSize: '12px'
+                                            }}
+                                            onClick={async () => {
+                                                const input = document.getElementById("new-topic-input-inline");
+                                                if (input && input.value.trim()) {
+                                                    if (window.handleCreateInlineCategory) {
+                                                        window.handleCreateInlineCategory(input.value.trim());
+                                                    }
+                                                }
+                                            }}
+                                        >
+                                            Save
+                                        </Button>
+                                        <IconButton 
+                                            size="small" 
+                                            onClick={() => handleCategoryChange({ target: { value: "" } })}
+                                            style={{ padding: '2px', color: '#64748b' }}
+                                            title="Cancel"
+                                        >
+                                            <CloseIcon fontSize="small" />
+                                        </IconButton>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                     <div className="right-side-controllers">
                         <button className="button-cancel" onClick={handleClose} disabled={loading}>
@@ -648,6 +725,29 @@ export default function AnnouncementContainer() {
         }
     };
 
+
+    const handleCreateInlineCategory = useCallback(async (name) => {
+        try {
+            const response = await dispatch(createCategory({ name, classId: currClass._id })).unwrap();
+            if (response && response.data) {
+                // Topic created successfully
+                dispatch(updateCurrClass({
+                    addedCategory: [...(currClass.addedCategory || []), response.data]
+                }));
+                setdata(prev => ({ ...prev, categoryId: response.data._id }));
+            }
+        } catch (err) {
+            console.error("Error creating inline topic", err);
+        }
+    }, [currClass?._id, currClass?.addedCategory, dispatch]);
+
+    // Keep it on window temporarily for the inline onClick (or pass it properly in the DOM event)
+    useEffect(() => {
+        window.handleCreateInlineCategory = handleCreateInlineCategory;
+        return () => {
+            delete window.handleCreateInlineCategory;
+        };
+    }, [handleCreateInlineCategory]);
 
     if (isStudent && currClass.studentCanPost === false) {
         return null; // Hide the announcement box completely

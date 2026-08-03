@@ -1,13 +1,15 @@
+const mongoose = require('mongoose');
 const Assignment = require('../../Models/Assignment');
+const Class = require('../../Models/Class');
 
 exports.getAssDetails = async (req, res, next) => {
     try {
         const id = req.params.id;
 
-        if (!id) {
+        if (!id || !mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({
                 success: false,
-                message: "Assignment ID is required"
+                message: "Valid Assignment ID is required"
             });
         }
 
@@ -37,11 +39,13 @@ exports.getAssDetails = async (req, res, next) => {
             });
         }
 
-        const parentClass = await require('../../Models/Class').findOne({ addedAssignment: id });
+        const parentClass = await Class.findOne({ addedAssignment: id });
         if (parentClass) {
             const isAuthorized = (parentClass.admin && parentClass.admin.toString() === req.user.id) ||
-                                 parentClass.teacher?.some(t => t.toString() === req.user.id) ||
-                                 parentClass.student?.some(s => s.toString() === req.user.id);
+                (parentClass.teacher && parentClass.teacher.some(t => t.toString() === req.user.id)) ||
+                (parentClass.student && parentClass.student.some(s => s.toString() === req.user.id)) ||
+                (currAss.teacher && currAss.teacher._id.toString() === req.user.id);
+
             if (!isAuthorized) {
                 return res.status(403).json({
                     success: false,
@@ -59,4 +63,4 @@ exports.getAssDetails = async (req, res, next) => {
     } catch (err) {
         next(err);
     }
-}
+};

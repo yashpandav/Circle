@@ -104,6 +104,60 @@ export default function ShowPostMain() {
         }
     }, [currClass, dispatch]);
 
+    const handleAssignmentSubmitted = useCallback(({ data }) => {
+        if (!data) return;
+        const assId = data.assignmentId || data.assignment?._id;
+        if (!assId) return;
+
+        setStreamItems(prev => prev.map(item => {
+            if (item._id === assId) {
+                const updatedSubmissions = [...(item.submission || []).filter(s => (s.student?._id || s.student) !== data.studentId), data.submission];
+                const updatedPending = (item.pendingStudent || []).filter(s => (s._id || s) !== data.studentId);
+                return { ...item, submission: updatedSubmissions, pendingStudent: updatedPending };
+            }
+            return item;
+        }));
+
+        if (currClass?.addedAssignment) {
+            dispatch(updateCurrClass({
+                addedAssignment: currClass.addedAssignment.map(a => {
+                    if (a._id === assId) {
+                        const updatedSubmissions = [...(a.submission || []).filter(s => (s.student?._id || s.student) !== data.studentId), data.submission];
+                        const updatedPending = (a.pendingStudent || []).filter(s => (s._id || s) !== data.studentId);
+                        return { ...a, submission: updatedSubmissions, pendingStudent: updatedPending };
+                    }
+                    return a;
+                })
+            }));
+        }
+    }, [currClass, dispatch]);
+
+    const handleSubmissionDeleted = useCallback(({ assId, studentId, submittedID }) => {
+        if (!assId) return;
+
+        setStreamItems(prev => prev.map(item => {
+            if (item._id === assId) {
+                const updatedSubmissions = (item.submission || []).filter(s => (s._id || s) !== submittedID && (s.student?._id || s.student) !== studentId);
+                const updatedPending = (item.pendingStudent || []).includes(studentId) ? item.pendingStudent : [...(item.pendingStudent || []), studentId];
+                return { ...item, submission: updatedSubmissions, pendingStudent: updatedPending };
+            }
+            return item;
+        }));
+
+        if (currClass?.addedAssignment) {
+            dispatch(updateCurrClass({
+                addedAssignment: currClass.addedAssignment.map(a => {
+                    if (a._id === assId) {
+                        const updatedSubmissions = (a.submission || []).filter(s => (s._id || s) !== submittedID && (s.student?._id || s.student) !== studentId);
+                        const updatedPending = (a.pendingStudent || []).includes(studentId) ? a.pendingStudent : [...(a.pendingStudent || []), studentId];
+                        return { ...a, submission: updatedSubmissions, pendingStudent: updatedPending };
+                    }
+                    return a;
+                })
+            }));
+        }
+    }, [currClass, dispatch]);
+
     useEffect(() => {
         socket.on('post:new', handleNewPost);
         socket.on('post:deleted', handlePostDeleted);
@@ -111,6 +165,8 @@ export default function ShowPostMain() {
         socket.on('assignment:new', handleNewAssignment);
         socket.on('assignment:deleted', handleAssignmentDeleted);
         socket.on('assignment:updated', handleAssignmentUpdated);
+        socket.on('assignment:submitted', handleAssignmentSubmitted);
+        socket.on('assignment:submission_deleted', handleSubmissionDeleted);
 
         return () => {
             socket.off('post:new', handleNewPost);
@@ -119,10 +175,13 @@ export default function ShowPostMain() {
             socket.off('assignment:new', handleNewAssignment);
             socket.off('assignment:deleted', handleAssignmentDeleted);
             socket.off('assignment:updated', handleAssignmentUpdated);
+            socket.off('assignment:submitted', handleAssignmentSubmitted);
+            socket.off('assignment:submission_deleted', handleSubmissionDeleted);
         };
     }, [
         handleNewPost, handlePostDeleted, handlePostUpdated,
-        handleNewAssignment, handleAssignmentDeleted, handleAssignmentUpdated
+        handleNewAssignment, handleAssignmentDeleted, handleAssignmentUpdated,
+        handleAssignmentSubmitted, handleSubmissionDeleted
     ]);
 
 

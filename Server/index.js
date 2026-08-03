@@ -103,12 +103,22 @@ const io = socketModule.init(httpServer, {
 io.on('connection', (socket) => {
     // Client joins a classroom room when they open a class page
     socket.on('join:room', (classId) => {
-        socket.join(`room:${classId}`);
+        if (classId) socket.join(`room:${classId}`);
     });
 
     // Client leaves a classroom room
     socket.on('leave:room', (classId) => {
-        socket.leave(`room:${classId}`);
+        if (classId) socket.leave(`room:${classId}`);
+    });
+
+    // Client joins personal user room for direct user-specific events (ToDo, notifications)
+    socket.on('join:user', (userId) => {
+        if (userId) socket.join(`user:${userId}`);
+    });
+
+    // Client leaves personal user room
+    socket.on('leave:user', (userId) => {
+        if (userId) socket.leave(`user:${userId}`);
     });
 });
 
