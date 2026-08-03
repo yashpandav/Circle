@@ -12,53 +12,57 @@ export default function HomeCircle() {
 
   const joinedClassAsTeacher = useSelector(
     (state) => state.classes.joinedClassesAsTeacher
-  ) || [];
+  );
   const joinedClassAsStudent = useSelector(
     (state) => state.classes.joinedClassesAsStudent
-  ) || [];
-  const createdClasses = useSelector((state) => state.classes.createdClasses) || [];
+  );
+  const createdClasses = useSelector((state) => state.classes.createdClasses);
 
-  const { loading } = useSelector((state) => state.loading);
   const { toggle } = useSelector((state) => state.toggle);
-
+  const [isFetching, setIsFetching] = useState(false);
   const [sortby, setSortBy] = useState("All");
 
+  // Fetch only if data isn't already in Redux (e.g. loaded by left panel)
   useEffect(() => {
-    const fetchJoinedClass = async () => {
-      try {
-        await dispatch(joinedClass({ dispatch }));
-      } catch (err) {
-        console.error("Failed to fetch joined classes:", err);
-      }
-    };
-    fetchJoinedClass();
-  }, [dispatch]);
+    if (joinedClassAsTeacher === null || joinedClassAsStudent === null) {
+      setIsFetching(true);
+      dispatch(joinedClass({ dispatch })).finally(() => setIsFetching(false));
+    }
+  }, [dispatch, joinedClassAsTeacher, joinedClassAsStudent]);
 
-  if (loading) {
+  if (isFetching) {
     return <LoaderComponent />;
   }
+
+  const teacherList = joinedClassAsTeacher || [];
+  const studentList = joinedClassAsStudent || [];
+  const createdList = createdClasses || [];
 
   const renderClasses = () => {
     let renderCircle = [];
 
     if (sortby === "All") {
-      renderCircle = [...joinedClassAsTeacher, ...joinedClassAsStudent];
+      // Merge teacher + student, dedup by _id
+      const seen = new Set();
+      renderCircle = [...teacherList, ...studentList].filter((item) => {
+        if (seen.has(item._id)) return false;
+        seen.add(item._id);
+        return true;
+      });
     } else if (sortby === "Teacher") {
-      renderCircle = joinedClassAsTeacher?.filter(
-        (item) => !createdClasses?.some((created) => created.id === item.id)
-      );
+      renderCircle = teacherList;
     } else if (sortby === "Student") {
-      renderCircle = joinedClassAsStudent;
+      renderCircle = studentList;
     } else {
-      renderCircle = createdClasses;
+      renderCircle = createdList;
     }
 
     if (renderCircle.length === 0) {
       return <NoCircle />;
-    } 
+    }
 
-    return renderCircle?.map((item, index) => (
-      <Classes item={item} key={index} />
+    return renderCircle.map((item, index) => (
+      <Classes item={item} key={item._id || index} />
     ));
   };
 

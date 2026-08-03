@@ -1,5 +1,14 @@
+/* ==========================================================================
+   Circle Platform - Main Circle Stream Area
+   ========================================================================== */
+
 .main-circle-area {
     width: 100%;
-    height: 500px;
-    margin-top: calc(10px + 1rem);
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px 24px 60px 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }

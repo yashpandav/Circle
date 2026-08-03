@@ -1,63 +1,114 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import './joinedCircleList.css';
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate, useLocation } from "react-router-dom";
+import { getClass } from "../../../../Api/apiCaller/classapicaller";
+import { joinedClass } from "../../../../Api/apiCaller/userapicaller";
+import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
+import "./joinedCircleList.css";
 
-export function Common({ item, index }) {
-    let name = item.name;
-    const shortName = name.charAt(0).toUpperCase();
-    let displayName = name;
+function CircleItem({ item }) {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const location = useLocation();
 
-    if (name.length > 6) {
-        displayName = name.slice(0, 6) + '...';
+    const isActive = location.pathname.includes(item._id);
+    const initial = (item.name || "C").charAt(0).toUpperCase();
+    const themeColor =
+        !item.classTheme || item.classTheme === "#FFFFFF"
+            ? "#4285f4"
+            : item.classTheme;
+
+    function handleNavigate() {
+        dispatch(getClass({ id: item._id, dispatch, navigate }));
     }
 
     return (
-        <div className='joined-circles' key={index} style={{
-            '--classTheme-shadow': `0 2px 4px ${item.classTheme}`
-        }}>
-            <div className="circle-imgs" style={{
-                backgroundColor: item.classTheme === '#FFFFFF' ? '#007BFF' : item.classTheme
-            }}>
-                <h4>{shortName}</h4>
+        <div
+            className={`jcl-item ${isActive ? "jcl-item--active" : ""}`}
+            style={{ "--item-theme": themeColor }}
+            onClick={handleNavigate}
+            title={item.name}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === "Enter" && handleNavigate()}
+        >
+            <div className="jcl-avatar">
+                {item.thumbnail ? (
+                    <img src={item.thumbnail} alt={item.name} className="jcl-avatar-img" />
+                ) : (
+                    <span className="jcl-avatar-initial">{initial}</span>
+                )}
             </div>
-            <p>{displayName}</p>
+            <div className="jcl-info">
+                <span className="jcl-name">{item.name}</span>
+                {item.admin && (
+                    <span className="jcl-admin">
+                        {item.admin.firstName} {item.admin.lastName}
+                    </span>
+                )}
+            </div>
+        </div>
+    );
+}
+
+function EmptyState({ label }) {
+    return (
+        <div className="jcl-empty">
+            <SchoolOutlinedIcon className="jcl-empty-icon" />
+            <p>{label}</p>
         </div>
     );
 }
 
 export function JoinedCircleListTeacher() {
-
-    const joinedClassAsTeacher = useSelector(
+    const dispatch = useDispatch();
+    const teacherClasses = useSelector(
         (state) => state.classes.joinedClassesAsTeacher
-    ) || [];
+    );
+
+    useEffect(() => {
+        if (!teacherClasses) {
+            dispatch(joinedClass({ dispatch }));
+        }
+    }, [dispatch, teacherClasses]);
+
+    const classes = teacherClasses || [];
 
     return (
-        <div className="joined-circle-list">
-            {joinedClassAsTeacher.length > 0 ? (
-                joinedClassAsTeacher.map((item, index) => (
-                    <Common item={item} index={index} key={index} />
+        <div className="jcl-list">
+            {classes.length > 0 ? (
+                classes.map((item) => (
+                    <CircleItem key={item._id} item={item} />
                 ))
             ) : (
-                <p>No classes joined as a teacher.</p>
+                <EmptyState label="No circles as teacher" />
             )}
         </div>
     );
 }
 
 export function JoinedCircleListStudent() {
-
-    const joinedClassAsStudent = useSelector(
+    const dispatch = useDispatch();
+    const studentClasses = useSelector(
         (state) => state.classes.joinedClassesAsStudent
-    ) || [];
+    );
+
+    useEffect(() => {
+        if (!studentClasses) {
+            dispatch(joinedClass({ dispatch }));
+        }
+    }, [dispatch, studentClasses]);
+
+    const classes = studentClasses || [];
 
     return (
-        <div className="joined-circle-list">
-            {joinedClassAsStudent.length > 0 ? (
-                joinedClassAsStudent.map((item, index) => (
-                    <Common item={item} index={index} key={index} />
+        <div className="jcl-list">
+            {classes.length > 0 ? (
+                classes.map((item) => (
+                    <CircleItem key={item._id} item={item} />
                 ))
             ) : (
-                <p>No classes joined as a student.</p>
+                <EmptyState label="No circles as student" />
             )}
         </div>
     );

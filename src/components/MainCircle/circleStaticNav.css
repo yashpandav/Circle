@@ -1,18 +1,24 @@
+/* ==========================================================================
+   Circle Platform - Static Circle Navigation Bar (Stream / Classwork / People)
+   ========================================================================== */
+
 .navbar-container {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: center;
     width: 100%;
-    margin: 0;
-    height: 64px;
-    padding: 0 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    height: 52px;
+    padding: 0 24px;
     box-sizing: border-box;
+    background-color: transparent;
 }
 
 .circle-navbar {
     display: flex;
     align-items: center;
-    gap: 2rem;  
+    gap: 2.25rem;  
     height: 100%;
 }
 
@@ -23,41 +29,55 @@
     height: 100%;
     cursor: pointer;
     box-sizing: border-box;
+    position: relative;
+    border-bottom: 3px solid transparent;
+    transition: border-color 0.2s ease;
 }
 
 .navbar-list:hover h3 {
-    color: #1e293b !important;
+    color: #202124 !important;
 }
 
 .navbar-list h3 {
-    font-size: 1.05rem;
+    font-size: 0.92rem;
     margin: 0;
     transition: all 0.2s ease;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    color: #64748b;
+    color: #5f6368;
     font-weight: 500;
 }
 
+.navbar-list.active-tab {
+    border-bottom: 3px solid var(--class-theme, #00a896);
+}
+
 .navbar-list.active-tab h3 {
-    color: var(--class-theme) !important;
+    color: var(--class-theme, #00a896) !important;
     font-weight: 600;
 }
 
 .navbar-setting-class {
     display: flex;
     align-items: center;
-    padding: 8px;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     transition: background-color 0.2s ease;
     cursor: pointer;
 }
 
 .navbar-setting-class:hover {
-    background-color: rgba(0, 0, 0, 0.04);
+    background-color: rgba(0, 0, 0, 0.06);
 }
 
 .settings-icon {
-    font-size: 24px !important;
+    font-size: 22px !important;
     color: #5f6368 !important;
+    transition: color 0.2s ease;
+}
+
+.navbar-setting-class:hover .settings-icon {
+    color: #202124 !important;
 }

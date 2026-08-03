@@ -1,190 +1,162 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import HomeIcon from "@mui/icons-material/Home";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import SchoolIcon from "@mui/icons-material/School";
-import CastForEducationIcon from "@mui/icons-material/CastForEducation";
+import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import CastForEducationRoundedIcon from "@mui/icons-material/CastForEducationRounded";
+import SchoolRoundedIcon from "@mui/icons-material/SchoolRounded";
 import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
-import TaskOutlinedIcon from "@mui/icons-material/TaskOutlined";
-import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
+import TaskAltRoundedIcon from "@mui/icons-material/TaskAltRounded";
+import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
+import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
+import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
+import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
+import Tooltip from "@mui/material/Tooltip";
 import { useSelector, useDispatch } from "react-redux";
 import { setToggle } from "../../../Slices/toggleSlice";
-import { JoinedCircleListStudent } from "./Helper/joinedCircleList";
-import { JoinedCircleListTeacher } from "./Helper/joinedCircleList";
+import { JoinedCircleListStudent, JoinedCircleListTeacher } from "./Helper/joinedCircleList";
 import "./leftPanelMain.css";
 
+function NavLink({ to, icon, label, toggle, activeLink }) {
+    const isActive = activeLink === to;
+    return (
+        <Tooltip
+            title={!toggle ? label : ""}
+            placement="right"
+            arrow
+            disableHoverListener={toggle}
+        >
+            <Link
+                to={to}
+                className={`lp-link ${toggle ? "lp-link--open" : "lp-link--closed"} ${isActive ? "lp-link--active" : ""}`}
+                aria-label={label}
+            >
+                <span className="lp-link-icon">{icon}</span>
+                {toggle && <span className="lp-link-label">{label}</span>}
+            </Link>
+        </Tooltip>
+    );
+}
+
+function SectionHeader({ icon, label, toggle, isOpen, onClick }) {
+    return (
+        <Tooltip
+            title={!toggle ? label : ""}
+            placement="right"
+            arrow
+            disableHoverListener={toggle}
+        >
+            <div
+                className={`lp-section-header ${toggle ? "lp-section-header--open" : "lp-section-header--closed"} ${isOpen ? "lp-section-header--expanded" : ""}`}
+                onClick={onClick}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === "Enter" && onClick()}
+                aria-label={label}
+            >
+                <span className="lp-section-icon">{icon}</span>
+                {toggle && (
+                    <>
+                        <span className="lp-section-label">{label}</span>
+                        <KeyboardArrowDownRoundedIcon
+                            className={`lp-section-chevron ${isOpen ? "lp-section-chevron--rotated" : ""}`}
+                        />
+                    </>
+                )}
+            </div>
+        </Tooltip>
+    );
+}
+
 export default function LeftMain() {
-    const [visibleSubMenu1, setVisibleSubMenu1] = useState(false);
-    const [visibleSubMenu2, setVisibleSubMenu2] = useState(false);
+    const [teachingOpen, setTeachingOpen] = useState(false);
+    const [enrolledOpen, setEnrolledOpen] = useState(false);
+
     const location = useLocation();
-    const [activeLink, setActiveLink] = useState(location.pathname);
+    const activeLink = location.pathname;
 
     const toggle = useSelector((state) => state.toggle.toggle);
     const dispatch = useDispatch();
 
-    const toggleMenu = () => {
-        dispatch(setToggle(!toggle));
-    };
-
-    useEffect(() => {
-        setActiveLink(location.pathname);
-    }, [location.pathname]);
-
-    const handleLinkClick = (path) => {
-        setActiveLink(path);
-    };
+    const toggleMenu = () => dispatch(setToggle(!toggle));
 
     return (
         <div id="left-main" className={toggle ? "menu-open" : "menu-closed"}>
-            <span className="menu-icon-container" onClick={toggleMenu}>
-                <ArrowRightIcon
-                    style={{
-                        transform: toggle ? "rotate(180deg)" : "",
-                        transition: "transform 0.3s ease-in-out",
-                    }}
-                />
-            </span>
+            {/* Collapse / Expand button */}
+            <button
+                type="button"
+                className="lp-toggle-btn"
+                onClick={toggleMenu}
+                title={toggle ? "Collapse sidebar" : "Expand sidebar"}
+                aria-label={toggle ? "Collapse sidebar" : "Expand sidebar"}
+            >
+                {toggle ? (
+                    <ChevronLeftRoundedIcon className="lp-toggle-icon" />
+                ) : (
+                    <ChevronRightRoundedIcon className="lp-toggle-icon" />
+                )}
+            </button>
+
             <div id="main-left-link">
-                <div className="left-links" style={{ marginTop: "2rem" }}>
-                    <Link
-                        to="/workarea/home"
-                        onClick={() => handleLinkClick("/workarea/home")}
-                        className={`left-link ${toggle ? "menu-open" : "menu-closed"} ${activeLink === "/workarea/home" ? "active" : ""
-                            }`}
-                    >
-                        <HomeIcon />
-                        {toggle && <p>Home</p>}
-                    </Link>
-                </div>
-                <div className="left-links">
-                    <Link
-                        to="/workarea/calendar"
-                        onClick={() => handleLinkClick("/workarea/calendar")}
-                        className={`left-link ${toggle ? "menu-open" : "menu-closed"} ${activeLink === "/workarea/calendar" ? "active" : ""
-                            }`}
-                    >
-                        <CalendarTodayIcon />
-                        {toggle && <p>Calendar</p>}
-                    </Link>
-                </div>
-                {toggle && (
-                    <div
-                        className="left-links"
-                        onClick={() => setVisibleSubMenu1(!visibleSubMenu1)}
-                    >
-                        <div
-                            className={`left-link-main ${toggle ? "menu-open" : "menu-closed"
-                                }`}
-                        >
-                            <CastForEducationIcon />
-                            {toggle && <p>Teaching</p>}
-                            <ArrowDropDownIcon
-                                style={{
-                                    transform: visibleSubMenu1 ? "rotate(180deg)" : "",
-                                    transition: "transform 0.3s ease-in-out",
-                                }}
-                            />
-                        </div>
-                    </div>
-                )}
-                {!toggle && (
-                    <div className="sub-menu">
-                        <Link
+                {/* ── Home ─────────────────────────── */}
+                <NavLink
+                    to="/workarea/home"
+                    icon={<HomeRoundedIcon />}
+                    label="Home"
+                    toggle={toggle}
+                    activeLink={activeLink}
+                />
+
+                {/* ── Teaching ─────────────────────── */}
+                <SectionHeader
+                    icon={<CastForEducationRoundedIcon />}
+                    label="Teaching"
+                    toggle={toggle}
+                    isOpen={teachingOpen}
+                    onClick={() => setTeachingOpen((p) => !p)}
+                />
+
+                {(teachingOpen || !toggle) && (
+                    <div className={`lp-sub ${toggle ? "lp-sub--open" : "lp-sub--closed"}`}>
+                        <NavLink
                             to="/workarea/review"
-                            onClick={() => handleLinkClick("/workarea/review")}
-                            className={`left-link sub-menu-closed ${activeLink === "/workarea/review" ? "active" : ""
-                                }`}
-                        >
-                            <RateReviewOutlinedIcon />
-                        </Link>
-                    </div>
-                )}
-                {visibleSubMenu1 && toggle && (
-                    <>
-                        <div className="sub-menu">
-                            <Link
-                                to="/workarea/review"
-                                onClick={() => handleLinkClick("/workarea/review")}
-                                className={`left-link ${activeLink === "/workarea/review" ? "active" : ""
-                                    }`}
-                            >
-                                <RateReviewOutlinedIcon />
-                                <p>To Review</p>
-                            </Link>
-                        </div>
-                        <span className="allCircles">
-                            <JoinedCircleListTeacher />
-                        </span>
-                    </>
-                )}
-                {toggle && (
-                    <div
-                        className="left-links"
-                        onClick={() => setVisibleSubMenu2(!visibleSubMenu2)}
-                    >
-                        <div
-                            className={`left-link-main ${toggle ? "menu-open" : "menu-closed"
-                                }`}
-                        >
-                            <SchoolIcon />
-                            {toggle && <p>Enrolled</p>}
-                            <ArrowDropDownIcon
-                                style={{
-                                    transform: visibleSubMenu2 ? "rotate(180deg)" : "",
-                                    transition: "transform 0.3s ease-in-out",
-                                }}
-                            />
-                        </div>
-                    </div>
-                )}
-                {!toggle && (
-                    <div className="sub-menu">
-                        <Link
-                            to="/workarea/todo"
-                            onClick={() => handleLinkClick("/workarea/todo")}
-                            className={`left-link sub-menu-closed ${activeLink === "/workarea/todo" ? "active" : ""
-                                }`}
-                        >
-                            <TaskOutlinedIcon />
-                        </Link>
-                    </div>
-                )}
-                {visibleSubMenu2 && toggle && (
-                    <>
-                        <div className="sub-menu">
-                            <Link
-                                to="/workarea/todo"
-                                onClick={() => handleLinkClick("/workarea/todo")}
-                                className={`left-link ${activeLink === "/workarea/todo" ? "active" : ""
-                                    }`}
-                            >
-                                <TaskOutlinedIcon />
-                                <p>To do</p>
-                            </Link>
-                        </div>
-                        <div className="allCircles">
-                            <JoinedCircleListStudent />
-                        </div>
-                    </>
-                )}
-                <div className="left-links">
-                    <Link
-                        to="/workarea/settings"
-                        onClick={() => handleLinkClick("/workarea/settings")}
-                        className={`left-link ${toggle ? "menu-open" : "menu-closed"} ${activeLink === "/workarea/settings" ? "active" : ""
-                            }`}
-                    >
-                        <SettingsOutlinedIcon
-                            className="settings-icon"
-                            style={{
-                                marginRight: toggle ? "" : "8px",
-                            }}
+                            icon={<RateReviewOutlinedIcon />}
+                            label="To Review"
+                            toggle={toggle}
+                            activeLink={activeLink}
                         />
-                        {toggle && <p>Settings</p>}
-                    </Link>
-                </div>
+                        {toggle && <JoinedCircleListTeacher />}
+                    </div>
+                )}
+
+                {/* ── Enrolled ─────────────────────── */}
+                <SectionHeader
+                    icon={<SchoolRoundedIcon />}
+                    label="Enrolled"
+                    toggle={toggle}
+                    isOpen={enrolledOpen}
+                    onClick={() => setEnrolledOpen((p) => !p)}
+                />
+
+                {(enrolledOpen || !toggle) && (
+                    <div className={`lp-sub ${toggle ? "lp-sub--open" : "lp-sub--closed"}`}>
+                        <NavLink
+                            to="/workarea/todo"
+                            icon={<TaskAltRoundedIcon />}
+                            label="To do"
+                            toggle={toggle}
+                            activeLink={activeLink}
+                        />
+                        {toggle && <JoinedCircleListStudent />}
+                    </div>
+                )}
+
+                {/* ── Settings ─────────────────────── */}
+                <NavLink
+                    to="/workarea/settings"
+                    icon={<SettingsRoundedIcon />}
+                    label="Settings"
+                    toggle={toggle}
+                    activeLink={activeLink}
+                />
             </div>
         </div>
     );

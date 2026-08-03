@@ -10,13 +10,16 @@
     transition: all 0.3s ease;
 }
 
+/* Sidebar open → 190px wide */
 .right-main {
     flex-grow: 1;
-    margin-left: 276px;
+    margin-left: 190px;
     background-color: #f8f9fa;
-    transition: all 0.5s ease;
+    min-height: calc(100vh - 7vh);
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.box-toggle{
-    margin-left: 114px;
+/* Sidebar closed → 64px wide */
+.box-toggle {
+    margin-left: 64px;
 }

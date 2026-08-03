@@ -1,4 +1,8 @@
-.main-circle-right-container{
+.main-circle-right-container {
+    flex: 1;
+    min-width: 0;
     width: 100%;
-    height: max-content;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }

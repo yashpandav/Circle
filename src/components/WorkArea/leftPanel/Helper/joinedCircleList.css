@@ -1,47 +1,133 @@
-.joined-circle-list {
-    max-height: 200px;
-    min-height: fit-content;
-    overflow-y: auto;
-    scrollbar-width: none;
-    padding-left: 20px;
-    padding-bottom: 10px;
+/* ==========================================================================
+   Circle Platform - Joined Circle List Styles
+   ========================================================================== */
+
+/* ── Joined Circle List ────────────────────────────────── */
+.jcl-list {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 2px;
+    padding: 2px 6px 6px 8px;
+    animation: jcl-fade-in 0.25s ease;
 }
 
-.joined-circles {
+@keyframes jcl-fade-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* ── Individual Circle Item ─────────────────────────────── */
+.jcl-item {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    background-color: #f9f9f9;
-    padding: 0.75rem 0.75rem 0.75rem 0.5rem;
-    border-radius: 10px; 
+    gap: 10px;
+    padding: 6px 10px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: all 0.3s ease-in-out;
+    position: relative;
+    transition: background 0.18s ease;
+    overflow: hidden;
+    text-decoration: none;
 }
 
-.joined-circles:hover {
-    box-shadow: var(--classTheme-shadow, 0 2px 4px rgba(0, 0, 0, 0.1));
-    transform: translateX(1.5px);
+.jcl-item:hover {
+    background: #f1f3f4;
 }
 
-.circle-imgs {
-    width: 45px;
-    height: 45px;
-    color: white;
+.jcl-item:focus-visible {
+    outline: 2px solid var(--item-theme, #00a896);
+    outline-offset: 1px;
+}
+
+.jcl-item--active {
+    background-color: color-mix(in srgb, var(--item-theme, #00a896) 12%, transparent) !important;
+}
+
+.jcl-item--active .jcl-name {
+    color: var(--item-theme, #00a896);
+    font-weight: 600;
+}
+
+/* ── Avatar ─────────────────────────────────────────────── */
+.jcl-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-color: var(--item-theme, #00a896);
     display: flex;
-    justify-content: center;
     align-items: center;
-    border-radius: 50%;
-    font-size: 1.2rem;
-    font-weight: bold;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.joined-circles p {
-    margin: 0;
-    font-size: 1rem;
+.jcl-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.jcl-avatar-initial {
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+/* ── Text Info ───────────────────────────────────────────── */
+.jcl-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+    flex: 1;
+}
+
+.jcl-name {
+    font-size: 0.84rem;
     font-weight: 500;
+    color: #3c4043;
     white-space: nowrap;
-    color: #333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 130px;
+    transition: color 0.15s ease;
+}
+
+.jcl-item:hover .jcl-name {
+    color: #202124;
+}
+
+.jcl-admin {
+    font-size: 0.72rem;
+    color: #70757a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 130px;
+}
+
+/* ── Empty State ─────────────────────────────────────────── */
+.jcl-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 8px;
+    text-align: center;
+}
+
+.jcl-empty-icon {
+    font-size: 1.5rem !important;
+    color: #9aa0a6;
+}
+
+.jcl-empty p {
+    margin: 0;
+    font-size: 0.75rem;
+    color: #70757a;
+    font-weight: 500;
 }

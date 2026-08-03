@@ -6,7 +6,6 @@ import { getClass } from "../../../../Api/apiCaller/classapicaller";
 import './mainPage.css';
 
 export default function MainCurrCircle() {
-    const toggle = useSelector((state) => state.toggle.toggle);
     const currClass = useSelector((state) => state.classes.currClass);
     const { id } = useParams();
     const dispatch = useDispatch();
@@ -25,13 +24,17 @@ export default function MainCurrCircle() {
     }, [id, currClass, dispatch]);
 
     if (loading || !currClass || currClass._id !== id) {
-        return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', width: '100%' }}>Loading...</div>;
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', width: '100%' }}>
+                Loading...
+            </div>
+        );
     }
 
     return (
         <div 
-            className={`main-curr-circle ${!toggle ? 'main-curr-circle-toggle' : ''}`}
-            style={{ '--class-theme': currClass?.classTheme || '#156f85' }}
+            className="main-curr-circle"
+            style={{ '--class-theme': currClass?.classTheme || '#00a896' }}
         >
             <CircleStaticNavbar />
             <Outlet />

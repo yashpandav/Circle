@@ -1,188 +1,290 @@
+/* ==========================================================================
+   Circle Platform - Left Navigation Sidebar Styles
+   Harmonious, Compact & Consistent Platform Color Palette
+   ========================================================================== */
+
+/* ─── Left Panel Shell ───────────────────────────────────── */
 #left-main {
     width: 190px;
-    background-color: #ffffff;
-    padding: 20px;
+    background: #ffffff;
+    padding: 14px 8px;
     position: fixed;
-    height: 100vh;
+    top: 7vh; /* matches navbar height */
+    left: 0;
+    bottom: 0;
     display: flex;
     flex-direction: column;
-    box-shadow: 2px 0 2px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    border-right: 1px solid #e0e0e0;
+    box-shadow: 1px 0 4px rgba(0, 0, 0, 0.03);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 100;
+    overflow: visible; /* Prevents clipping the toggle button floating on the right border */
+    box-sizing: border-box;
 }
 
 #left-main.menu-closed {
-    transform: translateX(-60%);
+    width: 64px;
+    padding: 14px 8px;
 }
 
-.menu-icon-container {
+/* ─── Collapse / Expand Toggle Button ─────────────────────── */
+.lp-toggle-btn {
+    position: absolute;
+    top: 18px;
+    right: -14px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid #dadce0;
+    background: #ffffff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background-color: #ffffff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    cursor: pointer;
-    position: absolute;
-    top: 30px;
-    right: -16px;
-    transition: all 0.3s ease;
-    z-index: 10;
-}
-
-.menu-icon-container:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.menu-icon-container svg {
-    font-size: 1.8rem;
-    color: #00a896;
-    transition: all 0.3s ease;
-}
-
-#main-left-link {
-    min-height: fit-content;
-    overflow-y: auto;
-    scrollbar-width: none;
-}
-
-.left-links {
-    margin-block: 0.6rem;
-    cursor: pointer;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-}
-
-.left-links .left-link,
-.left-link-main {
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    color: #64748b;
-    padding: 12px 16px;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 500;
-    position: relative;
     transition: all 0.2s ease;
+    z-index: 1001;
+    padding: 0;
+    outline: none;
 }
 
-.left-links:hover,
-.left-link-main:hover {
-    background-color: #f1f5f9;
-}
-
-.left-links .left-link:hover,
-.left-link-main:hover {
-    color: #1e293b;
-}
-
-.left-links .left-link svg,
-.left-link-main svg {
-    margin-right: 12px;
-    transition: all 0.2s ease;
-    color: #64748b;
-}
-
-.left-links .left-link:hover svg,
-.left-link-main:hover svg {
-    color: #00a896;
+.lp-toggle-btn:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    background-color: #f8f9fa;
+    border-color: #c0c4c9;
     transform: scale(1.05);
 }
 
-.left-links .left-link p,
-.left-link-main p {
-    margin: 0;
+.lp-toggle-icon {
+    font-size: 1.25rem !important;
+    color: #5f6368;
+    transition: color 0.2s ease;
 }
 
-.left-link.menu-open {
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
+.lp-toggle-btn:hover .lp-toggle-icon {
+    color: #00a896;
 }
 
-.left-link.menu-closed,
-.left-link-main.menu-closed {
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: center;
-    padding-right: 0 !important;
-}
-
-.left-link.menu-closed svg,
-.left-link-main.menu-closed svg {
-    margin-right: 14px !important;
-}
-
-.sub-menu {
-    padding-left: 20px;
+/* ─── Scrollable Nav Area ────────────────────────────────── */
+#main-left-link {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
     display: flex;
     flex-direction: column;
-    animation: fadeIn 0.3s ease;
+    gap: 4px;
+    padding-top: 6px;
 }
 
-.allCircles {
-    animation: fadeIn 0.5s ease;
+#main-left-link::-webkit-scrollbar {
+    display: none;
 }
 
-
-.sub-menu svg {
-    margin-left: 12px;
-    margin-right: 8px;
+#left-main.menu-closed #main-left-link {
+    align-items: center;
 }
 
-.sub-menu .left-link {
-    text-decoration: none;
+/* ─── Generic Nav Link ───────────────────────────────────── */
+.lp-link {
     display: flex;
     align-items: center;
-    color: #64748b;
-    padding: 8px 12px;
     border-radius: 10px;
-    font-size: 14px;
+    text-decoration: none;
+    color: #3c4043;
+    font-size: 0.86rem;
     font-weight: 500;
-    transition: all 0.2s ease;
+    transition: background 0.18s ease, color 0.18s ease;
+    white-space: nowrap;
+    position: relative;
+    cursor: pointer;
+    box-sizing: border-box;
 }
 
-.sub-menu .left-link:hover {
-    background-color: #f1f5f9;
-    padding-left: 14px;
-    color: #1e293b;
+.lp-link--open {
+    width: 100%;
+    height: 40px;
+    padding: 0 10px;
+    gap: 10px;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.lp-link--closed {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    margin: 0 auto;
+    justify-content: center;
+    gap: 0;
 }
 
-.active {
+.lp-link:hover {
+    background: #f1f3f4;
+    color: #202124;
+}
+
+.lp-link:hover .lp-link-icon svg {
+    color: #00a896;
+}
+
+/* Active Page State: Signature Brand Teal */
+.lp-link--active {
+    background: rgba(0, 168, 150, 0.1) !important;
     color: #00a896 !important;
-    background-color: rgba(0, 168, 150, 0.1) !important;
+    font-weight: 600;
 }
 
-.active svg {
+.lp-link--active .lp-link-icon svg {
     color: #00a896 !important;
 }
 
-
-
-.sub-menu-closed {
-    flex-direction: row;
-    justify-content: flex-end;
-    padding-right: 0 !important;
-    margin-block: 0.6rem;
+.lp-link-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
 }
 
-.sub-menu-closed svg {
-    margin-right: 14px !important;
+.lp-link-icon svg {
+    font-size: 1.25rem;
+    color: #5f6368;
+    transition: color 0.18s ease;
 }
 
-.settings-icon {
-    font-size: 24.5px;
+.lp-link-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ─── Section Header (Teaching / Enrolled) ───────────────── */
+.lp-section-header {
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #3c4043;
+    font-size: 0.86rem;
+    font-weight: 600;
+    transition: background 0.18s ease, color 0.18s ease;
+    user-select: none;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+.lp-section-header--open {
+    width: 100%;
+    height: 40px;
+    padding: 0 10px;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.lp-section-header--closed {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    margin: 4px auto 0 auto;
+    justify-content: center;
+    gap: 0;
+}
+
+.lp-section-header:hover {
+    background: #f1f3f4;
+    color: #202124;
+}
+
+.lp-section-header:hover .lp-section-icon svg {
+    color: #00a896;
+}
+
+.lp-section-header--expanded {
+    color: #202124;
+}
+
+.lp-section-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+}
+
+.lp-section-icon svg {
+    font-size: 1.25rem;
+    color: #5f6368;
+    transition: color 0.18s ease;
+}
+
+.lp-section-label {
+    flex: 1;
+    letter-spacing: -0.01em;
+}
+
+.lp-section-chevron {
+    font-size: 1.1rem !important;
+    color: #5f6368;
+    transition: transform 0.22s ease, color 0.18s ease !important;
+    flex-shrink: 0;
+}
+
+.lp-section-header:hover .lp-section-chevron {
+    color: #202124;
+}
+
+.lp-section-chevron--rotated {
+    transform: rotate(180deg);
+}
+
+/* ─── Sub-sections ───────────────────────────────────────── */
+.lp-sub {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    animation: lp-expand 0.2s ease;
+}
+
+.lp-sub--open {
+    padding-left: 8px;
+    width: 100%;
+}
+
+.lp-sub--open .lp-link {
+    font-size: 0.83rem;
+    height: 36px;
+    padding: 0 8px;
+}
+
+.lp-sub--closed {
+    padding-left: 0;
+    width: 100%;
+    align-items: center;
+}
+
+.lp-sub--closed .lp-link {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    margin: 0 auto;
+    justify-content: center;
+}
+
+@keyframes lp-expand {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* ─── Settings link at bottom ────────────────────────────── */
+.lp-link[href="/workarea/settings"] {
+    margin-top: auto;
+}
+
+#left-main.menu-closed .lp-link[href="/workarea/settings"] {
+    margin-top: auto;
+    margin-left: auto;
+    margin-right: auto;
 }

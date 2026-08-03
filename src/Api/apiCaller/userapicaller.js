@@ -1,26 +1,28 @@
 import { apiConnector } from '../apiconfig.js';
 import { PROFILE_API_URL } from '../apis.js';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { setJoinedClassTeacher ,setJoinedClassStudent , setCreatedClass} from '../../Slices/classSlice.js'
-import { setLoading } from '../../Slices/loadingSlice.js';
-const {
-    // GET_USER_DETAILS_API,
-    GET_USER_JOINED_API,
-} = PROFILE_API_URL;
+import { setJoinedClassTeacher, setJoinedClassStudent, setCreatedClass } from '../../Slices/classSlice.js';
+
+const { GET_USER_JOINED_API } = PROFILE_API_URL;
 
 export const joinedClass = createAsyncThunk(
     'class/joinedClass',
-    async ({dispatch}) => {
+    async (arg, { dispatch, rejectWithValue }) => {
         try {
-            dispatch(setLoading(true));
+            const thunkDispatch = dispatch || arg?.dispatch;
             const response = await apiConnector('GET', GET_USER_JOINED_API);
-            dispatch(setJoinedClassTeacher(response.data.data.joinedClassAsAteacher));
-            dispatch(setJoinedClassStudent(response.data.data.joinedClassAsStudent));
-            dispatch(setCreatedClass(response.data.data.createdClasses));
-            dispatch(setLoading(false));
+            const data = response?.data?.data;
+            if (!data) throw new Error('Invalid response structure');
+
+            if (thunkDispatch) {
+                thunkDispatch(setJoinedClassTeacher(data.joinedClassAsAteacher || []));
+                thunkDispatch(setJoinedClassStudent(data.joinedClassAsStudent || []));
+                thunkDispatch(setCreatedClass(data.createdClasses || []));
+            }
+
             return response.data;
         } catch (err) {
-            return err.response ? err.response : err.message;
+            return rejectWithValue(err.response?.data || err.message);
         }
     }
 );

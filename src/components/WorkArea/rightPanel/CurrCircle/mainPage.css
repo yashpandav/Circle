@@ -1,11 +1,8 @@
 .main-curr-circle {
-    width: 95%;
-    transition: all 0.2s ease;
-    padding-top: 20px;
+    width: 100%;
+    min-height: calc(100vh - 7vh);
+    box-sizing: border-box;
     background-color: #f8f9fa;
-}
-
-.main-curr-circle-toggle {
-    margin-left: 3rem;    
-    width: 90%;
+    display: flex;
+    flex-direction: column;
 }
