@@ -14,6 +14,9 @@ router.delete('/deleteuser', auth, asyncHandler(deleteUser));
 const { getProfile } = require('../Controllers/UserController/getUserDetails');
 router.get('/getuser', auth, asyncHandler(getProfile));
 
+const { getDashboardData } = require('../Controllers/UserController/getDashboardData');
+router.get('/dashboard', auth, asyncHandler(getDashboardData));
+
 const { createdByUser } = require('../Controllers/UserController/createdByUser');
 router.get('/created', auth, asyncHandler(createdByUser));
 

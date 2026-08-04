@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import CastForEducationRoundedIcon from "@mui/icons-material/CastForEducationRounded";
 import SchoolRoundedIcon from "@mui/icons-material/SchoolRounded";
 import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
@@ -101,6 +102,15 @@ export default function LeftMain() {
                     to="/workarea/home"
                     icon={<HomeRoundedIcon />}
                     label="Home"
+                    toggle={toggle}
+                    activeLink={activeLink}
+                />
+
+                {/* ── Dashboard ────────────────────── */}
+                <NavLink
+                    to="/workarea/dashboard"
+                    icon={<DashboardRoundedIcon />}
+                    label="Dashboard"
                     toggle={toggle}
                     activeLink={activeLink}
                 />

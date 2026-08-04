@@ -15,6 +15,7 @@ export const AUTH_API_URL = {
 //* USER API URL
 export const PROFILE_API_URL = {
     GET_USER_DETAILS_API: `${BASE_URL}/user/getuser`,
+    GET_USER_DASHBOARD_API: `${BASE_URL}/user/dashboard`,
     GET_USER_JOINED_API: `${BASE_URL}/user/joined`,
     GET_USER_CREATED_API: `${BASE_URL}/user/created`,
     DELETE_USER_API: `${BASE_URL}/user/deleteuser`,

@@ -21,6 +21,7 @@ import ForgotPassword from './components/AuthPages/ForgotPassword';
 import People from './components/People/People';
 import Classwork from './components/MainCircle/Classwork/Classwork';
 import AssignmentDetails from './components/MainCircle/AssignmentDetails/AssignmentDetails';
+import Dashboard from './components/WorkArea/rightPanel/Dashboard/dashboard';
 import SocketProvider from './socket/SocketProvider';
 import './App.css';
 
@@ -93,6 +94,7 @@ const App = () => {
         <Route path="/workarea" element={<WorkArea />}>
           <Route path="" element={<Navigate to="home" />} />
           <Route path="home" element={<HomeCircle />} />
+          <Route path="dashboard" element={<Dashboard />} />
           <Route path="circle/:id" element={<MainCurrCircle />}>
             <Route path="" element={<Navigate to="stream" replace />} />
             <Route path="stream" element={<MainCircle />} />

@@ -23,6 +23,8 @@ import {
 import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
 import { useDispatch, useSelector } from "react-redux";
 import { createAssignment } from "../../../Api/apiCaller/assignmentapicaller";
+import { createCategory } from "../../../Api/apiCaller/categoryapicaller";
+import { updateCurrClass } from "../../../Slices/classSlice";
 import TopicDropdown from "../../Helper/TopicDropdown";
 import toast from "react-hot-toast";
 import "../MainCircleWorkingArea/editAssignmentModal.css";

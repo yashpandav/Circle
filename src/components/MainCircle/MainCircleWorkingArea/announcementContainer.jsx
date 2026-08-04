@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { TextField, IconButton, Button, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
-import { useSelector } from "react-redux";
+import { TextField, IconButton, Button } from "@mui/material";
+import { useSelector, useDispatch } from "react-redux";
 import { IoIosSend } from "react-icons/io";
 import {
     Assignment,
@@ -19,18 +19,20 @@ import CloseIcon from '@mui/icons-material/Close';
 import "./announcementContainer.css";
 import './uploadFile.css';
 import { createPost } from "../../../Api/apiCaller/postapicaller";
-import { useDispatch } from "react-redux";
 import { setLoading } from "../../../Slices/loadingSlice";
 import { createAssignment } from "../../../Api/apiCaller/assignmentapicaller";
+import { createCategory } from "../../../Api/apiCaller/categoryapicaller";
+import { updateCurrClass } from "../../../Slices/classSlice";
 import TopicDropdown from "../../Helper/TopicDropdown";
 import toast from "react-hot-toast";
 
 const UserAnnouncementHeader = ({ setWriteAssignment }) => {
     const user = useSelector((state) => state?.auth?.user);
+    const userImage = user?.image || `https://ui-avatars.com/api/?name=${user?.firstName || 'User'}+${user?.lastName || ''}&background=4285f4&color=fff&bold=true`;
 
     return (
         <div className="announcement-header" onClick={() => setWriteAssignment(true)}>
-            <img src={user.image} alt="user-img" className="user-img" />
+            <img src={userImage} alt="user-img" className="user-img" />
             <div className="announce-content">
                 <h6 className="announce-heading">
                     Announce something to your circle...
@@ -185,7 +187,6 @@ const AnnouncementWriter = ({
     loading,
     isTeacherOrAdmin
 }) => {
-    const currClass = useSelector((state) => state.classes.currClass);
     const [showUploadOptions, setShowUploadOptions] = useState(false);
     const [showLinkInput, setShowLinkInput] = useState(false);
     const [showYouTubeInput, setShowYouTubeInput] = useState(false);
@@ -404,18 +405,18 @@ const AnnouncementWriter = ({
 };
 
 export default function AnnouncementContainer() {
-    const currClass = useSelector((state) => state.classes.currClass);
-    const currUser = useSelector((state) => state.auth.user);
+    const currClass = useSelector((state) => state?.classes?.currClass);
+    const currUser = useSelector((state) => state?.auth?.user);
 
-    const isTeacherOrAdmin = (currClass?.admin && currClass.admin._id === currUser?._id) ||
-        (currClass?.teacher && currClass.teacher.some(t => t._id === currUser?._id));
-    const isStudent = currClass?.student && currClass.student.some(s => s._id === currUser?._id);
+    const isTeacherOrAdmin = (currClass?.admin && (currClass.admin._id === currUser?._id || currClass.admin === currUser?._id)) ||
+        (currClass?.teacher && Array.isArray(currClass.teacher) && currClass.teacher.some(t => (t?._id === currUser?._id || t === currUser?._id)));
+    const isStudent = currClass?.student && Array.isArray(currClass.student) && currClass.student.some(s => (s?._id === currUser?._id || s === currUser?._id));
 
     const [writeAssignment, setWriteAssignment] = useState(false);
     const [isPost, setIsPost] = useState(true);
     const dispatch = useDispatch();
     const [data, setdata] = useState({
-        currClassId: currClass._id,
+        currClassId: currClass?._id || "",
         title: "",
         text: "",
         links: [],

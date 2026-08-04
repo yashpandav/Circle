@@ -115,14 +115,15 @@ const People = () => {
 
     // User Row Component (Clean, without right tags or heavy background)
     const UserRow = ({ user, isLast }) => {
+        if (!user) return null;
         const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown Member';
-        const isCurrentAuthUser = currUser?._id === user._id;
+        const isCurrentAuthUser = currUser?._id === (user._id || user);
 
         return (
             <div className={`people-user-row ${isLast ? 'is-last' : ''}`}>
                 <div className="people-user-main">
                     <Avatar
-                        src={user.image}
+                        src={user?.image}
                         alt={fullName}
                         sx={{
                             width: 38,

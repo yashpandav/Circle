@@ -202,13 +202,13 @@ export default function PostContainer({ post }) {
                 <div className="post-header">
                     <div className="left-side-post-details">
                         <img
-                            src={post.teacher.image}
+                            src={post?.teacher?.image || `https://ui-avatars.com/api/?name=${post?.teacher?.firstName || 'Teacher'}+${post?.teacher?.lastName || ''}&background=4285f4&color=fff&bold=true`}
                             alt="Post uploader"
                             className="post-uploader-image"
                         />
                         <div className="post-upload-details">
                             <h3 className="post-uploader-name">
-                                {post.teacher.firstName} {post.teacher.lastName}
+                                {post?.teacher?.firstName || 'Unknown'} {post?.teacher?.lastName || ''}
                             </h3>
                             <h6 className="post-upload-date">
                                 {new Date(post.uploadDate)

@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 import CircleStaticNavbar from "../../../MainCircle/CircleStaticNavbar";
 import { getClass } from "../../../../Api/apiCaller/classapicaller";
+import { LoaderComponent } from "../../../Helper/Loaders/loader";
 import './mainPage.css';
 
 export default function MainCurrCircle() {
@@ -12,21 +13,30 @@ export default function MainCurrCircle() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let isMounted = true;
         const fetchClass = async () => {
             if (!currClass || currClass._id !== id) {
-                await dispatch(getClass({ id, dispatch })).unwrap().catch(err => {
+                setLoading(true);
+                try {
+                    await dispatch(getClass({ id, dispatch })).unwrap();
+                } catch (err) {
                     console.error("Failed to fetch class on direct navigation", err);
-                });
+                }
             }
-            setLoading(false);
+            if (isMounted) {
+                setLoading(false);
+            }
         };
         fetchClass();
+        return () => {
+            isMounted = false;
+        };
     }, [id, currClass, dispatch]);
 
     if (loading || !currClass || currClass._id !== id) {
         return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', width: '100%' }}>
-                Loading...
+            <div className="main-curr-circle-loader-wrap">
+                <LoaderComponent />
             </div>
         );
     }
@@ -41,3 +51,4 @@ export default function MainCurrCircle() {
         </div>
     );
 }
+

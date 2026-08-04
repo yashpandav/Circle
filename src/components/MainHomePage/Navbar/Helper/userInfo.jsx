@@ -71,15 +71,15 @@ export default function UserInfo() {
                     <div className="dropdown-divider"></div>
 
                     <div id='user-info'>
-                        <div className="user-data">
+                        <div className="user-data" onClick={() => { navigate('/workarea/home'); setDialog(false); }}>
                             <div className="icon-container"><ClassIcon /></div>
                             <p>Classes</p>
                         </div>
-                        <div className="user-data">
+                        <div className="user-data" onClick={() => { navigate('/workarea/todo'); setDialog(false); }}>
                             <div className="icon-container"><FormatListBulletedIcon /></div>
                             <p>To-dos</p>
                         </div>
-                        <div className="user-data">
+                        <div className="user-data" onClick={() => { navigate('/workarea/review'); setDialog(false); }}>
                             <div className="icon-container"><GradingIcon /></div>
                             <p>Reviews</p>
                         </div>
@@ -88,8 +88,8 @@ export default function UserInfo() {
                     <div className="dropdown-divider"></div>
 
                     <div id='last-div'>
-                        <div className="dropdown-item">WorkArea</div>
-                        <div className="dropdown-item">Dashboard</div>
+                        <div className="dropdown-item" onClick={() => { navigate('/workarea/home'); setDialog(false); }}>WorkArea</div>
+                        <div className="dropdown-item" onClick={() => { navigate('/workarea/dashboard'); setDialog(false); }}>Dashboard</div>
                         <div className="dropdown-item logout" onClick={logoutHandler}>LogOut</div>
                     </div>
                 </div>
