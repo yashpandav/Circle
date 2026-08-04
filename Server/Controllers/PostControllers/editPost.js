@@ -4,6 +4,7 @@ const User = require('../../Models/User');
 const Category = require('../../Models/Category');
 const Class = require('../../Models/Class');
 const { uploadImage } = require('../../Utils/imageUpload');
+const { deleteFromCloudinary } = require('../../Utils/cloudinaryDelete');
 const { getIO } = require('../../socket');
 require('dotenv').config();
 
@@ -125,6 +126,16 @@ exports.editPost = async (req, res, next) => {
                 }
             } catch (parseErr) {
                 console.error("Error parsing existingFiles JSON:", parseErr);
+            }
+
+            // Detect and delete removed Cloudinary files
+            const oldFiles = findPost.postFiles || [];
+            const removedFiles = oldFiles.filter(
+                oldF => oldF?.fileUrl && !updatedFiles.some(uF => uF.fileUrl === oldF.fileUrl)
+            );
+            if (removedFiles.length > 0) {
+                const urlsToDelete = removedFiles.map(f => f.fileUrl).filter(Boolean);
+                await deleteFromCloudinary(urlsToDelete);
             }
         } else {
             // If existingFiles not specified in request, keep currently stored files

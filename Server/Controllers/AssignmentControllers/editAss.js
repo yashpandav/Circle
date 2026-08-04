@@ -4,6 +4,7 @@ const User = require('../../Models/User');
 const Category = require('../../Models/Category');
 const Class = require('../../Models/Class');
 const { uploadImage } = require('../../Utils/imageUpload');
+const { deleteFromCloudinary } = require('../../Utils/cloudinaryDelete');
 const { getIO } = require('../../socket');
 require('dotenv').config();
 
@@ -120,9 +121,16 @@ exports.editAss = async (req, res, next) => {
 
         //* Uploading new file or removing existing
         if (file) {
+            const oldFile = findAss.file;
             const image = await uploadImage(file, process.env.FOLDER_NAME);
+            if (oldFile) {
+                await deleteFromCloudinary(oldFile);
+            }
             findAss.file = image.secure_url;
         } else if (removeFile === 'true' || removeFile === true) {
+            if (findAss.file) {
+                await deleteFromCloudinary(findAss.file);
+            }
             findAss.file = '';
         }
 

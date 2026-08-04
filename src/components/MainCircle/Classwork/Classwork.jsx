@@ -129,18 +129,15 @@ const ClassworkAssignmentItem = ({
                         </span>
                     )}
 
-                    {/* Stats for Teachers */}
+                    {/* Status Badges for Teachers (Matching Student Badge System) */}
                     {isTeacher && (
-                        <div className="teacher-quick-stats">
-                            <div className="stat-item" title="Turned in">
-                                <span className="stat-count done">{submissions.length}</span>
-                                <span className="stat-name">Done</span>
-                            </div>
-                            <div className="stat-sep">/</div>
-                            <div className="stat-item" title="Assigned">
-                                <span className="stat-count pending">{pendingStudents.length}</span>
-                                <span className="stat-name">Assigned</span>
-                            </div>
+                        <div className="teacher-status-tags">
+                            <span className="status-tag done" title="Turned in">
+                                {submissions.length} Done
+                            </span>
+                            <span className="status-tag assigned" title="Assigned">
+                                {pendingStudents.length} Assigned
+                            </span>
                         </div>
                     )}
 
@@ -151,6 +148,7 @@ const ClassworkAssignmentItem = ({
                                 size="small"
                                 onClick={handleMenuOpen}
                                 className="item-more-btn"
+                                title="Assignment options"
                             >
                                 <MoreVertIcon fontSize="small" />
                             </IconButton>
@@ -162,6 +160,7 @@ const ClassworkAssignmentItem = ({
                                 e.stopPropagation();
                                 setIsExpanded(!isExpanded);
                             }}
+                            title={isExpanded ? "Collapse" : "Expand"}
                         >
                             {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                         </IconButton>
@@ -232,7 +231,7 @@ const ClassworkAssignmentItem = ({
                                 '&:hover': { backgroundColor: 'transparent', textDecoration: 'underline' }
                             }}
                         >
-                            View instructions →
+                            {isTeacher ? "View instructions & submissions →" : "View instructions →"}
                         </Button>
                     </div>
                 </div>
@@ -471,15 +470,15 @@ export default function Classwork() {
         <div className="classwork-page-container">
             <style>{`
                 .classwork-page-container {
-                    --class-theme: ${themeColor || '#ffffffff'};
+                    --class-theme: ${themeColor || '#00a896'};
                 }
             `}</style>
             {/* Top Clean Action & Filter Toolbar */}
             <div className="classwork-toolbar">
                 <div className="classwork-toolbar-left">
-                    {/* Teacher: + Create Menu Button */}
+                    {/* Teacher: + Create Menu Button and Review Work Button */}
                     {isTeacher ? (
-                        <>
+                        <div className="teacher-toolbar-actions">
                             <Button
                                 variant="contained"
                                 startIcon={<AddIcon />}
@@ -489,6 +488,24 @@ export default function Classwork() {
                                 style={{ backgroundColor: themeColor }}
                             >
                                 Create
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                startIcon={<AssignmentIndIcon />}
+                                onClick={() => navigate('/workarea/review')}
+                                className="classwork-review-btn"
+                                sx={{
+                                    borderColor: '#cbd5e1',
+                                    color: '#334155',
+                                    borderRadius: '10px',
+                                    textTransform: 'none',
+                                    fontWeight: 600,
+                                    height: '44px',
+                                    px: 2,
+                                    '&:hover': { borderColor: themeColor, color: themeColor, backgroundColor: '#f8fafc' }
+                                }}
+                            >
+                                Review work
                             </Button>
                             <Menu
                                 anchorEl={createMenuAnchor}
@@ -506,7 +523,7 @@ export default function Classwork() {
                                     <TopicIcon fontSize="small" sx={{ mr: 1.5, color: '#64748b' }} /> Topic
                                 </MenuItem>
                             </Menu>
-                        </>
+                        </div>
                     ) : (
                         /* Student: View Your Work Button */
                         <Button
@@ -583,7 +600,9 @@ export default function Classwork() {
                                     borderRadius: '10px',
                                     textTransform: 'none',
                                     fontWeight: 600,
-                                    padding: '8px 20px'
+                                    height: '44px',
+                                    padding: '0 20px',
+                                    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)'
                                 }}
                             >
                                 Create Assignment
@@ -747,7 +766,9 @@ export default function Classwork() {
                                                     color: themeColor,
                                                     textTransform: 'none',
                                                     fontWeight: 600,
-                                                    borderRadius: '8px'
+                                                    borderRadius: '10px',
+                                                    height: '38px',
+                                                    px: 2
                                                 }}
                                             >
                                                 Add assignment to this topic

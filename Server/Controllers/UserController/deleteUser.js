@@ -4,6 +4,7 @@ const Class = require('../../Models/Class');
 const ToDo = require('../../Models/ToDo');
 const Review = require('../../Models/review');
 const { getIO } = require('../../socket');
+const { deleteFromCloudinary } = require('../../Utils/cloudinaryDelete');
 
 exports.deleteUser = async (req, res, next) => {
     try {
@@ -15,6 +16,10 @@ exports.deleteUser = async (req, res, next) => {
                 success: false,
                 message: "USER NOT FOUND",
             });
+        }
+
+        if (user?.image) {
+            await deleteFromCloudinary(user.image);
         }
 
         await Profile.findByIdAndDelete(user?.additionalDetails);

@@ -5,6 +5,7 @@ const Class = require("../../Models/Class");
 const Category = require("../../Models/Category");
 const Comment = require("../../Models/Comment");
 const { getIO } = require("../../socket");
+const { deleteFromCloudinary } = require("../../Utils/cloudinaryDelete");
 
 exports.deletePost = async (req, res, next) => {
     try {
@@ -42,30 +43,38 @@ exports.deletePost = async (req, res, next) => {
             });
         }
 
-        // 5. Remove the post reference from the class if class exists
+        // 5. Clean up associated Cloudinary files
+        if (Array.isArray(findPost.postFiles) && findPost.postFiles.length > 0) {
+            const urls = findPost.postFiles.map(pf => pf?.fileUrl).filter(Boolean);
+            if (urls.length > 0) {
+                await deleteFromCloudinary(urls);
+            }
+        }
+
+        // 6. Remove the post reference from the class if class exists
         if (findClass) {
             await Class.findByIdAndUpdate(findClass._id, {
                 $pull: { addedPost: postId },
             });
         }
 
-        // 6. Remove post reference from any categories
+        // 7. Remove post reference from any categories
         await Category.updateMany(
             { post: postId },
             { $pull: { post: postId } }
         );
 
-        // 7. Batch delete associated comments
+        // 8. Batch delete associated comments
         if (findPost.comment && findPost.comment.length > 0) {
             await Comment.deleteMany({ _id: { $in: findPost.comment } });
         }
         // Also cleanup comments tagged with this post
         await Comment.deleteMany({ commentOn: "Post", id: postId });
 
-        // 8. Delete the post document
+        // 9. Delete the post document
         const deletedPost = await Post.findByIdAndDelete(postId);
 
-        // 9. Broadcast deletion event to circle members via Socket.IO
+        // 10. Broadcast deletion event to circle members via Socket.IO
         if (findClass) {
             getIO().to(`room:${findClass._id.toString()}`).emit('post:deleted', { postId });
         }

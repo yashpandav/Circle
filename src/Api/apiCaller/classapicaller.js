@@ -2,7 +2,7 @@ import { CLASS_API_URL } from '../apis';
 import { apiConnector } from '../apiconfig';
 import toast from 'react-hot-toast';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { setCurrClass } from '../../Slices/classSlice';
+import { setCurrClass, removeClass } from '../../Slices/classSlice';
 
 const {
     CREATE_CLASS_API,
@@ -139,11 +139,14 @@ export const addTeacherToClass = createAsyncThunk(
 
 export const deleteClassAction = createAsyncThunk(
     'deleteClass',
-    async ({ id, navigate }) => {
+    async ({ id, navigate }, { dispatch }) => {
         try {
             const response = await apiConnector('DELETE', `${DELETE_CLASS_API}/${id}`);
+            dispatch(removeClass(id));
             toast.success("Class deleted successfully");
-            navigate('/workarea/home');
+            if (navigate) {
+                navigate('/workarea/home');
+            }
             return response.data;
         } catch (err) {
             toast.error(err?.response?.data?.message || "Failed to delete class");
@@ -154,11 +157,14 @@ export const deleteClassAction = createAsyncThunk(
 
 export const leaveClassAction = createAsyncThunk(
     'leaveClass',
-    async ({ classId, navigate }) => {
+    async ({ classId, navigate }, { dispatch }) => {
         try {
             const response = await apiConnector('POST', LEFT_CLASS_API, { classId });
+            dispatch(removeClass(classId));
             toast.success("Left class successfully");
-            navigate('/workarea/home');
+            if (navigate) {
+                navigate('/workarea/home');
+            }
             return response.data;
         } catch (err) {
             toast.error(err?.response?.data?.message || "Failed to leave class");

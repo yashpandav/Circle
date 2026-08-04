@@ -1,7 +1,7 @@
 const User = require('../../Models/User');
 const OTP = require('../../Models/OTP');
 const Profile = require('../../Models/Profile');
-const { sendMail } = require('../../Utils/mailSender');
+const { sendMailInBackground } = require('../../Utils/mailSender');
 const { successSignUp } = require('../../Mail/successAccount');
 const bcrypt = require('bcrypt');
 exports.signUp = async (req, res, next) => {
@@ -78,16 +78,12 @@ exports.signUp = async (req, res, next) => {
         });
         const savedUser = await newUser.save();
 
-        //* Send success email
-        try {
-            await sendMail(
-                savedUser.email,
-                "Account Created Successfully",
-                successSignUp(savedUser.firstName, savedUser.lastName)
-            );
-        } catch (mailErr) {
-            console.error("Failed to send signup email:", mailErr);
-        }
+        //* Send success email in background
+        sendMailInBackground(
+            savedUser.email,
+            "Account Created Successfully",
+            successSignUp(savedUser.firstName, savedUser.lastName)
+        );
 
         savedUser.password = undefined;
 

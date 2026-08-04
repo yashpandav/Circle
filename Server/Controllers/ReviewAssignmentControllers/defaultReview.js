@@ -1,52 +1,74 @@
+const mongoose = require('mongoose');
 const Class = require('../../Models/Class');
 const User = require('../../Models/User');
 const Review = require('../../Models/review');
 const Assignment = require('../../Models/Assignment');
 
 async function fetchAssignmentReview(classId, user) {
-    const currClass = await Class.findById(classId).populate({
-        path: "addedAssignment",
-        populate: [
-            { path: "category", select: "name" },
-            { path: "submission", select: "_id student submitDate" },
-            { path: "pendingStudent", select: "_id" }
-        ]
-    });
-
-    if (!currClass || !currClass.addedAssignment || currClass.addedAssignment.length === 0) {
+    if (!classId || !mongoose.Types.ObjectId.isValid(classId)) {
         return null;
     }
+
+    const currClass = await Class.findById(classId)
+        .populate({
+            path: "addedAssignment",
+            populate: [
+                { path: "category", select: "name" },
+                { path: "teacher", select: "firstName lastName image email" },
+                { 
+                    path: "submission", 
+                    select: "_id student submitDate data file",
+                    populate: {
+                        path: "student",
+                        select: "firstName lastName image email"
+                    }
+                },
+                { path: "pendingStudent", select: "_id firstName lastName image email" }
+            ]
+        });
+
+    if (!currClass) {
+        return null;
+    }
+
+    const addedAssignments = Array.isArray(currClass.addedAssignment) ? currClass.addedAssignment : [];
+    const validAssignments = addedAssignments.filter(a => a && a._id);
 
     const userIdStr = user._id ? user._id.toString() : user.id.toString();
     const isClassAdmin = currClass.admin && currClass.admin.toString() === userIdStr;
+    const isClassTeacher = currClass.teacher && currClass.teacher.some(t => t && t.toString() === userIdStr);
 
-    // Filter assignments created by this teacher or all assignments if admin/teacher in class
-    const thisTeacherAssignments = currClass.addedAssignment.filter(assignment => {
-        if (!assignment) return false;
-        if (assignment.teacher && assignment.teacher.toString() === userIdStr) return true;
-        if (isClassAdmin) return true;
-        return true;
-    });
-
-    if (!thisTeacherAssignments.length) {
+    if (!isClassAdmin && !isClassTeacher) {
         return null;
     }
 
-    const reviewData = await Review.findById(user.reviewList);
+    const reviewData = user.reviewList ? await Review.findById(user.reviewList) : null;
     let classReviewData = null;
-    if (reviewData && reviewData.byClass) {
+    if (reviewData && Array.isArray(reviewData.byClass)) {
         classReviewData = reviewData.byClass.find(c => c.classId && c.classId.toString() === classId.toString());
     }
 
-    const reviewedAssignments = classReviewData ? classReviewData.reviewdAss.map(id => id.toString()) : [];
-    const notReviewedAssignments = classReviewData ? classReviewData.notReviedAss.map(id => id.toString()) : thisTeacherAssignments.map(ass => ass._id.toString());
+    const reviewedAssignmentIds = classReviewData && Array.isArray(classReviewData.reviewdAss)
+        ? classReviewData.reviewdAss.map(id => id.toString())
+        : [];
 
-    // Seperate pending and reviewed assignments
-    const reviewed = thisTeacherAssignments.filter(assignment => reviewedAssignments.includes(assignment._id.toString()));
-    const pending = thisTeacherAssignments.filter(assignment => !reviewedAssignments.includes(assignment._id.toString()));
+    // Separate into reviewed and not reviewed (pending)
+    const reviewed = validAssignments.filter(assignment => reviewedAssignmentIds.includes(assignment._id.toString()));
+    const pending = validAssignments.filter(assignment => !reviewedAssignmentIds.includes(assignment._id.toString()));
 
     return { 
-        classId, 
+        classId: currClass._id, 
+        className: currClass.name || 'Untitled Class',
+        classSubject: currClass.subject || '',
+        classTheme: currClass.classTheme || '#00a896',
+        entryCode: currClass.entryCode || '',
+        classInfo: {
+            _id: currClass._id,
+            name: currClass.name || 'Untitled Class',
+            subject: currClass.subject || '',
+            classTheme: currClass.classTheme || '#00a896',
+            entryCode: currClass.entryCode || ''
+        },
         reviewdAss: reviewed, 
         notReviedAss: pending 
     };
@@ -54,7 +76,13 @@ async function fetchAssignmentReview(classId, user) {
 
 exports.pendingReview = async (req, res, next) => {
     try {
-        const userId = req.user.id;
+        const userId = req.user?.id || req.user?._id;
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized: User identification missing"
+            });
+        }
 
         const user = await User.findById(userId).populate("reviewList");
         if (!user) {
@@ -64,19 +92,34 @@ exports.pendingReview = async (req, res, next) => {
             });
         }
 
-        const classId = req.params.classId === 'all' ? null : req.params.classId;
-        
-        // Collect all classes where user is teacher or admin
-        const joinedClasses = user.joinedClassAsAteacher ? user.joinedClassAsAteacher.map(c => c.toString()) : [];
-        const adminClasses = await Class.find({ admin: userId }).select('_id');
-        adminClasses.forEach(c => {
-            const cId = c._id.toString();
-            if (!joinedClasses.includes(cId)) {
-                joinedClasses.push(cId);
-            }
+        const requestedParam = req.params.classId || req.query.classId;
+        const targetClassId = (requestedParam && requestedParam !== 'all' && requestedParam !== 'null' && requestedParam !== 'undefined')
+            ? requestedParam
+            : null;
+
+        // Collect all teaching classes (where user is admin or in teacher array or joinedClassAsAteacher)
+        const teachingClassSet = new Set();
+
+        if (Array.isArray(user.joinedClassAsAteacher)) {
+            user.joinedClassAsAteacher.forEach(c => {
+                if (c) teachingClassSet.add(c.toString());
+            });
+        }
+
+        const adminAndTeacherClasses = await Class.find({
+            $or: [
+                { admin: userId },
+                { teacher: userId }
+            ]
+        }).select('_id');
+
+        adminAndTeacherClasses.forEach(c => {
+            if (c?._id) teachingClassSet.add(c._id.toString());
         });
 
-        if (!joinedClasses || joinedClasses.length === 0) {
+        const allTeachingClassIds = Array.from(teachingClassSet);
+
+        if (allTeachingClassIds.length === 0) {
             return res.status(200).json({
                 success: true,
                 message: "No teaching classes found",
@@ -84,11 +127,30 @@ exports.pendingReview = async (req, res, next) => {
             });
         }
 
-        const classIds = classId ? [classId] : joinedClasses;
-        const reviewData = await Promise.all(classIds.map(cId => fetchAssignmentReview(cId, user)));
+        let classIdsToFetch = allTeachingClassIds;
+        if (targetClassId) {
+            if (!mongoose.Types.ObjectId.isValid(targetClassId)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid Class ID format"
+                });
+            }
+            if (allTeachingClassIds.includes(targetClassId)) {
+                classIdsToFetch = [targetClassId];
+            } else {
+                return res.status(200).json({
+                    success: true,
+                    message: "No matching teaching class found",
+                    data: []
+                });
+            }
+        }
+
+        const reviewData = await Promise.all(classIdsToFetch.map(cId => fetchAssignmentReview(cId, user)));
         const validReviewData = reviewData.filter(data => data !== null);
 
-        let reviewList = await Review.findById(user.reviewList);
+        // Sync user Review document
+        let reviewList = user.reviewList ? await Review.findById(user.reviewList) : null;
         if (!reviewList) {
             reviewList = new Review({
                 user: userId,
@@ -115,8 +177,10 @@ exports.pendingReview = async (req, res, next) => {
         }
 
         await reviewList.save();
-        user.reviewList = reviewList._id;
-        await user.save();
+        if (!user.reviewList || user.reviewList.toString() !== reviewList._id.toString()) {
+            user.reviewList = reviewList._id;
+            await user.save();
+        }
 
         return res.status(200).json({
             success: true,

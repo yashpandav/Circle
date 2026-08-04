@@ -1,8 +1,9 @@
 require('dotenv').config();
 const { createTransporter } = require('../Config/mailTransporter');
+const { runInBackground } = require('./backgroundTasks');
 let transporterPromise = createTransporter();
 
-exports.sendMail = async (email , title ,body) => {
+async function sendMailDirect(email, title, body) {
     try {
         const transporter = await transporterPromise;
         const mailOptions = {
@@ -17,4 +18,15 @@ exports.sendMail = async (email , title ,body) => {
         console.error('[Mail] Failed to send email:', err.message);
         throw err;
     }
-};
+}
+
+function sendMailInBackground(email, title, body) {
+    runInBackground(`Send Email to ${email}`, async () => {
+        await sendMailDirect(email, title, body);
+    });
+    return Promise.resolve();
+}
+
+exports.sendMail = sendMailDirect;
+exports.sendMailDirect = sendMailDirect;
+exports.sendMailInBackground = sendMailInBackground;

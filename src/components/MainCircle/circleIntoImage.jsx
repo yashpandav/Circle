@@ -56,7 +56,10 @@ export default function CircleIntroImage() {
 
     const dispatch = useDispatch();
 
+    const [loading, setLoading] = useState(false);
+
     const handleSubmit = async () => {
+        setLoading(true);
         const formData = new FormData();
         if (selectedColor) formData.append('classTheme', selectedColor);
         if (file) formData.append('thumbnail', file);
@@ -66,6 +69,8 @@ export default function CircleIntroImage() {
             handleClose();
         } catch (err) {
             console.error("SOMETHING WENT WRONG WHILE SENDING API FUNCTION", err);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -190,8 +195,8 @@ export default function CircleIntroImage() {
                         <Button onClick={handleClose} variant="outlined" className="global-dialog-btn-cancel">
                             Cancel
                         </Button>
-                        <Button onClick={handleSubmit} variant="contained" className="global-dialog-btn-submit">
-                            Save
+                        <Button onClick={handleSubmit} variant="contained" className="global-dialog-btn-submit" disabled={loading}>
+                            {loading ? "Saving..." : "Save"}
                         </Button>
                     </DialogActions>
                 </MuiDialog>

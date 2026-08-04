@@ -26,6 +26,30 @@ const classSlice = createSlice({
                 state.currClass = { ...state.currClass, ...action.payload };
             }
         },
+        removeClass(state, action) {
+            const classId = action.payload?.classId || action.payload;
+            if (!classId) return;
+            const classIdStr = classId.toString();
+
+            if (state.currClass && ((state.currClass._id && state.currClass._id.toString() === classIdStr) || state.currClass.id === classIdStr)) {
+                state.currClass = null;
+            }
+            if (Array.isArray(state.createdClasses)) {
+                state.createdClasses = state.createdClasses.filter(
+                    c => (c._id ? c._id.toString() : c.toString()) !== classIdStr
+                );
+            }
+            if (Array.isArray(state.joinedClassesAsTeacher)) {
+                state.joinedClassesAsTeacher = state.joinedClassesAsTeacher.filter(
+                    c => (c._id ? c._id.toString() : c.toString()) !== classIdStr
+                );
+            }
+            if (Array.isArray(state.joinedClassesAsStudent)) {
+                state.joinedClassesAsStudent = state.joinedClassesAsStudent.filter(
+                    c => (c._id ? c._id.toString() : c.toString()) !== classIdStr
+                );
+            }
+        },
         addClassMember(state, action) {
             if (state.currClass) {
                 const { type, user } = action.payload; // type can be 'teacher' or 'student'
@@ -102,6 +126,7 @@ export const {
     setCreatedClass,
     setCurrClass,
     updateCurrClass,
+    removeClass,
     addClassMember,
     removeClassMember,
     updateClassMember,
@@ -110,4 +135,3 @@ export const {
     updateCategory
 } = classSlice.actions;
 export default classSlice.reducer;
-

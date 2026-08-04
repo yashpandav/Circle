@@ -1,6 +1,7 @@
 const User = require('../../Models/User');
 const Profile = require('../../Models/Profile');
 const { uploadImage } = require('../../Utils/imageUpload');
+const { deleteFromCloudinary } = require('../../Utils/cloudinaryDelete');
 const { getIO } = require('../../socket');
 require('dotenv').config();
 
@@ -27,7 +28,11 @@ exports.updateProfile = async (req, res, next) => {
         }
 
         if (image) {
+            const oldImage = currUser.image;
             const imageURL = await uploadImage(image, process.env.FOLDER_NAME);
+            if (oldImage) {
+                await deleteFromCloudinary(oldImage);
+            }
             image = imageURL.secure_url;
         }
 

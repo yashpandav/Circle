@@ -1,154 +1,263 @@
-@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap');
+/* ==========================================================================
+   Clean Classic People Layout CSS
+   ========================================================================== */
 
-.people-container {
-    max-width: 1000px;
+.people-page-wrapper {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #1e293b;
+}
+
+.people-page-container {
+    max-width: 960px;
     margin: 0 auto;
-    padding: 24px;
-}
-
-.teachers-section,
-.students-section {
-    margin-bottom: 48px;
-}
-
-.section-header {
+    padding: 24px 20px 80px 20px;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 40px;
+    box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   Top Action & Filter Toolbar
+   -------------------------------------------------------------------------- */
+.people-top-toolbar {
+    display: flex;
     align-items: center;
-    padding: 24px;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
 }
 
-h2 {
-    font-size: 1.75rem;
-    color: #202124;
+.people-search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 0 14px;
+    height: 40px;
+    width: 300px;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+.people-search-box:hover {
+    border-color: var(--class-theme, #00a896);
+}
+
+.people-search-box:focus-within {
+    border-color: var(--class-theme, #00a896);
+    box-shadow: 0 0 0 1px var(--class-theme, #00a896);
+}
+
+.people-search-box input {
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    font-size: 14px;
+    color: #1e293b;
+    font-family: inherit;
     font-weight: 500;
-    margin: 0;
-    letter-spacing: -0.25px;
 }
 
-.count-badge {
-    color: #5f6368;
-    font-size: 0.9375rem;
-    background-color: #f1f3f4;
-    padding: 4px 12px;
-    border-radius: 16px;
+.people-search-box input::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
+}
+
+.people-class-code-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    padding: 0 14px;
+    height: 40px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.people-class-code-btn:hover {
+    background: #f8fafc;
+    border-color: var(--class-theme, #00a896);
+}
+
+.people-class-code-btn .code-label {
+    font-size: 13px;
+    color: #64748b;
     font-weight: 500;
 }
 
-.users-list {
+.people-class-code-btn .code-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: 0.5px;
+}
+
+.people-class-code-btn .code-copy-icon {
+    font-size: 16px;
+    color: #94a3b8;
+    margin-left: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Section Headers & Horizontal Dividers
+   -------------------------------------------------------------------------- */
+.people-section-block {
     display: flex;
     flex-direction: column;
 }
 
-.user-card {
+.people-section-header {
     display: flex;
     align-items: center;
-    padding: 16px 24px;
-    transition: all 0.2s ease;
-    border-radius: 8px;
-    margin: 0 8px;
+    justify-content: space-between;
+    padding: 0 4px 8px 4px;
+    min-height: 44px;
 }
 
-.divider {
-    height: 1px;
-    margin: 0 24px;
-}
-
-.user-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    margin-right: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.2rem;
+.people-section-title {
+    margin: 0;
+    font-size: 1.65rem;
     font-weight: 500;
+    color: var(--class-theme, #00a896);
+    letter-spacing: -0.25px;
 }
 
-.user-avatar img {
+.people-section-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.people-count-text {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #5f6368;
+}
+
+.people-header-icon-btn {
+    padding: 8px !important;
+}
+
+.people-section-divider {
+    height: 2px;
     width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
+    border-radius: 1px;
+    margin-bottom: 4px;
 }
 
-.user-info {
+/* --------------------------------------------------------------------------
+   User List & Rows (Clean, Background-Free)
+   -------------------------------------------------------------------------- */
+.people-users-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.people-user-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-bottom: 1px solid #e0e0e0;
+    transition: background-color 0.15s ease;
+    border-radius: 6px;
+}
+
+.people-user-row:last-child,
+.people-user-row.is-last {
+    border-bottom: none !important;
+}
+
+.people-user-row:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.people-user-main {
     display: flex;
     align-items: center;
     gap: 16px;
-    flex-grow: 1;
+    min-width: 0;
+    flex: 1;
 }
 
-.user-name {
-    font-size: 1rem;
+.people-user-details {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.people-user-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.people-user-name {
+    font-size: 14.5px;
+    font-weight: 500;
     color: #202124;
-    font-weight: 500;
     letter-spacing: 0.1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.admin-badge {
-    font-size: 0.875rem;
+.current-user-tag {
+    font-size: 12px;
+    color: var(--class-theme, #00a896);
+    font-weight: 600;
+}
+
+.people-user-email {
+    font-size: 13px;
     color: #5f6368;
-    background-color: #f1f3f4;
-    padding: 4px 12px;
-    border-radius: 16px;
-    font-weight: 500;
-    letter-spacing: 0.1px;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.view-all {
+.people-empty-row {
+    padding: 32px 14px;
     text-align: center;
-    margin-top: 20px;
+    color: #70757a;
+    font-size: 14px;
+    font-weight: 400;
 }
 
-.view-all-button {
-    display: block;
-    margin: 20px auto;
-    padding: 10px 20px;
-    background-color: #e0e0e0;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    text-align: center;
-}
-
-@media (max-width: 600px) {
-    .people-container {
-        padding: 16px;
+/* --------------------------------------------------------------------------
+   Responsive Styles
+   -------------------------------------------------------------------------- */
+@media (max-width: 680px) {
+    .people-top-toolbar {
+        flex-direction: column;
+        align-items: stretch;
     }
 
-    .user-card {
-        padding: 12px 16px;
+    .people-search-box {
+        width: 100%;
     }
 
-    .user-avatar {
-        width: 40px;
-        height: 40px;
-        margin-right: 16px;
+    .people-class-code-btn {
+        width: 100%;
+        justify-content: center;
     }
 
-    h2 {
-        font-size: 1.5rem;
+    .people-user-row {
+        padding: 10px 8px;
     }
-}
 
-.empty-state {
-    text-align: center;
-    padding: 32px;
-    color: #5f6368;
-    font-size: 0.9375rem;
-}
-
-.skeleton {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 200% 100%;
-    animation: loading 1.5s infinite;
-    border-radius: 4px;
-}
-
-@keyframes loading {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+    .people-section-title {
+        font-size: 1.45rem;
+    }
 }

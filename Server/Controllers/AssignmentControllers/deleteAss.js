@@ -6,6 +6,7 @@ const Category = require('../../Models/Category');
 const Comment = require('../../Models/Comment');
 const SubmitAssignment = require('../../Models/SubmitAssignment');
 const { getIO } = require('../../socket');
+const { deleteFromCloudinary } = require('../../Utils/cloudinaryDelete');
 
 exports.deleteAss = async (req, res, next) => {
     try {
@@ -51,20 +52,38 @@ exports.deleteAss = async (req, res, next) => {
             });
         }
 
-        // 5. Remove the assignment from the class
+        // 5. Gather and delete Cloudinary files (assignment file + submission files)
+        const submissions = await SubmitAssignment.find({
+            $or: [
+                { assignment: assId },
+                { _id: { $in: assignment.submission || [] } }
+            ]
+        });
+
+        const filesToDelete = [];
+        if (assignment.file) filesToDelete.push(assignment.file);
+        submissions.forEach(sub => {
+            if (sub.file) filesToDelete.push(sub.file);
+        });
+
+        if (filesToDelete.length > 0) {
+            await deleteFromCloudinary(filesToDelete);
+        }
+
+        // 6. Remove the assignment from the class
         if (currClass) {
             await Class.findByIdAndUpdate(currClass._id, {
                 $pull: { addedAssignment: assId },
             });
         }
 
-        // 6. Remove assignment from any categories
+        // 7. Remove assignment from any categories
         await Category.updateMany(
             { assignment: assId },
             { $pull: { assignment: assId } }
         );
 
-        // 7. Batch delete all associated submissions
+        // 8. Batch delete all associated submissions
         await SubmitAssignment.deleteMany({
             $or: [
                 { assignment: assId },
@@ -72,7 +91,7 @@ exports.deleteAss = async (req, res, next) => {
             ]
         });
 
-        // 8. Batch delete all associated comments
+        // 9. Batch delete all associated comments
         await Comment.deleteMany({
             $or: [
                 { _id: { $in: assignment.comment || [] } },
@@ -80,7 +99,7 @@ exports.deleteAss = async (req, res, next) => {
             ]
         });
 
-        // 9. Clean up references in Review and ToDo models
+        // 10. Clean up references in Review and ToDo models
         try {
             const Review = require('../../Models/review');
             const ToDo = require('../../Models/ToDo');
@@ -107,10 +126,10 @@ exports.deleteAss = async (req, res, next) => {
             console.error("Non-fatal error cleaning up review/todo refs:", cleanupErr);
         }
 
-        // 10. Delete the assignment document
+        // 11. Delete the assignment document
         const deletedAssignment = await Assignment.findByIdAndDelete(assId);
 
-        // 11. Broadcast deletion event via Socket.IO
+        // 12. Broadcast deletion event via Socket.IO
         if (currClass) {
             getIO().to(`room:${currClass._id.toString()}`).emit('assignment:deleted', { assignmentId: assId });
             getIO().to(`room:${currClass._id.toString()}`).emit('todo:updated', { classId: currClass._id.toString(), assignmentId: assId });

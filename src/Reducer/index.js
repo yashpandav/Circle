@@ -4,6 +4,7 @@ import classReducer from '../Slices/classSlice';
 import toggleReducer from '../Slices/toggleSlice';
 import loadingReducer from '../Slices/loadingSlice';
 import todoReducer from '../Slices/todoSlice';
+import reviewReducer from '../Slices/reviewSlice';
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
     toggle: toggleReducer,
     loading: loadingReducer,
     todo: todoReducer,
+    review: reviewReducer,
 });
 
 export default rootReducer;

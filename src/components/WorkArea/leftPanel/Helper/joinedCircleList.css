@@ -25,13 +25,14 @@
     border-radius: 10px;
     cursor: pointer;
     position: relative;
+    background: transparent !important;
     transition: background 0.18s ease;
     overflow: hidden;
     text-decoration: none;
 }
 
 .jcl-item:hover {
-    background: #f1f3f4;
+    background-color: color-mix(in srgb, var(--item-theme, #00a896) 15%, transparent) !important;
 }
 
 .jcl-item:focus-visible {
@@ -40,7 +41,7 @@
 }
 
 .jcl-item--active {
-    background-color: color-mix(in srgb, var(--item-theme, #00a896) 12%, transparent) !important;
+    background-color: transparent !important;
 }
 
 .jcl-item--active .jcl-name {

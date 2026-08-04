@@ -4,6 +4,7 @@ const Assignment = require('../../../Models/Assignment');
 const SubmitAssignment = require('../../../Models/SubmitAssignment');
 const Class = require('../../../Models/Class');
 const { uploadImage } = require('../../../Utils/imageUpload');
+const { deleteFromCloudinary } = require('../../../Utils/cloudinaryDelete');
 const { getIO } = require('../../../socket');
 require('dotenv').config();
 
@@ -105,7 +106,11 @@ exports.submitAss = async (req, res, next) => {
 
             // Overwrite confirmed: update existing submission
             if (file) {
+                const oldFile = currSubmitted.file;
                 const uploaded = await uploadImage(file, process.env.FOLDER_NAME);
+                if (oldFile) {
+                    await deleteFromCloudinary(oldFile);
+                }
                 currSubmitted.file = uploaded.secure_url;
             }
             if (data !== undefined) {

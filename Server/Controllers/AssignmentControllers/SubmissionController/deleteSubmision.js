@@ -4,6 +4,7 @@ const Assignment = require('../../../Models/Assignment');
 const SubmitAssignment = require('../../../Models/SubmitAssignment');
 const Class = require('../../../Models/Class');
 const { getIO } = require('../../../socket');
+const { deleteFromCloudinary } = require('../../../Utils/cloudinaryDelete');
 
 exports.deleteSubmittedAss = async (req, res, next) => {
     try {
@@ -74,6 +75,11 @@ exports.deleteSubmittedAss = async (req, res, next) => {
 
         const studentId = currSubmitted.student;
         const submissionId = currSubmitted._id;
+
+        // Clean up submission file from Cloudinary
+        if (currSubmitted.file) {
+            await deleteFromCloudinary(currSubmitted.file);
+        }
 
         // Delete the submission document
         await SubmitAssignment.findByIdAndDelete(submissionId);

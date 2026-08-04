@@ -1,5 +1,6 @@
 const Class = require('../../Models/Class');
 const { uploadImage } = require('../../Utils/imageUpload');
+const { deleteFromCloudinary } = require('../../Utils/cloudinaryDelete');
 const { getIO } = require('../../socket');
 require('dotenv').config();
 
@@ -34,7 +35,11 @@ exports.updateClass = async (req, res, next) => {
         }
 
         if (thumbnail) {
+            const oldThumbnail = findClass.thumbnail;
             const uploadResponse = await uploadImage(thumbnail, process.env.FOLDER_NAME);
+            if (oldThumbnail) {
+                await deleteFromCloudinary(oldThumbnail);
+            }
             thumbnail = uploadResponse.secure_url;
         }
 

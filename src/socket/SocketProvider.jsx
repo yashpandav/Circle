@@ -5,6 +5,7 @@ import socket from './socket';
 import {
     updateCurrClass,
     setCurrClass,
+    removeClass,
     addClassMember,
     removeClassMember,
     updateClassMember,
@@ -67,18 +68,31 @@ export default function SocketProvider({ children }) {
         dispatch(updateCurrClass(data));
     }, [dispatch]);
 
-    const handleClassDeleted = useCallback(() => {
-        // Clear the current class and redirect all members to home
-        dispatch(setCurrClass(null));
-        navigate('/workarea/home');
-    }, [dispatch, navigate]);
+    const handleClassDeleted = useCallback((payload) => {
+        const deletedClassId = payload?.classId || payload?.data?.classId || payload?.id;
 
-    const handleMemberLeft = useCallback(({ userId }) => {
-        dispatch(removeClassMember({ userId }));
-    }, [dispatch]);
+        // Remove class globally from all Redux state lists (Home cards, Left sidebar, etc.)
+        if (deletedClassId) {
+            dispatch(removeClass(deletedClassId));
+        }
 
-    const handleMemberUpdated = useCallback(({ user }) => {
-        dispatch(updateClassMember({ user }));
+        // If user is currently viewing this deleted circle, clear currClass and redirect to home
+        if (!deletedClassId || !currClass?._id || currClass._id.toString() === deletedClassId.toString()) {
+            dispatch(setCurrClass(null));
+            navigate('/workarea/home');
+        }
+    }, [dispatch, navigate, currClass?._id]);
+
+    const handleMemberLeft = useCallback(({ userId, classId }) => {
+        if (userId === (user?._id || user?.id) && classId) {
+            dispatch(removeClass(classId));
+        } else {
+            dispatch(removeClassMember({ userId }));
+        }
+    }, [dispatch, user]);
+
+    const handleMemberUpdated = useCallback(({ user: memberUser }) => {
+        dispatch(updateClassMember({ user: memberUser }));
     }, [dispatch]);
 
     const handleCodeReset = useCallback(({ entryCode }) => {
@@ -89,12 +103,12 @@ export default function SocketProvider({ children }) {
         dispatch(updateCurrClass({ isCodeActive }));
     }, [dispatch]);
 
-    const handleTeacherAdded = useCallback(({ user }) => {
-        dispatch(addClassMember({ type: 'teacher', user }));
+    const handleTeacherAdded = useCallback(({ user: teacherUser }) => {
+        dispatch(addClassMember({ type: 'teacher', user: teacherUser }));
     }, [dispatch]);
 
-    const handleMemberJoined = useCallback(({ user }) => {
-        dispatch(addClassMember({ type: 'student', user }));
+    const handleMemberJoined = useCallback(({ user: joinedUser }) => {
+        dispatch(addClassMember({ type: 'student', user: joinedUser }));
     }, [dispatch]);
 
     const handleCategoryCreated = useCallback(({ data }) => {
