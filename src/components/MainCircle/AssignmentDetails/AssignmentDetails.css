@@ -159,13 +159,6 @@
     font-size: 16px;
 }
 
-/* Accent Divider */
-.assignment-accent-divider {
-    height: 2px;
-    width: 100%;
-    opacity: 0.85;
-}
-
 /* Instructions Body */
 .assignment-body-section {
     padding: 20px 24px 24px 24px;
@@ -337,6 +330,12 @@
 /* --------------------------------------------------------------------------
    5. Student Submission Components
    -------------------------------------------------------------------------- */
+.student-work-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
 .student-unsubmitted-container,
 .student-submitted-container {
     display: flex;
@@ -450,41 +449,42 @@
 .student-submitted-badge {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     background-color: #f8fafc;
     border: 1px solid #e2e8f0;
-    padding: 10px 12px;
+    padding: 11px 14px;
     border-radius: 8px;
 }
 
 .student-submitted-badge strong {
     display: block;
     font-size: 13px;
-    color: #202124;
+    color: #1e293b;
+    font-weight: 600;
 }
 
 .student-submitted-badge span {
     font-size: 11.5px;
-    color: #5f6368;
+    color: #64748b;
 }
 
 .student-submitted-file {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
+    gap: 10px;
+    padding: 10px 14px;
     background-color: #ffffff;
-    border: 1px solid #dadce0;
-    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
     text-decoration: none;
-    font-size: 13px;
+    font-size: 13.5px;
     font-weight: 500;
-    color: #202124;
+    color: #1e293b;
     transition: all 0.15s ease;
 }
 
 .student-submitted-file:hover {
-    border-color: var(--class-theme, #00a896);
+    border-color: #cbd5e1;
     background-color: #f8fafc;
 }
 
@@ -496,48 +496,51 @@
 }
 
 .student-submitted-file .ext-icon {
-    color: #9aa0a6;
+    color: #94a3b8;
 }
 
 .student-private-note-display {
     background: #f8fafc;
-    padding: 8px 12px;
-    border-radius: 6px;
+    padding: 10px 14px;
+    border-radius: 8px;
     border: 1px solid #e2e8f0;
 }
 
 .student-private-note-display .note-title {
     font-size: 11px;
     font-weight: 600;
-    color: #5f6368;
+    color: #64748b;
     text-transform: uppercase;
 }
 
 .student-private-note-display p {
     margin: 3px 0 0 0;
     font-size: 13px;
-    color: #3c4043;
+    color: #334155;
+    font-style: italic;
 }
 
 .student-action-btn-group {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
     margin-top: 4px;
 }
 
 .student-unsubmit-btn {
-    border-color: #dadce0 !important;
-    color: #3c4043 !important;
+    border-color: #cbd5e1 !important;
+    color: #475569 !important;
     text-transform: none !important;
     font-weight: 500 !important;
-    border-radius: 6px !important;
+    border-radius: 8px !important;
     font-size: 13.5px !important;
+    padding: 7px 14px !important;
 }
 
 .student-unsubmit-btn:hover {
     background-color: #f8fafc !important;
-    border-color: #cbd5e1 !important;
+    border-color: #94a3b8 !important;
+    color: #0f172a !important;
 }
 
 .student-edit-btn {
@@ -773,7 +776,149 @@
 }
 
 /* --------------------------------------------------------------------------
-   7. Loading & Error States
+   7. Student Grading Card & Feedback Display
+   -------------------------------------------------------------------------- */
+.student-grade-card {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.grade-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.grade-card-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #15803d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.grade-score-display {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 3px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #15803d;
+}
+
+.grade-score-max {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #4ade80;
+}
+
+.teacher-feedback-card {
+    background-color: #ffffff;
+    border: 1px solid #dcfce7;
+    border-radius: 6px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.feedback-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #15803d;
+}
+
+.feedback-body {
+    margin: 0;
+    font-size: 12.5px;
+    color: #1f2937;
+    line-height: 1.4;
+}
+
+.reviewed-by-tag {
+    font-size: 11px;
+    color: #64748b;
+    font-style: italic;
+}
+
+/* Student Rejection Banner */
+.student-rejected-banner {
+    background-color: #fff1f2;
+    border: 1px solid #fecdd3;
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.rejection-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #b91c1c;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.rejection-msg {
+    margin: 0;
+    font-size: 13px;
+    color: #7f1d1d;
+    line-height: 1.4;
+}
+
+.resubmit-btn {
+    margin-top: 4px !important;
+    background-color: #ef4444 !important;
+    color: #ffffff !important;
+    text-transform: none !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+}
+
+.resubmit-btn:hover {
+    background-color: #dc2626 !important;
+}
+
+/* Teacher View: Student Grading Controls */
+.student-grade-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px dashed #e2e8f0;
+}
+
+.student-grade-pill {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #15803d;
+    background-color: #dcfce7;
+    padding: 2px 7px;
+    border-radius: 4px;
+}
+
+.student-teacher-grade-btn {
+    padding: 3px 8px !important;
+    font-size: 11.5px !important;
+    text-transform: none !important;
+    font-weight: 600 !important;
+    border-radius: 4px !important;
+    line-height: 1.2 !important;
+}
+
+/* --------------------------------------------------------------------------
+   8. Loading & Error States
    -------------------------------------------------------------------------- */
 .assignment-details-loading-container,
 .assignment-not-found-container {
@@ -798,6 +943,7 @@
     font-size: 1.3rem;
     font-weight: 500;
 }
+
 
 .assignment-not-found-container p {
     margin: 0 0 12px 0;

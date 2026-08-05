@@ -2,7 +2,7 @@ import { CLASS_API_URL } from '../apis';
 import { apiConnector } from '../apiconfig';
 import toast from 'react-hot-toast';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { setCurrClass, removeClass } from '../../Slices/classSlice';
+import { setCurrClass, updateCurrClass, removeClass } from '../../Slices/classSlice';
 
 const {
     CREATE_CLASS_API,
@@ -84,7 +84,7 @@ export const changeEntryCode = createAsyncThunk(
     async ({ id, dispatch }) => {
         try {
             const response = await apiConnector('POST', `${CHANGE_ENTRY_CODE}/${id}`);
-            dispatch(setCurrClass(response.data.data));
+            dispatch(updateCurrClass({ entryCode: response.data.data.entryCode }));
             return response.data;
         } catch (err) {
             return err.response ? err.response : err.message;
@@ -97,7 +97,7 @@ export const toggleEntryCodeStatus = createAsyncThunk(
     async ({ id, dispatch }) => {
         try {
             const response = await apiConnector('POST', `${TOGGLE_ENTRY_CODE}/${id}`);
-            dispatch(setCurrClass(response.data.data));
+            dispatch(updateCurrClass({ isCodeActive: response.data.data.isCodeActive }));
             toast.success(response.data.message);
             return response.data;
         } catch (err) {

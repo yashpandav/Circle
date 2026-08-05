@@ -70,6 +70,14 @@ exports.editSubmimtedAss = async (req, res, next) => {
             });
         }
 
+        // Graded assignments cannot be edited
+        if (currSubmitted.status === 'ACCEPTED') {
+            return res.status(403).json({
+                success: false,
+                message: "This assignment has already been graded by your teacher and cannot be modified."
+            });
+        }
+
         if (file) {
             const oldFile = currSubmitted.file;
             const uploaded = await uploadImage(file, process.env.FOLDER_NAME);
@@ -81,6 +89,11 @@ exports.editSubmimtedAss = async (req, res, next) => {
 
         if (data !== undefined) {
             currSubmitted.data = data;
+        }
+
+        // If it was rejected, mark it as submitted for re-evaluation
+        if (currSubmitted.status === 'REJECTED') {
+            currSubmitted.status = 'SUBMITTED';
         }
 
         currSubmitted.submitDate = Date.now();

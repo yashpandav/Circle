@@ -179,10 +179,13 @@ export default function AssignmentContainer({ assignment }) {
 
     // Calculate student submission status
     const isStudent = !isAnnouncer;
-    const isSubmitted = assignment.submission && Array.isArray(assignment.submission) && assignment.submission.some(
-        s => (s.student?._id === currUser?._id || s.student === currUser?._id || s === currUser?._id)
-    );
+    const userSubmission = assignment.submission && Array.isArray(assignment.submission)
+        ? assignment.submission.find(s => (s?.student?._id === currUser?._id || s?.student === currUser?._id || s?._id === currUser?._id || s?.student?.id === currUser?._id))
+        : null;
+    const isSubmitted = Boolean(userSubmission);
     const isPastDue = assignment.dueDate && new Date(assignment.dueDate).getTime() < Date.now();
+    const isAccepted = userSubmission?.status === 'ACCEPTED';
+    const isRejected = userSubmission?.status === 'REJECTED';
 
     return (
         <div className="post-container assignment-post-container" key={assignment._id}>
@@ -225,10 +228,10 @@ export default function AssignmentContainer({ assignment }) {
                                 fontWeight: 600,
                                 padding: '4px 10px',
                                 borderRadius: '12px',
-                                backgroundColor: isSubmitted ? '#e6f4ea' : isPastDue ? '#fce8e6' : '#e8f0fe',
-                                color: isSubmitted ? '#137333' : isPastDue ? '#c5221f' : '#1a73e8'
+                                backgroundColor: isAccepted ? '#e6f4ea' : isRejected ? '#fce8e6' : isSubmitted ? '#e6f4ea' : isPastDue ? '#fce8e6' : '#e8f0fe',
+                                color: isAccepted ? '#137333' : isRejected ? '#c5221f' : isSubmitted ? '#137333' : isPastDue ? '#c5221f' : '#1a73e8'
                             }}>
-                                {isSubmitted ? "Turned in" : isPastDue ? "Missing" : "Assigned"}
+                                {isAccepted ? "Graded" : isRejected ? "Needs revision" : isSubmitted ? "Turned in" : isPastDue ? "Missing" : "Assigned"}
                             </span>
                         )}
 

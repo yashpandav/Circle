@@ -14,18 +14,17 @@ import {
     AttachFile as AttachFileIcon,
     OpenInNew as OpenInNewIcon,
     DescriptionOutlined as DescriptionIcon,
-    Send as SendIcon
+    Grade as GradeIcon,
+    Cancel as CancelIcon
 } from "@mui/icons-material";
 import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
 import {
-    IconButton,
     Button,
     CircularProgress,
     Tabs,
     Tab,
     Chip,
-    Avatar,
-    Tooltip
+    Avatar
 } from "@mui/material";
 import {
     getAssignmentDetails,
@@ -39,6 +38,7 @@ import { updateCurrClass } from '../../../Slices/classSlice';
 import socket from '../../../socket/socket';
 import ConfirmationDialog from '../../Helper/ConfirmationDialog';
 import EditAssignmentModal from '../MainCircleWorkingArea/EditAssignmentModal';
+import GradeSubmissionModal from '../../Helper/GradeSubmissionModal';
 import { CommentController, AddCommentController } from '../MainCircleWorkingArea/commentController';
 import toast from 'react-hot-toast';
 import './AssignmentDetails.css';
@@ -71,8 +71,13 @@ export default function AssignmentDetails() {
     // Teacher Management State
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
     const [teacherFilterTab, setTeacherFilterTab] = useState(0); // 0: All, 1: Turned in, 2: Assigned
+
+    // Teacher Grading Modal State
+    const [gradingModal, setGradingModal] = useState({
+        open: false,
+        submission: null
+    });
 
     const themeColor = currClass?.classTheme || '#00a896';
 
@@ -159,6 +164,12 @@ export default function AssignmentDetails() {
             }
         };
 
+        const handleAssignmentGraded = ({ data }) => {
+            if (data && (data.assignmentId === assignmentId || data.assignment === assignmentId)) {
+                fetchDetails();
+            }
+        };
+
         const handleNewComment = ({ data, parentId }) => {
             if (parentId === assignmentId) {
                 setComments(prev => {
@@ -184,6 +195,7 @@ export default function AssignmentDetails() {
         socket.on('assignment:submitted', handleAssignmentSubmitted);
         socket.on('assignment:submission_updated', handleSubmissionUpdated);
         socket.on('assignment:submission_deleted', handleSubmissionDeleted);
+        socket.on('assignment:graded', handleAssignmentGraded);
         socket.on('comment:new', handleNewComment);
         socket.on('comment:deleted', handleDeletedComment);
         socket.on('comment:updated', handleUpdatedComment);
@@ -193,6 +205,7 @@ export default function AssignmentDetails() {
             socket.off('assignment:submitted', handleAssignmentSubmitted);
             socket.off('assignment:submission_updated', handleSubmissionUpdated);
             socket.off('assignment:submission_deleted', handleSubmissionDeleted);
+            socket.off('assignment:graded', handleAssignmentGraded);
             socket.off('comment:new', handleNewComment);
             socket.off('comment:deleted', handleDeletedComment);
             socket.off('comment:updated', handleUpdatedComment);
@@ -212,6 +225,8 @@ export default function AssignmentDetails() {
     const isSubmitted = Boolean(userSubmission);
     const isPastDue = assignment?.dueDate ? new Date(assignment.dueDate).getTime() < Date.now() : false;
     const canSubmitLate = assignment?.acceptAfterDue ?? true;
+    const isGradedAccepted = userSubmission?.status === 'ACCEPTED';
+    const isGradedRejected = userSubmission?.status === 'REJECTED';
 
     // Student Turn-in Handler
     const handleTurnIn = async (overwrite = false) => {
@@ -248,6 +263,7 @@ export default function AssignmentDetails() {
 
     // Student Unsubmit Handler
     const handleUnsubmit = async () => {
+        if (isGradedAccepted) return;
         if (!userSubmission?._id && !assignmentId) return;
         setIsUnsubmitting(true);
         try {
@@ -267,6 +283,7 @@ export default function AssignmentDetails() {
 
     // Student Edit Submission Handlers
     const handleStartEditSubmission = () => {
+        if (isGradedAccepted) return;
         setEditNote(userSubmission?.data || "");
         setEditFile(null);
         setIsEditingSubmission(true);
@@ -304,7 +321,6 @@ export default function AssignmentDetails() {
 
     // Teacher Delete Assignment Handler
     const handleDeleteAssignment = async () => {
-        setIsDeleting(true);
         try {
             const resultAction = await dispatch(deleteAssignment(assignmentId));
             if (deleteAssignment.fulfilled.match(resultAction)) {
@@ -319,7 +335,6 @@ export default function AssignmentDetails() {
         } catch (err) {
             console.error("Failed to delete assignment:", err);
         } finally {
-            setIsDeleting(false);
             setShowDeleteConfirm(false);
         }
     };
@@ -370,6 +385,24 @@ export default function AssignmentDetails() {
         } catch (error) {
             console.error("Error editing comment:", error);
         }
+    };
+
+    const handleOpenGradingModal = (sub) => {
+        setGradingModal({
+            open: true,
+            submission: sub
+        });
+    };
+
+    const handleGradeModalClosed = () => {
+        setGradingModal({
+            open: false,
+            submission: null
+        });
+    };
+
+    const handleGradeSaved = () => {
+        fetchDetails();
     };
 
     if (isLoading) {
@@ -469,6 +502,14 @@ export default function AssignmentDetails() {
                                     <span className="assignment-date">
                                         Posted {new Date(assignment.uploadDate || Date.now()).toLocaleDateString("en-GB", { month: "short", day: "numeric" })}
                                     </span>
+                                    {assignment.totalMarks && (
+                                        <>
+                                            <span className="assignment-meta-bullet">•</span>
+                                            <span className="assignment-points-meta" style={{ fontWeight: 600, color: themeColor }}>
+                                                {assignment.totalMarks} points
+                                            </span>
+                                        </>
+                                    )}
                                     {assignment.category && (
                                         <>
                                             <span className="assignment-meta-bullet">•</span>
@@ -498,9 +539,6 @@ export default function AssignmentDetails() {
                                 )}
                             </div>
                         </div>
-
-                        {/* Accent Divider */}
-                        <div className="assignment-accent-divider" style={{ backgroundColor: themeColor }} />
 
                         {/* Instructions Body */}
                         <div className="assignment-body-section">
@@ -555,15 +593,68 @@ export default function AssignmentDetails() {
                 <div className="assignment-sidebar-column">
                     {!isTeacher ? (
                         /* ==============================================================
-                           STUDENT VIEW: YOUR WORK CARD
+                           STUDENT VIEW: YOUR WORK CARD & GRADING FEEDBACK
                            ============================================================== */
                         <div className="assignment-side-card student-work-panel">
                             <div className="side-card-header">
                                 <h2 className="side-card-title">Your work</h2>
-                                <span className={`submission-badge ${isSubmitted ? (isPastDue ? 'badge-late' : 'badge-done') : (isPastDue ? 'badge-missing' : 'badge-assigned')}`}>
-                                    {isSubmitted ? (isPastDue ? "Turned in late" : "Turned in") : (isPastDue ? "Missing" : "Assigned")}
+                                <span className={`submission-badge ${
+                                    isGradedAccepted
+                                        ? 'badge-done'
+                                        : isGradedRejected
+                                        ? 'badge-missing'
+                                        : isSubmitted
+                                        ? (isPastDue ? 'badge-late' : 'badge-done')
+                                        : (isPastDue ? 'badge-missing' : 'badge-assigned')
+                                }`}>
+                                    {isGradedAccepted
+                                        ? "Graded"
+                                        : isGradedRejected
+                                        ? "Needs revision"
+                                        : isSubmitted
+                                        ? (isPastDue ? "Turned in late" : "Turned in")
+                                        : (isPastDue ? "Missing" : "Assigned")}
                                 </span>
                             </div>
+
+                            {/* Teacher Grade Scorecard (When Accepted) */}
+                            {isGradedAccepted && (
+                                <div className="student-grade-card">
+                                    <div className="grade-card-top">
+                                        <span className="grade-card-label">Grade Awarded</span>
+                                        <div className="grade-score-display">
+                                            <span>{userSubmission.marks}</span>
+                                            <span className="grade-score-max">/ {assignment.totalMarks || userSubmission.maxMarks || 100} pts</span>
+                                        </div>
+                                    </div>
+                                    {userSubmission.feedback && (
+                                        <div className="teacher-feedback-card">
+                                            <span className="feedback-title">Teacher's Feedback:</span>
+                                            <p className="feedback-body">"{userSubmission.feedback}"</p>
+                                        </div>
+                                    )}
+                                    {userSubmission.reviewedBy && (
+                                        <span className="reviewed-by-tag">
+                                            Reviewed by {userSubmission.reviewedBy.firstName || 'Teacher'} {userSubmission.reviewedBy.lastName || ''}
+                                        </span>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Rejection Alert Banner (When Rejected) */}
+                            {isGradedRejected && (
+                                <div className="student-rejected-banner">
+                                    <div className="rejection-header">
+                                        <CancelIcon fontSize="small" />
+                                        <span>Submission Returned</span>
+                                    </div>
+                                    {userSubmission.feedback ? (
+                                        <p className="rejection-msg"><strong>Feedback:</strong> {userSubmission.feedback}</p>
+                                    ) : (
+                                        <p className="rejection-msg">Your submission was returned for revision. Please review your work and resubmit.</p>
+                                    )}
+                                </div>
+                            )}
 
                             {isSubmitted ? (
                                 /* SUBMITTED STATE */
@@ -602,26 +693,28 @@ export default function AssignmentDetails() {
                                                 </div>
                                             )}
 
-                                            <div className="student-action-btn-group">
-                                                <Button
-                                                    variant="outlined"
-                                                    onClick={() => setShowUnsubmitConfirm(true)}
-                                                    disabled={isUnsubmitting || (isPastDue && !canSubmitLate)}
-                                                    className="student-unsubmit-btn"
-                                                    fullWidth
-                                                >
-                                                    {isUnsubmitting ? <CircularProgress size={18} /> : "Unsubmit"}
-                                                </Button>
-                                                <Button
-                                                    variant="text"
-                                                    onClick={handleStartEditSubmission}
-                                                    disabled={isPastDue && !canSubmitLate}
-                                                    className="student-edit-btn"
-                                                    style={{ color: themeColor }}
-                                                >
-                                                    Edit Submission
-                                                </Button>
-                                            </div>
+                                            {!isGradedAccepted && (
+                                                <div className="student-action-btn-group">
+                                                    <Button
+                                                        variant="outlined"
+                                                        onClick={() => setShowUnsubmitConfirm(true)}
+                                                        disabled={isUnsubmitting || (isPastDue && !canSubmitLate)}
+                                                        className="student-unsubmit-btn"
+                                                        fullWidth
+                                                    >
+                                                        {isUnsubmitting ? <CircularProgress size={18} /> : "Unsubmit"}
+                                                    </Button>
+                                                    <Button
+                                                        variant="text"
+                                                        onClick={handleStartEditSubmission}
+                                                        disabled={isPastDue && !canSubmitLate}
+                                                        className="student-edit-btn"
+                                                        style={{ color: themeColor }}
+                                                    >
+                                                        {isGradedRejected ? "Resubmit / Edit Work" : "Edit Submission"}
+                                                    </Button>
+                                                </div>
+                                            )}
                                         </>
                                     ) : (
                                         /* EDIT SUBMISSION FORM */
@@ -647,7 +740,7 @@ export default function AssignmentDetails() {
                                                         type="file"
                                                         style={{ display: 'none' }}
                                                         onChange={(e) => {
-                                                            if (e.target.files?.[0]) setEditFile(e.target.files[0]);
+                                                             if (e.target.files?.[0]) setEditFile(e.target.files[0]);
                                                         }}
                                                     />
                                                 </label>
@@ -679,7 +772,7 @@ export default function AssignmentDetails() {
                                                     className="btn-save"
                                                     style={{ backgroundColor: themeColor }}
                                                 >
-                                                    {isSavingEdit ? <CircularProgress size={16} color="inherit" /> : "Save"}
+                                                    {isSavingEdit ? <CircularProgress size={16} color="inherit" /> : (isGradedRejected ? "Resubmit" : "Save")}
                                                 </Button>
                                             </div>
                                         </div>
@@ -808,6 +901,10 @@ export default function AssignmentDetails() {
                                         submissionsList.map((sub) => {
                                             const student = sub.student;
                                             const studentName = student ? `${student.firstName || ''} ${student.lastName || ''}`.trim() : "Student";
+                                            const isAccepted = sub.status === 'ACCEPTED';
+                                            const isRejected = sub.status === 'REJECTED';
+                                            const maxPts = assignment.totalMarks || sub.maxMarks || 100;
+
                                             return (
                                                 <div key={sub._id} className="teacher-student-item is-turned-in">
                                                     <Avatar
@@ -820,7 +917,15 @@ export default function AssignmentDetails() {
                                                     <div className="student-details">
                                                         <div className="student-name-row">
                                                             <span className="student-name" title={studentName}>{studentName}</span>
-                                                            <span className="turned-in-badge" style={{ color: themeColor, backgroundColor: 'rgba(0, 168, 150, 0.08)' }}>Turned in</span>
+                                                            <span
+                                                                className="turned-in-badge"
+                                                                style={{
+                                                                    color: isAccepted ? '#15803d' : isRejected ? '#b91c1c' : themeColor,
+                                                                    backgroundColor: isAccepted ? '#dcfce7' : isRejected ? '#fee2e2' : 'rgba(0, 168, 150, 0.08)'
+                                                                }}
+                                                            >
+                                                                {isAccepted ? 'Accepted' : isRejected ? 'Rejected' : 'Turned in'}
+                                                            </span>
                                                         </div>
                                                         <span className="submit-date-text">
                                                             {new Date(sub.submitDate || Date.now()).toLocaleDateString("en-GB", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
@@ -837,6 +942,41 @@ export default function AssignmentDetails() {
                                                             </a>
                                                         )}
                                                         {sub.data && <p className="student-note-text">"{sub.data}"</p>}
+
+                                                        {/* Grading Meta & Quick Action */}
+                                                        <div className="student-grade-meta-row">
+                                                            {isAccepted ? (
+                                                                <span className="student-grade-pill">
+                                                                    Grade: {sub.marks} / {maxPts}
+                                                                </span>
+                                                            ) : isRejected ? (
+                                                                <span className="student-grade-pill" style={{ color: '#b91c1c', backgroundColor: '#fee2e2' }}>
+                                                                    Rejected
+                                                                </span>
+                                                            ) : (
+                                                                <span style={{ fontSize: '11px', color: '#64748b' }}>
+                                                                    Ungraded
+                                                                </span>
+                                                            )}
+
+                                                            <Button
+                                                                size="small"
+                                                                variant={isAccepted ? "text" : "contained"}
+                                                                startIcon={<GradeIcon fontSize="inherit" />}
+                                                                onClick={() => handleOpenGradingModal(sub)}
+                                                                className="student-teacher-grade-btn"
+                                                                sx={{
+                                                                    backgroundColor: isAccepted ? 'transparent' : themeColor,
+                                                                    color: isAccepted ? themeColor : '#ffffff',
+                                                                    '&:hover': {
+                                                                        backgroundColor: isAccepted ? '#f1f5f9' : themeColor,
+                                                                        filter: 'brightness(0.92)'
+                                                                    }
+                                                                }}
+                                                            >
+                                                                {isAccepted ? 'Edit Grade' : 'Grade'}
+                                                            </Button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             );
@@ -923,6 +1063,17 @@ export default function AssignmentDetails() {
                     setAssignment(prev => ({ ...prev, ...updated }));
                 }}
             />
+
+            {/* Grade Submission Modal */}
+            <GradeSubmissionModal
+                open={gradingModal.open}
+                onClose={handleGradeModalClosed}
+                assignment={assignment}
+                submission={gradingModal.submission}
+                onGraded={handleGradeSaved}
+                themeColor={themeColor}
+            />
         </div>
     );
 }
+

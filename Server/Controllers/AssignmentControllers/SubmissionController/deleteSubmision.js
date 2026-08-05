@@ -73,6 +73,14 @@ exports.deleteSubmittedAss = async (req, res, next) => {
             });
         }
 
+        // Students cannot unsubmit an already graded and accepted assignment
+        if (isOwner && !isClassAdmin && !isClassTeacher && currSubmitted.status === 'ACCEPTED') {
+            return res.status(403).json({
+                success: false,
+                message: "This assignment has already been graded by your teacher and cannot be unsubmitted."
+            });
+        }
+
         const studentId = currSubmitted.student;
         const submissionId = currSubmitted._id;
 
