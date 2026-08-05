@@ -6,7 +6,6 @@ import CastForEducationRoundedIcon from "@mui/icons-material/CastForEducationRou
 import SchoolRoundedIcon from "@mui/icons-material/SchoolRounded";
 import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
 import TaskAltRoundedIcon from "@mui/icons-material/TaskAltRounded";
-import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
@@ -115,17 +114,55 @@ export default function LeftMain() {
                     activeLink={activeLink}
                 />
 
-                {/* ── Teaching ─────────────────────── */}
-                <SectionHeader
-                    icon={<CastForEducationRoundedIcon />}
-                    label="Teaching"
-                    toggle={toggle}
-                    isOpen={teachingOpen}
-                    onClick={() => setTeachingOpen((p) => !p)}
-                />
+                {toggle ? (
+                    <>
+                        {/* ── Teaching Section ─────────────── */}
+                        <SectionHeader
+                            icon={<CastForEducationRoundedIcon />}
+                            label="Teaching"
+                            toggle={toggle}
+                            isOpen={teachingOpen}
+                            onClick={() => setTeachingOpen((p) => !p)}
+                        />
 
-                {(teachingOpen || !toggle) && (
-                    <div className={`lp-sub ${toggle ? "lp-sub--open" : "lp-sub--closed"}`}>
+                        {teachingOpen && (
+                            <div className="lp-sub lp-sub--open">
+                                <NavLink
+                                    to="/workarea/review"
+                                    icon={<RateReviewOutlinedIcon />}
+                                    label="To Review"
+                                    toggle={toggle}
+                                    activeLink={activeLink}
+                                />
+                                <JoinedCircleListTeacher />
+                            </div>
+                        )}
+
+                        {/* ── Enrolled Section ─────────────── */}
+                        <SectionHeader
+                            icon={<SchoolRoundedIcon />}
+                            label="Enrolled"
+                            toggle={toggle}
+                            isOpen={enrolledOpen}
+                            onClick={() => setEnrolledOpen((p) => !p)}
+                        />
+
+                        {enrolledOpen && (
+                            <div className="lp-sub lp-sub--open">
+                                <NavLink
+                                    to="/workarea/todo"
+                                    icon={<TaskAltRoundedIcon />}
+                                    label="To do"
+                                    toggle={toggle}
+                                    activeLink={activeLink}
+                                />
+                                <JoinedCircleListStudent />
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <>
+                        {/* ── When Closed: Show To Review and To do directly ── */}
                         <NavLink
                             to="/workarea/review"
                             icon={<RateReviewOutlinedIcon />}
@@ -133,21 +170,6 @@ export default function LeftMain() {
                             toggle={toggle}
                             activeLink={activeLink}
                         />
-                        {toggle && <JoinedCircleListTeacher />}
-                    </div>
-                )}
-
-                {/* ── Enrolled ─────────────────────── */}
-                <SectionHeader
-                    icon={<SchoolRoundedIcon />}
-                    label="Enrolled"
-                    toggle={toggle}
-                    isOpen={enrolledOpen}
-                    onClick={() => setEnrolledOpen((p) => !p)}
-                />
-
-                {(enrolledOpen || !toggle) && (
-                    <div className={`lp-sub ${toggle ? "lp-sub--open" : "lp-sub--closed"}`}>
                         <NavLink
                             to="/workarea/todo"
                             icon={<TaskAltRoundedIcon />}
@@ -155,18 +177,8 @@ export default function LeftMain() {
                             toggle={toggle}
                             activeLink={activeLink}
                         />
-                        {toggle && <JoinedCircleListStudent />}
-                    </div>
+                    </>
                 )}
-
-                {/* ── Settings ─────────────────────── */}
-                <NavLink
-                    to="/workarea/settings"
-                    icon={<SettingsRoundedIcon />}
-                    label="Settings"
-                    toggle={toggle}
-                    activeLink={activeLink}
-                />
             </div>
         </div>
     );

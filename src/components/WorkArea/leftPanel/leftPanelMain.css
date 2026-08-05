@@ -277,14 +277,3 @@
     from { opacity: 0; transform: translateY(-4px); }
     to   { opacity: 1; transform: translateY(0);    }
 }
-
-/* ─── Settings link at bottom ────────────────────────────── */
-.lp-link[href="/workarea/settings"] {
-    margin-top: auto;
-}
-
-#left-main.menu-closed .lp-link[href="/workarea/settings"] {
-    margin-top: auto;
-    margin-left: auto;
-    margin-right: auto;
-}

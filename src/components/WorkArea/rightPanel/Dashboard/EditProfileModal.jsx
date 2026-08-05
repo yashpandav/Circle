@@ -1,34 +1,29 @@
 import React, { useState, useRef } from "react";
-import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    TextField,
-    Button,
-    Avatar,
-    IconButton,
-    CircularProgress,
-    MenuItem,
-    Select,
-    FormControl,
-    InputLabel
-} from "@mui/material";
-import {
-    PhotoCamera as PhotoCameraIcon,
-    Close as CloseIcon,
-    Person as PersonIcon,
-    Email as EmailIcon,
-    InfoOutlined as InfoIcon,
-    CalendarMonth as CalendarIcon,
-    Wc as WcIcon
-} from "@mui/icons-material";
+import MuiDialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import CircularProgress from "@mui/material/CircularProgress";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
+import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import { useDispatch } from "react-redux";
 import { updateUserProfile } from "../../../../Api/apiCaller/userapicaller";
 import toast from "react-hot-toast";
 
 export default function EditProfileModal({ open, onClose, user, onProfileUpdated }) {
     const dispatch = useDispatch();
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
     const fileInputRef = useRef(null);
 
     const [firstName, setFirstName] = useState(user?.firstName || "");
@@ -57,7 +52,9 @@ export default function EditProfileModal({ open, onClose, user, onProfileUpdated
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        if (e && e.preventDefault) {
+            e.preventDefault();
+        }
         if (!firstName.trim() || !lastName.trim()) {
             toast.error("First name and last name are required");
             return;
@@ -89,193 +86,196 @@ export default function EditProfileModal({ open, onClose, user, onProfileUpdated
         }
     };
 
-    const userInitials = `${(firstName || user?.firstName || 'U')[0]}${(lastName || user?.lastName || 'P')[0]}`.toUpperCase();
+    const userInitials = `${(firstName || user?.firstName || "U")[0]}${(lastName || user?.lastName || "P")[0]}`.toUpperCase();
 
     return (
-        <Dialog
+        <MuiDialog
+            fullScreen={fullScreen}
             open={open}
             onClose={!isSaving ? onClose : undefined}
             maxWidth="sm"
             fullWidth
-            PaperProps={{
-                sx: {
-                    borderRadius: "16px",
-                    boxShadow: "0 20px 40px rgba(0,0,0,0.12)",
-                    overflow: "hidden"
-                }
-            }}
+            className="global-dialog"
         >
-            <div className="edit-profile-dialog-header">
-                <DialogTitle sx={{ m: 0, p: "20px 24px", fontWeight: 700, fontSize: "1.25rem", color: "#1e293b" }}>
-                    Edit Profile
-                </DialogTitle>
-                <IconButton
-                    aria-label="close"
-                    onClick={onClose}
-                    disabled={isSaving}
-                    sx={{
-                        position: "absolute",
-                        right: 16,
-                        top: 16,
-                        color: "#94a3b8"
-                    }}
-                >
-                    <CloseIcon />
-                </IconButton>
-            </div>
+            <DialogTitle className="global-dialog-title" style={{ backgroundColor: "#00a896" }}>
+                Edit Profile
+            </DialogTitle>
 
             <form onSubmit={handleSubmit}>
-                <DialogContent sx={{ p: "16px 28px 24px", display: "flex", flexDirection: "column", gap: "20px" }}>
-                    {/* Avatar Upload Section */}
-                    <div className="edit-profile-avatar-section">
-                        <div className="avatar-preview-wrap">
-                            <Avatar
-                                src={imagePreview}
-                                alt="User Avatar"
-                                sx={{
-                                    width: 88,
-                                    height: 88,
-                                    bgcolor: "#00a896",
-                                    fontSize: "2rem",
-                                    fontWeight: 700,
-                                    boxShadow: "0 4px 12px rgba(0, 168, 150, 0.25)"
-                                }}
-                            >
-                                {userInitials}
-                            </Avatar>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                ref={fileInputRef}
-                                onChange={handleImageChange}
-                                style={{ display: "none" }}
-                            />
-                            <button
-                                type="button"
-                                className="avatar-camera-btn"
-                                onClick={() => fileInputRef.current?.click()}
-                                title="Upload new photo"
-                            >
-                                <PhotoCameraIcon fontSize="small" />
-                            </button>
-                        </div>
-                        <div className="avatar-info-text">
-                            <span className="avatar-title">Profile Photo</span>
-                            <span className="avatar-subtitle">PNG, JPG, or GIF up to 5MB</span>
-                        </div>
-                    </div>
+                <DialogContent className="global-dialog-content" style={{ padding: "24px 28px" }}>
+                    <Box display="flex" flexDirection="column" gap={2.5}>
+                        {/* Avatar Picker */}
+                        <Box display="flex" alignItems="center" gap={2.5} sx={{ mb: 1 }}>
+                            <Box position="relative" sx={{ display: "inline-block" }}>
+                                <Avatar
+                                    src={imagePreview}
+                                    alt="User Avatar"
+                                    sx={{
+                                        width: 76,
+                                        height: 76,
+                                        bgcolor: "#00a896",
+                                        fontSize: "1.75rem",
+                                        fontWeight: 700,
+                                        border: "3px solid #e2e8f0"
+                                    }}
+                                >
+                                    {userInitials}
+                                </Avatar>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    ref={fileInputRef}
+                                    onChange={handleImageChange}
+                                    style={{ display: "none" }}
+                                />
+                                <Button
+                                    type="button"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    sx={{
+                                        position: "absolute",
+                                        bottom: -4,
+                                        right: -4,
+                                        minWidth: 32,
+                                        width: 32,
+                                        height: 32,
+                                        borderRadius: "50%",
+                                        p: 0,
+                                        bgcolor: "#00a896",
+                                        color: "#ffffff",
+                                        boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                                        "&:hover": { bgcolor: "#008f80" }
+                                    }}
+                                    title="Upload photo"
+                                >
+                                    <PhotoCameraIcon sx={{ fontSize: 18 }} />
+                                </Button>
+                            </Box>
+                            <Box>
+                                <p style={{ margin: "0 0 4px", fontWeight: 600, color: "#1e293b", fontSize: "0.95rem" }}>
+                                    Profile Picture
+                                </p>
+                                <p style={{ margin: 0, color: "#64748b", fontSize: "0.82rem" }}>
+                                    JPG, PNG, or GIF up to 5MB
+                                </p>
+                            </Box>
+                        </Box>
 
-                    {/* Name Fields */}
-                    <div className="edit-profile-grid-2">
+                        {/* Name Inputs */}
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="First Name"
+                                    variant="outlined"
+                                    fullWidth
+                                    size="small"
+                                    value={firstName}
+                                    onChange={(e) => setFirstName(e.target.value)}
+                                    required
+                                    disabled={isSaving}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Last Name"
+                                    variant="outlined"
+                                    fullWidth
+                                    size="small"
+                                    value={lastName}
+                                    onChange={(e) => setLastName(e.target.value)}
+                                    required
+                                    disabled={isSaving}
+                                />
+                            </Grid>
+                        </Grid>
+
+                        {/* Email Read-only */}
                         <TextField
-                            label="First Name"
+                            label="Email Address"
                             variant="outlined"
                             fullWidth
                             size="small"
-                            value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
-                            required
-                            disabled={isSaving}
+                            value={user?.email || ""}
+                            disabled
+                            helperText="Email cannot be changed directly"
                         />
+
+                        {/* Gender & DOB */}
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6}>
+                                <FormControl fullWidth size="small">
+                                    <InputLabel id="edit-gender-label">Gender</InputLabel>
+                                    <Select
+                                        labelId="edit-gender-label"
+                                        label="Gender"
+                                        value={gender}
+                                        onChange={(e) => setGender(e.target.value)}
+                                        disabled={isSaving}
+                                    >
+                                        <MenuItem value=""><em>Not Specified</em></MenuItem>
+                                        <MenuItem value="Male">Male</MenuItem>
+                                        <MenuItem value="Female">Female</MenuItem>
+                                        <MenuItem value="Other">Other</MenuItem>
+                                        <MenuItem value="Prefer not to say">Prefer not to say</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    label="Date of Birth"
+                                    type="date"
+                                    variant="outlined"
+                                    fullWidth
+                                    size="small"
+                                    value={dob}
+                                    onChange={(e) => setDob(e.target.value)}
+                                    InputLabelProps={{ shrink: true }}
+                                    disabled={isSaving}
+                                />
+                            </Grid>
+                        </Grid>
+
+                        {/* Biography */}
                         <TextField
-                            label="Last Name"
+                            label="About / Bio"
+                            placeholder="Tell your classmates and teachers a bit about yourself..."
+                            multiline
+                            rows={3}
                             variant="outlined"
                             fullWidth
-                            size="small"
-                            value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
-                            required
+                            value={about}
+                            onChange={(e) => setAbout(e.target.value)}
                             disabled={isSaving}
                         />
-                    </div>
-
-                    {/* Email (Read only) */}
-                    <TextField
-                        label="Email Address"
-                        variant="outlined"
-                        fullWidth
-                        size="small"
-                        value={user?.email || ""}
-                        disabled
-                        helperText="Email cannot be changed directly"
-                    />
-
-                    {/* Gender & DOB */}
-                    <div className="edit-profile-grid-2">
-                        <FormControl fullWidth size="small">
-                            <InputLabel id="gender-select-label">Gender</InputLabel>
-                            <Select
-                                labelId="gender-select-label"
-                                label="Gender"
-                                value={gender}
-                                onChange={(e) => setGender(e.target.value)}
-                                disabled={isSaving}
-                            >
-                                <MenuItem value=""><em>Not Specified</em></MenuItem>
-                                <MenuItem value="Male">Male</MenuItem>
-                                <MenuItem value="Female">Female</MenuItem>
-                                <MenuItem value="Other">Other</MenuItem>
-                                <MenuItem value="Prefer not to say">Prefer not to say</MenuItem>
-                            </Select>
-                        </FormControl>
-
-                        <TextField
-                            label="Date of Birth"
-                            type="date"
-                            variant="outlined"
-                            fullWidth
-                            size="small"
-                            value={dob}
-                            onChange={(e) => setDob(e.target.value)}
-                            InputLabelProps={{ shrink: true }}
-                            disabled={isSaving}
-                        />
-                    </div>
-
-                    {/* About / Bio */}
-                    <TextField
-                        label="About / Bio"
-                        placeholder="Tell your classmates and teachers a bit about yourself..."
-                        multiline
-                        rows={3}
-                        variant="outlined"
-                        fullWidth
-                        value={about}
-                        onChange={(e) => setAbout(e.target.value)}
-                        disabled={isSaving}
-                    />
+                    </Box>
                 </DialogContent>
 
-                <DialogActions sx={{ p: "16px 28px", bgcolor: "#f8fafc", borderTop: "1px solid #e2e8f0" }}>
+                <DialogActions className="global-dialog-actions">
                     <Button
+                        variant="outlined"
+                        className="global-dialog-btn-cancel"
                         onClick={onClose}
                         disabled={isSaving}
-                        sx={{
-                            color: "#64748b",
-                            textTransform: "none",
-                            fontWeight: 600,
-                            borderRadius: "8px"
-                        }}
                     >
                         Cancel
                     </Button>
                     <Button
                         type="submit"
                         variant="contained"
+                        className="global-dialog-btn-submit"
+                        style={{ backgroundColor: "#00a896" }}
                         disabled={isSaving}
-                        sx={{
-                            bgcolor: "#00a896",
-                            "&:hover": { bgcolor: "#008f80" },
-                            textTransform: "none",
-                            fontWeight: 600,
-                            borderRadius: "8px",
-                            px: 3
-                        }}
                     >
-                        {isSaving ? <CircularProgress size={22} color="inherit" /> : "Save Changes"}
+                        {isSaving ? (
+                            <Box display="flex" alignItems="center" gap={1}>
+                                <CircularProgress size={16} color="inherit" />
+                                <span>Saving...</span>
+                            </Box>
+                        ) : (
+                            "Save Changes"
+                        )}
                     </Button>
                 </DialogActions>
             </form>
-        </Dialog>
+        </MuiDialog>
     );
 }

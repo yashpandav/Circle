@@ -15,7 +15,6 @@ import {
     Assignment as AssignmentIcon,
     CheckCircleOutline as CheckCircleOutlineIcon,
     WarningAmberRounded as WarningAmberIcon,
-    FilterList as FilterListIcon,
     AccessTime as AccessTimeIcon,
     FolderOutlined as FolderOutlinedIcon,
     ChevronRight as ChevronRightIcon,
@@ -98,12 +97,16 @@ const getDateBucket = (dateStr, tabType) => {
     }
 };
 
+const EMPTY_ARRAY = [];
+
 export default function ToDo() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     // Redux State
-    const todoData = useSelector((state) => state.todo?.todoData) || [];
+    const rawTodoData = useSelector((state) => state.todo?.todoData);
+    const todoData = rawTodoData || EMPTY_ARRAY;
+
     const selectedClassId = useSelector((state) => state.todo?.selectedClassId) || 'all';
     const activeTab = useSelector((state) => state.todo?.activeTab) || 'Assigned';
     const groupBy = useSelector((state) => state.todo?.groupBy) || 'time';
@@ -162,7 +165,7 @@ export default function ToDo() {
                 return c.classTheme;
             }
         }
-        return '#1967d2';
+        return '#00a896';
     }, [selectedClassId, allClassesList, currClass, todoData]);
 
     // Collapsed sections tracking
@@ -258,26 +261,34 @@ export default function ToDo() {
 
     // Grouping logic
     const groupedSections = useMemo(() => {
-        if (groupBy === 'circle') {
+        if (groupBy === "circle") {
             const classMap = {};
             filteredAssignments.forEach((ass) => {
-                const classId = ass.classInfo?._id || 'unknown';
-                if (!classMap[classId]) {
-                    classMap[classId] = {
-                        title: ass.classInfo?.name || "Circle",
-                        subtitle: ass.classInfo?.className || ass.classInfo?.subject || "",
-                        color: ass.classInfo?.classTheme || activeThemeColor,
+                const cId = ass.classInfo?._id || 'unknown';
+                if (!classMap[cId]) {
+                    classMap[cId] = {
+                        key: cId,
+                        title: ass.classInfo?.name || "Circle Classroom",
+                        theme: ass.classInfo?.classTheme || activeThemeColor,
                         items: []
                     };
                 }
-                classMap[classId].items.push(ass);
+                classMap[cId].items.push(ass);
             });
-            return Object.entries(classMap).map(([key, val]) => ({ key, ...val }));
+
+            return Object.values(classMap).map((cls) => ({
+                key: cls.key,
+                title: cls.title,
+                subtitle: `${cls.items.length} ${cls.items.length === 1 ? 'assignment' : 'assignments'}`,
+                color: cls.theme,
+                items: cls.items
+            }));
         } else {
-            // Group by Time Bucket
-            const bucketOrder = activeTab === "Assigned"
-                ? ["This week", "Next week", "Later", "No due date"]
-                : ["This week", "Last week", "Earlier", "No due date"];
+            // Group by Time Buckets
+            const bucketOrder =
+                activeTab === "Assigned"
+                    ? ["Overdue", "This week", "Next week", "Later", "No due date"]
+                    : ["This week", "Last week", "Earlier", "No due date"];
 
             const bucketMap = {};
             bucketOrder.forEach((b) => {
@@ -285,11 +296,9 @@ export default function ToDo() {
             });
 
             filteredAssignments.forEach((ass) => {
-                const bucket = getDateBucket(ass.dueDate, activeTab);
-                if (!bucketMap[bucket]) {
-                    bucketMap[bucket] = [];
-                }
-                bucketMap[bucket].push(ass);
+                const b = getDateBucket(ass.dueDate, activeTab);
+                if (!bucketMap[b]) bucketMap[b] = [];
+                bucketMap[b].push(ass);
             });
 
             return bucketOrder
@@ -298,25 +307,25 @@ export default function ToDo() {
                     key: bucket,
                     title: bucket,
                     subtitle: `${bucketMap[bucket].length} ${bucketMap[bucket].length === 1 ? 'assignment' : 'assignments'}`,
-                    color: activeTab === 'Missing' ? '#d93025' : activeTab === 'Done' ? '#188038' : activeThemeColor,
+                    color: activeTab === 'Missing' ? '#d93025' : activeTab === 'Done' ? '#16a34a' : activeThemeColor,
                     items: bucketMap[bucket]
                 }));
         }
     }, [filteredAssignments, groupBy, activeTab, activeThemeColor]);
 
     return (
-        <div className="todo-page-container" style={{ '--class-theme': activeThemeColor }}>
+        <div className="task-page-container" style={{ '--class-theme': activeThemeColor }}>
             {/* Header Title and Actions */}
-            <div className="todo-header-bar">
-                <div className="todo-header-left">
-                    <h1 className="todo-page-title">To-do</h1>
+            <div className="task-header-bar">
+                <div className="task-header-left">
+                    <h1 className="task-page-title">To-do</h1>
                 </div>
 
-                <div className="todo-header-right">
+                <div className="task-header-right">
                     <Tooltip title="Refresh assignments">
                         <IconButton
                             onClick={() => fetchTodos(false)}
-                            className="todo-refresh-button"
+                            className="task-refresh-btn"
                             size="small"
                         >
                             <RefreshIcon fontSize="small" />
@@ -325,46 +334,46 @@ export default function ToDo() {
                 </div>
             </div>
 
-            {/* Navigation Tabs (Underline Style matching Google Classroom & Review) */}
-            <div className="todo-tabs-container">
-                <div className="todo-tabs-list">
+            {/* Navigation Tabs (Underline Style matching Circle standard) */}
+            <div className="task-tabs-container">
+                <div className="task-tabs-list">
                     <button
                         type="button"
-                        className={`todo-tab ${activeTab === 'Assigned' ? 'active' : ''}`}
+                        className={`task-tab ${activeTab === 'Assigned' ? 'active' : ''}`}
                         onClick={() => dispatch(setActiveTab('Assigned'))}
                     >
                         <span>Assigned</span>
-                        <span className="todo-tab-badge">{assignedCount}</span>
+                        <span className="task-tab-badge">{assignedCount}</span>
                     </button>
 
                     <button
                         type="button"
-                        className={`todo-tab ${activeTab === 'Missing' ? 'active missing' : ''}`}
+                        className={`task-tab ${activeTab === 'Missing' ? 'active missing' : ''}`}
                         onClick={() => dispatch(setActiveTab('Missing'))}
                     >
                         <span>Missing</span>
-                        <span className="todo-tab-badge missing">{missingCount}</span>
+                        <span className="task-tab-badge missing">{missingCount}</span>
                     </button>
 
                     <button
                         type="button"
-                        className={`todo-tab ${activeTab === 'Done' ? 'active done' : ''}`}
+                        className={`task-tab ${activeTab === 'Done' ? 'active done' : ''}`}
                         onClick={() => dispatch(setActiveTab('Done'))}
                     >
                         <span>Done</span>
-                        <span className="todo-tab-badge done">{doneCount}</span>
+                        <span className="task-tab-badge done">{doneCount}</span>
                     </button>
                 </div>
             </div>
 
             {/* Toolbar: Circle Filter, Search & View Toggle */}
-            <div className="todo-toolbar">
-                <div className="todo-toolbar-left">
+            <div className="task-toolbar">
+                <div className="task-toolbar-left">
                     {/* Circle Select Dropdown */}
-                    <div className="todo-circle-select-wrap">
-                        <FilterListIcon className="todo-toolbar-icon" />
+                    <div className="task-select-wrap">
+                        <ClassOutlinedIcon className="task-toolbar-icon" fontSize="small" />
                         <select
-                            className="todo-circle-select"
+                            className="task-select"
                             value={selectedClassId}
                             onChange={(e) => dispatch(setSelectedClassId(e.target.value))}
                         >
@@ -378,19 +387,19 @@ export default function ToDo() {
                     </div>
 
                     {/* Search Field */}
-                    <div className="todo-search-wrap">
-                        <SearchIcon className="todo-toolbar-icon" />
+                    <div className="task-search-wrap">
+                        <SearchIcon className="task-toolbar-icon" fontSize="small" />
                         <input
                             type="text"
                             placeholder="Search assignments..."
                             value={searchQuery}
                             onChange={(e) => dispatch(setSearchQuery(e.target.value))}
-                            className="todo-search-input"
+                            className="task-search-input"
                         />
                         {searchQuery && (
                             <button
                                 type="button"
-                                className="todo-search-clear-btn"
+                                className="task-search-clear-btn"
                                 onClick={() => dispatch(setSearchQuery(''))}
                             >
                                 <CloseIcon fontSize="small" />
@@ -400,67 +409,65 @@ export default function ToDo() {
                 </div>
 
                 {/* View Mode Toggle */}
-                <div className="todo-toolbar-right">
-                    <div className="todo-view-toggle-group">
-                        <Tooltip title="Group by due date">
-                            <button
-                                type="button"
-                                className={`todo-toggle-btn ${groupBy === 'time' ? 'active' : ''}`}
-                                onClick={() => dispatch(setGroupBy('time'))}
-                            >
-                                <CalendarMonthIcon fontSize="small" />
-                                <span className="toggle-label">Date</span>
-                            </button>
-                        </Tooltip>
-                        <Tooltip title="Group by circle">
-                            <button
-                                type="button"
-                                className={`todo-toggle-btn ${groupBy === 'circle' ? 'active' : ''}`}
-                                onClick={() => dispatch(setGroupBy('circle'))}
-                            >
-                                <ClassOutlinedIcon fontSize="small" />
-                                <span className="toggle-label">Circle</span>
-                            </button>
-                        </Tooltip>
+                <div className="task-toolbar-right">
+                    <div className="task-view-toggle">
+                        <button
+                            type="button"
+                            className={`toggle-btn ${groupBy === 'time' ? 'active' : ''}`}
+                            onClick={() => dispatch(setGroupBy('time'))}
+                            title="Group by due date"
+                        >
+                            <CalendarMonthIcon fontSize="small" />
+                            <span>Date</span>
+                        </button>
+                        <button
+                            type="button"
+                            className={`toggle-btn ${groupBy === 'circle' ? 'active' : ''}`}
+                            onClick={() => dispatch(setGroupBy('circle'))}
+                            title="Group by circle"
+                        >
+                            <ClassOutlinedIcon fontSize="small" />
+                            <span>Circle</span>
+                        </button>
                     </div>
                 </div>
             </div>
 
             {/* Main Content Area */}
-            <div className="todo-content-area">
+            <div className="task-content-area">
                 {loading ? (
-                    <div className="todo-loading-state">
+                    <div className="task-loading-state">
                         <LoaderComponent />
                         <p>Loading assignments...</p>
                     </div>
                 ) : groupedSections.length > 0 ? (
-                    <div className="todo-sections-stack">
+                    <div className="task-sections-stack">
                         {groupedSections.map((section) => {
                             const isCollapsed = Boolean(collapsedSections[section.key]);
 
                             return (
-                                <div key={section.key} className="todo-section-card">
+                                <div key={section.key} className="task-section-card">
                                     {/* Section Header */}
                                     <div
-                                        className="todo-section-header"
+                                        className="task-section-header"
                                         onClick={() => toggleSection(section.key)}
                                     >
-                                        <div className="todo-section-header-left">
+                                        <div className="task-section-header-left">
                                             <span
-                                                className="todo-section-dot"
+                                                className="task-section-dot"
                                                 style={{ backgroundColor: section.color }}
                                             />
-                                            <h3 className="todo-section-title">{section.title}</h3>
+                                            <h3 className="task-section-title">{section.title}</h3>
                                             {section.subtitle && (
-                                                <span className="todo-section-subtitle">{section.subtitle}</span>
+                                                <span className="task-section-subtitle">{section.subtitle}</span>
                                             )}
                                         </div>
 
-                                        <div className="todo-section-header-right">
-                                            <span className="todo-section-count-tag">
+                                        <div className="task-section-header-right">
+                                            <span className="task-section-count-tag">
                                                 {section.items.length}
                                             </span>
-                                            <IconButton size="small" className="todo-collapse-icon-btn">
+                                            <IconButton size="small" className="task-collapse-icon-btn">
                                                 {isCollapsed ? (
                                                     <ExpandMoreIcon fontSize="small" />
                                                 ) : (
@@ -472,7 +479,7 @@ export default function ToDo() {
 
                                     {/* Assignment Items List */}
                                     {!isCollapsed && (
-                                        <div className="todo-assignment-list">
+                                        <div className="task-assignment-list">
                                             {section.items.map((ass) => {
                                                 const itemTheme =
                                                     !ass.classInfo?.classTheme || ass.classInfo?.classTheme === "#FFFFFF"
@@ -484,7 +491,7 @@ export default function ToDo() {
                                                 return (
                                                     <div
                                                         key={ass._id}
-                                                        className="todo-assignment-item"
+                                                        className="task-item-row"
                                                         style={{ '--item-theme': itemTheme }}
                                                         onClick={() =>
                                                             navigate(
@@ -492,9 +499,9 @@ export default function ToDo() {
                                                             )
                                                         }
                                                     >
-                                                        <div className="todo-item-left">
+                                                        <div className="task-item-left">
                                                             <div
-                                                                className={`todo-item-icon-wrapper ${
+                                                                className={`task-item-icon-wrapper ${
                                                                     activeTab === 'Done'
                                                                         ? 'done'
                                                                         : activeTab === 'Missing'
@@ -516,14 +523,14 @@ export default function ToDo() {
                                                                 )}
                                                             </div>
 
-                                                            <div className="todo-item-meta">
-                                                                <h4 className="todo-assignment-name">
+                                                            <div className="task-item-meta">
+                                                                <h4 className="task-assignment-name">
                                                                     {ass.name}
                                                                 </h4>
 
-                                                                <div className="todo-assignment-submeta">
+                                                                <div className="task-assignment-submeta">
                                                                     <span
-                                                                        className="todo-class-tag"
+                                                                        className="task-class-tag"
                                                                         style={{
                                                                             color: itemTheme,
                                                                             borderColor: `${itemTheme}35`,
@@ -534,7 +541,7 @@ export default function ToDo() {
                                                                     </span>
 
                                                                     {ass.category?.name && (
-                                                                        <span className="todo-topic-tag">
+                                                                        <span className="task-topic-tag">
                                                                             <FolderOutlinedIcon
                                                                                 fontSize="inherit"
                                                                                 className="tag-icon"
@@ -544,7 +551,7 @@ export default function ToDo() {
                                                                     )}
 
                                                                     {ass.teacher && (
-                                                                        <span className="todo-teacher-name">
+                                                                        <span className="task-teacher-name">
                                                                             {ass.teacher.firstName} {ass.teacher.lastName}
                                                                         </span>
                                                                     )}
@@ -552,9 +559,9 @@ export default function ToDo() {
                                                             </div>
                                                         </div>
 
-                                                        <div className="todo-item-right">
+                                                        <div className="task-item-right">
                                                             <div
-                                                                className={`todo-due-status ${
+                                                                className={`task-due-status ${
                                                                     activeTab === 'Done'
                                                                         ? 'status-done'
                                                                         : activeTab === 'Missing'
@@ -578,7 +585,7 @@ export default function ToDo() {
                                                                 </span>
                                                             </div>
 
-                                                            <ChevronRightIcon className="todo-item-chevron" />
+                                                            <ChevronRightIcon className="task-item-chevron" />
                                                         </div>
                                                     </div>
                                                 );
@@ -591,8 +598,8 @@ export default function ToDo() {
                     </div>
                 ) : (
                     /* Humanized Clean Empty State */
-                    <div className="todo-empty-state">
-                        <div className={`todo-empty-icon-circle ${activeTab.toLowerCase()}`}>
+                    <div className="task-empty-state">
+                        <div className={`task-empty-icon-circle ${activeTab.toLowerCase()}`}>
                             {activeTab === 'Missing' ? (
                                 <AssignmentTurnedInIcon className="empty-icon" />
                             ) : activeTab === 'Done' ? (
@@ -602,7 +609,7 @@ export default function ToDo() {
                             )}
                         </div>
 
-                        <h2 className="todo-empty-title">
+                        <h2 className="task-empty-title">
                             {searchQuery
                                 ? "No matching assignments found"
                                 : activeTab === 'Missing'
@@ -612,7 +619,7 @@ export default function ToDo() {
                                 : "Woohoo, no work due soon!"}
                         </h2>
 
-                        <p className="todo-empty-description">
+                        <p className="task-empty-description">
                             {searchQuery
                                 ? "Check your search keywords or clear the filter to view all work."
                                 : activeTab === 'Missing'
@@ -625,7 +632,7 @@ export default function ToDo() {
                         {searchQuery && (
                             <button
                                 type="button"
-                                className="todo-empty-clear-btn"
+                                className="task-empty-clear-btn"
                                 onClick={() => dispatch(setSearchQuery(''))}
                             >
                                 Clear search

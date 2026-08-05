@@ -21,6 +21,7 @@ import {
     CheckCircleOutline as CheckCircleOutlineIcon,
     WarningAmberRounded as WarningAmberIcon,
     AccessTime as AccessTimeIcon,
+    FolderOutlined as FolderOutlinedIcon,
     Search as SearchIcon,
     Close as CloseIcon,
     CalendarMonthOutlined as CalendarMonthIcon,
@@ -31,7 +32,7 @@ import {
     CheckCircle as CheckCircleIcon,
     OpenInNew as OpenInNewIcon
 } from "@mui/icons-material";
-import { IconButton, Tooltip, Button, Select, MenuItem, FormControl } from "@mui/material";
+import { IconButton, Tooltip, Button } from "@mui/material";
 import "./review.css";
 
 const EMPTY_ARRAY = [];
@@ -110,7 +111,9 @@ export default function Review() {
     const filterAssId = queryParams.get("assId");
 
     // Redux State
-    const reviewData = useSelector((state) => state.review?.reviewData) || EMPTY_ARRAY;
+    const rawReviewData = useSelector((state) => state.review?.reviewData);
+    const reviewData = rawReviewData || EMPTY_ARRAY;
+
     const selectedClassId = useSelector((state) => state.review?.selectedClassId) || 'all';
     const activeTab = useSelector((state) => state.review?.activeTab) || 'To Review';
     const groupBy = useSelector((state) => state.review?.groupBy) || 'time';
@@ -148,9 +151,8 @@ export default function Review() {
                 if (cId && !map.has(cId)) {
                     map.set(cId, {
                         _id: cId,
-                        name: rd.className || rd.classInfo?.name || "Untitled Circle",
-                        subject: rd.classSubject || rd.classInfo?.subject || "",
-                        classTheme: rd.classTheme || rd.classInfo?.classTheme || "#00a896"
+                        name: rd.classId?.name || "Classroom",
+                        classTheme: rd.classId?.classTheme || "#00a896"
                     });
                 }
             });
@@ -159,28 +161,24 @@ export default function Review() {
         return Array.from(map.values());
     }, [joinedClassesAsTeacher, createdClasses, reviewData]);
 
-    // Calculate active theme color
+    // Theme color resolution
     const activeThemeColor = useMemo(() => {
         if (selectedClassId && selectedClassId !== 'all') {
             const found = teachingClassesList.find((c) => c._id === selectedClassId);
             if (found?.classTheme && found.classTheme !== '#FFFFFF') {
                 return found.classTheme;
             }
-            const fromReview = reviewData.find((rd) => (rd.classId?._id || rd.classId) === selectedClassId);
-            if (fromReview?.classTheme && fromReview.classTheme !== '#FFFFFF') {
-                return fromReview.classTheme;
-            }
         }
         if (currClass?.classTheme && currClass.classTheme !== '#FFFFFF') {
             return currClass.classTheme;
         }
-        for (const rd of reviewData) {
-            if (rd.classTheme && rd.classTheme !== '#FFFFFF') {
-                return rd.classTheme;
+        for (const c of teachingClassesList) {
+            if (c.classTheme && c.classTheme !== '#FFFFFF') {
+                return c.classTheme;
             }
         }
         return '#00a896';
-    }, [selectedClassId, teachingClassesList, currClass, reviewData]);
+    }, [selectedClassId, teachingClassesList, currClass]);
 
     // Collapsed sections tracking
     const [collapsedSections, setCollapsedSections] = useState({});
@@ -194,27 +192,27 @@ export default function Review() {
 
     // Fetch review data
     const fetchReviews = useCallback((isSilent = false) => {
-        dispatch(getPendingReviews({ classId: selectedClassId, isSilent }));
-    }, [dispatch, selectedClassId]);
+        dispatch(getPendingReviews({ isSilent }));
+    }, [dispatch]);
 
     useEffect(() => {
         fetchReviews(false);
     }, [fetchReviews]);
 
-    // Real-time synchronization via Socket.IO
+    // Real-time synchronization
     useEffect(() => {
         const handleLiveUpdate = () => {
             fetchReviews(true);
         };
 
         const events = [
-            "assignment:new",
-            "assignment:updated",
-            "assignment:deleted",
+            "review:updated",
             "assignment:submitted",
             "assignment:submission_updated",
             "assignment:submission_deleted",
-            "review:updated"
+            "assignment:new",
+            "assignment:updated",
+            "assignment:deleted"
         ];
 
         events.forEach((evt) => socket.on(evt, handleLiveUpdate));
@@ -224,116 +222,122 @@ export default function Review() {
         };
     }, [fetchReviews]);
 
-    // Calculate dynamic badge counts
+    // Dynamic badge counts
     const { toReviewCount, reviewedCount } = useMemo(() => {
         let toRev = 0;
         let rev = 0;
 
         if (Array.isArray(reviewData)) {
-            reviewData.forEach((c) => {
-                if (c.notReviedAss) toRev += c.notReviedAss.length;
-                if (c.reviewdAss) rev += c.reviewdAss.length;
+            reviewData.forEach((classItem) => {
+                if (Array.isArray(classItem.assignmentId)) {
+                    toRev += classItem.assignmentId.length;
+                }
+                if (Array.isArray(classItem.reviewed)) {
+                    rev += classItem.reviewed.length;
+                }
             });
         }
 
         return { toReviewCount: toRev, reviewedCount: rev };
     }, [reviewData]);
 
-    // Filter assignments according to search, filterAssId, and active tab
+    // Filter assignments according to search and selected circle
     const filteredAssignments = useMemo(() => {
         const query = searchQuery.toLowerCase().trim();
         const items = [];
 
         if (!Array.isArray(reviewData)) return items;
 
-        reviewData.forEach((classData) => {
-            const list = activeTab === "To Review"
-                ? (classData.notReviedAss || [])
-                : (classData.reviewdAss || []);
+        reviewData.forEach((classItem) => {
+            const classObj = classItem.classId || {};
+            const classIdStr = classObj._id || classItem.classId;
+
+            if (selectedClassId !== 'all' && classIdStr !== selectedClassId) {
+                return;
+            }
+
+            const rawList = activeTab === "To Review" ? classItem.assignmentId : classItem.reviewed;
+            const list = Array.isArray(rawList) ? rawList : [];
 
             list.forEach((ass) => {
                 if (!ass || typeof ass !== 'object') return;
 
-                if (filterAssId && (ass._id?.toString() !== filterAssId && ass.id?.toString() !== filterAssId)) {
+                if (filterAssId && String(ass._id) !== String(filterAssId)) {
                     return;
                 }
 
-                const cName = classData.className || classData.classInfo?.name || "";
                 const nameMatch = ass.name?.toLowerCase().includes(query);
                 const descMatch = ass.description?.toLowerCase().includes(query);
                 const catMatch = ass.category?.name?.toLowerCase().includes(query);
-                const classNameMatch = cName.toLowerCase().includes(query);
+                const classNameMatch = classObj.name?.toLowerCase().includes(query);
 
                 if (!query || nameMatch || descMatch || catMatch || classNameMatch) {
                     items.push({
                         ...ass,
-                        classId: classData.classId?._id || classData.classId,
-                        className: cName || "Circle",
-                        classSubject: classData.classSubject || classData.classInfo?.subject || "",
-                        classTheme: classData.classTheme || classData.classInfo?.classTheme || "#00a896"
+                        classId: classIdStr,
+                        className: classObj.name || "Untitled Circle",
+                        classTheme: classObj.classTheme || activeThemeColor
                     });
                 }
             });
         });
 
         return items;
-    }, [reviewData, activeTab, searchQuery, filterAssId]);
+    }, [reviewData, selectedClassId, activeTab, filterAssId, searchQuery, activeThemeColor]);
 
-    // Grouping computation
-    const groupedData = useMemo(() => {
-        const groups = {};
-
-        if (groupBy === 'time') {
-            const timeBucketsOrder = activeTab === "To Review"
-                ? ["Past due / Needs grading", "Due this week", "Due next week", "Due later", "No due date"]
-                : ["This week", "Last week", "Earlier", "No due date"];
-
-            timeBucketsOrder.forEach((b) => {
-                groups[b] = [];
-            });
-
+    // Grouping logic
+    const groupedSections = useMemo(() => {
+        if (groupBy === 'circle') {
+            const classMap = {};
             filteredAssignments.forEach((ass) => {
-                const bucket = getDateBucket(ass.dueDate, activeTab);
-                if (!groups[bucket]) groups[bucket] = [];
-                groups[bucket].push(ass);
-            });
-
-            // Clean up empty buckets
-            const result = [];
-            timeBucketsOrder.forEach((bucketName) => {
-                if (groups[bucketName] && groups[bucketName].length > 0) {
-                    result.push({
-                        key: bucketName,
-                        title: bucketName,
-                        items: groups[bucketName]
-                    });
-                }
-            });
-
-            return result;
-        } else {
-            // Group by Circle
-            filteredAssignments.forEach((ass) => {
-                const circleKey = ass.classId?.toString() || 'unknown';
-                const circleName = ass.className || 'Untitled Circle';
-                const circleTheme = ass.classTheme || '#00a896';
-
-                if (!groups[circleKey]) {
-                    groups[circleKey] = {
-                        key: circleKey,
-                        title: circleName,
-                        theme: circleTheme,
+                const cId = ass.classId || 'unknown';
+                if (!classMap[cId]) {
+                    classMap[cId] = {
+                        key: cId,
+                        title: ass.className || "Circle Classroom",
+                        theme: ass.classTheme || activeThemeColor,
                         items: []
                     };
                 }
-                groups[circleKey].items.push(ass);
+                classMap[cId].items.push(ass);
             });
 
-            return Object.values(groups);
-        }
-    }, [filteredAssignments, groupBy, activeTab]);
+            return Object.values(classMap).map((cls) => ({
+                key: cls.key,
+                title: cls.title,
+                subtitle: `${cls.items.length} ${cls.items.length === 1 ? 'assignment' : 'assignments'}`,
+                color: cls.theme,
+                items: cls.items
+            }));
+        } else {
+            // Group by Time Buckets
+            const bucketOrder = activeTab === "To Review"
+                ? ["Past due / Needs grading", "Due this week", "Due next week", "Due later", "No due date"]
+                : ["This week", "Last week", "Earlier", "No due date"];
 
-    // Handlers for marking reviewed / pending
+            const bucketMap = {};
+            bucketOrder.forEach((b) => {
+                bucketMap[b] = [];
+            });
+
+            filteredAssignments.forEach((ass) => {
+                const b = getDateBucket(ass.dueDate, activeTab);
+                if (!bucketMap[b]) bucketMap[b] = [];
+                bucketMap[b].push(ass);
+            });
+
+            return bucketOrder
+                .filter((b) => bucketMap[b] && bucketMap[b].length > 0)
+                .map((bucket) => ({
+                    key: bucket,
+                    title: bucket,
+                    subtitle: `${bucketMap[bucket].length} ${bucketMap[bucket].length === 1 ? 'assignment' : 'assignments'}`,
+                    color: activeTab === "To Review" ? '#00a896' : '#16a34a',
+                    items: bucketMap[bucket]
+                }));
+        }
+    }, [filteredAssignments, groupBy, activeTab, activeThemeColor]);
+
     const handleMarkReviewed = async (e, assId) => {
         e.stopPropagation();
         await dispatch(addIntoReviewed(assId));
@@ -351,121 +355,18 @@ export default function Review() {
     };
 
     return (
-        <div
-            className="review-page-root"
-            style={{ "--class-theme": activeThemeColor }}
-        >
-            {/* 1. Header Toolbar */}
-            <div className="review-header-container">
-                <div className="review-header-left">
-                    <div className="review-title-wrap">
-                        <div
-                            className="review-title-icon"
-                            style={{ backgroundColor: `${activeThemeColor}18`, color: activeThemeColor }}
-                        >
-                            <RateReviewIcon fontSize="small" />
-                        </div>
-                        <div className="review-title-text">
-                            <h1>To-review</h1>
-                            <p>Manage and grade student submissions across your Circles</p>
-                        </div>
-                    </div>
+        <div className="task-page-container" style={{ '--class-theme': activeThemeColor }}>
+            {/* 1. Header Bar */}
+            <div className="task-header-bar">
+                <div className="task-header-left">
+                    <h1 className="task-page-title">To-review</h1>
                 </div>
 
-                <div className="review-header-actions">
-                    {/* Circle Filter Dropdown */}
-                    <div className="review-class-filter">
-                        <ClassOutlinedIcon fontSize="small" className="filter-dropdown-icon" sx={{ position: 'absolute', left: 10, zIndex: 1, pointerEvents: 'none', color: '#64748b' }} />
-                        <FormControl size="small" sx={{ minWidth: 160 }}>
-                            <Select
-                                value={selectedClassId}
-                                onChange={(e) => dispatch(setSelectedClassId(e.target.value))}
-                                aria-label="Filter by Circle"
-                                sx={{
-                                    borderRadius: '8px',
-                                    fontSize: '13.5px',
-                                    fontWeight: 500,
-                                    color: '#334155',
-                                    backgroundColor: '#ffffff',
-                                    '.MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#cbd5e1',
-                                    },
-                                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#94a3b8',
-                                    },
-                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'var(--class-theme, #00a896)',
-                                        borderWidth: '2px',
-                                    },
-                                    paddingLeft: '24px' // make space for the absolute icon
-                                }}
-                                MenuProps={{
-                                    PaperProps: {
-                                        sx: {
-                                            borderRadius: '8px',
-                                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                                            mt: 0.5,
-                                            '& .MuiMenuItem-root': {
-                                                fontSize: '13.5px',
-                                                padding: '8px 16px',
-                                            }
-                                        }
-                                    }
-                                }}
-                            >
-                                <MenuItem value="all">All Circles</MenuItem>
-                                {teachingClassesList.map((cls) => (
-                                    <MenuItem key={cls._id} value={cls._id}>
-                                        {cls.name || "Untitled Circle"}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </div>
-
-                    {/* Group By Switcher */}
-                    <div className="review-group-by">
-                        <button
-                            type="button"
-                            className={`group-btn ${groupBy === 'time' ? 'active' : ''}`}
-                            onClick={() => dispatch(setGroupBy('time'))}
-                            title="Group by Due Date"
-                        >
-                            <CalendarMonthIcon fontSize="inherit" />
-                            <span>Due Date</span>
-                        </button>
-                        <button
-                            type="button"
-                            className={`group-btn ${groupBy === 'circle' ? 'active' : ''}`}
-                            onClick={() => dispatch(setGroupBy('circle'))}
-                            title="Group by Circle"
-                        >
-                            <ClassOutlinedIcon fontSize="inherit" />
-                            <span>Circle</span>
-                        </button>
-                    </div>
-
-                    {/* Search Box */}
-                    <div className="review-search-bar">
-                        <SearchIcon fontSize="small" className="search-icon" />
-                        <input
-                            type="text"
-                            placeholder="Search assignments..."
-                            value={searchQuery}
-                            onChange={(e) => dispatch(setSearchQuery(e.target.value))}
-                        />
-                        {searchQuery && (
-                            <IconButton size="small" onClick={() => dispatch(setSearchQuery(''))}>
-                                <CloseIcon fontSize="small" />
-                            </IconButton>
-                        )}
-                    </div>
-
-                    {/* Refresh Button */}
+                <div className="task-header-right">
                     <Tooltip title="Refresh review list">
                         <IconButton
                             onClick={() => fetchReviews(false)}
-                            className={`review-refresh-btn ${isRefreshing ? 'spinning' : ''}`}
+                            className={`task-refresh-btn ${isRefreshing ? 'spinning' : ''}`}
                             size="small"
                         >
                             <RefreshIcon fontSize="small" />
@@ -474,33 +375,36 @@ export default function Review() {
                 </div>
             </div>
 
-            {/* 2. Navigation Tabs */}
-            <div className="review-tabs-bar">
-                <button
-                    type="button"
-                    className={`review-tab-item ${activeTab === 'To Review' ? 'active' : ''}`}
-                    onClick={() => dispatch(setActiveTab('To Review'))}
-                >
-                    <span>To review</span>
-                    <span className="tab-badge">{toReviewCount}</span>
-                </button>
-                <button
-                    type="button"
-                    className={`review-tab-item ${activeTab === 'Reviewed' ? 'active' : ''}`}
-                    onClick={() => dispatch(setActiveTab('Reviewed'))}
-                >
-                    <span>Reviewed</span>
-                    <span className="tab-badge">{reviewedCount}</span>
-                </button>
+            {/* 2. Navigation Tabs (Underline Style matching Circle Standard) */}
+            <div className="task-tabs-container">
+                <div className="task-tabs-list">
+                    <button
+                        type="button"
+                        className={`task-tab ${activeTab === 'To Review' ? 'active' : ''}`}
+                        onClick={() => dispatch(setActiveTab('To Review'))}
+                    >
+                        <span>To review</span>
+                        <span className="task-tab-badge">{toReviewCount}</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        className={`task-tab ${activeTab === 'Reviewed' ? 'active done' : ''}`}
+                        onClick={() => dispatch(setActiveTab('Reviewed'))}
+                    >
+                        <span>Reviewed</span>
+                        <span className="task-tab-badge done">{reviewedCount}</span>
+                    </button>
+                </div>
 
                 {filterAssId && (
-                    <div className="active-filter-indicator">
-                        <span>Filtered to single assignment</span>
+                    <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+                        <span style={{ fontSize: '12px', color: '#64748b' }}>Filtered to single assignment</span>
                         <Button
                             size="small"
                             variant="text"
                             onClick={() => navigate('/workarea/review')}
-                            sx={{ textTransform: 'none', fontSize: '12px', ml: 1 }}
+                            sx={{ textTransform: 'none', fontSize: '12px', ml: 1, color: activeThemeColor }}
                         >
                             Clear
                         </Button>
@@ -508,149 +412,204 @@ export default function Review() {
                 )}
             </div>
 
-            {/* 3. Main Review Content Area */}
-            <div className="review-main-content">
-                {loading && !isRefreshing ? (
-                    <div className="review-loader-wrap">
-                        <LoaderComponent />
-                    </div>
-                ) : groupedData.length === 0 ? (
-                    /* Clean Empty State */
-                    <div className="review-empty-state">
-                        <div
-                            className="empty-icon-circle"
-                            style={{ backgroundColor: `${activeThemeColor}14`, color: activeThemeColor }}
+            {/* 3. Toolbar: Circle Filter, Search & View Toggle */}
+            <div className="task-toolbar">
+                <div className="task-toolbar-left">
+                    {/* Circle Select Dropdown */}
+                    <div className="task-select-wrap">
+                        <ClassOutlinedIcon className="task-toolbar-icon" fontSize="small" />
+                        <select
+                            className="task-select"
+                            value={selectedClassId}
+                            onChange={(e) => dispatch(setSelectedClassId(e.target.value))}
                         >
-                            {activeTab === "To Review" ? (
-                                <CheckCircleIcon sx={{ fontSize: 48 }} />
-                            ) : (
-                                <RateReviewIcon sx={{ fontSize: 48 }} />
-                            )}
-                        </div>
-                        <h3>
-                            {searchQuery
-                                ? "No assignments match your search"
-                                : activeTab === "To Review"
-                                    ? "All caught up! No work to review."
-                                    : "No reviewed assignments yet."}
-                        </h3>
-                        <p>
-                            {searchQuery
-                                ? `Try refining your search terms or clearing the filter.`
-                                : activeTab === "To Review"
-                                    ? "When students submit assignments, they'll appear here for you to grade and review."
-                                    : "Assignments you mark as reviewed will appear here for easy reference."}
-                        </p>
+                            <option value="all">All circles</option>
+                            {teachingClassesList.map((c) => (
+                                <option key={c._id} value={c._id}>
+                                    {c.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Search Field */}
+                    <div className="task-search-wrap">
+                        <SearchIcon className="task-toolbar-icon" fontSize="small" />
+                        <input
+                            type="text"
+                            placeholder="Search assignments..."
+                            value={searchQuery}
+                            onChange={(e) => dispatch(setSearchQuery(e.target.value))}
+                            className="task-search-input"
+                        />
                         {searchQuery && (
-                            <Button
-                                variant="outlined"
-                                size="small"
+                            <button
+                                type="button"
+                                className="task-search-clear-btn"
                                 onClick={() => dispatch(setSearchQuery(''))}
-                                sx={{ mt: 2, textTransform: 'none', borderRadius: '8px', color: activeThemeColor, borderColor: activeThemeColor }}
                             >
-                                Clear search
-                            </Button>
+                                <CloseIcon fontSize="small" />
+                            </button>
                         )}
                     </div>
-                ) : (
-                    /* Render Grouped Sections */
-                    <div className="review-groups-container">
-                        {groupedData.map((group) => {
-                            const isCollapsed = Boolean(collapsedSections[group.key]);
-                            const groupCount = group.items.length;
+                </div>
+
+                {/* View Mode Toggle */}
+                <div className="task-toolbar-right">
+                    <div className="task-view-toggle">
+                        <button
+                            type="button"
+                            className={`toggle-btn ${groupBy === 'time' ? 'active' : ''}`}
+                            onClick={() => dispatch(setGroupBy('time'))}
+                            title="Group by due date"
+                        >
+                            <CalendarMonthIcon fontSize="small" />
+                            <span>Date</span>
+                        </button>
+                        <button
+                            type="button"
+                            className={`toggle-btn ${groupBy === 'circle' ? 'active' : ''}`}
+                            onClick={() => dispatch(setGroupBy('circle'))}
+                            title="Group by circle"
+                        >
+                            <ClassOutlinedIcon fontSize="small" />
+                            <span>Circle</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* 4. Main Content Area */}
+            <div className="task-content-area">
+                {loading && !isRefreshing ? (
+                    <div className="task-loading-state">
+                        <LoaderComponent />
+                        <p style={{ marginTop: '12px' }}>Loading reviews...</p>
+                    </div>
+                ) : groupedSections.length > 0 ? (
+                    <div className="task-sections-stack">
+                        {groupedSections.map((section) => {
+                            const isCollapsed = Boolean(collapsedSections[section.key]);
 
                             return (
-                                <div key={group.key} className="review-group-section">
+                                <div key={section.key} className="task-section-card">
                                     {/* Section Header */}
                                     <div
-                                        className="review-section-header"
-                                        onClick={() => toggleSection(group.key)}
+                                        className="task-section-header"
+                                        onClick={() => toggleSection(section.key)}
                                     >
-                                        <div className="section-header-left">
-                                            {groupBy === 'circle' && group.theme && (
-                                                <span
-                                                    className="circle-color-dot"
-                                                    style={{ backgroundColor: group.theme }}
-                                                />
+                                        <div className="task-section-header-left">
+                                            <span
+                                                className="task-section-dot"
+                                                style={{ backgroundColor: section.color }}
+                                            />
+                                            <h3 className="task-section-title">{section.title}</h3>
+                                            {section.subtitle && (
+                                                <span className="task-section-subtitle">{section.subtitle}</span>
                                             )}
-                                            <h2 className="section-title">{group.title}</h2>
-                                            <span className="section-count-badge">
-                                                {groupCount} {groupCount === 1 ? 'assignment' : 'assignments'}
-                                            </span>
                                         </div>
-                                        <IconButton size="small" className="section-chevron">
-                                            {isCollapsed ? <ExpandMoreIcon /> : <ExpandLessIcon />}
-                                        </IconButton>
+
+                                        <div className="task-section-header-right">
+                                            <span className="task-section-count-tag">
+                                                {section.items.length}
+                                            </span>
+                                            <IconButton size="small" className="task-collapse-icon-btn">
+                                                {isCollapsed ? (
+                                                    <ExpandMoreIcon fontSize="small" />
+                                                ) : (
+                                                    <ExpandLessIcon fontSize="small" />
+                                                )}
+                                            </IconButton>
+                                        </div>
                                     </div>
 
-                                    {/* Section Assignment Rows */}
+                                    {/* Assignment Items List */}
                                     {!isCollapsed && (
-                                        <div className="review-items-list">
-                                            {group.items.map((ass, index) => {
-                                                const isLast = index === group.items.length - 1;
+                                        <div className="task-assignment-list">
+                                            {section.items.map((ass) => {
+                                                const itemTheme = ass.classTheme || activeThemeColor;
                                                 const dueInfo = formatDueDate(ass.dueDate);
                                                 const submissionsCount = Array.isArray(ass.submission) ? ass.submission.length : 0;
                                                 const pendingCount = Array.isArray(ass.pendingStudent) ? ass.pendingStudent.length : 0;
-                                                const itemTheme = ass.classTheme || activeThemeColor;
 
                                                 return (
                                                     <div
-                                                        key={ass._id || index}
-                                                        className={`review-row-item ${isLast ? 'is-last-row' : ''}`}
+                                                        key={ass._id}
+                                                        className="task-item-row"
+                                                        style={{ '--item-theme': itemTheme }}
                                                         onClick={() => handleAssignmentClick(ass.classId, ass._id)}
                                                     >
-                                                        {/* Left Icon & Meta */}
-                                                        <div className="review-row-left">
+                                                        <div className="task-item-left">
                                                             <div
-                                                                className="review-ass-icon"
+                                                                className="task-item-icon-wrapper"
                                                                 style={{ backgroundColor: itemTheme }}
                                                             >
                                                                 <AssignmentIcon fontSize="small" />
                                                             </div>
-                                                            <div className="review-ass-meta">
-                                                                <h4 className="review-ass-title">{ass.name}</h4>
-                                                                <div className="review-ass-submeta">
-                                                                    <span className="review-circle-name">{ass.className}</span>
+
+                                                            <div className="task-item-meta">
+                                                                <h4 className="task-assignment-name">
+                                                                    {ass.name}
+                                                                </h4>
+
+                                                                <div className="task-assignment-submeta">
+                                                                    <span
+                                                                        className="task-class-tag"
+                                                                        style={{
+                                                                            color: itemTheme,
+                                                                            borderColor: `${itemTheme}35`,
+                                                                            backgroundColor: `${itemTheme}12`
+                                                                        }}
+                                                                    >
+                                                                        {ass.className || "Circle"}
+                                                                    </span>
+
                                                                     {ass.category?.name && (
-                                                                        <>
-                                                                            <span className="meta-dot">•</span>
-                                                                            <span className="review-cat-name">{ass.category.name}</span>
-                                                                        </>
+                                                                        <span className="task-topic-tag">
+                                                                            <FolderOutlinedIcon
+                                                                                fontSize="inherit"
+                                                                                className="tag-icon"
+                                                                            />
+                                                                            {ass.category.name}
+                                                                        </span>
                                                                     )}
                                                                 </div>
                                                             </div>
                                                         </div>
 
-                                                        {/* Center: Due Date Pill */}
-                                                        <div className="review-row-center">
-                                                            <div className={`due-status-pill ${dueInfo.isOverdue ? 'overdue' : dueInfo.isUrgent ? 'urgent' : ''}`}>
-                                                                {dueInfo.isOverdue ? (
-                                                                    <WarningAmberIcon fontSize="inherit" />
-                                                                ) : (
-                                                                    <AccessTimeIcon fontSize="inherit" />
-                                                                )}
+                                                        <div className="task-item-right" onClick={(e) => e.stopPropagation()}>
+                                                            {/* Due Date Status */}
+                                                            <div
+                                                                className={`task-due-status ${
+                                                                    dueInfo.isOverdue
+                                                                        ? 'status-overdue'
+                                                                        : dueInfo.isUrgent
+                                                                        ? 'status-urgent'
+                                                                        : ''
+                                                                }`}
+                                                            >
+                                                                <AccessTimeIcon fontSize="inherit" className="status-icon" />
                                                                 <span>{dueInfo.text}</span>
                                                             </div>
-                                                        </div>
 
-                                                        {/* Right: Submission Metrics & Action */}
-                                                        <div className="review-row-right" onClick={(e) => e.stopPropagation()}>
-                                                            <div className="review-metrics">
-                                                                <div className="metric-pill turned-in" title={`${submissionsCount} students turned in`}>
-                                                                    <span className="metric-num">{submissionsCount}</span>
-                                                                    <span className="metric-lbl">Turned in</span>
+                                                            {/* Metrics */}
+                                                            <div className="task-review-metrics">
+                                                                <div className="task-metric-pill turned-in" title={`${submissionsCount} students turned in`}>
+                                                                    <span className="task-metric-num">{submissionsCount}</span>
+                                                                    <span className="task-metric-lbl">Turned in</span>
                                                                 </div>
-                                                                <div className="metric-pill assigned" title={`${pendingCount} students assigned`}>
-                                                                    <span className="metric-num">{pendingCount}</span>
-                                                                    <span className="metric-lbl">Assigned</span>
+                                                                <div className="task-metric-pill assigned" title={`${pendingCount} students assigned`}>
+                                                                    <span className="task-metric-num">{pendingCount}</span>
+                                                                    <span className="task-metric-lbl">Assigned</span>
                                                                 </div>
                                                             </div>
 
-                                                            <div className="review-action-wrap">
+                                                            {/* Review Action Buttons */}
+                                                            <div className="task-action-wrap">
                                                                 {activeTab === "To Review" ? (
                                                                     <button
                                                                         type="button"
-                                                                        className="review-toggle-btn mark-reviewed"
+                                                                        className="task-action-btn"
                                                                         onClick={(e) => handleMarkReviewed(e, ass._id)}
                                                                         title="Mark as reviewed"
                                                                     >
@@ -660,7 +619,7 @@ export default function Review() {
                                                                 ) : (
                                                                     <button
                                                                         type="button"
-                                                                        className="review-toggle-btn mark-pending"
+                                                                        className="task-action-btn"
                                                                         onClick={(e) => handleMarkPending(e, ass._id)}
                                                                         title="Move back to To-Review"
                                                                     >
@@ -673,7 +632,7 @@ export default function Review() {
                                                                     <IconButton
                                                                         size="small"
                                                                         onClick={() => handleAssignmentClick(ass.classId, ass._id)}
-                                                                        className="review-view-details-btn"
+                                                                        className="task-view-details-btn"
                                                                     >
                                                                         <OpenInNewIcon fontSize="small" />
                                                                     </IconButton>
@@ -688,6 +647,43 @@ export default function Review() {
                                 </div>
                             );
                         })}
+                    </div>
+                ) : (
+                    /* Humanized Clean Empty State */
+                    <div className="task-empty-state">
+                        <div className={`task-empty-icon-circle ${activeTab === 'Reviewed' ? 'done' : ''}`}>
+                            {activeTab === 'Reviewed' ? (
+                                <CheckCircleOutlineIcon className="empty-icon" />
+                            ) : (
+                                <CheckCircleIcon className="empty-icon" />
+                            )}
+                        </div>
+
+                        <h2 className="task-empty-title">
+                            {searchQuery
+                                ? "No matching assignments found"
+                                : activeTab === 'Reviewed'
+                                ? "No reviewed assignments yet"
+                                : "Woohoo, all caught up!"}
+                        </h2>
+
+                        <p className="task-empty-description">
+                            {searchQuery
+                                ? "Check your search keywords or clear the filter to view all submissions."
+                                : activeTab === 'Reviewed'
+                                ? "Assignments you mark as reviewed will appear here in your completion history."
+                                : "You have reviewed all student submissions. When new submissions come in, they will appear here."}
+                        </p>
+
+                        {searchQuery && (
+                            <button
+                                type="button"
+                                className="task-empty-clear-btn"
+                                onClick={() => dispatch(setSearchQuery(''))}
+                            >
+                                Clear search
+                            </button>
+                        )}
                     </div>
                 )}
             </div>
