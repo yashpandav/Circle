@@ -26,4 +26,8 @@ router.delete('/deletesubmission/:id', auth, asyncHandler(deleteSubmittedAss));
 const { editSubmimtedAss } = require('../Controllers/AssignmentControllers/SubmissionController/editSubmitedAss');
 router.put('/editsubmitted/:id', auth, uploadLimiter, validateFiles, asyncHandler(editSubmimtedAss));
 
+const { gradeSubmission } = require('../Controllers/AssignmentControllers/gradeSubmission');
+router.post('/grade/:id', auth, asyncHandler(gradeSubmission));
+router.post('/grade', auth, asyncHandler(gradeSubmission));
+
 module.exports = router;

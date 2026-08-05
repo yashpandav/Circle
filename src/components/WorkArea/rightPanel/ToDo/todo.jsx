@@ -9,6 +9,7 @@ import {
     setGroupBy,
     setSearchQuery
 } from "../../../../Slices/todoSlice";
+import CircleDropdown from "../../../Helper/CircleDropdown";
 import { LoaderComponent } from "../../../Helper/Loaders/loader";
 import socket from "../../../../socket/socket";
 import {
@@ -369,22 +370,13 @@ export default function ToDo() {
             {/* Toolbar: Circle Filter, Search & View Toggle */}
             <div className="task-toolbar">
                 <div className="task-toolbar-left">
-                    {/* Circle Select Dropdown */}
-                    <div className="task-select-wrap">
-                        <ClassOutlinedIcon className="task-toolbar-icon" fontSize="small" />
-                        <select
-                            className="task-select"
-                            value={selectedClassId}
-                            onChange={(e) => dispatch(setSelectedClassId(e.target.value))}
-                        >
-                            <option value="all">All circles</option>
-                            {allClassesList.map((c) => (
-                                <option key={c._id} value={c._id}>
-                                    {c.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    {/* Circle Dropdown */}
+                    <CircleDropdown
+                        selectedCircleId={selectedClassId}
+                        onSelectCircle={(id) => dispatch(setSelectedClassId(id))}
+                        circlesList={allClassesList}
+                        themeColor={activeThemeColor}
+                    />
 
                     {/* Search Field */}
                     <div className="task-search-wrap">

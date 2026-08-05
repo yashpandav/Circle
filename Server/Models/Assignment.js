@@ -53,6 +53,10 @@ const AssignmentSchema = new mongoose.Schema({
     acceptAfterDue : {
         type : Boolean,
 		default : false
+    },
+    totalMarks: {
+        type: Number,
+        default: 100
     }
     }
 );

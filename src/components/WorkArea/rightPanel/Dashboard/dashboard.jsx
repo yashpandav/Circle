@@ -879,7 +879,7 @@ export default function Dashboard() {
                                             </Box>
 
                                             {/* Entry code for teacher */}
-                                            {c.entryCode && (
+                                            {c.role === "teacher" && c.entryCode && (
                                                 <Box
                                                     display="flex"
                                                     justifyContent="space-between"

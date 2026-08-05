@@ -24,10 +24,10 @@ exports.getAssDetails = async (req, res, next) => {
         const currAss = await Assignment.findById(id)
             .populate({
                 path: "submission",
-                populate: {
-                    path: "student",
-                    select: "firstName lastName image email"
-                }
+                populate: [
+                    { path: "student", select: "firstName lastName image email" },
+                    { path: "reviewedBy", select: "firstName lastName image email" }
+                ]
             })
             .populate("teacher", "firstName lastName image email")
             .populate("pendingStudent", "firstName lastName image email")

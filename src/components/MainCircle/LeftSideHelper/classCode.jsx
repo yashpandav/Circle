@@ -81,7 +81,7 @@ export default function ClassCodeComponent() {
         dispatch(toggleEntryCodeStatus({ id, dispatch }));
     }
 
-    if (!isAdmin) return null;
+    if (!isAdmin || !currClass) return null;
 
     const isActive = currClass.isCodeActive !== false;
 

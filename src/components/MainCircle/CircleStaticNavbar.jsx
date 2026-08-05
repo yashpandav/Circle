@@ -42,8 +42,10 @@ export default function CircleStaticNavbar() {
             setActiveTab('People');
         } else if (path.includes('/classwork')) {
             setActiveTab('Classwork');
-        } else {
+        } else if (path.includes('/stream')) {
             setActiveTab('Stream');
+        } else {
+            setActiveTab('');
         }
     }, [location.pathname]);
 
@@ -99,12 +101,7 @@ export default function CircleStaticNavbar() {
     };
 
     return (
-        <div
-            className="navbar-container"
-            style={{
-                borderBottom: `1px solid #e2e8f0`,
-            }}
-        >
+        <div className="navbar-container">
             <div className="circle-navbar">
                 {navItems.map((item) => (
                     <div

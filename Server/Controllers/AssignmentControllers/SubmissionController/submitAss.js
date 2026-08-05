@@ -116,6 +116,8 @@ exports.submitAss = async (req, res, next) => {
             if (data !== undefined) {
                 currSubmitted.data = data;
             }
+            currSubmitted.status = 'SUBMITTED';
+            currSubmitted.marks = null;
             currSubmitted.submitDate = Date.now();
             await currSubmitted.save();
 
@@ -169,6 +171,8 @@ exports.submitAss = async (req, res, next) => {
             file: fileUrl,
             student: userId,
             assignment: assId,
+            status: 'SUBMITTED',
+            marks: null,
             submitDate: Date.now()
         });
 

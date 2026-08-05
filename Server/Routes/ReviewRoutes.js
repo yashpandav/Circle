@@ -5,7 +5,9 @@ const { auth } = require('../Middleware/auth');
 const { addIntoReviewd } = require('../Controllers/ReviewAssignmentControllers/addReview');
 const { removeFromReviewed } = require('../Controllers/ReviewAssignmentControllers/removeReview');
 const { pendingReview } = require('../Controllers/ReviewAssignmentControllers/defaultReview');
+const { gradeSubmission } = require('../Controllers/AssignmentControllers/gradeSubmission');
 
+router.post('/grade', auth, asyncHandler(gradeSubmission));
 router.post('/add', auth, asyncHandler(addIntoReviewd));
 router.post('/remove', auth, asyncHandler(removeFromReviewed));
 router.post('/:classId', auth, asyncHandler(pendingReview));

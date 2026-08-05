@@ -17,11 +17,11 @@ async function fetchAssignmentReview(classId, user) {
                 { path: "teacher", select: "firstName lastName image email" },
                 { 
                     path: "submission", 
-                    select: "_id student submitDate data file",
-                    populate: {
-                        path: "student",
-                        select: "firstName lastName image email"
-                    }
+                    select: "_id student submitDate data file status marks maxMarks feedback reviewedAt reviewedBy",
+                    populate: [
+                        { path: "student", select: "firstName lastName image email" },
+                        { path: "reviewedBy", select: "firstName lastName image email" }
+                    ]
                 },
                 { path: "pendingStudent", select: "_id firstName lastName image email" }
             ]

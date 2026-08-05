@@ -1,0 +1,242 @@
+/* ==========================================================================
+   Circle Platform - Circle Dropdown Styles
+   Matching TopicDropdown and Platform Design System
+   ========================================================================== */
+
+.global-circle-dropdown-wrapper {
+    position: relative;
+    box-sizing: border-box;
+    display: inline-block;
+    width: auto;
+}
+
+/* Trigger Button */
+.global-circle-trigger-btn {
+    min-width: 160px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0 12px;
+    background-color: #ffffff;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.global-circle-trigger-btn:hover {
+    background-color: #f8f9fa;
+    border-color: var(--dropdown-theme, #00a896);
+}
+
+.global-circle-trigger-btn.open,
+.global-circle-trigger-btn:focus-visible {
+    background-color: #ffffff;
+    border-color: var(--dropdown-theme, #00a896);
+    box-shadow: 0 0 0 2px rgba(0, 168, 150, 0.15);
+}
+
+.global-circle-selected-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1;
+}
+
+.global-circle-selected-icon {
+    font-size: 18px !important;
+    color: #5f6368;
+    flex-shrink: 0;
+}
+
+.global-circle-theme-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.global-circle-selected-label {
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+}
+
+.global-circle-chevron-icon {
+    font-size: 18px !important;
+    color: #5f6368;
+    transition: transform 0.2s ease !important;
+    flex-shrink: 0;
+}
+
+.global-circle-chevron-icon.rotate {
+    transform: rotate(180deg);
+}
+
+/* Floating Dropdown Modal Menu */
+.global-circle-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    z-index: 1500;
+    overflow: hidden;
+    animation: globalCircleFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    min-width: 200px;
+    width: max-content;
+    max-width: 320px;
+}
+
+@keyframes globalCircleFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Search Box Inside Menu */
+.global-circle-search-box {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px;
+    border-bottom: 1px solid #f1f5f9;
+    background-color: #fafbfc;
+}
+
+.global-circle-search-icon {
+    color: #94a3b8;
+    font-size: 16px !important;
+}
+
+.global-circle-search-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 0.82rem;
+    background: transparent;
+    color: #1e293b;
+    font-family: inherit;
+}
+
+/* Options List */
+.global-circle-options-list {
+    max-height: 240px;
+    overflow-y: auto;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.global-circle-options-list::-webkit-scrollbar {
+    width: 5px;
+}
+
+.global-circle-options-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.global-circle-option-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    user-select: none;
+}
+
+.global-circle-option-item:hover {
+    background-color: #f1f5f9;
+}
+
+.global-circle-option-item.active {
+    background-color: #e6f6f4;
+}
+
+.global-circle-option-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+}
+
+.global-circle-option-icon {
+    font-size: 17px !important;
+    color: #64748b;
+    flex-shrink: 0;
+}
+
+.global-circle-option-item.active .global-circle-option-icon {
+    color: var(--dropdown-theme, #00a896);
+}
+
+.global-circle-item-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.global-circle-text-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.global-circle-option-name {
+    font-size: 0.86rem;
+    font-weight: 500;
+    color: #334155;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.global-circle-option-item.active .global-circle-option-name {
+    color: var(--dropdown-theme, #00a896);
+    font-weight: 600;
+}
+
+.global-circle-option-sub {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.global-circle-check-icon {
+    font-size: 16px !important;
+    color: var(--dropdown-theme, #00a896);
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+.global-circle-empty-msg {
+    padding: 12px 10px;
+    font-size: 0.82rem;
+    color: #94a3b8;
+    text-align: center;
+}

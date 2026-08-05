@@ -14,7 +14,11 @@ async function fetchClassAssignments(classId, userId) {
             populate: [
                 { path: "category", select: "name" },
                 { path: "teacher", select: "firstName lastName image email" },
-                { path: "submission", select: "_id student submitDate data file" }
+                { 
+                    path: "submission", 
+                    select: "_id student submitDate data file status marks maxMarks feedback reviewedAt reviewedBy",
+                    populate: { path: "reviewedBy", select: "firstName lastName image email" }
+                }
             ]
         }).exec();
 
@@ -132,7 +136,11 @@ async function updateToDo(req, res, next) {
                 populate: [
                     { path: 'category', select: 'name' },
                     { path: 'teacher', select: 'firstName lastName image email' },
-                    { path: 'submission', select: '_id student submitDate data file' }
+                    { 
+                        path: 'submission', 
+                        select: '_id student submitDate data file status marks maxMarks feedback reviewedAt reviewedBy',
+                        populate: { path: "reviewedBy", select: "firstName lastName image email" }
+                    }
                 ]
             })
             .populate({
@@ -140,7 +148,11 @@ async function updateToDo(req, res, next) {
                 populate: [
                     { path: 'category', select: 'name' },
                     { path: 'teacher', select: 'firstName lastName image email' },
-                    { path: 'submission', select: '_id student submitDate data file' }
+                    { 
+                        path: 'submission', 
+                        select: '_id student submitDate data file status marks maxMarks feedback reviewedAt reviewedBy',
+                        populate: { path: "reviewedBy", select: "firstName lastName image email" }
+                    }
                 ]
             })
             .populate({
@@ -148,7 +160,11 @@ async function updateToDo(req, res, next) {
                 populate: [
                     { path: 'category', select: 'name' },
                     { path: 'teacher', select: 'firstName lastName image email' },
-                    { path: 'submission', select: '_id student submitDate data file' }
+                    { 
+                        path: 'submission', 
+                        select: '_id student submitDate data file status marks maxMarks feedback reviewedAt reviewedBy',
+                        populate: { path: "reviewedBy", select: "firstName lastName image email" }
+                    }
                 ]
             })
             .exec();

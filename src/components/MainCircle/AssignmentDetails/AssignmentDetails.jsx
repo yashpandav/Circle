@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -11,13 +11,13 @@ import {
     CheckCircle as CheckCircleIcon,
     ErrorOutline as ErrorOutlineIcon,
     PeopleAlt as PeopleAltIcon,
-    School as SchoolIcon,
     AttachFile as AttachFileIcon,
-    OpenInNew as OpenInNewIcon
+    OpenInNew as OpenInNewIcon,
+    DescriptionOutlined as DescriptionIcon,
+    Send as SendIcon
 } from "@mui/icons-material";
 import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
 import {
-    Divider,
     IconButton,
     Button,
     CircularProgress,
@@ -52,7 +52,6 @@ export default function AssignmentDetails() {
 
     const [assignment, setAssignment] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [isTeacher, setIsTeacher] = useState(false);
     const [comments, setComments] = useState([]);
 
     // Student Submission State
@@ -88,7 +87,6 @@ export default function AssignmentDetails() {
             }
         } catch (err) {
             console.error("Error fetching assignment details:", err);
-            // Fallback from currClass if available
             if (currClass?.addedAssignment) {
                 const found = currClass.addedAssignment.find(a => (a._id === assignmentId || a === assignmentId));
                 if (found && typeof found === 'object') {
@@ -105,16 +103,34 @@ export default function AssignmentDetails() {
         fetchDetails();
     }, [fetchDetails]);
 
-    // Determine Teacher / Admin Authorization
-    useEffect(() => {
-        if (currUser && assignment) {
-            const isOwner = currUser._id === (assignment.teacher?._id || assignment.teacher);
-            const isClassAdmin = currClass?.admin && (currClass.admin._id === currUser._id || currClass.admin === currUser._id);
-            const isClassTeacher = currClass?.teacher && Array.isArray(currClass.teacher) && currClass.teacher.some(
-                t => (t._id === currUser._id || t === currUser._id || t.id === currUser._id)
-            );
-            setIsTeacher(Boolean(isOwner || isClassAdmin || isClassTeacher));
+    // Determine Teacher / Admin Authorization safely via useMemo
+    const isTeacher = useMemo(() => {
+        if (!currUser) return false;
+        const userId = (currUser._id || currUser.id)?.toString();
+        if (!userId) return false;
+
+        // 1. Is assignment teacher?
+        if (assignment?.teacher) {
+            const assTeacherId = (assignment.teacher._id || assignment.teacher)?.toString();
+            if (assTeacherId === userId) return true;
         }
+
+        // 2. Is class admin?
+        if (currClass?.admin) {
+            const adminId = (currClass.admin._id || currClass.admin)?.toString();
+            if (adminId === userId) return true;
+        }
+
+        // 3. Is in class teacher list?
+        if (currClass?.teacher && Array.isArray(currClass.teacher)) {
+            const inTeacherList = currClass.teacher.some(t => {
+                const tId = (t?._id || t?.id || t)?.toString();
+                return tId === userId;
+            });
+            if (inTeacherList) return true;
+        }
+
+        return false;
     }, [currUser, assignment, currClass]);
 
     // Socket.IO Listeners for Live Updates
@@ -184,11 +200,17 @@ export default function AssignmentDetails() {
     }, [assignmentId, fetchDetails]);
 
     // Check if the current student has already submitted
-    const userSubmission = assignment?.submission?.find(
-        s => (s.student?._id === currUser?._id || s.student === currUser?._id || s === currUser?._id)
-    );
+    const userSubmission = useMemo(() => {
+        if (!assignment?.submission || !currUser) return null;
+        const userId = (currUser._id || currUser.id)?.toString();
+        return assignment.submission.find(s => {
+            const studentId = (s?.student?._id || s?.student?.id || s?.student || s)?.toString();
+            return studentId === userId;
+        });
+    }, [assignment?.submission, currUser]);
+
     const isSubmitted = Boolean(userSubmission);
-    const isPastDue = assignment?.dueDate && new Date(assignment.dueDate).getTime() < Date.now();
+    const isPastDue = assignment?.dueDate ? new Date(assignment.dueDate).getTime() < Date.now() : false;
     const canSubmitLate = assignment?.acceptAfterDue ?? true;
 
     // Student Turn-in Handler
@@ -354,7 +376,7 @@ export default function AssignmentDetails() {
         return (
             <div className="assignment-details-loading-container">
                 <CircularProgress size={36} sx={{ color: themeColor }} />
-                <p>Loading assignment details...</p>
+                <p>Loading assignment...</p>
             </div>
         );
     }
@@ -383,31 +405,32 @@ export default function AssignmentDetails() {
     const totalAssignedCount = submissionsList.length + pendingStudentsList.length;
 
     return (
-        <div className="assignment-details-container">
-            {/* Top Navigation Bar */}
-            <div className="assignment-details-top-bar">
+        <div className="assignment-page" style={{ '--class-theme': themeColor }}>
+            {/* Top Navigation Row */}
+            <div className="assignment-top-nav">
                 <Button
                     startIcon={<ArrowBackIcon />}
-                    onClick={() => navigate(`/workarea/circle/${currClass._id}/stream`)}
-                    className="back-btn"
-                    sx={{ color: '#475569', textTransform: 'none', fontWeight: 500 }}
+                    onClick={() => navigate(`/workarea/circle/${currClass?._id || ''}/stream`)}
+                    className="assignment-back-btn"
+                    sx={{ color: '#475569', textTransform: 'none', fontWeight: 500, borderRadius: '8px' }}
                 >
                     Back to Stream
                 </Button>
 
                 {isTeacher && (
-                    <div className="teacher-actions-top">
+                    <div className="assignment-teacher-actions">
                         <Button
                             variant="outlined"
                             size="small"
                             startIcon={<EditIcon fontSize="small" />}
                             onClick={() => setIsEditModalOpen(true)}
                             sx={{
-                                borderColor: '#cbd5e1',
-                                color: '#334155',
+                                borderColor: '#dadce0',
+                                color: '#3c4043',
                                 textTransform: 'none',
                                 borderRadius: '8px',
-                                '&:hover': { borderColor: themeColor, color: themeColor }
+                                fontWeight: 500,
+                                '&:hover': { borderColor: themeColor, color: themeColor, backgroundColor: '#f8fafc' }
                             }}
                         >
                             Edit
@@ -418,7 +441,7 @@ export default function AssignmentDetails() {
                             color="error"
                             startIcon={<DeleteIcon fontSize="small" />}
                             onClick={() => setShowDeleteConfirm(true)}
-                            sx={{ borderRadius: '8px', textTransform: 'none' }}
+                            sx={{ borderRadius: '8px', textTransform: 'none', fontWeight: 500 }}
                         >
                             Delete
                         </Button>
@@ -426,129 +449,132 @@ export default function AssignmentDetails() {
                 )}
             </div>
 
-            <div className="assignment-details-layout">
-                {/* Left / Main Content Column */}
-                <div className="assignment-details-main">
-                    {/* Header Card */}
-                    <div className="assignment-hero-card">
-                        <div className="hero-top-row">
-                            <div className="hero-icon-avatar" style={{ backgroundColor: themeColor }}>
+            <div className="assignment-content-grid">
+                {/* Main Left Column: Assignment Details, Instructions, Attachments & Comments */}
+                <div className="assignment-main-column">
+                    <div className="assignment-unified-card">
+                        {/* Header Section */}
+                        <div className="assignment-card-header">
+                            <div className="assignment-header-icon" style={{ backgroundColor: themeColor }}>
                                 <AssignmentIcon />
                             </div>
-                            <div className="hero-info">
-                                <h1 className="hero-title">{assignment.name}</h1>
-                                <div className="hero-meta">
-                                    <span className="teacher-name">
+
+                            <div className="assignment-header-text">
+                                <h1 className="assignment-title">{assignment.name}</h1>
+                                <div className="assignment-meta-row">
+                                    <span className="assignment-author">
                                         {assignment.teacher?.firstName || "Teacher"} {assignment.teacher?.lastName || ""}
                                     </span>
-                                    <span className="dot-sep">•</span>
-                                    <span className="post-date">
+                                    <span className="assignment-meta-bullet">•</span>
+                                    <span className="assignment-date">
                                         Posted {new Date(assignment.uploadDate || Date.now()).toLocaleDateString("en-GB", { month: "short", day: "numeric" })}
                                     </span>
                                     {assignment.category && (
                                         <>
-                                            <span className="dot-sep">•</span>
+                                            <span className="assignment-meta-bullet">•</span>
                                             <Chip
                                                 label={assignment.category.name || assignment.category}
                                                 size="small"
-                                                className="topic-chip"
+                                                className="assignment-topic-chip"
                                             />
                                         </>
                                     )}
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Due Date & Late Status Banner */}
-                        <div className="hero-due-badge-row">
-                            {assignment.dueDate ? (
-                                <div className={`due-date-pill ${isPastDue ? 'past-due' : ''}`}>
-                                    <AccessTimeIcon fontSize="small" />
-                                    <span>
-                                        Due {new Date(assignment.dueDate).toLocaleDateString("en-GB", { month: "short", day: "numeric", hour: "numeric", minute: "numeric" })}
-                                    </span>
-                                </div>
-                            ) : (
-                                <div className="due-date-pill">
-                                    <AccessTimeIcon fontSize="small" />
-                                    <span>No due date</span>
-                                </div>
-                            )}
-
-                            {isPastDue && (
-                                <span className={`late-policy-tag ${canSubmitLate ? 'late-allowed' : 'late-closed'}`}>
-                                    {canSubmitLate ? "Late Submissions Allowed" : "Submissions Closed"}
-                                </span>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Assignment Instructions / Description */}
-                    <div className="assignment-instructions-card">
-                        <h3 className="section-heading">Instructions</h3>
-                        <div
-                            className="instructions-content"
-                            dangerouslySetInnerHTML={{ __html: assignment.description || "<p>No instructions provided.</p>" }}
-                        />
-
-                        {/* Teacher's Reference Attachment */}
-                        {assignment.file && (
-                            <div className="teacher-reference-attachment">
-                                <h4 className="attachment-heading">Reference Material</h4>
-                                <a
-                                    href={assignment.file}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="reference-file-card"
-                                >
-                                    <PictureAsPdfRoundedIcon sx={{ color: '#ef4444', fontSize: 32 }} />
-                                    <div className="file-meta">
-                                        <span className="file-name">View Reference Material</span>
-                                        <span className="file-subtitle">Click to open or download</span>
+                            {/* Due Date Indicator on Top Right */}
+                            <div className="assignment-header-due">
+                                {assignment.dueDate ? (
+                                    <div className={`assignment-due-text ${isPastDue ? 'is-overdue' : ''}`}>
+                                        <AccessTimeIcon fontSize="small" />
+                                        <span>
+                                            Due {new Date(assignment.dueDate).toLocaleDateString("en-GB", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                                        </span>
                                     </div>
-                                    <OpenInNewIcon fontSize="small" className="external-link-icon" />
-                                </a>
+                                ) : (
+                                    <div className="assignment-due-text">
+                                        <span>No due date</span>
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
-
-                    {/* Class Comments Section */}
-                    <div className="assignment-comments-card">
-                        <div className="comments-card-header">
-                            <PeopleAltIcon fontSize="small" style={{ color: themeColor }} />
-                            <h3>Class Comments ({comments.length})</h3>
                         </div>
-                        <CommentController
-                            comments={comments}
-                            onDeleteComment={handleDeleteComment}
-                            onEditComment={handleEditComment}
-                        />
-                        <AddCommentController addComment={handleAddComment} />
+
+                        {/* Accent Divider */}
+                        <div className="assignment-accent-divider" style={{ backgroundColor: themeColor }} />
+
+                        {/* Instructions Body */}
+                        <div className="assignment-body-section">
+                            <div
+                                className="assignment-instructions-text"
+                                dangerouslySetInnerHTML={{ __html: assignment.description || "<p>No instructions provided.</p>" }}
+                            />
+
+                            {/* Reference Material Attachment */}
+                            {assignment.file && (
+                                <div className="assignment-reference-wrap">
+                                    <h4 className="assignment-reference-title">Reference Material</h4>
+                                    <a
+                                        href={assignment.file}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="assignment-attachment-item"
+                                    >
+                                        <div className="attachment-icon-box">
+                                            <PictureAsPdfRoundedIcon sx={{ color: '#ea4335', fontSize: 26 }} />
+                                        </div>
+                                        <div className="attachment-details">
+                                            <span className="attachment-name">
+                                                {assignment.file.split('/').pop() || "Reference Document"}
+                                            </span>
+                                            <span className="attachment-sub">Click to view material</span>
+                                        </div>
+                                        <OpenInNewIcon fontSize="small" className="attachment-link-icon" />
+                                    </a>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Class Comments Section */}
+                        <div className="assignment-comments-section">
+                            <div className="assignment-comments-header">
+                                <PeopleAltIcon fontSize="small" style={{ color: themeColor }} />
+                                <h3>Class Comments ({comments.length})</h3>
+                            </div>
+                            <CommentController
+                                comments={comments}
+                                onDeleteComment={handleDeleteComment}
+                                onDeleteComment_error={handleDeleteComment}
+                                onEditComment={handleEditComment}
+                            />
+                            <AddCommentController addComment={handleAddComment} />
+                        </div>
                     </div>
                 </div>
 
-                {/* Right Column / Actions & Submissions Panel */}
-                <div className="assignment-details-sidebar">
+                {/* Right Sidebar: Student Submission / Teacher Submissions Dashboard */}
+                <div className="assignment-sidebar-column">
                     {!isTeacher ? (
-                        /* STUDENT SUBMISSION WORK CARD */
-                        <div className="student-work-card">
-                            <div className="work-card-header">
-                                <h2>Your Work</h2>
-                                <span className={`submission-status-badge ${isSubmitted ? 'status-turned-in' : isPastDue ? 'status-missing' : 'status-assigned'}`}>
-                                    {isSubmitted ? (isPastDue ? "Turned in (Late)" : "Turned in") : (isPastDue ? "Missing" : "Assigned")}
+                        /* ==============================================================
+                           STUDENT VIEW: YOUR WORK CARD
+                           ============================================================== */
+                        <div className="assignment-side-card student-work-panel">
+                            <div className="side-card-header">
+                                <h2 className="side-card-title">Your work</h2>
+                                <span className={`submission-badge ${isSubmitted ? (isPastDue ? 'badge-late' : 'badge-done') : (isPastDue ? 'badge-missing' : 'badge-assigned')}`}>
+                                    {isSubmitted ? (isPastDue ? "Turned in late" : "Turned in") : (isPastDue ? "Missing" : "Assigned")}
                                 </span>
                             </div>
 
-                            <Divider sx={{ my: 1.5 }} />
-
                             {isSubmitted ? (
                                 /* SUBMITTED STATE */
-                                <div className="submitted-work-view">
-                                    <div className="submitted-success-banner">
-                                        <CheckCircleIcon sx={{ color: '#10b981' }} />
+                                <div className="student-submitted-container">
+                                    <div className="student-submitted-badge">
+                                        <CheckCircleIcon sx={{ color: themeColor, fontSize: 20 }} />
                                         <div>
-                                            <h4>Assignment Handed In</h4>
-                                            <p>{new Date(userSubmission.submitDate || Date.now()).toLocaleDateString("en-GB", { month: "short", day: "numeric", hour: "numeric", minute: "numeric" })}</p>
+                                            <strong>Turned in</strong>
+                                            <span>
+                                                {new Date(userSubmission.submitDate || Date.now()).toLocaleDateString("en-GB", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                                            </span>
                                         </div>
                                     </div>
 
@@ -559,81 +585,64 @@ export default function AssignmentDetails() {
                                                     href={userSubmission.file}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="submitted-file-attachment"
+                                                    className="student-submitted-file"
                                                 >
-                                                    <AttachFileIcon sx={{ color: themeColor }} />
-                                                    <span className="filename">Your Submitted File</span>
+                                                    <DescriptionIcon sx={{ color: themeColor, fontSize: 20 }} />
+                                                    <span className="file-title">
+                                                        {userSubmission.file.split('/').pop() || "Submitted Attachment"}
+                                                    </span>
                                                     <OpenInNewIcon fontSize="small" className="ext-icon" />
                                                 </a>
                                             )}
 
                                             {userSubmission.data && (
-                                                <div className="submitted-note-box">
-                                                    <span className="note-label">Private Note:</span>
+                                                <div className="student-private-note-display">
+                                                    <span className="note-title">Private Comment</span>
                                                     <p>{userSubmission.data}</p>
                                                 </div>
                                             )}
 
-                                            <div className="submission-actions-row">
+                                            <div className="student-action-btn-group">
                                                 <Button
                                                     variant="outlined"
-                                                    startIcon={<EditIcon fontSize="small" />}
-                                                    disabled={isPastDue && !canSubmitLate}
-                                                    onClick={handleStartEditSubmission}
-                                                    className="edit-submission-btn"
-                                                    sx={{
-                                                        borderColor: themeColor,
-                                                        color: themeColor,
-                                                        textTransform: 'none',
-                                                        fontWeight: 600,
-                                                        borderRadius: '8px',
-                                                        flex: 1,
-                                                        '&:hover': { borderColor: themeColor, backgroundColor: '#f0fdfa' }
-                                                    }}
+                                                    onClick={() => setShowUnsubmitConfirm(true)}
+                                                    disabled={isUnsubmitting || (isPastDue && !canSubmitLate)}
+                                                    className="student-unsubmit-btn"
+                                                    fullWidth
                                                 >
-                                                    Edit
+                                                    {isUnsubmitting ? <CircularProgress size={18} /> : "Unsubmit"}
                                                 </Button>
                                                 <Button
-                                                    variant="outlined"
-                                                    color="inherit"
-                                                    disabled={isUnsubmitting || (isPastDue && !canSubmitLate)}
-                                                    onClick={() => setShowUnsubmitConfirm(true)}
-                                                    className="unsubmit-action-btn"
-                                                    sx={{ flex: 1 }}
+                                                    variant="text"
+                                                    onClick={handleStartEditSubmission}
+                                                    disabled={isPastDue && !canSubmitLate}
+                                                    className="student-edit-btn"
+                                                    style={{ color: themeColor }}
                                                 >
-                                                    {isUnsubmitting ? <CircularProgress size={20} /> : "Unsubmit"}
+                                                    Edit Submission
                                                 </Button>
                                             </div>
-                                            <p className="unsubmit-hint">Edit your note or attachment, or unsubmit to start over.</p>
                                         </>
                                     ) : (
                                         /* EDIT SUBMISSION FORM */
-                                        <div className="edit-submission-form">
-                                            {/* Existing file notification */}
+                                        <div className="student-edit-form">
                                             {userSubmission.file && !editFile && (
-                                                <div className="edit-current-file-badge">
+                                                <div className="edit-current-file">
                                                     <AttachFileIcon fontSize="small" sx={{ color: themeColor }} />
-                                                    <span>Current: {userSubmission.file.split('/').pop() || 'Submitted File'}</span>
+                                                    <span>Current: {userSubmission.file.split('/').pop()}</span>
                                                 </div>
                                             )}
 
-                                            {/* Replacement file picker */}
                                             {editFile ? (
-                                                <div className="selected-upload-card">
-                                                    <div className="selected-upload-info">
-                                                        <AttachFileIcon sx={{ color: themeColor }} />
-                                                        <span className="selected-filename">{editFile.name}</span>
-                                                    </div>
-                                                    <IconButton size="small" onClick={() => setEditFile(null)}>
-                                                        ✕
-                                                    </IconButton>
+                                                <div className="selected-file-chip">
+                                                    <AttachFileIcon sx={{ color: themeColor, fontSize: 18 }} />
+                                                    <span className="filename">{editFile.name}</span>
+                                                    <button type="button" onClick={() => setEditFile(null)} className="chip-remove">✕</button>
                                                 </div>
                                             ) : (
-                                                <label className="upload-file-trigger" style={{ borderColor: themeColor, padding: '12px 10px' }}>
+                                                <label className="upload-drop-zone">
                                                     <CloudUploadIcon sx={{ color: themeColor, fontSize: 22 }} />
-                                                    <span style={{ fontSize: '13px' }}>
-                                                        {userSubmission.file ? "Replace attached file" : "Add attached file"}
-                                                    </span>
+                                                    <span>{userSubmission.file ? "Replace attached file" : "Attach file"}</span>
                                                     <input
                                                         type="file"
                                                         style={{ display: 'none' }}
@@ -644,22 +653,21 @@ export default function AssignmentDetails() {
                                                 </label>
                                             )}
 
-                                            {/* Edit note textarea */}
                                             <textarea
-                                                placeholder="Private note to teacher..."
+                                                placeholder="Private comment to teacher..."
                                                 value={editNote}
                                                 onChange={(e) => setEditNote(e.target.value)}
-                                                className="student-note-textarea"
-                                                rows={3}
+                                                className="private-comment-input"
+                                                rows={2}
                                             />
 
-                                            <div className="edit-submission-actions-row">
+                                            <div className="edit-btn-row">
                                                 <Button
                                                     variant="outlined"
                                                     size="small"
                                                     onClick={handleCancelEditSubmission}
                                                     disabled={isSavingEdit}
-                                                    sx={{ textTransform: 'none', borderRadius: '8px', color: '#64748b', borderColor: '#cbd5e1' }}
+                                                    className="btn-cancel"
                                                 >
                                                     Cancel
                                                 </Button>
@@ -668,10 +676,10 @@ export default function AssignmentDetails() {
                                                     size="small"
                                                     onClick={handleSaveEditSubmission}
                                                     disabled={isSavingEdit}
+                                                    className="btn-save"
                                                     style={{ backgroundColor: themeColor }}
-                                                    sx={{ textTransform: 'none', borderRadius: '8px', fontWeight: 600 }}
                                                 >
-                                                    {isSavingEdit ? <CircularProgress size={18} color="inherit" /> : "Save Changes"}
+                                                    {isSavingEdit ? <CircularProgress size={16} color="inherit" /> : "Save"}
                                                 </Button>
                                             </div>
                                         </div>
@@ -679,30 +687,26 @@ export default function AssignmentDetails() {
                                 </div>
                             ) : (
                                 /* NOT SUBMITTED STATE */
-                                <div className="unsubmitted-work-form">
+                                <div className="student-unsubmitted-container">
                                     {isPastDue && !canSubmitLate ? (
-                                        <div className="submissions-closed-notice">
-                                            <ErrorOutlineIcon sx={{ color: '#ef4444' }} />
-                                            <p>The deadline has passed and the teacher has closed submissions for this assignment.</p>
+                                        <div className="submission-closed-box">
+                                            <ErrorOutlineIcon sx={{ color: '#d93025', fontSize: 22 }} />
+                                            <p>Submissions are closed for this assignment.</p>
                                         </div>
                                     ) : (
                                         <>
-                                            {/* File Picker */}
+                                            {/* Attached file selector */}
                                             {selectedFile ? (
-                                                <div className="selected-upload-card">
-                                                    <div className="selected-upload-info">
-                                                        <AttachFileIcon sx={{ color: themeColor }} />
-                                                        <span className="selected-filename">{selectedFile.name}</span>
-                                                    </div>
-                                                    <IconButton size="small" onClick={() => setSelectedFile(null)}>
-                                                        ✕
-                                                    </IconButton>
+                                                <div className="selected-file-chip">
+                                                    <AttachFileIcon sx={{ color: themeColor, fontSize: 18 }} />
+                                                    <span className="filename">{selectedFile.name}</span>
+                                                    <button type="button" onClick={() => setSelectedFile(null)} className="chip-remove">✕</button>
                                                 </div>
                                             ) : (
-                                                <label className="upload-file-trigger" style={{ borderColor: themeColor }}>
-                                                    <CloudUploadIcon sx={{ color: themeColor, fontSize: 28 }} />
-                                                    <span>Add or attach your work</span>
-                                                    <span className="subtext">PDF, DOC, Images supported</span>
+                                                <label className="upload-drop-zone">
+                                                    <CloudUploadIcon sx={{ color: themeColor, fontSize: 24 }} />
+                                                    <span className="drop-title">+ Add or create</span>
+                                                    <span className="drop-sub">Attach file or document</span>
                                                     <input
                                                         type="file"
                                                         style={{ display: 'none' }}
@@ -713,13 +717,13 @@ export default function AssignmentDetails() {
                                                 </label>
                                             )}
 
-                                            {/* Student Private Note */}
+                                            {/* Private Note / Comment */}
                                             <textarea
-                                                placeholder="Add a private note to teacher (optional)..."
+                                                placeholder="Add private comment to teacher..."
                                                 value={studentNote}
                                                 onChange={(e) => setStudentNote(e.target.value)}
-                                                className="student-note-textarea"
-                                                rows={3}
+                                                className="private-comment-input"
+                                                rows={2}
                                             />
 
                                             {/* Turn In Button */}
@@ -728,15 +732,15 @@ export default function AssignmentDetails() {
                                                 fullWidth
                                                 disabled={isSubmitting || (!selectedFile && !studentNote.trim())}
                                                 onClick={() => handleTurnIn(false)}
-                                                className="turn-in-action-btn"
+                                                className="turn-in-btn"
                                                 style={{ backgroundColor: themeColor }}
                                             >
                                                 {isSubmitting ? (
-                                                    <CircularProgress size={20} color="inherit" />
+                                                    <CircularProgress size={18} color="inherit" />
                                                 ) : isPastDue ? (
-                                                    "Turn In Late"
+                                                    "Turn in late"
                                                 ) : (
-                                                    "Turn In"
+                                                    "Turn in"
                                                 )}
                                             </Button>
                                         </>
@@ -745,93 +749,94 @@ export default function AssignmentDetails() {
                             )}
                         </div>
                     ) : (
-                        /* TEACHER SUBMISSIONS & STATS DASHBOARD */
-                        <div className="teacher-workspace-panel">
-                            {/* Summary Metrics */}
-                            <div className="teacher-stats-box">
-                                <h3>Student Progress</h3>
-                                <div className="stats-row">
-                                    <div className="stat-card">
-                                        <span className="stat-number" style={{ color: '#10b981' }}>
-                                            {submissionsList.length}
-                                        </span>
-                                        <span className="stat-label">Turned In</span>
-                                    </div>
-                                    <div className="stat-card">
-                                        <span className="stat-number" style={{ color: '#64748b' }}>
-                                            {pendingStudentsList.length}
-                                        </span>
-                                        <span className="stat-label">Assigned</span>
-                                    </div>
-                                </div>
-                                <Button
-                                    variant="outlined"
-                                    fullWidth
-                                    size="small"
-                                    onClick={() => navigate(`/workarea/review?assId=${assignment._id}`)}
-                                    sx={{
-                                        mt: 1.5,
-                                        borderColor: themeColor,
-                                        color: themeColor,
-                                        textTransform: 'none',
-                                        borderRadius: '8px'
-                                    }}
-                                >
-                                    Open Full Review List
-                                </Button>
+                        /* ==============================================================
+                           TEACHER VIEW: STUDENT WORK & SUBMISSIONS DASHBOARD
+                           ============================================================== */
+                        <div className="assignment-side-card teacher-work-panel">
+                            <div className="side-card-header">
+                                <h2 className="side-card-title">Student work</h2>
                             </div>
 
-                            {/* Submissions Filter Tabs */}
-                            <div className="teacher-submissions-container">
+                            {/* Summary Metrics */}
+                            <div className="teacher-metrics-row">
+                                <div className="metric-box">
+                                    <span className="metric-num" style={{ color: themeColor }}>
+                                        {submissionsList.length}
+                                    </span>
+                                    <span className="metric-lbl">Turned in</span>
+                                </div>
+                                <div className="metric-box">
+                                    <span className="metric-num" style={{ color: '#5f6368' }}>
+                                        {pendingStudentsList.length}
+                                    </span>
+                                    <span className="metric-lbl">Assigned</span>
+                                </div>
+                            </div>
+
+                            <Button
+                                variant="outlined"
+                                fullWidth
+                                size="small"
+                                onClick={() => navigate(`/workarea/review?assId=${assignment._id}`)}
+                                className="teacher-open-review-btn"
+                                style={{ borderColor: '#dadce0', color: themeColor }}
+                            >
+                                Open Full Review List
+                            </Button>
+
+                            {/* Filter Tabs */}
+                            <div className="teacher-tabs-wrap">
                                 <Tabs
                                     value={teacherFilterTab}
                                     onChange={(e, val) => setTeacherFilterTab(val)}
                                     variant="fullWidth"
-                                    className="submission-filter-tabs"
+                                    className="teacher-filter-tabs"
                                     sx={{
-                                        minHeight: '38px',
+                                        minHeight: '36px',
                                         '& .MuiTabs-indicator': { backgroundColor: themeColor }
                                     }}
                                 >
-                                    <Tab label={`All (${totalAssignedCount})`} sx={{ textTransform: 'none', fontSize: '13px', minHeight: '38px' }} />
-                                    <Tab label={`Done (${submissionsList.length})`} sx={{ textTransform: 'none', fontSize: '13px', minHeight: '38px' }} />
-                                    <Tab label={`Pending (${pendingStudentsList.length})`} sx={{ textTransform: 'none', fontSize: '13px', minHeight: '38px' }} />
+                                    <Tab label={`All (${totalAssignedCount})`} sx={{ textTransform: 'none', fontSize: '13px', minHeight: '36px', fontWeight: 500 }} />
+                                    <Tab label={`Turned in (${submissionsList.length})`} sx={{ textTransform: 'none', fontSize: '13px', minHeight: '36px', fontWeight: 500 }} />
+                                    <Tab label={`Assigned (${pendingStudentsList.length})`} sx={{ textTransform: 'none', fontSize: '13px', minHeight: '36px', fontWeight: 500 }} />
                                 </Tabs>
 
-                                <div className="submissions-student-list">
-                                    {/* Turned In Students */}
+                                {/* Student Submissions List */}
+                                <div className="teacher-students-list">
+                                    {/* Turned in Students */}
                                     {(teacherFilterTab === 0 || teacherFilterTab === 1) &&
                                         submissionsList.map((sub) => {
                                             const student = sub.student;
-                                            const studentName = student ? `${student.firstName || ''} ${student.lastName || ''}`.trim() : "Unknown Student";
+                                            const studentName = student ? `${student.firstName || ''} ${student.lastName || ''}`.trim() : "Student";
                                             return (
-                                                <div key={sub._id} className="student-submission-item done">
+                                                <div key={sub._id} className="teacher-student-item is-turned-in">
                                                     <Avatar
                                                         src={student?.image}
                                                         alt={studentName}
-                                                        sx={{ width: 34, height: 34 }}
+                                                        sx={{ width: 32, height: 32, fontSize: '13px', backgroundColor: themeColor }}
                                                     >
-                                                        {studentName[0] || <SchoolIcon />}
+                                                        {studentName[0]}
                                                     </Avatar>
-                                                    <div className="student-item-details">
-                                                        <div className="student-item-header">
-                                                            <span className="student-name">{studentName}</span>
-                                                            <span className="status-pill done">Turned In</span>
+                                                    <div className="student-details">
+                                                        <div className="student-name-row">
+                                                            <span className="student-name" title={studentName}>{studentName}</span>
+                                                            <span className="turned-in-badge" style={{ color: themeColor, backgroundColor: 'rgba(0, 168, 150, 0.08)' }}>Turned in</span>
                                                         </div>
-                                                        <span className="submission-time">
-                                                            {new Date(sub.submitDate || Date.now()).toLocaleDateString("en-GB", { month: "short", day: "numeric", hour: "numeric", minute: "numeric" })}
+                                                        <span className="submit-date-text">
+                                                            {new Date(sub.submitDate || Date.now()).toLocaleDateString("en-GB", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
                                                         </span>
                                                         {sub.file && (
                                                             <a
                                                                 href={sub.file}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="student-file-link"
+                                                                className="student-attachment-link"
+                                                                style={{ color: themeColor }}
                                                             >
                                                                 <AttachFileIcon fontSize="inherit" /> Attached Work
                                                             </a>
                                                         )}
-                                                        {sub.data && <p className="student-note-preview">"{sub.data}"</p>}
+                                                        {sub.data && <p className="student-note-text">"{sub.data}"</p>}
                                                     </div>
                                                 </div>
                                             );
@@ -844,18 +849,18 @@ export default function AssignmentDetails() {
                                             const avatarImg = typeof st === 'object' ? st.image : null;
                                             const stKey = typeof st === 'object' ? st._id : st;
                                             return (
-                                                <div key={stKey} className="student-submission-item pending">
+                                                <div key={stKey} className="teacher-student-item is-pending">
                                                     <Avatar
                                                         src={avatarImg}
                                                         alt={studentName}
-                                                        sx={{ width: 34, height: 34 }}
+                                                        sx={{ width: 32, height: 32, fontSize: '13px', backgroundColor: '#e2e8f0', color: '#5f6368' }}
                                                     >
-                                                        {studentName[0] || <SchoolIcon />}
+                                                        {studentName[0]}
                                                     </Avatar>
-                                                    <div className="student-item-details">
-                                                        <div className="student-item-header">
-                                                            <span className="student-name">{studentName}</span>
-                                                            <span className={`status-pill ${isPastDue ? 'missing' : 'assigned'}`}>
+                                                    <div className="student-details">
+                                                        <div className="student-name-row">
+                                                            <span className="student-name" title={studentName}>{studentName}</span>
+                                                            <span className={`assigned-badge ${isPastDue ? 'is-missing' : ''}`}>
                                                                 {isPastDue ? "Missing" : "Assigned"}
                                                             </span>
                                                         </div>
@@ -865,7 +870,7 @@ export default function AssignmentDetails() {
                                         })}
 
                                     {totalAssignedCount === 0 && (
-                                        <div className="no-students-message">
+                                        <div className="teacher-empty-students">
                                             No students currently assigned to this assignment.
                                         </div>
                                     )}

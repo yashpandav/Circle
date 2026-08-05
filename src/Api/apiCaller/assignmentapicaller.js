@@ -142,3 +142,26 @@ export const deleteSubmittedAssignment = createAsyncThunk(
         }
     }
 );
+
+export const gradeSubmission = createAsyncThunk(
+    'gradeSubmission',
+    async ({ assignmentId, submissionId, studentId, marks, feedback, status, maxMarks }, { rejectWithValue }) => {
+        try {
+            const response = await apiConnector('POST', `${ASSIGNMENT_API_URL.GRADE_SUBMISSION_API}/${assignmentId}`, {
+                assignmentId,
+                submissionId,
+                studentId,
+                marks,
+                feedback,
+                status,
+                maxMarks
+            });
+            toast.success(status === 'REJECTED' ? "Submission rejected with feedback" : "Submission graded successfully");
+            return response.data;
+        } catch (err) {
+            toast.error(err?.response?.data?.message || "Failed to grade submission");
+            return rejectWithValue(err.response ? err.response.data : err.message);
+        }
+    }
+);
+

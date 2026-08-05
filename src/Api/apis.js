@@ -45,6 +45,7 @@ export const ASSIGNMENT_API_URL = {
     SUBMIT_ASSIGNMENT_API: `${BASE_URL}/assignment/submit`,
     DELETED_SUBMITTED_ASSIGNMENT_API: `${BASE_URL}/assignment/deletesubmission`,
     EDITED_SUBMITTED_ASSIGNMENT_API: `${BASE_URL}/assignment/editsubmitted`,
+    GRADE_SUBMISSION_API: `${BASE_URL}/assignment/grade`,
 };
 
 //* REVIEWS API URL

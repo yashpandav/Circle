@@ -178,7 +178,7 @@ const People = () => {
                         )}
                     </div>
 
-                    {currClass?.entryCode && (
+                    {isAdminOrTeacher && currClass?.entryCode && (
                         <button
                             type="button"
                             className="people-class-code-btn"
