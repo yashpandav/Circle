@@ -27,6 +27,7 @@ export default function ColorSelector({ setselectedColor, selectedColor }) {
             <div className="theme-color-options">
                 {Object.keys(colorOptions).map((color) => (
                     <button
+                        type="button"
                         key={color}
                         className={`color-btn ${color} ${selectedColor === colorOptions[color] ? 'selected' : ''}`}
                         onClick={() => handleColorClick(color)}
