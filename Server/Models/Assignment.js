@@ -10,6 +10,9 @@ const AssignmentSchema = new mongoose.Schema({
 	file: {
         type : String
     },
+    files: [],
+    links: [],
+    youtubeLinks: [],
 	category: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "Category",

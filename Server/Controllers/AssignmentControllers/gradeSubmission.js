@@ -56,15 +56,13 @@ exports.gradeSubmission = async (req, res, next) => {
             });
         }
 
-        // Authorization check: Teacher / Admin only
-        const isTeacher = targetAssignment.teacher && targetAssignment.teacher.toString() === userId.toString();
-        const isClassAdmin = parentClass.admin && parentClass.admin.toString() === userId.toString();
-        const isClassTeacher = parentClass.teacher && parentClass.teacher.some(t => t && t.toString() === userId.toString());
+        // Authorization check: Only the teacher who created this assignment can grade/review submissions
+        const isAuthorTeacher = targetAssignment.teacher && targetAssignment.teacher.toString() === userId.toString();
 
-        if (!isTeacher && !isClassAdmin && !isClassTeacher) {
+        if (!isAuthorTeacher) {
             return res.status(403).json({
                 success: false,
-                message: "Only teachers and class admins are authorized to grade submissions."
+                message: "Only the teacher who uploaded this assignment is authorized to grade and review submissions."
             });
         }
 

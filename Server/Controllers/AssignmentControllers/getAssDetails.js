@@ -48,13 +48,17 @@ exports.getAssDetails = async (req, res, next) => {
         }
 
         const parentClass = await Class.findOne({ addedAssignment: id });
-        if (parentClass) {
-            const isTeacher = currAss.teacher && currAss.teacher._id.toString() === userId.toString();
-            const isClassAdmin = parentClass.admin && parentClass.admin.toString() === userId.toString();
-            const isClassTeacher = parentClass.teacher && parentClass.teacher.some(t => t.toString() === userId.toString());
-            const isEnrolledStudent = parentClass.student && parentClass.student.some(s => s.toString() === userId.toString());
+        const isAuthorTeacher = currAss.teacher && (currAss.teacher._id ? currAss.teacher._id.toString() : currAss.teacher.toString()) === userId.toString();
+        let isClassAdmin = false;
+        let isClassTeacher = false;
+        let isEnrolledStudent = false;
 
-            const isAuthorized = isTeacher || isClassAdmin || isClassTeacher || isEnrolledStudent;
+        if (parentClass) {
+            isClassAdmin = parentClass.admin && parentClass.admin.toString() === userId.toString();
+            isClassTeacher = parentClass.teacher && parentClass.teacher.some(t => t && t.toString() === userId.toString());
+            isEnrolledStudent = parentClass.student && parentClass.student.some(s => s && s.toString() === userId.toString());
+
+            const isAuthorized = isAuthorTeacher || isClassAdmin || isClassTeacher || isEnrolledStudent;
 
             if (!isAuthorized) {
                 return res.status(403).json({
@@ -63,8 +67,8 @@ exports.getAssDetails = async (req, res, next) => {
                 });
             }
 
-            // If assignment is still a Draft, only teachers/admins can view it
-            if (currAss.status === 'Draft' && !isTeacher && !isClassAdmin && !isClassTeacher) {
+            // If assignment is still a Draft, only author teacher or teachers can view it
+            if (currAss.status === 'Draft' && !isAuthorTeacher && !isClassAdmin && !isClassTeacher) {
                 return res.status(403).json({
                     success: false,
                     message: "This assignment is currently in draft mode and not available to students."
@@ -72,10 +76,29 @@ exports.getAssDetails = async (req, res, next) => {
             }
         }
 
+        // Prepare response data based on role
+        const assObj = currAss.toObject ? currAss.toObject() : JSON.parse(JSON.stringify(currAss));
+        assObj.isAuthor = isAuthorTeacher;
+
+        if (!isAuthorTeacher) {
+            if (isEnrolledStudent) {
+                // Students only see their own submission
+                assObj.submission = (assObj.submission || []).filter(sub => {
+                    const subStudentId = sub?.student?._id ? sub.student._id.toString() : sub?.student?.toString();
+                    return subStudentId === userId.toString();
+                });
+                assObj.pendingStudent = [];
+            } else {
+                // Other teachers / admin (not the author) only see assignment content (no student submissions)
+                assObj.submission = [];
+                assObj.pendingStudent = [];
+            }
+        }
+
         return res.status(200).json({
             success: true,
             message: "Assignment found",
-            data: currAss
+            data: assObj
         });
 
     } catch (err) {

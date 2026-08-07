@@ -37,22 +37,29 @@ exports.addTeacher = async (req, res, next) => {
             });
         }
 
-        // Check if user is already enrolled
-        const alreadyEnrolled =
+        // Check if user is already a teacher/creator in this class
+        const isAlreadyTeacher =
             targetUser.createdClasses.some(id => id.toString() === classId) ||
             targetUser.joinedClassAsAteacher.some(id => id.toString() === classId) ||
-            targetUser.joinedClassAsStudent.some(id => id.toString() === classId);
+            currClass.teacher.some(id => id.toString() === targetUser._id.toString()) ||
+            currClass.admin.toString() === targetUser._id.toString();
 
-        if (alreadyEnrolled) {
+        if (isAlreadyTeacher) {
             return res.status(400).json({
                 success: false,
-                message: "User is already enrolled in this class"
+                message: "User is already a teacher in this class"
             });
         }
 
+        // If user was enrolled as student, remove from student list
+        currClass.student = currClass.student.filter(id => id.toString() !== targetUser._id.toString());
+        targetUser.joinedClassAsStudent = targetUser.joinedClassAsStudent.filter(id => id.toString() !== classId);
+
         // Add user as Teacher
         currClass.teacher.push(targetUser._id);
-        targetUser.joinedClassAsAteacher.push(currClass._id);
+        if (!targetUser.joinedClassAsAteacher.some(id => id.toString() === classId)) {
+            targetUser.joinedClassAsAteacher.push(currClass._id);
+        }
 
         await Promise.all([currClass.save(), targetUser.save()]);
 

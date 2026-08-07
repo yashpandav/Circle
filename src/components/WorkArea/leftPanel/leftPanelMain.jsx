@@ -67,8 +67,8 @@ function SectionHeader({ icon, label, toggle, isOpen, onClick }) {
 }
 
 export default function LeftMain() {
-    const [teachingOpen, setTeachingOpen] = useState(false);
-    const [enrolledOpen, setEnrolledOpen] = useState(false);
+    const [teachingOpen, setTeachingOpen] = useState(true);
+    const [enrolledOpen, setEnrolledOpen] = useState(true);
 
     const location = useLocation();
     const activeLink = location.pathname;

@@ -27,11 +27,12 @@ exports.editAss = async (req, res, next) => {
             dueDate,
             acceptAfterDue,
             status,
+            totalMarks,
             removeFile,
             currClassId
         } = req.body;
 
-        let file = req?.files?.file;
+        const newFiles = req.files?.files || req.files?.file;
 
         if (!assId || !mongoose.Types.ObjectId.isValid(assId)) {
             return res.status(400).json({
@@ -61,15 +62,13 @@ exports.editAss = async (req, res, next) => {
             });
         }
 
-        //* Authorizing teacher or admin
-        const isAuthorized = (findAss.teacher && findAss.teacher.toString() === userId.toString()) ||
-            (parentClass && parentClass.admin && parentClass.admin.toString() === userId.toString()) ||
-            (parentClass && parentClass.teacher && parentClass.teacher.some(t => t.toString() === userId.toString()));
+        //* Authorizing teacher (only the teacher who created this assignment can edit it)
+        const isAuthorTeacher = findAss.teacher && findAss.teacher.toString() === userId.toString();
 
-        if (!isAuthorized) {
+        if (!isAuthorTeacher) {
             return res.status(403).json({
                 success: false,
-                message: "You are not authorized to edit this assignment",
+                message: "Only the teacher who uploaded this assignment is authorized to edit it",
             });
         }
 
@@ -119,24 +118,125 @@ exports.editAss = async (req, res, next) => {
             }
         }
 
-        //* Uploading new file or removing existing
-        if (file) {
-            const oldFile = findAss.file;
-            const image = await uploadImage(file, process.env.FOLDER_NAME);
-            if (oldFile) {
-                await deleteFromCloudinary(oldFile);
+        //* Handle Retained / Existing Files & Cleanup of Removed Files
+        let updatedFiles = [];
+        if (req.body.existingFiles !== undefined) {
+            try {
+                const parsedExisting = typeof req.body.existingFiles === 'string'
+                    ? JSON.parse(req.body.existingFiles)
+                    : req.body.existingFiles;
+
+                if (Array.isArray(parsedExisting)) {
+                    updatedFiles = parsedExisting.filter(
+                        f => f && typeof f === 'object' && f.fileUrl && f.fileName
+                    );
+                }
+            } catch (parseErr) {
+                console.error("Error parsing existingFiles JSON in editAss:", parseErr);
             }
-            findAss.file = image.secure_url;
-        } else if (removeFile === 'true' || removeFile === true) {
-            if (findAss.file) {
+
+            // Detect and delete removed Cloudinary files from files array and legacy file field
+            const oldFiles = findAss.files || [];
+            const removedFiles = oldFiles.filter(
+                oldF => oldF?.fileUrl && !updatedFiles.some(uF => uF.fileUrl === oldF.fileUrl)
+            );
+            if (removedFiles.length > 0) {
+                const urlsToDelete = removedFiles.map(f => f.fileUrl).filter(Boolean);
+                await deleteFromCloudinary(urlsToDelete);
+            }
+
+            if (findAss.file && !updatedFiles.some(uF => uF.fileUrl === findAss.file)) {
                 await deleteFromCloudinary(findAss.file);
             }
-            findAss.file = '';
+        } else {
+            // Keep currently stored files if existingFiles not passed
+            updatedFiles = findAss.files || [];
+        }
+
+        //* Upload and Append New Files (Images, PDFs, Docs, etc.)
+        if (newFiles) {
+            const filesArray = Array.isArray(newFiles) ? newFiles : [newFiles];
+            for (const item of filesArray) {
+                const originalFileName = item.name || "attachment";
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E4);
+                const fileExt = originalFileName.split('.').pop();
+                const baseName = originalFileName.split('.')[0];
+                const newFileName = `${baseName}|${uniqueSuffix}.${fileExt}`;
+
+                const uploadedResult = await uploadImage(item, process.env.FOLDER_NAME, newFileName);
+                if (uploadedResult && uploadedResult.secure_url) {
+                    updatedFiles.push({
+                        fileName: newFileName,
+                        fileType: uploadedResult.format || fileExt || 'unknown',
+                        fileUrl: uploadedResult.secure_url,
+                    });
+                }
+            }
+        }
+
+        if (removeFile === 'true' || removeFile === true) {
+            if (findAss.file) {
+                await deleteFromCloudinary(findAss.file);
+                findAss.file = '';
+            }
+            if (updatedFiles.length > 0) {
+                const urlsToDelete = updatedFiles.map(f => f.fileUrl).filter(Boolean);
+                await deleteFromCloudinary(urlsToDelete);
+                updatedFiles = [];
+            }
+        }
+
+        findAss.files = updatedFiles;
+        findAss.file = updatedFiles.length > 0 ? updatedFiles[0].fileUrl : (findAss.file || '');
+
+        //* Update Web Links
+        if (req.body.links !== undefined) {
+            let parsedLinks = [];
+            if (Array.isArray(req.body.links)) {
+                parsedLinks = req.body.links;
+            } else if (typeof req.body.links === 'string') {
+                try {
+                    parsedLinks = JSON.parse(req.body.links);
+                } catch {
+                    parsedLinks = [req.body.links];
+                }
+            }
+            findAss.links = Array.isArray(parsedLinks) ? parsedLinks.filter(l => l && typeof l === 'string' && l.trim() !== '') : [];
+        }
+
+        //* Update YouTube Links
+        if (req.body.youtubeLinks !== undefined) {
+            let parsedYouTube = [];
+            if (Array.isArray(req.body.youtubeLinks)) {
+                parsedYouTube = req.body.youtubeLinks;
+            } else if (typeof req.body.youtubeLinks === 'string') {
+                try {
+                    parsedYouTube = JSON.parse(req.body.youtubeLinks);
+                } catch {
+                    parsedYouTube = [req.body.youtubeLinks];
+                }
+            }
+
+            const cleanedYouTube = (Array.isArray(parsedYouTube) ? parsedYouTube : [])
+                .map(link => {
+                    if (!link || typeof link !== 'string') return null;
+                    if (link.includes('youtube.com') || link.includes('youtu.be')) {
+                        const match = link.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
+                        return (match && match[2].length === 11) ? match[2] : link;
+                    }
+                    return link.trim();
+                })
+                .filter(Boolean);
+
+            findAss.youtubeLinks = cleanedYouTube;
         }
 
         //* Updating standard fields
-        if (name !== undefined && name.trim()) findAss.name = name.trim();
+        if (name !== undefined && typeof name === 'string' && name.trim()) findAss.name = name.trim();
         if (description !== undefined) findAss.description = description;
+        if (totalMarks !== undefined && !isNaN(Number(totalMarks))) {
+            findAss.totalMarks = Number(totalMarks);
+        }
         if (acceptAfterDue !== undefined) {
             findAss.acceptAfterDue = (acceptAfterDue === 'true' || acceptAfterDue === true || acceptAfterDue === 'on');
         }

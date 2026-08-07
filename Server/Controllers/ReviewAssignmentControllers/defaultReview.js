@@ -31,9 +31,6 @@ async function fetchAssignmentReview(classId, user) {
         return null;
     }
 
-    const addedAssignments = Array.isArray(currClass.addedAssignment) ? currClass.addedAssignment : [];
-    const validAssignments = addedAssignments.filter(a => a && a._id);
-
     const userIdStr = user._id ? user._id.toString() : user.id.toString();
     const isClassAdmin = currClass.admin && currClass.admin.toString() === userIdStr;
     const isClassTeacher = currClass.teacher && currClass.teacher.some(t => t && t.toString() === userIdStr);
@@ -41,6 +38,14 @@ async function fetchAssignmentReview(classId, user) {
     if (!isClassAdmin && !isClassTeacher) {
         return null;
     }
+
+    const addedAssignments = Array.isArray(currClass.addedAssignment) ? currClass.addedAssignment : [];
+    // Only include assignments created/uploaded by this specific teacher
+    const validAssignments = addedAssignments.filter(a => {
+        if (!a || !a._id) return false;
+        const teacherId = a.teacher?._id ? a.teacher._id.toString() : (a.teacher ? a.teacher.toString() : null);
+        return teacherId === userIdStr;
+    });
 
     const reviewData = user.reviewList ? await Review.findById(user.reviewList) : null;
     let classReviewData = null;

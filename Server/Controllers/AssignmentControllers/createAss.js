@@ -16,6 +16,7 @@ exports.createAss = async (req, res, next) => {
             category,
             dueDate,
             status = 'Published',
+            totalMarks = 100,
             acceptAfterDue
         } = req.body;
 
@@ -76,11 +77,67 @@ exports.createAss = async (req, res, next) => {
             });
         }
 
-        let file = req.files?.file;
-        let fileUrl = '';
-        if (file) {
-            const uploaded = await uploadImage(file, process.env.FOLDER_NAME);
-            fileUrl = uploaded.secure_url;
+        //* Process Files
+        let uploadedFiles = [];
+        const rawFiles = req.files?.files || req.files?.file;
+        if (rawFiles) {
+            const filesArray = Array.isArray(rawFiles) ? rawFiles : [rawFiles];
+            for (const item of filesArray) {
+                const originalFileName = item.name || "attachment";
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E4);
+                const fileExt = originalFileName.split('.').pop();
+                const baseName = originalFileName.split('.')[0];
+                const newFileName = `${baseName}|${uniqueSuffix}.${fileExt}`;
+
+                const uploadedResult = await uploadImage(item, process.env.FOLDER_NAME, newFileName);
+                if (uploadedResult && uploadedResult.secure_url) {
+                    uploadedFiles.push({
+                        fileName: newFileName,
+                        fileType: uploadedResult.format || fileExt || 'unknown',
+                        fileUrl: uploadedResult.secure_url,
+                    });
+                }
+            }
+        }
+
+        //* Process Web Links
+        let parsedLinks = [];
+        if (req.body.links !== undefined) {
+            if (Array.isArray(req.body.links)) {
+                parsedLinks = req.body.links;
+            } else if (typeof req.body.links === 'string') {
+                try {
+                    parsedLinks = JSON.parse(req.body.links);
+                } catch {
+                    parsedLinks = [req.body.links];
+                }
+            }
+            parsedLinks = Array.isArray(parsedLinks) ? parsedLinks.filter(l => l && typeof l === 'string' && l.trim() !== '') : [];
+        }
+
+        //* Process YouTube Links
+        let parsedYouTube = [];
+        if (req.body.youtubeLinks !== undefined) {
+            if (Array.isArray(req.body.youtubeLinks)) {
+                parsedYouTube = req.body.youtubeLinks;
+            } else if (typeof req.body.youtubeLinks === 'string') {
+                try {
+                    parsedYouTube = JSON.parse(req.body.youtubeLinks);
+                } catch {
+                    parsedYouTube = [req.body.youtubeLinks];
+                }
+            }
+
+            parsedYouTube = (Array.isArray(parsedYouTube) ? parsedYouTube : [])
+                .map(link => {
+                    if (!link || typeof link !== 'string') return null;
+                    if (link.includes('youtube.com') || link.includes('youtu.be')) {
+                        const match = link.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
+                        return (match && match[2].length === 11) ? match[2] : link;
+                    }
+                    return link.trim();
+                })
+                .filter(Boolean);
         }
 
         const teacher = userId;
@@ -113,7 +170,11 @@ exports.createAss = async (req, res, next) => {
         const newAss = new Assignment({
             name: name.trim(),
             description: description.trim(),
-            file: fileUrl,
+            file: uploadedFiles.length > 0 ? uploadedFiles[0].fileUrl : '',
+            files: uploadedFiles,
+            links: parsedLinks,
+            youtubeLinks: parsedYouTube,
+            totalMarks: !isNaN(Number(totalMarks)) ? Number(totalMarks) : 100,
             teacher,
             category: validCategoryId,
             dueDate: parsedDueDate,

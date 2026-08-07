@@ -60,6 +60,10 @@ const ClassworkAssignmentItem = ({
     const [isExpanded, setIsExpanded] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
 
+    const userId = (currUser?._id || currUser?.id)?.toString();
+    const assTeacherId = (assignment.teacher?._id || assignment.teacher?.id || assignment.teacher)?.toString();
+    const isAssignmentAuthor = Boolean(userId && assTeacherId && userId === assTeacherId);
+
     const submissions = assignment.submission || [];
     const pendingStudents = assignment.pendingStudent || [];
 
@@ -129,18 +133,6 @@ const ClassworkAssignmentItem = ({
                         </span>
                     )}
 
-                    {/* Status Badges for Teachers (Matching Student Badge System) */}
-                    {isTeacher && (
-                        <div className="teacher-status-tags">
-                            <span className="status-tag done" title="Turned in">
-                                {submissions.length} Done
-                            </span>
-                            <span className="status-tag assigned" title="Assigned">
-                                {pendingStudents.length} Assigned
-                            </span>
-                        </div>
-                    )}
-
                     {/* Action Menu & Expand Chevron */}
                     <div className="item-actions">
                         {isTeacher && (
@@ -176,15 +168,19 @@ const ClassworkAssignmentItem = ({
                             sx: { borderRadius: '10px', minWidth: '150px' }
                         }}
                     >
-                        <MenuItem onClick={() => { handleMenuClose(); onEdit(assignment); }}>
-                            <EditIcon fontSize="small" sx={{ mr: 1.2, color: '#64748b' }} /> Edit
-                        </MenuItem>
+                        {isAssignmentAuthor && (
+                            <MenuItem onClick={() => { handleMenuClose(); onEdit(assignment); }}>
+                                <EditIcon fontSize="small" sx={{ mr: 1.2, color: '#64748b' }} /> Edit
+                            </MenuItem>
+                        )}
                         <MenuItem onClick={handleCopyLink}>
                             <OpenInNewIcon fontSize="small" sx={{ mr: 1.2, color: '#64748b' }} /> Copy link
                         </MenuItem>
-                        <MenuItem onClick={() => { handleMenuClose(); onDelete(assignment); }} sx={{ color: '#ef4444' }}>
-                            <DeleteIcon fontSize="small" sx={{ mr: 1.2, color: '#ef4444' }} /> Delete
-                        </MenuItem>
+                        {isAssignmentAuthor && (
+                            <MenuItem onClick={() => { handleMenuClose(); onDelete(assignment); }} sx={{ color: '#ef4444' }}>
+                                <DeleteIcon fontSize="small" sx={{ mr: 1.2, color: '#ef4444' }} /> Delete
+                            </MenuItem>
+                        )}
                     </Menu>
                 </div>
             </div>
@@ -200,19 +196,63 @@ const ClassworkAssignmentItem = ({
                         />
                     )}
 
-                    {/* Reference Attachment Preview */}
-                    {assignment.file && (
-                        <div className="preview-attachment-row">
-                            <a
-                                href={assignment.file}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="preview-file-chip"
-                            >
-                                <PictureAsPdfRoundedIcon sx={{ color: '#ef4444', fontSize: 18 }} />
-                                <span>Reference Material</span>
-                                <OpenInNewIcon sx={{ fontSize: 14, color: '#94a3b8' }} />
-                            </a>
+                    {/* Attachments Preview */}
+                    {((assignment.files && assignment.files.length > 0) || assignment.file || (assignment.youtubeLinks && assignment.youtubeLinks.length > 0) || (assignment.links && assignment.links.length > 0)) && (
+                        <div className="preview-attachment-row" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                            {assignment.files && assignment.files.length > 0 ? (
+                                assignment.files.map((file, idx) => (
+                                    <a
+                                        href={file.fileUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="preview-file-chip"
+                                        key={file.fileUrl || idx}
+                                    >
+                                        <PictureAsPdfRoundedIcon sx={{ color: '#ef4444', fontSize: 18 }} />
+                                        <span>{file.fileName ? (file.fileName.includes("|") ? file.fileName.split("|")[0] + "." + file.fileName.split(".").pop() : file.fileName) : "Attachment"}</span>
+                                        <OpenInNewIcon sx={{ fontSize: 14, color: '#94a3b8' }} />
+                                    </a>
+                                ))
+                            ) : assignment.file ? (
+                                <a
+                                    href={assignment.file}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="preview-file-chip"
+                                >
+                                    <PictureAsPdfRoundedIcon sx={{ color: '#ef4444', fontSize: 18 }} />
+                                    <span>Reference Material</span>
+                                    <OpenInNewIcon sx={{ fontSize: 14, color: '#94a3b8' }} />
+                                </a>
+                            ) : null}
+
+                            {assignment.youtubeLinks && assignment.youtubeLinks.map((yLink, idx) => (
+                                <a
+                                    href={yLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="preview-file-chip"
+                                    key={idx}
+                                >
+                                    <span style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '13px' }}>▶</span>
+                                    <span>YouTube Video</span>
+                                    <OpenInNewIcon sx={{ fontSize: 14, color: '#94a3b8' }} />
+                                </a>
+                            ))}
+
+                            {assignment.links && assignment.links.map((link, idx) => (
+                                <a
+                                    href={link.startsWith("http") ? link : `https://${link}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="preview-file-chip"
+                                    key={idx}
+                                >
+                                    <span style={{ color: '#059669', fontWeight: 'bold', fontSize: '13px' }}>🔗</span>
+                                    <span>{link}</span>
+                                    <OpenInNewIcon sx={{ fontSize: 14, color: '#94a3b8' }} />
+                                </a>
+                            ))}
                         </div>
                     )}
 
@@ -231,7 +271,7 @@ const ClassworkAssignmentItem = ({
                                 '&:hover': { backgroundColor: 'transparent', textDecoration: 'underline' }
                             }}
                         >
-                            {isTeacher ? "View instructions & submissions →" : "View instructions →"}
+                            {isAssignmentAuthor ? "View instructions & submissions →" : "View instructions →"}
                         </Button>
                     </div>
                 </div>
@@ -907,25 +947,6 @@ export default function Classwork() {
                     </IconButton>
                 </div>
 
-                <div className="student-work-modal-stats">
-                    <div className="sw-stat-pill">
-                        <span className="sw-count">{studentWorkStats.total}</span>
-                        <span className="sw-lbl">Total Work</span>
-                    </div>
-                    <div className="sw-stat-pill done">
-                        <span className="sw-count">{studentWorkStats.doneCount}</span>
-                        <span className="sw-lbl">Turned In</span>
-                    </div>
-                    <div className="sw-stat-pill assigned">
-                        <span className="sw-count">{studentWorkStats.assignedCount}</span>
-                        <span className="sw-lbl">Assigned</span>
-                    </div>
-                    <div className="sw-stat-pill missing">
-                        <span className="sw-count">{studentWorkStats.missingCount}</span>
-                        <span className="sw-lbl">Missing</span>
-                    </div>
-                </div>
-
                 <Tabs
                     value={studentWorkTab}
                     onChange={(e, v) => setStudentWorkTab(v)}
@@ -933,10 +954,10 @@ export default function Classwork() {
                     TabIndicatorProps={{ style: { backgroundColor: themeColor, height: '3px', borderRadius: '3px 3px 0 0' } }}
                     sx={{ borderBottom: '1px solid #f1f5f9', minHeight: '48px', '& .Mui-selected': { color: `${themeColor} !important`, fontWeight: 600 } }}
                 >
-                    <Tab label={`All (${studentWorkStats.total})`} sx={{ textTransform: 'none', fontSize: '13.5px', fontFamily: 'inherit' }} />
-                    <Tab label={`Assigned (${studentWorkStats.assignedCount})`} sx={{ textTransform: 'none', fontSize: '13.5px', fontFamily: 'inherit' }} />
-                    <Tab label={`Missing (${studentWorkStats.missingCount})`} sx={{ textTransform: 'none', fontSize: '13.5px', fontFamily: 'inherit' }} />
-                    <Tab label={`Done (${studentWorkStats.doneCount})`} sx={{ textTransform: 'none', fontSize: '13.5px', fontFamily: 'inherit' }} />
+                    <Tab label="All" sx={{ textTransform: 'none', fontSize: '13.5px', fontFamily: 'inherit' }} />
+                    <Tab label="Assigned" sx={{ textTransform: 'none', fontSize: '13.5px', fontFamily: 'inherit' }} />
+                    <Tab label="Missing" sx={{ textTransform: 'none', fontSize: '13.5px', fontFamily: 'inherit' }} />
+                    <Tab label="Done" sx={{ textTransform: 'none', fontSize: '13.5px', fontFamily: 'inherit' }} />
                 </Tabs>
 
                 <div className="student-work-modal-list">

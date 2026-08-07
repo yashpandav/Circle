@@ -65,19 +65,33 @@ export function JoinedCircleListTeacher() {
     const teacherClasses = useSelector(
         (state) => state.classes.joinedClassesAsTeacher
     );
+    const createdClasses = useSelector(
+        (state) => state.classes.createdClasses
+    );
 
     useEffect(() => {
-        if (!teacherClasses) {
+        if (teacherClasses === null || createdClasses === null) {
             dispatch(joinedClass({ dispatch }));
         }
-    }, [dispatch, teacherClasses]);
+    }, [dispatch, teacherClasses, createdClasses]);
 
-    const classes = teacherClasses || [];
+    // Merge created classes and joined-as-teacher classes (deduplicated by _id)
+    const teacherList = React.useMemo(() => {
+        const teacher = Array.isArray(teacherClasses) ? teacherClasses : [];
+        const created = Array.isArray(createdClasses) ? createdClasses : [];
+        const map = new Map();
+        [...created, ...teacher].forEach((c) => {
+            if (c && c._id && !map.has(c._id.toString())) {
+                map.set(c._id.toString(), c);
+            }
+        });
+        return Array.from(map.values());
+    }, [teacherClasses, createdClasses]);
 
     return (
         <div className="jcl-list">
-            {classes.length > 0 ? (
-                classes.map((item) => (
+            {teacherList.length > 0 ? (
+                teacherList.map((item) => (
                     <CircleItem key={item._id} item={item} />
                 ))
             ) : (
@@ -92,19 +106,45 @@ export function JoinedCircleListStudent() {
     const studentClasses = useSelector(
         (state) => state.classes.joinedClassesAsStudent
     );
+    const teacherClasses = useSelector(
+        (state) => state.classes.joinedClassesAsTeacher
+    );
+    const createdClasses = useSelector(
+        (state) => state.classes.createdClasses
+    );
 
     useEffect(() => {
-        if (!studentClasses) {
+        if (studentClasses === null) {
             dispatch(joinedClass({ dispatch }));
         }
     }, [dispatch, studentClasses]);
 
-    const classes = studentClasses || [];
+    // Enrolled circles strictly excluding any teaching circle
+    const studentList = React.useMemo(() => {
+        const students = Array.isArray(studentClasses) ? studentClasses : [];
+        const teacher = Array.isArray(teacherClasses) ? teacherClasses : [];
+        const created = Array.isArray(createdClasses) ? createdClasses : [];
+
+        const teachingIds = new Set();
+        [...created, ...teacher].forEach((c) => {
+            if (c && c._id) teachingIds.add(c._id.toString());
+        });
+
+        const seen = new Set();
+        return students.filter((item) => {
+            if (!item || !item._id) return false;
+            const idStr = item._id.toString();
+            if (teachingIds.has(idStr)) return false;
+            if (seen.has(idStr)) return false;
+            seen.add(idStr);
+            return true;
+        });
+    }, [studentClasses, teacherClasses, createdClasses]);
 
     return (
         <div className="jcl-list">
-            {classes.length > 0 ? (
-                classes.map((item) => (
+            {studentList.length > 0 ? (
+                studentList.map((item) => (
                     <CircleItem key={item._id} item={item} />
                 ))
             ) : (

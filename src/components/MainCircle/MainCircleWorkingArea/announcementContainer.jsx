@@ -1,5 +1,15 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { TextField, IconButton, Button } from "@mui/material";
+import {
+    TextField,
+    IconButton,
+    Button,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    FormControlLabel,
+    Switch
+} from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { IoIosSend } from "react-icons/io";
 import {
@@ -172,8 +182,14 @@ const AnnouncementWriter = ({
     handleAnnouncementChange,
     handleDueDateChange,
     dueDate,
+    totalMarks,
+    handleTotalMarksChange,
     categoryId,
     handleCategoryChange,
+    status,
+    handleStatusChange,
+    acceptAfterDue,
+    handleAcceptAfterDueChange,
     toggleWriteAssignment,
     handlePost,
     handleClose,
@@ -249,20 +265,6 @@ const AnnouncementWriter = ({
                         disableUnderline: true,
                     }}
                 />
-                {!isPost && (
-                    <TextField
-                        type="datetime-local"
-                        label="Due Date"
-                        variant="outlined"
-                        size="small"
-                        InputLabelProps={{ shrink: true }}
-                        value={dueDate}
-                        onChange={handleDueDateChange}
-                        style={{ marginTop: '15px', width: '250px' }}
-                    />
-                )}
-
-
 
                 <div
                     ref={announcementRef}
@@ -270,11 +272,122 @@ const AnnouncementWriter = ({
                     className="announcement-textfield content-editable"
                     onInput={handleAnnouncementChangeInternal}
                     style={{
-                        marginTop: '5px'
+                        marginTop: '8px'
                     }}
                     dir="ltr"
-                    data-placeholder={isPost ? "Announce Here..." : "Assignment details..."}
+                    data-placeholder={isPost ? "Announce Here..." : "Assignment instructions & details..."}
                 ></div>
+
+                {/* Assignment Options Panel (when creating an Assignment) */}
+                {!isPost && (
+                    <div className="assignment-inline-options-grid">
+                        {/* Due Date & Time */}
+                        <div className="assignment-inline-field">
+                            <TextField
+                                type="datetime-local"
+                                label="Due Date & Time"
+                                variant="outlined"
+                                size="small"
+                                InputLabelProps={{ shrink: true }}
+                                value={dueDate}
+                                onChange={handleDueDateChange}
+                                fullWidth
+                                sx={{
+                                    backgroundColor: '#fff',
+                                    borderRadius: '6px',
+                                    '& .MuiOutlinedInput-root': {
+                                        fontSize: '13px'
+                                    }
+                                }}
+                            />
+                        </div>
+
+                        {/* Points / Total Marks */}
+                        <div className="assignment-inline-field">
+                            <TextField
+                                type="number"
+                                label="Points / Total Marks"
+                                variant="outlined"
+                                size="small"
+                                inputProps={{ min: 0, max: 1000 }}
+                                value={totalMarks ?? 100}
+                                onChange={handleTotalMarksChange}
+                                fullWidth
+                                sx={{
+                                    backgroundColor: '#fff',
+                                    borderRadius: '6px',
+                                    '& .MuiOutlinedInput-root': {
+                                        fontSize: '13px'
+                                    }
+                                }}
+                            />
+                        </div>
+
+                        {/* Topic Selector */}
+                        <div className="assignment-inline-field">
+                            <div className="inline-topic-wrapper">
+                                <span className="inline-field-label">Topic</span>
+                                <TopicDropdown
+                                    selectedTopic={categoryId}
+                                    onSelectTopic={(topicId) => handleCategoryChange({ target: { value: topicId || "" } })}
+                                    defaultLabel="No topic"
+                                    emptyValue=""
+                                    allowCreate={true}
+                                    allowDelete={false}
+                                    triggerStyle={{ height: '40px', width: '100%', fontSize: '13px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Status Selector */}
+                        <div className="assignment-inline-field">
+                            <FormControl size="small" fullWidth>
+                                <InputLabel id="inline-ass-status-label">Status</InputLabel>
+                                <Select
+                                    labelId="inline-ass-status-label"
+                                    id="inline-ass-status-select"
+                                    value={status || "Published"}
+                                    label="Status"
+                                    onChange={handleStatusChange}
+                                    sx={{
+                                        backgroundColor: '#fff',
+                                        borderRadius: '6px',
+                                        fontSize: '13px'
+                                    }}
+                                >
+                                    <MenuItem value="Published">Published</MenuItem>
+                                    <MenuItem value="Draft">Draft</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </div>
+
+                        {/* Allow Late Submissions Toggle */}
+                        <div className="assignment-inline-field assignment-inline-toggle">
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={acceptAfterDue ?? true}
+                                        onChange={handleAcceptAfterDueChange}
+                                        sx={{
+                                            '& .MuiSwitch-switchBase.Mui-checked': {
+                                                color: 'var(--class-theme, #1967d2)'
+                                            },
+                                            '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                                                backgroundColor: 'var(--class-theme, #1967d2)'
+                                            }
+                                        }}
+                                    />
+                                }
+                                label={
+                                    <span style={{ fontSize: '13px', fontWeight: 500, color: '#475569' }}>
+                                        Allow Late Submissions
+                                    </span>
+                                }
+                            />
+                        </div>
+                    </div>
+                )}
+
                 <div className="preview-of-upload-container">
                     {files.map((file) => (
                         <FilePreview
@@ -334,10 +447,10 @@ const AnnouncementWriter = ({
                         <div className="upload-container">
                             <input
                                 type="file"
-                                multiple
+                                multiple={isPost}
                                 onChange={handleFileChange}
                                 style={{ display: "none" }}
-                                accept=".jpg,.jpeg,.png,.pdf"
+                                accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
                                 id="file-upload"
                             />
                             <IconButton
@@ -363,8 +476,8 @@ const AnnouncementWriter = ({
                             )}
                         </div>
 
-                        {/* Topic / Category Selector */}
-                        {isTeacherOrAdmin && (
+                        {/* Topic / Category Selector for Posts */}
+                        {isTeacherOrAdmin && isPost && (
                             <div style={{ marginLeft: '4px', marginRight: '4px', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
                                 <TopicDropdown
                                     selectedTopic={categoryId}
@@ -383,7 +496,15 @@ const AnnouncementWriter = ({
                             Cancel
                         </button>
                         <button className="button-post" onClick={handlePost} disabled={loading}>
-                            {loading ? "Posting..." : <>Post <IoIosSend /></>}
+                            {loading ? (
+                                isPost ? "Posting..." : "Assigning..."
+                            ) : isPost ? (
+                                <>Post <IoIosSend /></>
+                            ) : status === "Draft" ? (
+                                <>Save Draft <Assignment fontSize="small" /></>
+                            ) : (
+                                <>Assign <Assignment fontSize="small" /></>
+                            )}
                         </button>
                     </div>
                 </div>
@@ -423,14 +544,23 @@ export default function AnnouncementContainer() {
         files: [],
         youtubeLinks: [],
         dueDate: "",
+        totalMarks: 100,
         categoryId: "",
-        acceptAfterDue: true
+        acceptAfterDue: true,
+        status: "Published"
     });
 
     const handleTitleChange = (e) => {
         setdata(prev => ({
             ...prev,
             title: e.target.value
+        }));
+    };
+
+    const handleTotalMarksChange = (e) => {
+        setdata(prev => ({
+            ...prev,
+            totalMarks: e.target.value
         }));
     };
 
@@ -455,14 +585,57 @@ export default function AnnouncementContainer() {
         }));
     };
 
+    const handleStatusChange = (e) => {
+        setdata(prev => ({
+            ...prev,
+            status: e.target.value
+        }));
+    };
+
+    const handleAcceptAfterDueChange = (e) => {
+        setdata(prev => ({
+            ...prev,
+            acceptAfterDue: e.target.checked
+        }));
+    };
+
     const handleClose = () => {
         setWriteAssignment(false);
-        setdata({ title: "", text: "", links: [], files: [], youtubeLinks: [], categoryId: "" });
+        setdata({
+            currClassId: currClass?._id || "",
+            title: "",
+            text: "",
+            links: [],
+            files: [],
+            youtubeLinks: [],
+            dueDate: "",
+            totalMarks: 100,
+            categoryId: "",
+            acceptAfterDue: true,
+            status: "Published"
+        });
     };
 
     const loading = useSelector((state) => state.loading.loading);
 
     const handlePost = async () => {
+        if (isPost) {
+            if (!data.title.trim() && !data.text.trim() && data.files.length === 0 && data.links.length === 0 && data.youtubeLinks.length === 0) {
+                toast.error("Announcement cannot be empty");
+                return;
+            }
+        } else {
+            if (!data.title.trim()) {
+                toast.error("Assignment title is required");
+                return;
+            }
+            const strippedText = data.text ? data.text.replace(/<[^>]*>/g, "").trim() : "";
+            if (!strippedText && data.files.length === 0 && data.links.length === 0 && data.youtubeLinks.length === 0) {
+                toast.error("Assignment details or attachments are required");
+                return;
+            }
+        }
+
         dispatch(setLoading(true));
         try {
             const formData = new FormData();
@@ -492,32 +665,46 @@ export default function AnnouncementContainer() {
                             addedPost: [response.data, ...(currClass.addedPost || [])]
                         }));
                     }
-                    setdata((prev) => ({
-                        ...prev,
+                    setdata({
+                        currClassId: currClass?._id || "",
                         title: "",
                         text: "",
                         links: [],
                         files: [],
                         youtubeLinks: [],
                         dueDate: "",
-                        categoryId: ""
-                    }));
+                        categoryId: "",
+                        acceptAfterDue: true,
+                        status: "Published"
+                    });
                     setWriteAssignment(false);
                 }
             } else {
-                if (data.files.length > 0) formData.append("file", data.files[0].file);
+                data.files.forEach((file) => {
+                    formData.append("files", file.file);
+                });
+                if (data.files.length === 1) {
+                    formData.append("file", data.files[0].file);
+                }
                 formData.append('name', data.title);
                 formData.append('description', data.text);
                 formData.append('currClassId', currClass._id);
-                formData.append('status', 'Published');
-                formData.append('acceptAfterDue', data.acceptAfterDue);
+                formData.append('totalMarks', data.totalMarks !== undefined ? data.totalMarks : 100);
+                formData.append('status', data.status || 'Published');
+                formData.append('acceptAfterDue', data.acceptAfterDue !== undefined ? data.acceptAfterDue : true);
                 if (data.dueDate) {
-                    formData.append('dueDate', data.dueDate);
+                    formData.append('dueDate', new Date(data.dueDate).toISOString());
                 } else {
                     const defaultDate = new Date();
                     defaultDate.setDate(defaultDate.getDate() + 7);
                     formData.append('dueDate', defaultDate.toISOString());
                 }
+                data.links.forEach((link) => {
+                    formData.append('links', link);
+                });
+                data.youtubeLinks.forEach((link) => {
+                    formData.append('youtubeLinks', link);
+                });
                 if (data.categoryId) {
                     formData.append('category', data.categoryId);
                 }
@@ -531,16 +718,19 @@ export default function AnnouncementContainer() {
                             addedAssignment: [newAssignment, ...(currClass.addedAssignment || [])]
                         }));
                     }
-                    setdata((prev) => ({
-                        ...prev,
+                    setdata({
+                        currClassId: currClass?._id || "",
                         title: "",
                         text: "",
                         links: [],
                         files: [],
                         youtubeLinks: [],
                         dueDate: "",
-                        categoryId: ""
-                    }));
+                        totalMarks: 100,
+                        categoryId: "",
+                        acceptAfterDue: true,
+                        status: "Published"
+                    });
                     setWriteAssignment(false);
                 }
             }
@@ -679,13 +869,19 @@ export default function AnnouncementContainer() {
                         title={data.title}
                         announcement={data.text}
                         dueDate={data.dueDate}
+                        totalMarks={data.totalMarks}
+                        handleTotalMarksChange={handleTotalMarksChange}
                         categoryId={data.categoryId}
+                        status={data.status}
+                        acceptAfterDue={data.acceptAfterDue}
                         links={data.links}
                         youtubeLinks={data.youtubeLinks}
                         handleTitleChange={handleTitleChange}
                         handleAnnouncementChange={handleAnnouncementChange}
                         handleDueDateChange={handleDueDateChange}
                         handleCategoryChange={handleCategoryChange}
+                        handleStatusChange={handleStatusChange}
+                        handleAcceptAfterDueChange={handleAcceptAfterDueChange}
                         toggleWriteAssignment={setIsPost}
                         handlePost={handlePost}
                         handleClose={handleClose}

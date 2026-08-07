@@ -15,7 +15,9 @@ import {
     OpenInNew as OpenInNewIcon,
     DescriptionOutlined as DescriptionIcon,
     Grade as GradeIcon,
-    Cancel as CancelIcon
+    Cancel as CancelIcon,
+    YouTube as YouTubeIcon,
+    Link as LinkIcon
 } from "@mui/icons-material";
 import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
 import {
@@ -108,25 +110,28 @@ export default function AssignmentDetails() {
         fetchDetails();
     }, [fetchDetails]);
 
-    // Determine Teacher / Admin Authorization safely via useMemo
-    const isTeacher = useMemo(() => {
+    // 1. Is current user the specific teacher who created/uploaded this assignment?
+    const isAssignmentAuthor = useMemo(() => {
+        if (!currUser || !assignment) return false;
+        const userId = (currUser._id || currUser.id)?.toString();
+        if (!userId) return false;
+        const assTeacherId = (assignment.teacher?._id || assignment.teacher?.id || assignment.teacher)?.toString();
+        return assTeacherId === userId;
+    }, [currUser, assignment]);
+
+    // 2. Is current user a teacher or admin in this class?
+    const isTeacherOrAdmin = useMemo(() => {
         if (!currUser) return false;
         const userId = (currUser._id || currUser.id)?.toString();
         if (!userId) return false;
 
-        // 1. Is assignment teacher?
-        if (assignment?.teacher) {
-            const assTeacherId = (assignment.teacher._id || assignment.teacher)?.toString();
-            if (assTeacherId === userId) return true;
-        }
+        if (isAssignmentAuthor) return true;
 
-        // 2. Is class admin?
         if (currClass?.admin) {
             const adminId = (currClass.admin._id || currClass.admin)?.toString();
             if (adminId === userId) return true;
         }
 
-        // 3. Is in class teacher list?
         if (currClass?.teacher && Array.isArray(currClass.teacher)) {
             const inTeacherList = currClass.teacher.some(t => {
                 const tId = (t?._id || t?.id || t)?.toString();
@@ -136,7 +141,22 @@ export default function AssignmentDetails() {
         }
 
         return false;
-    }, [currUser, assignment, currClass]);
+    }, [currUser, currClass, isAssignmentAuthor]);
+
+    // 3. Is current user an enrolled student?
+    const isStudent = useMemo(() => {
+        if (!currUser) return false;
+        const userId = (currUser._id || currUser.id)?.toString();
+        if (!userId) return false;
+
+        // If user is author or teacher/admin in this circle, they are not treated as student
+        if (isAssignmentAuthor || isTeacherOrAdmin) return false;
+
+        return true;
+    }, [currUser, isAssignmentAuthor, isTeacherOrAdmin]);
+
+    // Legacy flag for general teacher components if needed
+    const isTeacher = isAssignmentAuthor;
 
     // Socket.IO Listeners for Live Updates
     useEffect(() => {
@@ -547,27 +567,123 @@ export default function AssignmentDetails() {
                                 dangerouslySetInnerHTML={{ __html: assignment.description || "<p>No instructions provided.</p>" }}
                             />
 
-                            {/* Reference Material Attachment */}
-                            {assignment.file && (
+                            {/* Reference Material Attachments (Files) */}
+                            {((assignment.files && assignment.files.length > 0) || assignment.file) && (
                                 <div className="assignment-reference-wrap">
-                                    <h4 className="assignment-reference-title">Reference Material</h4>
-                                    <a
-                                        href={assignment.file}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="assignment-attachment-item"
-                                    >
-                                        <div className="attachment-icon-box">
-                                            <PictureAsPdfRoundedIcon sx={{ color: '#ea4335', fontSize: 26 }} />
-                                        </div>
-                                        <div className="attachment-details">
-                                            <span className="attachment-name">
-                                                {assignment.file.split('/').pop() || "Reference Document"}
-                                            </span>
-                                            <span className="attachment-sub">Click to view material</span>
-                                        </div>
-                                        <OpenInNewIcon fontSize="small" className="attachment-link-icon" />
-                                    </a>
+                                    <h4 className="assignment-reference-title">Reference Materials ({assignment.files?.length || 1})</h4>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '10px' }}>
+                                        {assignment.files && assignment.files.length > 0 ? (
+                                            assignment.files.map((file, idx) => {
+                                                const isPdf = file.fileType === "pdf" || file.fileUrl?.endsWith(".pdf") || file.fileName?.endsWith(".pdf");
+                                                const isImg = file.fileType === "image" || /\.(jpg|jpeg|png|webp|gif)$/i.test(file.fileUrl || file.fileName || "");
+                                                const fileName = file.fileName ? (file.fileName.includes("|") ? file.fileName.split("|")[0] + "." + file.fileName.split(".").pop() : file.fileName) : "Reference Document";
+                                                return (
+                                                    <a
+                                                        href={file.fileUrl}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="assignment-attachment-item"
+                                                        key={file.fileUrl || idx}
+                                                    >
+                                                        <div className="attachment-icon-box">
+                                                            {isImg ? (
+                                                                <img src={file.fileUrl} alt="Thumb" style={{ width: 28, height: 28, borderRadius: 4, objectFit: 'cover' }} />
+                                                            ) : isPdf ? (
+                                                                <PictureAsPdfRoundedIcon sx={{ color: '#ea4335', fontSize: 26 }} />
+                                                            ) : (
+                                                                <DescriptionIcon sx={{ color: themeColor, fontSize: 26 }} />
+                                                            )}
+                                                        </div>
+                                                        <div className="attachment-details">
+                                                            <span className="attachment-name" title={fileName}>
+                                                                {fileName}
+                                                            </span>
+                                                            <span className="attachment-sub">Click to view material</span>
+                                                        </div>
+                                                        <OpenInNewIcon fontSize="small" className="attachment-link-icon" />
+                                                    </a>
+                                                );
+                                            })
+                                        ) : (
+                                            <a
+                                                href={assignment.file}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="assignment-attachment-item"
+                                            >
+                                                <div className="attachment-icon-box">
+                                                    <PictureAsPdfRoundedIcon sx={{ color: '#ea4335', fontSize: 26 }} />
+                                                </div>
+                                                <div className="attachment-details">
+                                                    <span className="attachment-name">
+                                                        {assignment.file.split('/').pop() || "Reference Document"}
+                                                    </span>
+                                                    <span className="attachment-sub">Click to view material</span>
+                                                </div>
+                                                <OpenInNewIcon fontSize="small" className="attachment-link-icon" />
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* YouTube Videos */}
+                            {assignment.youtubeLinks && assignment.youtubeLinks.length > 0 && (
+                                <div className="assignment-reference-wrap" style={{ marginTop: '16px' }}>
+                                    <h4 className="assignment-reference-title">YouTube Videos ({assignment.youtubeLinks.length})</h4>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '12px' }}>
+                                        {assignment.youtubeLinks.map((link, index) => {
+                                            const embedUrl = link.includes("embed")
+                                                ? link
+                                                : link.includes("youtu.be")
+                                                ? `https://www.youtube.com/embed/${link.split("/").pop()}`
+                                                : link.includes("watch?v=")
+                                                ? `https://www.youtube.com/embed/${link.split("watch?v=")[1].split("&")[0]}`
+                                                : `https://www.youtube.com/embed/${link}`;
+                                            return (
+                                                <div key={index} style={{ borderRadius: '10px', overflow: 'hidden', border: '1px solid #e2e8f0', aspectRatio: '16/9' }}>
+                                                    <iframe
+                                                        src={embedUrl}
+                                                        title={`YouTube Video ${index + 1}`}
+                                                        frameBorder="0"
+                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                        allowFullScreen
+                                                        style={{ width: '100%', height: '100%' }}
+                                                    ></iframe>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Web Links */}
+                            {assignment.links && assignment.links.length > 0 && (
+                                <div className="assignment-reference-wrap" style={{ marginTop: '16px' }}>
+                                    <h4 className="assignment-reference-title">Web Links ({assignment.links.length})</h4>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                        {assignment.links.map((link, idx) => (
+                                            <a
+                                                href={link.startsWith("http") ? link : `https://${link}`}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                key={idx}
+                                                className="assignment-attachment-item"
+                                                style={{ textDecoration: 'none' }}
+                                            >
+                                                <div className="attachment-icon-box">
+                                                    <LinkIcon sx={{ color: '#059669', fontSize: 24 }} />
+                                                </div>
+                                                <div className="attachment-details">
+                                                    <span className="attachment-name" style={{ color: '#059669' }}>
+                                                        {link}
+                                                    </span>
+                                                    <span className="attachment-sub">Open link in new tab</span>
+                                                </div>
+                                                <OpenInNewIcon fontSize="small" className="attachment-link-icon" />
+                                            </a>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -589,9 +705,9 @@ export default function AssignmentDetails() {
                     </div>
                 </div>
 
-                {/* Right Sidebar: Student Submission / Teacher Submissions Dashboard */}
+                {/* Right Sidebar: Student Submission / Teacher Submissions Dashboard / Co-Teacher Read-Only View */}
                 <div className="assignment-sidebar-column">
-                    {!isTeacher ? (
+                    {isStudent ? (
                         /* ==============================================================
                            STUDENT VIEW: YOUR WORK CARD & GRADING FEEDBACK
                            ============================================================== */
@@ -841,29 +957,13 @@ export default function AssignmentDetails() {
                                 </div>
                             )}
                         </div>
-                    ) : (
+                    ) : isAssignmentAuthor ? (
                         /* ==============================================================
                            TEACHER VIEW: STUDENT WORK & SUBMISSIONS DASHBOARD
                            ============================================================== */
                         <div className="assignment-side-card teacher-work-panel">
                             <div className="side-card-header">
                                 <h2 className="side-card-title">Student work</h2>
-                            </div>
-
-                            {/* Summary Metrics */}
-                            <div className="teacher-metrics-row">
-                                <div className="metric-box">
-                                    <span className="metric-num" style={{ color: themeColor }}>
-                                        {submissionsList.length}
-                                    </span>
-                                    <span className="metric-lbl">Turned in</span>
-                                </div>
-                                <div className="metric-box">
-                                    <span className="metric-num" style={{ color: '#5f6368' }}>
-                                        {pendingStudentsList.length}
-                                    </span>
-                                    <span className="metric-lbl">Assigned</span>
-                                </div>
                             </div>
 
                             <Button
@@ -889,9 +989,9 @@ export default function AssignmentDetails() {
                                         '& .MuiTabs-indicator': { backgroundColor: themeColor }
                                     }}
                                 >
-                                    <Tab label={`All (${totalAssignedCount})`} sx={{ textTransform: 'none', fontSize: '13px', minHeight: '36px', fontWeight: 500 }} />
-                                    <Tab label={`Turned in (${submissionsList.length})`} sx={{ textTransform: 'none', fontSize: '13px', minHeight: '36px', fontWeight: 500 }} />
-                                    <Tab label={`Assigned (${pendingStudentsList.length})`} sx={{ textTransform: 'none', fontSize: '13px', minHeight: '36px', fontWeight: 500 }} />
+                                    <Tab label="All" sx={{ textTransform: 'none', fontSize: '13px', minHeight: '36px', fontWeight: 500 }} />
+                                    <Tab label="Turned in" sx={{ textTransform: 'none', fontSize: '13px', minHeight: '36px', fontWeight: 500 }} />
+                                    <Tab label="Assigned" sx={{ textTransform: 'none', fontSize: '13px', minHeight: '36px', fontWeight: 500 }} />
                                 </Tabs>
 
                                 {/* Student Submissions List */}
@@ -1014,6 +1114,36 @@ export default function AssignmentDetails() {
                                             No students currently assigned to this assignment.
                                         </div>
                                     )}
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        /* ==============================================================
+                           CO-TEACHER / ADMIN READ-ONLY VIEW (No student submission access)
+                           ============================================================== */
+                        <div className="assignment-side-card info-view-panel">
+                            <div className="side-card-header">
+                                <h2 className="side-card-title">Assignment details</h2>
+                            </div>
+                            <div className="assignment-info-content" style={{ padding: '16px 0', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <Avatar
+                                        src={assignment.teacher?.image}
+                                        sx={{ width: 38, height: 38, backgroundColor: themeColor }}
+                                    >
+                                        {(assignment.teacher?.firstName || 'T')[0]}
+                                    </Avatar>
+                                    <div>
+                                        <div style={{ fontSize: '14px', fontWeight: 600, color: '#1e293b' }}>
+                                            {assignment.teacher?.firstName || 'Teacher'} {assignment.teacher?.lastName || ''}
+                                        </div>
+                                        <div style={{ fontSize: '12px', color: '#64748b' }}>
+                                            Assignment Creator
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style={{ fontSize: '13px', color: '#64748b', lineHeight: 1.5, background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                                    You are viewing this assignment in read-only mode. Only the creator teacher can review submissions, grade student work, and modify this assignment.
                                 </div>
                             </div>
                         </div>

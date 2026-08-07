@@ -4,7 +4,7 @@ import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
 import { Menu, MenuItem, IconButton, CircularProgress } from "@mui/material";
-import { Assignment as AssignmentIcon } from "@mui/icons-material";
+import { Assignment as AssignmentIcon, LinkRounded as LinkRoundedIcon } from "@mui/icons-material";
 import "./postContainer.css";
 import "./uploadFile.css";
 import { CommentController, AddCommentController } from "./commentController";
@@ -34,15 +34,20 @@ export default function AssignmentContainer({ assignment }) {
     const [isOverflowing, setIsOverflowing] = useState(false);
     const contentRef = useRef(null);
 
-    useEffect(() => {
-        const isOwner = currUser?._id && (currUser._id === assignment?.teacher?._id || currUser._id === assignment?.teacher);
-        const isClassAdmin = currClass?.admin && (currClass.admin._id === currUser?._id || currClass.admin === currUser?._id);
-        const isClassTeacher = currClass?.teacher && Array.isArray(currClass.teacher) && currClass.teacher.some(
-            t => (t._id === currUser?._id || t === currUser?._id || t.id === currUser?._id)
-        );
+    const userId = (currUser?._id || currUser?.id)?.toString();
+    const assTeacherId = (assignment?.teacher?._id || assignment?.teacher?.id || assignment?.teacher)?.toString();
+    const isOwner = Boolean(userId && assTeacherId && userId === assTeacherId);
 
-        setAnnouncer(Boolean(isOwner || isClassAdmin || isClassTeacher));
-    }, [assignment, currUser, currClass]);
+    const isClassAdmin = Boolean(currClass?.admin && ((currClass.admin._id || currClass.admin)?.toString() === userId));
+    const isClassTeacher = Boolean(currClass?.teacher && Array.isArray(currClass.teacher) && currClass.teacher.some(
+        t => (t?._id || t?.id || t)?.toString() === userId
+    ));
+    const isTeacherOrAdmin = Boolean(isOwner || isClassAdmin || isClassTeacher);
+    const isStudent = !isTeacherOrAdmin;
+
+    useEffect(() => {
+        setAnnouncer(isOwner);
+    }, [isOwner]);
 
     useEffect(() => {
         if (contentRef.current) {
@@ -178,7 +183,6 @@ export default function AssignmentContainer({ assignment }) {
     };
 
     // Calculate student submission status
-    const isStudent = !isAnnouncer;
     const userSubmission = assignment.submission && Array.isArray(assignment.submission)
         ? assignment.submission.find(s => (s?.student?._id === currUser?._id || s?.student === currUser?._id || s?._id === currUser?._id || s?.student?.id === currUser?._id))
         : null;
@@ -314,24 +318,102 @@ export default function AssignmentContainer({ assignment }) {
                     </>
                 )}
 
-                {/* Attachment */}
-                {assignment.file && (
+                {/* Attachments (Files) */}
+                {((assignment.files && assignment.files.length > 0) || assignment.file) && (
                     <div className="post-attachments">
-                        <div className="unsupported-files post-side">
-                            <div className="unsupported-file-first-div">
-                                <PictureAsPdfRoundedIcon />
-                                <div className="vertical-line"></div>
+                        {assignment.files && assignment.files.length > 0 ? (
+                            assignment.files.map((file, idx) => {
+                                const isPdf = file.fileType === "pdf" || file.fileUrl?.endsWith(".pdf") || file.fileName?.endsWith(".pdf");
+                                const fileName = file.fileName ? (file.fileName.includes("|") ? file.fileName.split("|")[0] + "." + file.fileName.split(".").pop() : file.fileName) : "Attachment";
+                                if (isPdf) {
+                                    return (
+                                        <div className="unsupported-files post-side" key={file.fileUrl || idx}>
+                                            <div className="unsupported-file-first-div">
+                                                <PictureAsPdfRoundedIcon />
+                                                <div className="vertical-line"></div>
+                                            </div>
+                                            <div className="file-preview-name" title={fileName}>
+                                                <a href={file.fileUrl} target="_blank" rel="noopener noreferrer">
+                                                    {fileName}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    );
+                                } else {
+                                    return (
+                                        <a
+                                            href={file.fileUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            key={file.fileUrl || idx}
+                                            className="post-image-link"
+                                        >
+                                            <img src={file.fileUrl} alt={fileName} />
+                                        </a>
+                                    );
+                                }
+                            })
+                        ) : assignment.file ? (
+                            <div className="unsupported-files post-side">
+                                <div className="unsupported-file-first-div">
+                                    <PictureAsPdfRoundedIcon />
+                                    <div className="vertical-line"></div>
+                                </div>
+                                <div className="file-preview-name" title={assignment.file}>
+                                    <a
+                                        href={assignment.file}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        View Attachment
+                                    </a>
+                                </div>
                             </div>
-                            <div className="file-preview-name" title={assignment.file}>
-                                <a
-                                    href={assignment.file}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    View Attachment
-                                </a>
-                            </div>
-                        </div>
+                        ) : null}
+                    </div>
+                )}
+
+                {/* YouTube Video Embeds */}
+                {assignment.youtubeLinks && assignment.youtubeLinks.length > 0 && (
+                    <div className="youtube-links-for-post user-post-side">
+                        {assignment.youtubeLinks.map((link, index) => {
+                            const embedUrl = link.includes("embed")
+                                ? link
+                                : link.includes("youtu.be")
+                                ? `https://www.youtube.com/embed/${link.split("/").pop()}`
+                                : link.includes("watch?v=")
+                                ? `https://www.youtube.com/embed/${link.split("watch?v=")[1].split("&")[0]}`
+                                : `https://www.youtube.com/embed/${link}`;
+                            return (
+                                <div className="youtube-video-container" key={index}>
+                                    <iframe
+                                        src={embedUrl}
+                                        title="YouTube video player"
+                                        frameBorder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                    ></iframe>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {/* Web Links */}
+                {assignment.links && assignment.links.length > 0 && (
+                    <div className="links-for-post user-post-side">
+                        {assignment.links.map((link, idx) => (
+                            <a
+                                href={link.startsWith("http") ? link : `https://${link}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                key={idx}
+                                className="post-link-card"
+                            >
+                                <LinkRoundedIcon className="post-link-icon" />
+                                <span className="post-link-text">{link}</span>
+                            </a>
+                        ))}
                     </div>
                 )}
             </div>

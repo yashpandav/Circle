@@ -156,15 +156,15 @@ export default function Review() {
 
         const map = new Map();
         [...created, ...teacher].forEach((c) => {
-            if (c && c._id && !map.has(c._id)) {
-                map.set(c._id, c);
+            if (c && c._id && !map.has(c._id.toString())) {
+                map.set(c._id.toString(), c);
             }
         });
 
         // Also add any classes present in reviewData
         if (Array.isArray(reviewData)) {
             reviewData.forEach((rd) => {
-                const cId = rd.classId?._id || rd.classId;
+                const cId = (rd.classId?._id || rd.classId)?.toString();
                 if (cId && !map.has(cId)) {
                     map.set(cId, {
                         _id: cId,
@@ -630,25 +630,7 @@ export default function Review() {
                                                                     <span>{dueInfo.text}</span>
                                                                 </div>
 
-                                                                {/* Metrics with click to toggle submissions drawer */}
-                                                                <div className="task-review-metrics">
-                                                                    <Tooltip title={submissionsCount > 0 ? "Click to view turned in submissions" : "No student submissions yet"}>
-                                                                        <div
-                                                                            className={`task-metric-pill turned-in ${submissionsCount > 0 ? 'clickable' : ''}`}
-                                                                            onClick={(e) => submissionsCount > 0 && toggleAssignmentDrawer(e, ass._id)}
-                                                                            style={{ cursor: submissionsCount > 0 ? 'pointer' : 'default' }}
-                                                                        >
-                                                                            <span className="task-metric-num">{submissionsCount}</span>
-                                                                            <span className="task-metric-lbl">Turned in</span>
-                                                                        </div>
-                                                                    </Tooltip>
-                                                                    <div className="task-metric-pill assigned" title={`${pendingCount} students assigned`}>
-                                                                        <span className="task-metric-num">{pendingCount}</span>
-                                                                        <span className="task-metric-lbl">Assigned</span>
-                                                                    </div>
-                                                                </div>
-
-                                                                {/* Review Action Buttons */}
+                                                                 {/* Review Action Buttons */}
                                                                 <div className="task-action-wrap">
                                                                     {submissionsCount > 0 && (
                                                                         <button

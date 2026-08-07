@@ -10,7 +10,8 @@ import {
     FormControl,
     InputLabel,
     FormControlLabel,
-    Switch
+    Switch,
+    Tooltip
 } from "@mui/material";
 import {
     Close as CloseIcon,
@@ -18,7 +19,11 @@ import {
     FormatItalic,
     FormatUnderlined,
     CloudUpload,
-    Assignment as AssignmentIcon
+    Assignment as AssignmentIcon,
+    YouTube,
+    Link as LinkIcon,
+    Delete as DeleteIcon,
+    EventBusy as EventBusyIcon
 } from "@mui/icons-material";
 import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
 import { useDispatch, useSelector } from "react-redux";
@@ -37,10 +42,20 @@ export default function CreateAssignmentModal({ open, onClose, defaultCategoryId
     const [description, setDescription] = useState("");
     const [category, setCategory] = useState(defaultCategoryId || "");
     const [dueDate, setDueDate] = useState("");
+    const [totalMarks, setTotalMarks] = useState(100);
     const [acceptAfterDue, setAcceptAfterDue] = useState(true);
     const [status, setStatus] = useState("Published");
     
-    const [file, setFile] = useState(null);
+    // Attachments
+    const [files, setFiles] = useState([]);
+    const [links, setLinks] = useState([]);
+    const [youtubeLinks, setYoutubeLinks] = useState([]);
+
+    // Input toggles
+    const [showLinkInput, setShowLinkInput] = useState(false);
+    const [newLinkUrl, setNewLinkUrl] = useState("");
+    const [showYouTubeInput, setShowYouTubeInput] = useState(false);
+    const [newYouTubeUrl, setNewYouTubeUrl] = useState("");
     const [isSaving, setIsSaving] = useState(false);
 
     const editorRef = useRef(null);
@@ -51,9 +66,16 @@ export default function CreateAssignmentModal({ open, onClose, defaultCategoryId
         setDescription("");
         setCategory(defaultCategoryId || "");
         setDueDate("");
+        setTotalMarks(100);
         setAcceptAfterDue(true);
         setStatus("Published");
-        setFile(null);
+        setFiles([]);
+        setLinks([]);
+        setYoutubeLinks([]);
+        setShowLinkInput(false);
+        setShowYouTubeInput(false);
+        setNewLinkUrl("");
+        setNewYouTubeUrl("");
         if (editorRef.current) {
             editorRef.current.innerHTML = "";
         }
@@ -66,22 +88,6 @@ export default function CreateAssignmentModal({ open, onClose, defaultCategoryId
         }
     };
 
-    const handleCreateInlineTopic = useCallback(async (topicName) => {
-        if (!topicName || !topicName.trim()) return;
-        try {
-            const response = await dispatch(createCategory({ name: topicName.trim(), classId: currClass._id })).unwrap();
-            if (response && response.data) {
-                dispatch(updateCurrClass({
-                    addedCategory: [...(currClass.addedCategory || []), response.data]
-                }));
-                setCategory(response.data._id);
-                toast.success(`Topic "${topicName.trim()}" created`);
-            }
-        } catch (err) {
-            console.error("Error creating inline topic", err);
-        }
-    }, [currClass?._id, currClass?.addedCategory, dispatch]);
-
     const handleApplyFormatting = (command) => {
         document.execCommand(command, false, null);
     };
@@ -92,16 +98,75 @@ export default function CreateAssignmentModal({ open, onClose, defaultCategoryId
         }
     };
 
+    // --- File Handlers ---
     const handleFileChange = (e) => {
-        const selected = e.target.files?.[0];
-        if (selected) {
-            setFile(selected);
-        }
+        const selected = Array.from(e.target.files || []);
+        const mapped = selected.map((file) => ({
+            file,
+            name: file.name,
+            type: file.type,
+            url: URL.createObjectURL(file),
+        }));
+
+        setFiles((prev) => {
+            const existingNames = new Set(prev.map((f) => f.name));
+            const unique = mapped.filter((f) => !existingNames.has(f.name));
+            if (unique.length < mapped.length) {
+                toast.error("Duplicate files were skipped");
+            }
+            return [...prev, ...unique];
+        });
+
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
         }
     };
 
+    const handleRemoveFile = (fileName) => {
+        setFiles((prev) => prev.filter((f) => f.name !== fileName));
+    };
+
+    // --- Link Handlers ---
+    const handleAddLink = (e) => {
+        e.preventDefault();
+        const trimmed = newLinkUrl.trim();
+        if (!trimmed) return;
+        if (links.includes(trimmed)) {
+            toast.error("Link is already added");
+            return;
+        }
+        setLinks((prev) => [...prev, trimmed]);
+        setNewLinkUrl("");
+        setShowLinkInput(false);
+    };
+
+    const handleRemoveLink = (urlToRemove) => {
+        setLinks((prev) => prev.filter((l) => l !== urlToRemove));
+    };
+
+    // --- YouTube Handlers ---
+    const handleAddYouTubeLink = (e) => {
+        e.preventDefault();
+        const trimmed = newYouTubeUrl.trim();
+        if (!trimmed) return;
+        if (youtubeLinks.includes(trimmed)) {
+            toast.error("YouTube video is already added");
+            return;
+        }
+        setYoutubeLinks((prev) => [...prev, trimmed]);
+        setNewYouTubeUrl("");
+        setShowYouTubeInput(false);
+    };
+
+    const handleRemoveYouTubeLink = (urlToRemove) => {
+        setYoutubeLinks((prev) => prev.filter((y) => y !== urlToRemove));
+    };
+
+    const handleClearDueDate = () => {
+        setDueDate("");
+    };
+
+    // --- Submit Create Assignment ---
     const handleSave = async () => {
         const trimmedName = name.trim();
         const rawContent = editorRef.current ? editorRef.current.innerHTML : description;
@@ -124,6 +189,7 @@ export default function CreateAssignmentModal({ open, onClose, defaultCategoryId
             formData.append("description", rawContent);
             formData.append("currClassId", currClass._id);
             formData.append("category", category || "");
+            formData.append("totalMarks", totalMarks !== "" ? totalMarks : 100);
             formData.append("acceptAfterDue", acceptAfterDue);
             formData.append("status", status);
 
@@ -135,8 +201,20 @@ export default function CreateAssignmentModal({ open, onClose, defaultCategoryId
                 formData.append("dueDate", defaultDate.toISOString());
             }
 
-            if (file) {
-                formData.append("file", file);
+            // Web links
+            links.forEach((l) => formData.append("links", l));
+
+            // YouTube links
+            youtubeLinks.forEach((y) => formData.append("youtubeLinks", y));
+
+            // Multi Files
+            files.forEach((f) => {
+                formData.append("files", f.file);
+            });
+
+            // Legacy single file fallback
+            if (files.length === 1) {
+                formData.append("file", files[0].file);
             }
 
             const res = await dispatch(createAssignment(formData)).unwrap();
@@ -156,10 +234,13 @@ export default function CreateAssignmentModal({ open, onClose, defaultCategoryId
             }
         } catch (err) {
             console.error("Error creating assignment:", err);
+            toast.error(err?.message || "Failed to create assignment");
         } finally {
             setIsSaving(false);
         }
     };
+
+    const themeColor = currClass?.classTheme || "#00a896";
 
     return (
         <Dialog
@@ -173,7 +254,7 @@ export default function CreateAssignmentModal({ open, onClose, defaultCategoryId
                 {/* Header */}
                 <div className="edit-assignment-modal-header">
                     <div className="modal-title-group">
-                        <div className="modal-icon-badge" style={{ backgroundColor: currClass?.classTheme || '#00a896' }}>
+                        <div className="modal-icon-badge" style={{ backgroundColor: themeColor }}>
                             <AssignmentIcon fontSize="small" />
                         </div>
                         <h3>Create Assignment</h3>
@@ -211,7 +292,7 @@ export default function CreateAssignmentModal({ open, onClose, defaultCategoryId
                             ref={editorRef}
                             contentEditable={!isSaving}
                             className="edit-assignment-content-editor"
-                            data-placeholder="Assignment instructions (optional or detailed steps)..."
+                            placeholder="Assignment instructions (optional or detailed steps)..."
                             onInput={handleContentInput}
                             dir="ltr"
                         />
@@ -248,57 +329,166 @@ export default function CreateAssignmentModal({ open, onClose, defaultCategoryId
                             <div className="toolbar-right">
                                 <input
                                     type="file"
+                                    multiple
                                     ref={fileInputRef}
                                     onChange={handleFileChange}
                                     style={{ display: "none" }}
-                                    accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
+                                    accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.zip,.txt"
                                     disabled={isSaving}
                                 />
-                                <Button
-                                    variant="outlined"
-                                    size="small"
-                                    startIcon={<CloudUpload fontSize="small" />}
-                                    onClick={() => fileInputRef.current && fileInputRef.current.click()}
-                                    disabled={isSaving}
-                                    sx={{
-                                        textTransform: 'none',
-                                        fontSize: '13px',
-                                        borderColor: '#e2e8f0',
-                                        color: '#475569',
-                                        '&:hover': {
-                                            borderColor: currClass?.classTheme || '#00a896',
-                                            backgroundColor: '#f8fafc'
-                                        }
-                                    }}
-                                >
-                                    Attach File
-                                </Button>
+                                <Tooltip title="Attach Files">
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => fileInputRef.current && fileInputRef.current.click()}
+                                        disabled={isSaving}
+                                        style={{ color: "#8b5cf6" }}
+                                    >
+                                        <CloudUpload fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+
+                                <Tooltip title="Add YouTube Video">
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => setShowYouTubeInput((prev) => !prev)}
+                                        disabled={isSaving}
+                                        style={{ color: "#ef4444" }}
+                                    >
+                                        <YouTube fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+
+                                <Tooltip title="Add Web Link">
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => setShowLinkInput((prev) => !prev)}
+                                        disabled={isSaving}
+                                        style={{ color: "#059669" }}
+                                    >
+                                        <LinkIcon fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
                             </div>
                         </div>
                     </div>
 
-                    {/* Controls Grid */}
+                    {/* YouTube Inline Input Box */}
+                    {showYouTubeInput && (
+                        <form onSubmit={handleAddYouTubeLink} className="inline-add-input-form">
+                            <TextField
+                                size="small"
+                                placeholder="Paste YouTube link (e.g., https://youtube.com/watch?v=...)"
+                                value={newYouTubeUrl}
+                                onChange={(e) => setNewYouTubeUrl(e.target.value)}
+                                fullWidth
+                                autoFocus
+                            />
+                            <Button
+                                variant="contained"
+                                size="small"
+                                type="submit"
+                                style={{
+                                    backgroundColor: "#ef4444",
+                                    color: "#fff",
+                                    textTransform: "none",
+                                    fontWeight: 600,
+                                    borderRadius: "8px",
+                                    px: 2
+                                }}
+                            >
+                                Add
+                            </Button>
+                            <Button
+                                size="small"
+                                onClick={() => setShowYouTubeInput(false)}
+                                style={{ color: "#64748b", textTransform: "none" }}
+                            >
+                                Cancel
+                            </Button>
+                        </form>
+                    )}
+
+                    {/* Web Link Inline Input Box */}
+                    {showLinkInput && (
+                        <form onSubmit={handleAddLink} className="inline-add-input-form">
+                            <TextField
+                                size="small"
+                                placeholder="Enter link (e.g., https://example.com)"
+                                value={newLinkUrl}
+                                onChange={(e) => setNewLinkUrl(e.target.value)}
+                                fullWidth
+                                autoFocus
+                            />
+                            <Button
+                                variant="contained"
+                                size="small"
+                                type="submit"
+                                style={{
+                                    backgroundColor: themeColor,
+                                    color: "#fff",
+                                    textTransform: "none",
+                                    fontWeight: 600,
+                                    borderRadius: "8px",
+                                    px: 2
+                                }}
+                            >
+                                Add
+                            </Button>
+                            <Button
+                                size="small"
+                                onClick={() => setShowLinkInput(false)}
+                                style={{ color: "#64748b", textTransform: "none" }}
+                            >
+                                Cancel
+                            </Button>
+                        </form>
+                    )}
+
+                    {/* Assignment Configuration Grid */}
                     <div className="assignment-meta-grid">
                         {/* Due Date & Time */}
+                        <div className="meta-field due-date-field-wrapper">
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <TextField
+                                    label="Due Date & Time"
+                                    type="datetime-local"
+                                    size="small"
+                                    value={dueDate}
+                                    onChange={(e) => setDueDate(e.target.value)}
+                                    InputLabelProps={{ shrink: true }}
+                                    fullWidth
+                                    disabled={isSaving}
+                                />
+                                {dueDate && (
+                                    <Tooltip title="Clear due date">
+                                        <IconButton size="small" onClick={handleClearDueDate} sx={{ color: '#94a3b8' }}>
+                                            <EventBusyIcon fontSize="small" />
+                                        </IconButton>
+                                    </Tooltip>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Points / Total Marks */}
                         <div className="meta-field">
                             <TextField
-                                label="Due Date & Time"
-                                type="datetime-local"
+                                label="Points / Total Marks"
+                                type="number"
                                 size="small"
-                                value={dueDate}
-                                onChange={(e) => setDueDate(e.target.value)}
-                                InputLabelProps={{ shrink: true }}
+                                value={totalMarks}
+                                onChange={(e) => setTotalMarks(e.target.value)}
+                                inputProps={{ min: 0, max: 1000 }}
                                 fullWidth
                                 disabled={isSaving}
+                                sx={{ backgroundColor: '#fff' }}
                             />
                         </div>
 
                         {/* Topic Selector */}
                         <div className="meta-field">
-                            <label className="meta-label">Topic</label>
                             <TopicDropdown
                                 selectedTopic={category}
-                                onSelectTopic={(topicId) => setCategory(topicId)}
+                                onSelectTopic={(topicId) => setCategory(topicId || "")}
                                 defaultLabel="No topic"
                                 emptyValue=""
                                 allowCreate={true}
@@ -342,7 +532,7 @@ export default function CreateAssignmentModal({ open, onClose, defaultCategoryId
                                 label="Allow Late Submissions"
                                 sx={{
                                     '& .MuiTypography-root': {
-                                        fontSize: '14px',
+                                        fontSize: '13.5px',
                                         fontWeight: 500,
                                         color: '#334155'
                                     }
@@ -351,21 +541,94 @@ export default function CreateAssignmentModal({ open, onClose, defaultCategoryId
                         </div>
                     </div>
 
-                    {/* Attached File Preview */}
-                    {file && (
+                    {/* Files Preview Section */}
+                    {files.length > 0 && (
                         <div className="attachment-preview-section">
-                            <div className="attachment-section-title">Attached Reference Material</div>
-                            <div className="attachment-file-card new-file">
-                                <PictureAsPdfRoundedIcon style={{ color: currClass?.classTheme || '#00a896', fontSize: 28 }} />
-                                <span className="attachment-link">{file.name}</span>
-                                <IconButton
-                                    size="small"
-                                    onClick={() => setFile(null)}
-                                    title="Remove file"
-                                    className="remove-file-btn"
-                                >
-                                    <CloseIcon fontSize="small" />
-                                </IconButton>
+                            <div className="attachment-section-title">Attached Files ({files.length})</div>
+                            <div className="edit-assignment-files-grid">
+                                {files.map((file) => {
+                                    const isPdf = file.type === "application/pdf" || file.name.endsWith(".pdf");
+                                    const isImg = file.type?.startsWith("image/");
+                                    return (
+                                        <div className="attachment-file-card new-file" key={file.name}>
+                                            {isImg ? (
+                                                <img
+                                                    src={file.url}
+                                                    alt="Preview"
+                                                    className="edit-assignment-file-thumb"
+                                                />
+                                            ) : isPdf ? (
+                                                <PictureAsPdfRoundedIcon style={{ color: "#ef4444", fontSize: 28 }} />
+                                            ) : (
+                                                <PictureAsPdfRoundedIcon style={{ color: themeColor, fontSize: 28 }} />
+                                            )}
+                                            <span className="attachment-link" title={file.name}>{file.name}</span>
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => handleRemoveFile(file.name)}
+                                                title="Remove file"
+                                                className="remove-file-btn"
+                                            >
+                                                <CloseIcon fontSize="small" />
+                                            </IconButton>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* YouTube Videos List */}
+                    {youtubeLinks.length > 0 && (
+                        <div className="attachment-preview-section">
+                            <div className="attachment-section-title">YouTube Videos ({youtubeLinks.length})</div>
+                            <div className="links-list-container">
+                                {youtubeLinks.map((yLink) => (
+                                    <div className="edit-link-item-row" key={yLink}>
+                                        <div className="link-item-left">
+                                            <YouTube style={{ color: "#ef4444", fontSize: 20 }} />
+                                            <span className="link-item-text">{yLink}</span>
+                                        </div>
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => handleRemoveYouTubeLink(yLink)}
+                                            color="error"
+                                        >
+                                            <DeleteIcon fontSize="small" />
+                                        </IconButton>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Web Links List */}
+                    {links.length > 0 && (
+                        <div className="attachment-preview-section">
+                            <div className="attachment-section-title">Web Links ({links.length})</div>
+                            <div className="links-list-container">
+                                {links.map((link) => (
+                                    <div className="edit-link-item-row" key={link}>
+                                        <div className="link-item-left">
+                                            <LinkIcon style={{ color: "#059669", fontSize: 20 }} />
+                                            <a
+                                                href={link.startsWith("http") ? link : `https://${link}`}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="link-item-anchor"
+                                            >
+                                                {link}
+                                            </a>
+                                        </div>
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => handleRemoveLink(link)}
+                                            color="error"
+                                        >
+                                            <DeleteIcon fontSize="small" />
+                                        </IconButton>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     )}
@@ -386,7 +649,7 @@ export default function CreateAssignmentModal({ open, onClose, defaultCategoryId
                         className="modal-btn-save"
                         onClick={handleSave}
                         disabled={isSaving}
-                        style={{ backgroundColor: currClass?.classTheme || '#00a896' }}
+                        style={{ backgroundColor: themeColor }}
                     >
                         {isSaving ? (
                             <>
@@ -402,3 +665,4 @@ export default function CreateAssignmentModal({ open, onClose, defaultCategoryId
         </Dialog>
     );
 }
+

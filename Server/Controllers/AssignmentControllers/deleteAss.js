@@ -40,15 +40,13 @@ exports.deleteAss = async (req, res, next) => {
         // 3. Find the associated class
         const currClass = await Class.findOne({ addedAssignment: assId });
 
-        // 4. Authorization check: Author, Class Admin, or Class Teacher
+        // 4. Authorization check: Only the teacher who created this assignment can delete it
         const isOwner = assignment.teacher && assignment.teacher.toString() === userId.toString();
-        const isClassAdmin = currClass?.admin && currClass.admin.toString() === userId.toString();
-        const isClassTeacher = currClass?.teacher && currClass.teacher.some(t => t.toString() === userId.toString());
 
-        if (!isOwner && !isClassAdmin && !isClassTeacher) {
+        if (!isOwner) {
             return res.status(403).json({
                 success: false,
-                message: "You are not authorized to delete this assignment",
+                message: "Only the teacher who uploaded this assignment is authorized to delete it",
             });
         }
 

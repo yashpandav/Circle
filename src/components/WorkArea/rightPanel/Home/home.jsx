@@ -34,8 +34,33 @@ export default function HomeCircle() {
     return <LoaderComponent />;
   }
 
-  const teacherList = joinedClassAsTeacher || [];
-  const studentList = joinedClassAsStudent || [];
+  // Deduplicate and separate teacher list and student list
+  const teacherList = React.useMemo(() => {
+    const teacher = Array.isArray(joinedClassAsTeacher) ? joinedClassAsTeacher : [];
+    const created = Array.isArray(createdClasses) ? createdClasses : [];
+    const map = new Map();
+    [...created, ...teacher].forEach((c) => {
+      if (c && c._id && !map.has(c._id.toString())) {
+        map.set(c._id.toString(), c);
+      }
+    });
+    return Array.from(map.values());
+  }, [joinedClassAsTeacher, createdClasses]);
+
+  const studentList = React.useMemo(() => {
+    const students = Array.isArray(joinedClassAsStudent) ? joinedClassAsStudent : [];
+    const teachingIds = new Set(teacherList.map((c) => c._id.toString()));
+    const seen = new Set();
+    return students.filter((item) => {
+      if (!item || !item._id) return false;
+      const idStr = item._id.toString();
+      if (teachingIds.has(idStr)) return false;
+      if (seen.has(idStr)) return false;
+      seen.add(idStr);
+      return true;
+    });
+  }, [joinedClassAsStudent, teacherList]);
+
   const createdList = createdClasses || [];
 
   const renderClasses = () => {
@@ -45,8 +70,8 @@ export default function HomeCircle() {
       // Merge teacher + student, dedup by _id
       const seen = new Set();
       renderCircle = [...teacherList, ...studentList].filter((item) => {
-        if (seen.has(item._id)) return false;
-        seen.add(item._id);
+        if (seen.has(item._id.toString())) return false;
+        seen.add(item._id.toString());
         return true;
       });
     } else if (sortby === "Teacher") {

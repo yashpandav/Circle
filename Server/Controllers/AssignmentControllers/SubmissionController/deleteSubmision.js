@@ -61,12 +61,11 @@ exports.deleteSubmittedAss = async (req, res, next) => {
 
         const classForAss = await Class.findOne({ addedAssignment: assId });
 
-        // Authorization check: Submitter OR Class Admin / Teacher
+        // Authorization check: Submitter OR Assignment Author Teacher
         const isOwner = currSubmitted.student.toString() === userId.toString();
-        const isClassAdmin = classForAss?.admin && classForAss.admin.toString() === userId.toString();
-        const isClassTeacher = classForAss?.teacher && classForAss.teacher.some(t => t.toString() === userId.toString());
+        const isAuthorTeacher = assDetails.teacher && assDetails.teacher.toString() === userId.toString();
 
-        if (!isOwner && !isClassAdmin && !isClassTeacher) {
+        if (!isOwner && !isAuthorTeacher) {
             return res.status(403).json({
                 success: false,
                 message: "You are not authorized to unsubmit this assignment"
@@ -74,7 +73,7 @@ exports.deleteSubmittedAss = async (req, res, next) => {
         }
 
         // Students cannot unsubmit an already graded and accepted assignment
-        if (isOwner && !isClassAdmin && !isClassTeacher && currSubmitted.status === 'ACCEPTED') {
+        if (isOwner && !isAuthorTeacher && currSubmitted.status === 'ACCEPTED') {
             return res.status(403).json({
                 success: false,
                 message: "This assignment has already been graded by your teacher and cannot be unsubmitted."
