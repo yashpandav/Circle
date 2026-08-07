@@ -25,6 +25,7 @@ const {addPostIntoCategory} = require('../Controllers/CategoryController/Categor
 router.post('/post/add', auth, asyncHandler(addPostIntoCategory));
 
 const {deletePostFromCategory} = require('../Controllers/CategoryController/CategoryWithPost/deletePost');
+router.delete('/post/delete/:id', auth, asyncHandler(deletePostFromCategory));
 router.post('/post/delete/:id', auth, asyncHandler(deletePostFromCategory));
 
 module.exports = router;

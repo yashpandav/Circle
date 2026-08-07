@@ -6,6 +6,7 @@ const generateOtp = async (email) => {
     try {
         let otp;
         let findOTP;
+        let attempts = 0;
 
         // Generate a unique OTP
         do {
@@ -15,6 +16,7 @@ const generateOtp = async (email) => {
                 lowerCaseAlphabets: false,
             });
             findOTP = await OTP.findOne({ otp });
+            if (++attempts > 10) break;
         } while (findOTP);
 
         const finalOTP = await OTP.create({ email, otp });
@@ -27,15 +29,16 @@ const generateOtp = async (email) => {
 exports.validateEmail = async (req, res, next) => {
     try {
         const { email } = req.body;
+        const normalizedEmail = email ? email.toLowerCase().trim() : '';
 
-        if (!email) {
+        if (!normalizedEmail) {
             return res.status(400).json({
                 success: false,
                 message: "Email ID is required",
             });
         }
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email: normalizedEmail });
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -44,7 +47,7 @@ exports.validateEmail = async (req, res, next) => {
         }
 
         // Generate OTP
-        const otpResponse = await generateOtp(email);
+        const otpResponse = await generateOtp(normalizedEmail);
 
         if (otpResponse.success) {
             return res.status(200).json({

@@ -5,15 +5,16 @@ const OTP = require('../../Models/OTP');
 exports.genrateOtp = async (req, res, next) => {
     try {
         const email = req.body.email;
+        const normalizedEmail = email ? email.toLowerCase().trim() : '';
 
-        if (!email) {
+        if (!normalizedEmail) {
             return res.status(400).json({
                 success: false,
                 message: "Email is required"
             });
         }
 
-        const findUser = await User.findOne({ email });
+        const findUser = await User.findOne({ email: normalizedEmail });
 
         if (findUser) {
             return res.status(409).json({
@@ -24,6 +25,7 @@ exports.genrateOtp = async (req, res, next) => {
 
         let otp;
         let findOTP;
+        let attempts = 0;
 
         do {
             otp = otpgenerator.generate(6, {
@@ -32,9 +34,10 @@ exports.genrateOtp = async (req, res, next) => {
                 lowerCaseAlphabets: false
             });
             findOTP = await OTP.findOne({ otp });
+            if (++attempts > 10) break;
         } while (findOTP);
 
-        const finalOTP = await OTP.create({ email, otp });
+        const finalOTP = await OTP.create({ email: normalizedEmail, otp });
 
         return res.status(200).json({
             success: true,

@@ -40,17 +40,18 @@ exports.deleteAss = async (req, res, next) => {
         // 3. Find the associated class
         const currClass = await Class.findOne({ addedAssignment: assId });
 
-        // 4. Authorization check: Only the teacher who created this assignment can delete it
+        // 4. Authorization check: Teacher who created or Class Admin can delete
         const isOwner = assignment.teacher && assignment.teacher.toString() === userId.toString();
+        const isClassAdmin = currClass && currClass.admin && currClass.admin.toString() === userId.toString();
 
-        if (!isOwner) {
+        if (!isOwner && !isClassAdmin) {
             return res.status(403).json({
                 success: false,
-                message: "Only the teacher who uploaded this assignment is authorized to delete it",
+                message: "Only the teacher who uploaded this assignment or the class admin is authorized to delete it",
             });
         }
 
-        // 5. Gather and delete Cloudinary files (assignment file + submission files)
+        // 5. Gather and delete Cloudinary files (assignment files + submission files)
         const submissions = await SubmitAssignment.find({
             $or: [
                 { assignment: assId },
@@ -60,8 +61,18 @@ exports.deleteAss = async (req, res, next) => {
 
         const filesToDelete = [];
         if (assignment.file) filesToDelete.push(assignment.file);
+        if (Array.isArray(assignment.files)) {
+            assignment.files.forEach(f => {
+                if (f?.fileUrl) filesToDelete.push(f.fileUrl);
+            });
+        }
         submissions.forEach(sub => {
             if (sub.file) filesToDelete.push(sub.file);
+            if (Array.isArray(sub.files)) {
+                sub.files.forEach(sf => {
+                    if (sf?.fileUrl) filesToDelete.push(sf.fileUrl);
+                });
+            }
         });
 
         if (filesToDelete.length > 0) {

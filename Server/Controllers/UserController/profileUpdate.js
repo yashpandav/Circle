@@ -58,7 +58,19 @@ exports.updateProfile = async (req, res, next) => {
         currUser.image = image || currUser.image;
         await currUser.save();
 
-        const populatedUser = await User.findById(id).select('firstName lastName email image');
+        const updatedUser = await User.findById(id)
+            .populate('additionalDetails')
+            .select('-password');
+
+        const memberUpdatePayload = {
+            _id: updatedUser._id,
+            id: updatedUser.id,
+            firstName: updatedUser.firstName,
+            lastName: updatedUser.lastName,
+            email: updatedUser.email,
+            image: updatedUser.image,
+        };
+
         const userClasses = [
             ...(currUser.createdClasses || []),
             ...(currUser.joinedClassAsAteacher || []),
@@ -67,14 +79,14 @@ exports.updateProfile = async (req, res, next) => {
 
         userClasses.forEach(classId => {
             if (classId) {
-                getIO().to(`room:${classId.toString()}`).emit('class:member_updated', { user: populatedUser });
+                getIO().to(`room:${classId.toString()}`).emit('class:member_updated', { user: memberUpdatePayload });
             }
         });
 
         return res.status(200).json({
             success: true,
             message: "Profile Updated Successfully",
-            data: currUser
+            data: updatedUser
         });
     } catch (err) {
         next(err);

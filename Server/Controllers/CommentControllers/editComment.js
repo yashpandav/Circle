@@ -34,7 +34,14 @@ exports.editComment = async (req, res, next) => {
             });
         }
 
-        findComment.commentBody = commentBody || findComment.commentBody;
+        if (commentBody === undefined || typeof commentBody !== 'string' || commentBody.trim() === '') {
+            return res.status(400).json({
+                success: false,
+                message: "Comment body cannot be empty"
+            });
+        }
+
+        findComment.commentBody = commentBody.trim();
         await findComment.save();
 
         const { id, commentOn } = req.body;

@@ -48,8 +48,4 @@ const SubmitAssignmentSchema = new mongoose.Schema({
     }
 });
 
-const SubmitAssignment = mongoose.models.SubmitAssignment || mongoose.model("SubmitAssignment", SubmitAssignmentSchema);
-if (!mongoose.models.SumitAssignment) {
-    mongoose.model("SumitAssignment", SubmitAssignmentSchema);
-}
-module.exports = SubmitAssignment;
+module.exports = mongoose.models.SubmitAssignment || mongoose.model("SubmitAssignment", SubmitAssignmentSchema);

@@ -5,8 +5,9 @@ const OTP = require('../../Models/OTP');
 exports.forgotPassword = async (req, res, next) => {
     try {
         const { otp, newPassword, confirmNewPassword, email } = req.body;
+        const normalizedEmail = email ? email.toLowerCase().trim() : '';
 
-        if (!otp || !newPassword || !confirmNewPassword || !email) {
+        if (!otp || !newPassword || !confirmNewPassword || !normalizedEmail) {
             return res.status(400).json({
                 success: false,
                 message: "All fields are required.",
@@ -20,7 +21,7 @@ exports.forgotPassword = async (req, res, next) => {
             });
         }
 
-        const latestOTP = await OTP.findOne({ email }).sort({ createdAt: -1 }).limit(1);
+        const latestOTP = await OTP.findOne({ email: normalizedEmail }).sort({ createdAt: -1 }).limit(1);
 
         if (!latestOTP) {
             return res.status(404).json({
@@ -44,7 +45,7 @@ exports.forgotPassword = async (req, res, next) => {
             });
         }
 
-        const userDetails = await User.findOne({ email });
+        const userDetails = await User.findOne({ email: normalizedEmail });
 
         if (!userDetails) {
             return res.status(404).json({
@@ -68,7 +69,11 @@ exports.forgotPassword = async (req, res, next) => {
             { new: true }
         );
 
-        await OTP.deleteMany({ email });
+        await OTP.deleteMany({ email: normalizedEmail });
+
+        if (updatedUser) {
+            updatedUser.password = undefined;
+        }
 
         return res.status(200).json({
             success: true,

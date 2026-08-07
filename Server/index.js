@@ -165,19 +165,26 @@ app.get('/', (req, res) => {
 //* GLOBAL ERROR HANDLER
 app.use(errorHandler);
 
-//* PORT AND LISTEN — Start only after DB is connected
+// PORT AND LISTEN — Connect DB before accepting traffic
 const PORT = process.env.PORT || 5000;
-const server = httpServer.listen(PORT, async () => {
-    await dbConnect();
-    console.log(`App is running on ${PORT}`);
-});
 
-// Handle Unhandled Promise Rejections
-process.on('unhandledRejection', (err) => {
-    console.error(`[Process] Unhandled Rejection: ${err.message}`);
-    console.error(err.stack);
-    // Graceful shutdown
-    server.close(() => {
+(async () => {
+    try {
+        await dbConnect();
+        const server = httpServer.listen(PORT, () => {
+            console.log(`App is running on ${PORT}`);
+        });
+
+        // Handle Unhandled Promise Rejections
+        process.on('unhandledRejection', (err) => {
+            console.error(`[Process] Unhandled Rejection: ${err.message}`);
+            console.error(err.stack);
+            server.close(() => {
+                process.exit(1);
+            });
+        });
+    } catch (err) {
+        console.error(`[Server] Failed to start server: ${err.message}`);
         process.exit(1);
-    });
-});
+    }
+})();

@@ -10,6 +10,7 @@ exports.uploadImage = async (file, folder, fileName) => {
     return await cloudinary.uploader.upload(file.tempFilePath, {
         folder: folder,
         public_id: fileName,
-        use_filename: true, 
+        use_filename: true,
+        resource_type: "auto",
     });
 };

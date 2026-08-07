@@ -1,6 +1,7 @@
 const Category = require('../../Models/Category');
 const Assignment = require('../../Models/Assignment');
 const Post = require('../../Models/Post');
+const Class = require('../../Models/Class');
 
 exports.getDetails = async (req, res, next) => {
     try {
@@ -24,7 +25,7 @@ exports.getDetails = async (req, res, next) => {
             });
         }
 
-        const parentClass = await require('../../Models/Class').findById(category.classId);
+        const parentClass = await Class.findById(category.classId);
         if (!parentClass) {
             return res.status(404).json({
                 success: false,

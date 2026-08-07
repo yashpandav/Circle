@@ -50,7 +50,6 @@ exports.createPost = async (req, res, next) => {
             }
         }
 
-        const uploadDate = new Date().toLocaleString();
         const teacher = req.user.id;
 
         const newPost = new Post({
@@ -62,17 +61,16 @@ exports.createPost = async (req, res, next) => {
             teacher,
             category: category || null,
             status,
-            uploadDate,
         });
 
         await newPost.save();
 
-        await Class.findByIdAndUpdate(currClassId, { $push: { addedPost: newPost.id } });
+        await Class.findByIdAndUpdate(currClassId, { $addToSet: { addedPost: newPost.id } });
 
         if (category) {
             const currCategory = await Category.findById(category);
             if (currCategory) {
-                await Category.findByIdAndUpdate(currCategory.id, { $push: { post: newPost.id } });
+                await Category.findByIdAndUpdate(currCategory.id, { $addToSet: { post: newPost.id } });
             }
         }
 

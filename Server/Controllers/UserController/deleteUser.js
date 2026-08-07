@@ -28,7 +28,13 @@ exports.deleteUser = async (req, res, next) => {
 
         await Review.findByIdAndDelete(user?.reviewList);
 
-        const allClasses = await Class.find({});
+        const allClasses = await Class.find({
+            $or: [
+                { admin: user.id },
+                { teacher: user.id },
+                { student: user.id }
+            ]
+        });
 
         await Promise.all(allClasses.map(async (classes) => {
             let wasMember = false;

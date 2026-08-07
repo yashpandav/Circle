@@ -1,4 +1,5 @@
 const Post = require('../../Models/Post');
+const Class = require('../../Models/Class');
 
 exports.getPostDetails = async (req, res, next) => {
     try {
@@ -29,7 +30,7 @@ exports.getPostDetails = async (req, res, next) => {
             });
         }
 
-        const parentClass = await require('../../Models/Class').findOne({ addedPost: postId });
+        const parentClass = await Class.findOne({ addedPost: postId });
         if (!parentClass) {
             return res.status(404).json({
                 success: false,

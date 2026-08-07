@@ -5,16 +5,16 @@ require('dotenv').config();
 
 exports.LogIn = async (req, res, next) => {
     try {
-        const { email, password } = req.body;
+        const normalizedEmail = email ? email.toLowerCase().trim() : '';
 
-        if (!email || !password) {
+        if (!normalizedEmail || !password) {
             return res.status(400).json({
                 success: false,
                 message: "Please Enter Email and Password"
             });
         }
 
-        let findUser = await User.findOne({ email });
+        let findUser = await User.findOne({ email: normalizedEmail });
 
         if (!findUser) {
             return res.status(400).json({
@@ -41,9 +41,6 @@ exports.LogIn = async (req, res, next) => {
                 expiresIn: "24h" // 1 day session expiry
             }
         );
-
-        findUser.token = token;
-        await findUser.save(); //* Save the user with the new token
 
         const options = {
             expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day cookie expiry

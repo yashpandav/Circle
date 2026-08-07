@@ -1,5 +1,6 @@
 const Post = require('../../Models/Post');
 const Assignment = require('../../Models/Assignment');
+const Class = require('../../Models/Class');
 
 exports.getAllComment = async (req, res, next) => {
     try {
@@ -40,6 +41,22 @@ exports.getAllComment = async (req, res, next) => {
                 success: false,
                 message: `${commentOn} not found`,
             });
+        }
+
+        const queryField = commentOn === 'Post' ? { addedPost: id } : { addedAssignment: id };
+        const parentClass = await Class.findOne(queryField);
+
+        if (parentClass) {
+            const isAuthorized = (parentClass.admin && parentClass.admin.toString() === req.user.id) ||
+                parentClass.teacher?.some(t => t.toString() === req.user.id) ||
+                parentClass.student?.some(s => s.toString() === req.user.id);
+
+            if (!isAuthorized) {
+                return res.status(403).json({
+                    success: false,
+                    message: "You are not authorized to view comments for this item",
+                });
+            }
         }
 
         return res.status(200).json({

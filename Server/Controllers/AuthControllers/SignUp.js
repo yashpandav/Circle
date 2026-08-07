@@ -16,7 +16,9 @@ exports.signUp = async (req, res, next) => {
         } = req.body;
 
 
-        if (!firstName || !lastName || !email || !password || !confirmPassword || !otp) {
+        const normalizedEmail = email ? email.toLowerCase().trim() : '';
+
+        if (!firstName || !lastName || !normalizedEmail || !password || !confirmPassword || !otp) {
             return res.status(400).json({
                 success: false,
                 message: "All fields are required",
@@ -32,7 +34,7 @@ exports.signUp = async (req, res, next) => {
         }
 
         //* Check if user already exists
-        const findUser = await User.findOne({ email });
+        const findUser = await User.findOne({ email: normalizedEmail });
         if (findUser) {
             return res.status(400).json({
                 success: false,
@@ -41,7 +43,7 @@ exports.signUp = async (req, res, next) => {
         }
 
         //* Check OTP
-        const latestOTP = await OTP.findOne({ email }).sort({ createdAt: -1 }).limit(1);
+        const latestOTP = await OTP.findOne({ email: normalizedEmail }).sort({ createdAt: -1 }).limit(1);
         if (!latestOTP || latestOTP.otp !== otp) {
             return res.status(400).json({
                 success: false,
@@ -49,7 +51,7 @@ exports.signUp = async (req, res, next) => {
             });
         }
 
-        await OTP.deleteMany({ email });
+        await OTP.deleteMany({ email: normalizedEmail });
 
         //* Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -71,7 +73,7 @@ exports.signUp = async (req, res, next) => {
         const newUser = new User({
             firstName,
             lastName,
-            email,
+            email: normalizedEmail,
             password: hashedPassword,
             image: profileURL,
             additionalDetails: savedProfile._id,

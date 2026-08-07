@@ -33,12 +33,10 @@ exports.validateLogin = async (req, res, next) => {
             }
         );
 
-        user.token = token;
-        await user.save();
-
         const options = {
             expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day cookie expiry
             httpOnly: false,
+            secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
             path: '/',
         };

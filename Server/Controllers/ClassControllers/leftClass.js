@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Class = require('../../Models/Class');
 const User = require('../../Models/User');
 const { getIO } = require('../../socket');
@@ -6,6 +7,13 @@ exports.leftClass = async (req, res, next) => {
     try {
         const userId = req.user.id;
         const { classId } = req.body;
+
+        if (!classId || !mongoose.Types.ObjectId.isValid(classId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Valid Class ID is required"
+            });
+        }
 
         const classDetails = await Class.findById(classId);
         if (!classDetails) {

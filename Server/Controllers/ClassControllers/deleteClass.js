@@ -64,12 +64,26 @@ exports.deleteClass = async (req, res, next) => {
             if (ass.file) {
                 cloudinaryUrlsToDelete.push(ass.file);
             }
+            if (Array.isArray(ass.files)) {
+                for (const f of ass.files) {
+                    if (f?.fileUrl) {
+                        cloudinaryUrlsToDelete.push(f.fileUrl);
+                    }
+                }
+            }
         }
 
         // (c) Submission attachments
         for (const sub of submissions) {
             if (sub.file) {
                 cloudinaryUrlsToDelete.push(sub.file);
+            }
+            if (Array.isArray(sub.files)) {
+                for (const sf of sub.files) {
+                    if (sf?.fileUrl) {
+                        cloudinaryUrlsToDelete.push(sf.fileUrl);
+                    }
+                }
             }
         }
 
