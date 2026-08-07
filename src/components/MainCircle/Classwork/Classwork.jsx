@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import {
     Assignment as AssignmentIcon,
     Add as AddIcon,
-    FolderOutlined as FolderIcon,
     Search as SearchIcon,
     MoreVert as MoreVertIcon,
     Edit as EditIcon,
@@ -15,8 +14,7 @@ import {
     Topic as TopicIcon,
     ExpandMore as ExpandMoreIcon,
     ExpandLess as ExpandLessIcon,
-    AssignmentIndOutlined as AssignmentIndIcon,
-    InsertDriveFileOutlined as FileIcon
+    AssignmentIndOutlined as AssignmentIndIcon
 } from "@mui/icons-material";
 import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
 import {
@@ -65,7 +63,6 @@ const ClassworkAssignmentItem = ({
     const isAssignmentAuthor = Boolean(userId && assTeacherId && userId === assTeacherId);
 
     const submissions = assignment.submission || [];
-    const pendingStudents = assignment.pendingStudent || [];
 
     const userSubmission = submissions.find(
         (s) => (s.student?._id === currUser?._id || s.student === currUser?._id || s === currUser?._id)

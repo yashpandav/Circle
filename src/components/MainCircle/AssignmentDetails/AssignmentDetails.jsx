@@ -16,7 +16,6 @@ import {
     DescriptionOutlined as DescriptionIcon,
     Grade as GradeIcon,
     Cancel as CancelIcon,
-    YouTube as YouTubeIcon,
     Link as LinkIcon
 } from "@mui/icons-material";
 import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";

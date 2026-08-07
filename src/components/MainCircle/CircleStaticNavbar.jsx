@@ -5,8 +5,7 @@ import "./circleStaticNav.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { updateClassDetails, deleteClassAction, leaveClassAction, changeEntryCode } from "../../Api/apiCaller/classapicaller";
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, IconButton, Select, MenuItem, FormControl } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Select, MenuItem, FormControl } from "@mui/material";
 import ConfirmationDialog from "../Helper/ConfirmationDialog";
 
 export default function CircleStaticNavbar() {

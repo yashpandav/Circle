@@ -15,7 +15,7 @@ export const sendOTP = createAsyncThunk(
             navigate('/auth/otp');
             return response;
         } catch (err) {
-            toast.error("USER ALREADY EXISTS", { position: 'top-right' });
+            toast.error(err?.response?.data?.message || "Failed to send OTP", { position: 'top-right' });
             return err.response ? err.response : err.message;
         }
     }
@@ -111,9 +111,10 @@ export const validateLogin = createAsyncThunk(
     }
 );
 
-export const validateEmail = async (email) => {
+export const validateEmail = async (emailInput) => {
     try {
-        const response = await apiConnector('POST', VALIDATE_EMAIL, email);
+        const payload = typeof emailInput === 'string' ? { email: emailInput } : emailInput;
+        const response = await apiConnector('POST', VALIDATE_EMAIL, payload);
         toast.success("OTP has been sent to your email.");
         return response.data;
     } catch (err) {

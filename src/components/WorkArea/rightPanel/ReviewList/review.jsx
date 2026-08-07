@@ -564,7 +564,6 @@ export default function Review() {
                                                 const dueInfo = formatDueDate(ass.dueDate);
                                                 const submissions = Array.isArray(ass.submission) ? ass.submission : [];
                                                 const submissionsCount = submissions.length;
-                                                const pendingCount = Array.isArray(ass.pendingStudent) ? ass.pendingStudent.length : 0;
                                                 const isDrawerExpanded = Boolean(expandedAssignments[ass._id]);
 
                                                 // Count how many are graded (ACCEPTED) vs pending (SUBMITTED)

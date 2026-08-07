@@ -9,7 +9,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefaultOutlined';
-import { Divider, IconButton, Typography } from "@mui/material";
+import { Divider, IconButton } from "@mui/material";
 import { changeEntryCode, toggleEntryCodeStatus } from '../../../Api/apiCaller/classapicaller.js'
 import "./classCode.css";
 

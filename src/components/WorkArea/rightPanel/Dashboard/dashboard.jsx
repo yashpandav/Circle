@@ -47,11 +47,6 @@ import {
     ContentCopyRounded as CopyIcon,
     CheckRounded as CheckIcon,
     CampaignRounded as CampaignIcon,
-    PersonRounded as PersonIcon,
-    EmailRounded as EmailIcon,
-    WcRounded as GenderIcon,
-    CakeRounded as CakeIcon,
-    InfoOutlined as InfoIcon,
     TrendingUpRounded as TrendingUpIcon,
     ArrowForwardRounded as ArrowForwardIcon,
     FolderOpenOutlined as FolderOpenIcon,
@@ -127,7 +122,7 @@ export default function Dashboard() {
         completionRate: 100,
         classes: []
     };
-    const upcomingDeadlines = dashboardData?.upcomingDeadlines || [];
+    const upcomingDeadlines = useMemo(() => dashboardData?.upcomingDeadlines || [], [dashboardData?.upcomingDeadlines]);
     const recentActivity = dashboardData?.recentActivity || [];
 
     // Filtered Circles for "My Circles" tab

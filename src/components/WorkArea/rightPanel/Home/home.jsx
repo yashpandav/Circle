@@ -30,10 +30,6 @@ export default function HomeCircle() {
     }
   }, [dispatch, joinedClassAsTeacher, joinedClassAsStudent]);
 
-  if (isFetching) {
-    return <LoaderComponent />;
-  }
-
   // Deduplicate and separate teacher list and student list
   const teacherList = React.useMemo(() => {
     const teacher = Array.isArray(joinedClassAsTeacher) ? joinedClassAsTeacher : [];
@@ -60,6 +56,10 @@ export default function HomeCircle() {
       return true;
     });
   }, [joinedClassAsStudent, teacherList]);
+
+  if (isFetching) {
+    return <LoaderComponent />;
+  }
 
   const createdList = createdClasses || [];
 

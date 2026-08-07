@@ -6,23 +6,19 @@ import {
     Button,
     TextField,
     Avatar,
-    Chip,
-    InputAdornment,
-    Tooltip
+    InputAdornment
 } from '@mui/material';
 import {
     Close as CloseIcon,
     RateReviewOutlined as RateReviewIcon,
     CheckCircleRounded as CheckCircleIcon,
     AssignmentReturnRounded as ReturnIcon,
-    AttachFile as AttachFileIcon,
     OpenInNew as OpenInNewIcon,
     AccessTime as AccessTimeIcon,
     ChatBubbleOutlineRounded as ChatIcon,
     InfoOutlined as InfoIcon,
     DescriptionOutlined as DescriptionIcon
 } from '@mui/icons-material';
-import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
 import { useDispatch } from 'react-redux';
 import { gradeSubmission } from '../../Api/apiCaller/assignmentapicaller';
 import toast from 'react-hot-toast';

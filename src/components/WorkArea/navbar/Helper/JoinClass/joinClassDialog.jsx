@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import { TextField, Box, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material';
+import { TextField, Box } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { joinClass } from '../../../../../Api/apiCaller/classapicaller';
 import { joinedClass } from '../../../../../Api/apiCaller/userapicaller';

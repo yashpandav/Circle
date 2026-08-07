@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
     Dialog,
     TextField,
@@ -23,13 +23,11 @@ import {
     YouTube,
     Link as LinkIcon,
     Delete as DeleteIcon,
-    EventBusy as EventBusyIcon,
-    Grade as GradeIcon
+    EventBusy as EventBusyIcon
 } from "@mui/icons-material";
 import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
 import { useDispatch, useSelector } from "react-redux";
 import { editAssignment } from "../../../Api/apiCaller/assignmentapicaller";
-import { createCategory } from "../../../Api/apiCaller/categoryapicaller";
 import { updateCurrClass } from "../../../Slices/classSlice";
 import TopicDropdown from "../../Helper/TopicDropdown";
 import toast from "react-hot-toast";

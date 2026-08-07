@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import './dialog.css';
 
 const Dialog = ({ setCreateDialog, setJoinDialog, setDialog }) => {

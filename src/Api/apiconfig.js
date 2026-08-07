@@ -42,8 +42,9 @@ export const apiConnector = (method, url, bodyData, header, params) => {
         window.dispatchEvent(new Event('circle:session_expired'));
     }
 
+    const flatHeader = header?.headers ? header.headers : (header || {});
     const headers = {
-        ...header,
+        ...flatHeader,
         Authorization: token ? `Bearer ${token}` : ''
     };
 
