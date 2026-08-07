@@ -77,27 +77,31 @@ exports.createAss = async (req, res, next) => {
             });
         }
 
-        //* Process Files
+        //* Process Files in parallel
         let uploadedFiles = [];
         const rawFiles = req.files?.files || req.files?.file;
         if (rawFiles) {
             const filesArray = Array.isArray(rawFiles) ? rawFiles : [rawFiles];
-            for (const item of filesArray) {
-                const originalFileName = item.name || "attachment";
-                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E4);
-                const fileExt = originalFileName.split('.').pop();
-                const baseName = originalFileName.split('.')[0];
-                const newFileName = `${baseName}|${uniqueSuffix}.${fileExt}`;
+            uploadedFiles = await Promise.all(
+                filesArray.map(async (item) => {
+                    const originalFileName = item.name || "attachment";
+                    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E4);
+                    const fileExt = originalFileName.split('.').pop();
+                    const baseName = originalFileName.split('.')[0];
+                    const newFileName = `${baseName}|${uniqueSuffix}.${fileExt}`;
 
-                const uploadedResult = await uploadImage(item, process.env.FOLDER_NAME, newFileName);
-                if (uploadedResult && uploadedResult.secure_url) {
-                    uploadedFiles.push({
-                        fileName: newFileName,
-                        fileType: uploadedResult.format || fileExt || 'unknown',
-                        fileUrl: uploadedResult.secure_url,
-                    });
-                }
-            }
+                    const uploadedResult = await uploadImage(item, process.env.FOLDER_NAME, newFileName);
+                    if (uploadedResult && uploadedResult.secure_url) {
+                        return {
+                            fileName: newFileName,
+                            fileType: uploadedResult.format || fileExt || 'unknown',
+                            fileUrl: uploadedResult.secure_url,
+                        };
+                    }
+                    return null;
+                })
+            );
+            uploadedFiles = uploadedFiles.filter(Boolean);
         }
 
         //* Process Web Links
@@ -187,21 +191,26 @@ exports.createAss = async (req, res, next) => {
         await newAss.save();
 
         if (newAss.status === 'Published') {
-            //* Add assignment reference to class
-            await Class.findByIdAndUpdate(currClassId, {
-                $addToSet: {
-                    addedAssignment: newAss._id
-                }
-            });
-
-            //* Add to category if provided
-            if (validCategoryId) {
-                await Category.findByIdAndUpdate(validCategoryId, {
+            //* Concurrently add assignment reference to class and category (if provided)
+            const updateOps = [
+                Class.findByIdAndUpdate(currClassId, {
                     $addToSet: {
-                        assignment: newAss._id
+                        addedAssignment: newAss._id
                     }
-                });
+                })
+            ];
+
+            if (validCategoryId) {
+                updateOps.push(
+                    Category.findByIdAndUpdate(validCategoryId, {
+                        $addToSet: {
+                            assignment: newAss._id
+                        }
+                    })
+                );
             }
+
+            await Promise.all(updateOps);
         }
 
         const populatedAss = await Assignment.findById(newAss._id)

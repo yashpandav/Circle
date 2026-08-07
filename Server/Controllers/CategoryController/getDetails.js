@@ -16,7 +16,8 @@ exports.getDetails = async (req, res, next) => {
 
         const category = await Category.findById(categoryId)
             ?.populate("assignment")
-            .populate("post");
+            .populate("post")
+            .lean();
 
         if (!category) {
             return res.status(404).json({
@@ -25,7 +26,9 @@ exports.getDetails = async (req, res, next) => {
             });
         }
 
-        const parentClass = await Class.findById(category.classId);
+        const parentClass = await Class.findById(category.classId)
+            .select('_id admin teacher student')
+            .lean();
         if (!parentClass) {
             return res.status(404).json({
                 success: false,

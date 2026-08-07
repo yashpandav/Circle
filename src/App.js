@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense, lazy } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
@@ -6,24 +6,38 @@ import toast from 'react-hot-toast';
 import { validateLogin } from './Api/apiCaller/authapicaller';
 import { resetAuth } from './Slices/authSlice';
 import { isTokenValid } from './Api/apiconfig';
-import MainHomePage from './components/MainHomePage/MainHomePage';
-import Signup from './components/AuthPages/signup';
-import Login from './components/AuthPages/login';
-import OtpPage from './components/AuthPages/otppage';
-import WorkArea from './components/WorkArea/workarea';
-import HomeCircle from './components/WorkArea/rightPanel/Home/home';
-import Review from './components/WorkArea/rightPanel/ReviewList/review';
-import Todo from './components/WorkArea/rightPanel/ToDo/todo';
-import MainCurrCircle from './components/WorkArea/rightPanel/CurrCircle/mainPage';
-import MainCircle from './components/MainCircle/mainCircle';
 import ScrollToTop from './components/Helper/scrollToTop';
-import ForgotPassword from './components/AuthPages/ForgotPassword';
-import People from './components/People/People';
-import Classwork from './components/MainCircle/Classwork/Classwork';
-import AssignmentDetails from './components/MainCircle/AssignmentDetails/AssignmentDetails';
-import Dashboard from './components/WorkArea/rightPanel/Dashboard/dashboard';
 import SocketProvider from './socket/SocketProvider';
 import './App.css';
+
+// Lazy loaded page components for optimal bundle splitting
+const MainHomePage = lazy(() => import('./components/MainHomePage/MainHomePage'));
+const Signup = lazy(() => import('./components/AuthPages/signup'));
+const Login = lazy(() => import('./components/AuthPages/login'));
+const OtpPage = lazy(() => import('./components/AuthPages/otppage'));
+const ForgotPassword = lazy(() => import('./components/AuthPages/ForgotPassword'));
+const WorkArea = lazy(() => import('./components/WorkArea/workarea'));
+const HomeCircle = lazy(() => import('./components/WorkArea/rightPanel/Home/home'));
+const Review = lazy(() => import('./components/WorkArea/rightPanel/ReviewList/review'));
+const Todo = lazy(() => import('./components/WorkArea/rightPanel/ToDo/todo'));
+const MainCurrCircle = lazy(() => import('./components/WorkArea/rightPanel/CurrCircle/mainPage'));
+const MainCircle = lazy(() => import('./components/MainCircle/mainCircle'));
+const People = lazy(() => import('./components/People/People'));
+const Classwork = lazy(() => import('./components/MainCircle/Classwork/Classwork'));
+const AssignmentDetails = lazy(() => import('./components/MainCircle/AssignmentDetails/AssignmentDetails'));
+const Dashboard = lazy(() => import('./components/WorkArea/rightPanel/Dashboard/dashboard'));
+
+const PageLoaderFallback = () => (
+  <div style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: '60vh',
+    width: '100%'
+  }}>
+    <span className="loader"></span>
+  </div>
+);
 
 const App = () => {
   const { login, user } = useSelector((state) => state.auth);
@@ -85,28 +99,31 @@ const App = () => {
 
   return (
     <SocketProvider>
-      <><Routes>
-        <Route path="/" element={<MainHomePage />} />
-        <Route path="/auth/signup" element={login ? <Navigate to="/workarea/home" /> : <Signup />} />
-        <Route path="/auth/login" element={login ? <Navigate to="/workarea/home" /> : <Login />} />
-        <Route path="/auth/forgot-password" element={login ? <Navigate to="/workarea/home" /> : <ForgotPassword />} />
-        <Route path="/auth/otp" element={<OtpPage />} />
-        <Route path="/workarea" element={<WorkArea />}>
-          <Route path="" element={<Navigate to="home" />} />
-          <Route path="home" element={<HomeCircle />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="circle/:id" element={<MainCurrCircle />}>
-            <Route path="" element={<Navigate to="stream" replace />} />
-            <Route path="stream" element={<MainCircle />} />
-            <Route path="classwork" element={<Classwork />} />
-            <Route path="people" element={<People />} />
-            <Route path="assignment/:assignmentId" element={<AssignmentDetails />} />
+      <Suspense fallback={<PageLoaderFallback />}>
+        <Routes>
+          <Route path="/" element={<MainHomePage />} />
+          <Route path="/auth/signup" element={login ? <Navigate to="/workarea/home" /> : <Signup />} />
+          <Route path="/auth/login" element={login ? <Navigate to="/workarea/home" /> : <Login />} />
+          <Route path="/auth/forgot-password" element={login ? <Navigate to="/workarea/home" /> : <ForgotPassword />} />
+          <Route path="/auth/otp" element={<OtpPage />} />
+          <Route path="/workarea" element={<WorkArea />}>
+            <Route path="" element={<Navigate to="home" />} />
+            <Route path="home" element={<HomeCircle />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="circle/:id" element={<MainCurrCircle />}>
+              <Route path="" element={<Navigate to="stream" replace />} />
+              <Route path="stream" element={<MainCircle />} />
+              <Route path="classwork" element={<Classwork />} />
+              <Route path="people" element={<People />} />
+              <Route path="assignment/:assignmentId" element={<AssignmentDetails />} />
+            </Route>
+            <Route path="review" element={<Review />} />
+            <Route path="todo" element={<Todo />} />
           </Route>
-          <Route path="review" element={<Review />} />
-          <Route path="todo" element={<Todo />} />
-        </Route>
-        <Route path="*" element={<MainHomePage />} />
-      </Routes><ScrollToTop /></>
+          <Route path="*" element={<MainHomePage />} />
+        </Routes>
+        <ScrollToTop />
+      </Suspense>
     </SocketProvider>
   );
 };

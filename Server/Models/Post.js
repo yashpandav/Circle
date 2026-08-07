@@ -1,19 +1,19 @@
 const mongoose = require("mongoose");
 
 const PostSchema = new mongoose.Schema({
-    title: { 
+    title: {
         type: String,
         required: true
     },
-    postBody: { 
+    postBody: {
         type: String,
         required: true
     },
-    postFiles: [], 
+    postFiles: [],
     links: [],
     youtubeLinks: [],
     teacher: {
-        type: mongoose.Schema.Types.ObjectId,   
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: "User",
     },
@@ -36,6 +36,11 @@ const PostSchema = new mongoose.Schema({
         enum: ["Draft", "Published"],
         default: "Published",
     },
-});
+}, { timestamps: true });
+
+PostSchema.index({ teacher: 1, uploadDate: -1 });
+PostSchema.index({ category: 1, uploadDate: -1 });
+PostSchema.index({ uploadDate: -1 });
+PostSchema.index({ status: 1 });
 
 module.exports = mongoose.model("Post", PostSchema);

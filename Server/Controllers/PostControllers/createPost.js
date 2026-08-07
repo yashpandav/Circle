@@ -35,19 +35,24 @@ exports.createPost = async (req, res, next) => {
         let fileUrls = [];
         if (postFiles) {
             const filesArray = Array.isArray(postFiles) ? postFiles : [postFiles];
-            for (const file of filesArray) {
-                const originalFileName = file.name;
-                if (originalFileName) {
-                    const uniqueSuffix = Date.now();
+            const uploadResults = await Promise.all(
+                filesArray.map(async (file) => {
+                    const originalFileName = file.name;
+                    if (!originalFileName) return null;
+                    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E4);
                     const newFileName = `${originalFileName.split('.')[0]}|${uniqueSuffix}.${originalFileName.split('.').pop()}`;
                     const fileUrl = await uploadImage(file, process.env.FOLDER_NAME, newFileName);
-                    fileUrls.push({
-                        fileName: newFileName,
-                        fileType: fileUrl.format,
-                        fileUrl: fileUrl.secure_url,
-                    });
-                }
-            }
+                    if (fileUrl && fileUrl.secure_url) {
+                        return {
+                            fileName: newFileName,
+                            fileType: fileUrl.format,
+                            fileUrl: fileUrl.secure_url,
+                        };
+                    }
+                    return null;
+                })
+            );
+            fileUrls = uploadResults.filter(Boolean);
         }
 
         const teacher = req.user.id;
@@ -65,14 +70,17 @@ exports.createPost = async (req, res, next) => {
 
         await newPost.save();
 
-        await Class.findByIdAndUpdate(currClassId, { $addToSet: { addedPost: newPost.id } });
+        const updateOps = [
+            Class.findByIdAndUpdate(currClassId, { $addToSet: { addedPost: newPost.id } })
+        ];
 
         if (category) {
-            const currCategory = await Category.findById(category);
-            if (currCategory) {
-                await Category.findByIdAndUpdate(currCategory.id, { $addToSet: { post: newPost.id } });
-            }
+            updateOps.push(
+                Category.findByIdAndUpdate(category, { $addToSet: { post: newPost.id } })
+            );
         }
+
+        await Promise.all(updateOps);
 
         // Populate before broadcasting so clients get full data
         const populatedPost = await Post.findById(newPost.id).populate('teacher', 'firstName lastName image');

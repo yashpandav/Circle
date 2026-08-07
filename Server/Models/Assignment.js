@@ -61,7 +61,12 @@ const AssignmentSchema = new mongoose.Schema({
         type: Number,
         default: 100
     }
-    }
+    }, { timestamps: true }
 );
+
+AssignmentSchema.index({ teacher: 1, status: 1 });
+AssignmentSchema.index({ dueDate: 1, status: 1 });
+AssignmentSchema.index({ category: 1 });
+AssignmentSchema.index({ uploadDate: -1 });
 
 module.exports = mongoose.model("Assignment", AssignmentSchema);

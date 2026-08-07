@@ -18,6 +18,8 @@ const OTPSchema = new mongoose.Schema({
     }
 });
 
+OTPSchema.index({ email: 1, createdAt: -1 });
+
 async function sendVerificationEmail(email, otp) {
     try {
         await sendMail(

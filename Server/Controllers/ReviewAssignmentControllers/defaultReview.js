@@ -9,45 +9,63 @@ async function fetchAssignmentReview(classId, user) {
         return null;
     }
 
+    const userIdStr = user._id ? user._id.toString() : user.id.toString();
+
     const currClass = await Class.findById(classId)
-        .populate({
-            path: "addedAssignment",
-            populate: [
-                { path: "category", select: "name" },
-                { path: "teacher", select: "firstName lastName image email" },
-                { 
-                    path: "submission", 
-                    select: "_id student submitDate data file status marks maxMarks feedback reviewedAt reviewedBy",
-                    populate: [
-                        { path: "student", select: "firstName lastName image email" },
-                        { path: "reviewedBy", select: "firstName lastName image email" }
-                    ]
-                },
-                { path: "pendingStudent", select: "_id firstName lastName image email" }
-            ]
-        });
+        .select('_id name subject classTheme entryCode admin teacher addedAssignment')
+        .lean();
 
     if (!currClass) {
         return null;
     }
 
-    const userIdStr = user._id ? user._id.toString() : user.id.toString();
     const isClassAdmin = currClass.admin && currClass.admin.toString() === userIdStr;
-    const isClassTeacher = currClass.teacher && currClass.teacher.some(t => t && t.toString() === userIdStr);
+    const isClassTeacher = Array.isArray(currClass.teacher) && currClass.teacher.some(t => t && t.toString() === userIdStr);
 
     if (!isClassAdmin && !isClassTeacher) {
         return null;
     }
 
     const addedAssignments = Array.isArray(currClass.addedAssignment) ? currClass.addedAssignment : [];
-    // Only include assignments created/uploaded by this specific teacher
-    const validAssignments = addedAssignments.filter(a => {
-        if (!a || !a._id) return false;
-        const teacherId = a.teacher?._id ? a.teacher._id.toString() : (a.teacher ? a.teacher.toString() : null);
-        return teacherId === userIdStr;
-    });
+    if (addedAssignments.length === 0) {
+        return {
+            classId: currClass._id,
+            className: currClass.name || 'Untitled Class',
+            classSubject: currClass.subject || '',
+            classTheme: currClass.classTheme || '#00a896',
+            entryCode: currClass.entryCode || '',
+            classInfo: {
+                _id: currClass._id,
+                name: currClass.name || 'Untitled Class',
+                subject: currClass.subject || '',
+                classTheme: currClass.classTheme || '#00a896',
+                entryCode: currClass.entryCode || ''
+            },
+            reviewdAss: [],
+            notReviedAss: []
+        };
+    }
 
-    const reviewData = user.reviewList ? await Review.findById(user.reviewList) : null;
+    const [validAssignments, reviewData] = await Promise.all([
+        Assignment.find({
+            _id: { $in: addedAssignments },
+            teacher: userIdStr
+        })
+        .populate('category', 'name')
+        .populate('teacher', 'firstName lastName image email')
+        .populate({
+            path: 'submission',
+            select: '_id student submitDate data file status marks maxMarks feedback reviewedAt reviewedBy',
+            populate: [
+                { path: 'student', select: 'firstName lastName image email' },
+                { path: 'reviewedBy', select: 'firstName lastName image email' }
+            ]
+        })
+        .populate('pendingStudent', '_id firstName lastName image email')
+        .lean(),
+        user.reviewList ? Review.findById(user.reviewList).lean() : null
+    ]);
+
     let classReviewData = null;
     if (reviewData && Array.isArray(reviewData.byClass)) {
         classReviewData = reviewData.byClass.find(c => c.classId && c.classId.toString() === classId.toString());
@@ -89,7 +107,16 @@ exports.pendingReview = async (req, res, next) => {
             });
         }
 
-        const user = await User.findById(userId).populate("reviewList");
+        const [user, adminAndTeacherClasses] = await Promise.all([
+            User.findById(userId).populate("reviewList"),
+            Class.find({
+                $or: [
+                    { admin: userId },
+                    { teacher: userId }
+                ]
+            }).select('_id').lean()
+        ]);
+
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -110,13 +137,6 @@ exports.pendingReview = async (req, res, next) => {
                 if (c) teachingClassSet.add(c.toString());
             });
         }
-
-        const adminAndTeacherClasses = await Class.find({
-            $or: [
-                { admin: userId },
-                { teacher: userId }
-            ]
-        }).select('_id');
 
         adminAndTeacherClasses.forEach(c => {
             if (c?._id) teachingClassSet.add(c._id.toString());
@@ -151,8 +171,83 @@ exports.pendingReview = async (req, res, next) => {
             }
         }
 
-        const reviewData = await Promise.all(classIdsToFetch.map(cId => fetchAssignmentReview(cId, user)));
-        const validReviewData = reviewData.filter(data => data !== null);
+        // Fetch teaching classes metadata leanly
+        const classes = await Class.find({ _id: { $in: classIdsToFetch } })
+            .select('_id name subject classTheme entryCode admin teacher addedAssignment')
+            .lean();
+
+        const userIdStr = user._id ? user._id.toString() : user.id.toString();
+        const allAssIds = classes.flatMap(c => (Array.isArray(c.addedAssignment) ? c.addedAssignment : []));
+
+        // Single batch fetch of only teacher's assignments across all teaching classes
+        const teacherAssignments = allAssIds.length > 0
+            ? await Assignment.find({
+                _id: { $in: allAssIds },
+                teacher: userIdStr
+            })
+            .populate('category', 'name')
+            .populate('teacher', 'firstName lastName image email')
+            .populate({
+                path: 'submission',
+                select: '_id student submitDate data file status marks maxMarks feedback reviewedAt reviewedBy',
+                populate: [
+                    { path: 'student', select: 'firstName lastName image email' },
+                    { path: 'reviewedBy', select: 'firstName lastName image email' }
+                ]
+            })
+            .populate('pendingStudent', '_id firstName lastName image email')
+            .lean()
+            : [];
+
+        // Map assignments by string ID for quick lookup
+        const assMap = new Map(teacherAssignments.map(a => [a._id.toString(), a]));
+        const reviewDataDoc = user.reviewList;
+        const validReviewData = [];
+
+        for (const currClass of classes) {
+            if (!currClass) continue;
+
+            const isClassAdmin = currClass.admin && currClass.admin.toString() === userIdStr;
+            const isClassTeacher = Array.isArray(currClass.teacher) && currClass.teacher.some(t => t && (t._id ? t._id.toString() === userIdStr : t.toString() === userIdStr));
+
+            if (!isClassAdmin && !isClassTeacher) continue;
+
+            const addedAssignmentIds = Array.isArray(currClass.addedAssignment) ? currClass.addedAssignment : [];
+            const validAssignments = [];
+            addedAssignmentIds.forEach(aId => {
+                const found = assMap.get(aId.toString());
+                if (found) validAssignments.push(found);
+            });
+
+            let classReviewData = null;
+            if (reviewDataDoc && Array.isArray(reviewDataDoc.byClass)) {
+                classReviewData = reviewDataDoc.byClass.find(c => c.classId && c.classId.toString() === currClass._id.toString());
+            }
+
+            const reviewedAssignmentIds = classReviewData && Array.isArray(classReviewData.reviewdAss)
+                ? classReviewData.reviewdAss.map(id => id.toString())
+                : [];
+
+            const reviewed = validAssignments.filter(assignment => reviewedAssignmentIds.includes(assignment._id.toString()));
+            const pending = validAssignments.filter(assignment => !reviewedAssignmentIds.includes(assignment._id.toString()));
+
+            validReviewData.push({
+                classId: currClass._id, 
+                className: currClass.name || 'Untitled Class',
+                classSubject: currClass.subject || '',
+                classTheme: currClass.classTheme || '#00a896',
+                entryCode: currClass.entryCode || '',
+                classInfo: {
+                    _id: currClass._id,
+                    name: currClass.name || 'Untitled Class',
+                    subject: currClass.subject || '',
+                    classTheme: currClass.classTheme || '#00a896',
+                    entryCode: currClass.entryCode || ''
+                },
+                reviewdAss: reviewed, 
+                notReviedAss: pending 
+            });
+        }
 
         // Sync user Review document
         let reviewList = user.reviewList ? await Review.findById(user.reviewList) : null;

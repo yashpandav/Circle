@@ -15,9 +15,9 @@ exports.getClass = async (req, res, next) => {
         }
 
         const findClass = await Class.findById(id)
-            ?.populate("admin")
-            .populate("student")
-            .populate("teacher")
+            ?.populate("admin", "firstName lastName email image")
+            .populate("student", "firstName lastName email image")
+            .populate("teacher", "firstName lastName email image")
             .populate("addedAssignment")
             .populate("addedCategory")
             .populate("addedPost")
@@ -34,7 +34,7 @@ exports.getClass = async (req, res, next) => {
                             path: 'user',
                             select: 'firstName lastName image'
                         },
-                        select: 'commentBody user'
+                        select: 'commentBody user createdAt'
                     }
                 ]
             })
@@ -51,10 +51,11 @@ exports.getClass = async (req, res, next) => {
                             path: 'user',
                             select: 'firstName lastName image'
                         },
-                        select: 'commentBody user'
+                        select: 'commentBody user createdAt'
                     }
                 ]
             })
+            .lean()
             .exec();
 
         if (!findClass) {

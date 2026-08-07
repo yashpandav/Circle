@@ -32,6 +32,9 @@ const ToDoSchema = new mongoose.Schema({
             ]
         }
     ]
-});
+}, { timestamps: true });
+
+ToDoSchema.index({ user: 1 });
+ToDoSchema.index({ "byClass.classId": 1 });
 
 module.exports = mongoose.model('ToDo', ToDoSchema);

@@ -142,25 +142,29 @@ exports.editPost = async (req, res, next) => {
             updatedFiles = findPost.postFiles || [];
         }
 
-        // 7. Upload and Append New Files (Images, PDFs, etc.)
+        // 7. Upload and Append New Files (Images, PDFs, etc.) in parallel
         if (newFiles) {
             const filesArray = Array.isArray(newFiles) ? newFiles : [newFiles];
-            for (const file of filesArray) {
-                const originalFileName = file.name || "attachment";
-                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E4);
-                const fileExt = originalFileName.split('.').pop();
-                const baseName = originalFileName.split('.')[0];
-                const newFileName = `${baseName}|${uniqueSuffix}.${fileExt}`;
+            const uploadedNewFiles = await Promise.all(
+                filesArray.map(async (file) => {
+                    const originalFileName = file.name || "attachment";
+                    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E4);
+                    const fileExt = originalFileName.split('.').pop();
+                    const baseName = originalFileName.split('.')[0];
+                    const newFileName = `${baseName}|${uniqueSuffix}.${fileExt}`;
 
-                const uploadedResult = await uploadImage(file, process.env.FOLDER_NAME, newFileName);
-                if (uploadedResult && uploadedResult.secure_url) {
-                    updatedFiles.push({
-                        fileName: newFileName,
-                        fileType: uploadedResult.format || fileExt || 'unknown',
-                        fileUrl: uploadedResult.secure_url,
-                    });
-                }
-            }
+                    const uploadedResult = await uploadImage(file, process.env.FOLDER_NAME, newFileName);
+                    if (uploadedResult && uploadedResult.secure_url) {
+                        return {
+                            fileName: newFileName,
+                            fileType: uploadedResult.format || fileExt || 'unknown',
+                            fileUrl: uploadedResult.secure_url,
+                        };
+                    }
+                    return null;
+                })
+            );
+            updatedFiles.push(...uploadedNewFiles.filter(Boolean));
         }
         findPost.postFiles = updatedFiles;
 

@@ -16,7 +16,11 @@ exports.deleteCategory = async (req, res, next) => {
             });
         }
 
-        const category = await Category.findById(id);
+        const [category, findClass] = await Promise.all([
+            Category.findById(id),
+            Class.findById(classId)
+        ]);
+
         if (!category) {
             return res.status(404).json({
                 success: false,
@@ -24,7 +28,6 @@ exports.deleteCategory = async (req, res, next) => {
             });
         }
 
-        const findClass = await Class.findById(classId);
         if (!findClass) {
             return res.status(404).json({
                 success: false,
@@ -40,25 +43,21 @@ exports.deleteCategory = async (req, res, next) => {
             });
         }
 
-        //* Remove the category from the class
-        await Class.findByIdAndUpdate(classId, {
-            $pull: { addedCategory: id }
-        });
-
-        //* Remove the category from assignments
-        await Assignment.updateMany(
-            { category: id },
-            { $set: { category: null } }
-        );
-
-        //* Remove the category from posts
-        await Post.updateMany(
-            { category: id },
-            { $set: { category: null } }
-        );
-
-        //* Delete the category
-        await Category.findByIdAndDelete(id);
+        //* Concurrently unlink category from class, assignments, and posts
+        await Promise.all([
+            Class.findByIdAndUpdate(classId, {
+                $pull: { addedCategory: id }
+            }),
+            Assignment.updateMany(
+                { category: id },
+                { $set: { category: null } }
+            ),
+            Post.updateMany(
+                { category: id },
+                { $set: { category: null } }
+            ),
+            Category.findByIdAndDelete(id)
+        ]);
 
         getIO().to(`room:${classId}`).emit('category:deleted', { categoryId: id, classId });
 

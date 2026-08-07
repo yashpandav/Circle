@@ -51,25 +51,20 @@ exports.deletePost = async (req, res, next) => {
             }
         }
 
-        // 6. Remove the post reference from the class if class exists
-        if (findClass) {
-            await Class.findByIdAndUpdate(findClass._id, {
-                $pull: { addedPost: postId },
-            });
-        }
-
-        // 7. Remove post reference from any categories
-        await Category.updateMany(
-            { post: postId },
-            { $pull: { post: postId } }
-        );
-
-        // 8. Batch delete associated comments
-        if (findPost.comment && findPost.comment.length > 0) {
-            await Comment.deleteMany({ _id: { $in: findPost.comment } });
-        }
-        // Also cleanup comments tagged with this post
-        await Comment.deleteMany({ commentOn: "Post", id: postId });
+        // 6. Concurrently clean up Class, Categories, and Comments
+        await Promise.all([
+            findClass ? Class.findByIdAndUpdate(findClass._id, { $pull: { addedPost: postId } }) : Promise.resolve(),
+            Category.updateMany(
+                { post: postId },
+                { $pull: { post: postId } }
+            ),
+            Comment.deleteMany({
+                $or: [
+                    { _id: { $in: findPost.comment || [] } },
+                    { commentOn: "Post", id: postId }
+                ]
+            })
+        ]);
 
         // 9. Delete the post document
         const deletedPost = await Post.findByIdAndDelete(postId);

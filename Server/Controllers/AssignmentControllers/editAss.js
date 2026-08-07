@@ -153,25 +153,29 @@ exports.editAss = async (req, res, next) => {
             updatedFiles = findAss.files || [];
         }
 
-        //* Upload and Append New Files (Images, PDFs, Docs, etc.)
+        //* Upload and Append New Files (Images, PDFs, Docs, etc.) in parallel
         if (newFiles) {
             const filesArray = Array.isArray(newFiles) ? newFiles : [newFiles];
-            for (const item of filesArray) {
-                const originalFileName = item.name || "attachment";
-                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E4);
-                const fileExt = originalFileName.split('.').pop();
-                const baseName = originalFileName.split('.')[0];
-                const newFileName = `${baseName}|${uniqueSuffix}.${fileExt}`;
+            const uploadedNewFiles = await Promise.all(
+                filesArray.map(async (item) => {
+                    const originalFileName = item.name || "attachment";
+                    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E4);
+                    const fileExt = originalFileName.split('.').pop();
+                    const baseName = originalFileName.split('.')[0];
+                    const newFileName = `${baseName}|${uniqueSuffix}.${fileExt}`;
 
-                const uploadedResult = await uploadImage(item, process.env.FOLDER_NAME, newFileName);
-                if (uploadedResult && uploadedResult.secure_url) {
-                    updatedFiles.push({
-                        fileName: newFileName,
-                        fileType: uploadedResult.format || fileExt || 'unknown',
-                        fileUrl: uploadedResult.secure_url,
-                    });
-                }
-            }
+                    const uploadedResult = await uploadImage(item, process.env.FOLDER_NAME, newFileName);
+                    if (uploadedResult && uploadedResult.secure_url) {
+                        return {
+                            fileName: newFileName,
+                            fileType: uploadedResult.format || fileExt || 'unknown',
+                            fileUrl: uploadedResult.secure_url,
+                        };
+                    }
+                    return null;
+                })
+            );
+            updatedFiles.push(...uploadedNewFiles.filter(Boolean));
         }
 
         if (removeFile === 'true' || removeFile === true) {

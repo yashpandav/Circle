@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const SubmitAssignmentSchema = new mongoose.Schema({
-    data: { 
+    data: {
         type: String,
         default: ""
     },
@@ -46,6 +46,12 @@ const SubmitAssignmentSchema = new mongoose.Schema({
     reviewedAt: {
         type: Date
     }
-});
+}, { timestamps: true });
+
+SubmitAssignmentSchema.index({ assignment: 1, student: 1 });
+SubmitAssignmentSchema.index({ assignment: 1, status: 1 });
+SubmitAssignmentSchema.index({ student: 1 });
+SubmitAssignmentSchema.index({ status: 1 });
+SubmitAssignmentSchema.index({ submitDate: -1 });
 
 module.exports = mongoose.models.SubmitAssignment || mongoose.model("SubmitAssignment", SubmitAssignmentSchema);

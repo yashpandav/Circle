@@ -69,6 +69,11 @@ const UserSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : "Review"
     }
-})
+}, { timestamps: true });
+
+UserSchema.index({ joinedClassAsStudent: 1 });
+UserSchema.index({ joinedClassAsAteacher: 1 });
+UserSchema.index({ createdClasses: 1 });
+UserSchema.index({ resetPasswordExpires: 1 });
 
 module.exports = mongoose.model("User", UserSchema);

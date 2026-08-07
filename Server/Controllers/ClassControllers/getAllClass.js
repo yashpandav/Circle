@@ -2,7 +2,7 @@ const Class = require('../../Models/Class');
 exports.getAllClass = async (req, res, next) => {
     try {
 
-        const classes = await Class.find({}, 'student teacher admin');
+        const classes = await Class.find({}, 'student teacher admin').lean();
         let totalClass = classes.length;
         let totalTeacher = 0;
         let totalStudent = 0;

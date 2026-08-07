@@ -25,6 +25,9 @@ const ReviewSchema = new mongoose.Schema({
 			],
 		}
 	]
-});
+}, { timestamps: true });
+
+ReviewSchema.index({ user: 1 });
+ReviewSchema.index({ "byClass.classId": 1 });
 
 module.exports = mongoose.model("Review", ReviewSchema);

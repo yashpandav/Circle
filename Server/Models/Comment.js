@@ -11,4 +11,7 @@ const CommentSchema = new mongoose.Schema({
 	}
 }, { timestamps: true });
 
+CommentSchema.index({ user: 1 });
+CommentSchema.index({ createdAt: -1 });
+
 module.exports = mongoose.model("Comment", CommentSchema);

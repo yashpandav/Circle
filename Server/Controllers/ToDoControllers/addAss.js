@@ -1,60 +1,78 @@
 const ToDo = require('../../Models/ToDo');
 const Assignment = require('../../Models/Assignment');
+const SubmitAssignment = require('../../Models/SubmitAssignment');
 const User = require('../../Models/User');
 const Class = require('../../Models/Class');
 const cron = require('node-cron');
 
 /**
- * Fetch and categorize all assignments for a user in a given class.
+ * Fetch and categorize all assignments for a user across multiple classes in a single batch.
  */
-async function fetchClassAssignments(classId, userId) {
+async function fetchBatchClassAssignments(classIds, userId) {
     try {
-        const currClass = await Class.findById(classId).populate({
-            path: "addedAssignment",
-            populate: [
-                { path: "category", select: "name" },
-                { path: "teacher", select: "firstName lastName image email" },
-                { 
-                    path: "submission", 
-                    select: "_id student submitDate data file status marks maxMarks feedback reviewedAt reviewedBy",
-                    populate: { path: "reviewedBy", select: "firstName lastName image email" }
+        const classes = await Class.find({ _id: { $in: classIds } })
+            .select('_id addedAssignment')
+            .lean();
+
+        if (!classes || classes.length === 0) return [];
+
+        const allAssIds = classes.flatMap(c => (Array.isArray(c.addedAssignment) ? c.addedAssignment : []));
+        if (allAssIds.length === 0) {
+            return classes.map(c => ({ classId: c._id, assigned: [], missing: [], completed: [] }));
+        }
+
+        const [assignments, userSubmissions] = await Promise.all([
+            Assignment.find({
+                _id: { $in: allAssIds },
+                status: { $ne: 'Draft' }
+            }).select('_id dueDate status').lean(),
+            SubmitAssignment.find({
+                student: userId,
+                assignment: { $in: allAssIds }
+            }).select('_id assignment').lean()
+        ]);
+
+        const submittedAssSet = new Set(userSubmissions.map(s => s.assignment ? s.assignment.toString() : ''));
+        const assMap = new Map(assignments.map(a => [a._id.toString(), a]));
+        const now = Date.now();
+
+        return classes.map(currClass => {
+            if (!currClass || !Array.isArray(currClass.addedAssignment)) {
+                return { classId: currClass?._id, assigned: [], missing: [], completed: [] };
+            }
+
+            const assigned = [];
+            const missing = [];
+            const completed = [];
+
+            currClass.addedAssignment.forEach((assId) => {
+                const aIdStr = assId.toString();
+                const currAssignment = assMap.get(aIdStr);
+                if (!currAssignment) return; // Not published or not found
+
+                if (submittedAssSet.has(aIdStr)) {
+                    completed.push(currAssignment._id);
+                } else {
+                    if (!currAssignment.dueDate || isNaN(new Date(currAssignment.dueDate).getTime())) {
+                        assigned.push(currAssignment._id);
+                    } else if (new Date(currAssignment.dueDate).getTime() >= now) {
+                        assigned.push(currAssignment._id);
+                    } else {
+                        missing.push(currAssignment._id);
+                    }
                 }
-            ]
-        }).exec();
-
-        if (!currClass || !currClass.addedAssignment) return null;
-
-        const assigned = [];
-        const missing = [];
-        const completed = [];
-
-        currClass.addedAssignment.forEach((currAssignment) => {
-            if (!currAssignment || currAssignment.status === 'Draft') return;
-
-            const submission = currAssignment.submission?.find(sub => {
-                if (!sub) return false;
-                if (sub.student && sub.student._id) return sub.student._id.toString() === userId.toString();
-                if (sub.student) return sub.student.toString() === userId.toString();
-                return sub.toString() === userId.toString();
             });
 
-            if (submission) {
-                completed.push(currAssignment._id);
-            } else {
-                if (!currAssignment.dueDate || new Date(currAssignment.dueDate).toString() === 'Invalid Date') {
-                    assigned.push(currAssignment._id);
-                } else if (new Date(currAssignment.dueDate).getTime() >= Date.now()) {
-                    assigned.push(currAssignment._id);
-                } else {
-                    missing.push(currAssignment._id);
-                }
-            }
+            return {
+                classId: currClass._id,
+                assigned,
+                missing,
+                completed
+            };
         });
-
-        return { classId, assigned, missing, completed };
     } catch (err) {
-        console.error(`Error in fetchClassAssignments for class ${classId}:`, err);
-        return null;
+        console.error("Error in fetchBatchClassAssignments:", err);
+        return [];
     }
 }
 
@@ -71,7 +89,11 @@ async function updateToDo(req, res, next) {
             });
         }
 
-        let user = await User.findById(userId).populate('todo').exec();
+        const [user, enrolledClasses] = await Promise.all([
+            User.findById(userId).populate('todo'),
+            Class.find({ student: userId }).select('_id').lean()
+        ]);
+
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -83,7 +105,6 @@ async function updateToDo(req, res, next) {
 
         // Collect all classes the student is enrolled in
         const joinedClasses = user.joinedClassAsStudent ? user.joinedClassAsStudent.map(c => c.toString()) : [];
-        const enrolledClasses = await Class.find({ student: userId }).select('_id');
         enrolledClasses.forEach(c => {
             const cId = c._id.toString();
             if (!joinedClasses.includes(cId)) {
@@ -101,8 +122,8 @@ async function updateToDo(req, res, next) {
 
         const classIds = (claId && claId !== 'all') ? [claId] : joinedClasses;
 
-        const allAssignments = await Promise.all(classIds.map(classId => fetchClassAssignments(classId, userId)));
-        const assignmentsByClass = allAssignments.filter(Boolean);
+        // Batch fetch and process all classes in a single DB query
+        const assignmentsByClass = await fetchBatchClassAssignments(classIds, userId);
 
         let toDo = await ToDo.findById(user.todo);
         if (!toDo) {
@@ -126,8 +147,10 @@ async function updateToDo(req, res, next) {
         }
 
         await toDo.save();
-        user.todo = toDo._id;
-        await user.save();
+        if (!user.todo || user.todo.toString() !== toDo._id.toString()) {
+            user.todo = toDo._id;
+            await user.save();
+        }
 
         const populatedToDo = await ToDo.findById(toDo._id)
             .populate('byClass.classId', 'name className subject classTheme')
@@ -138,6 +161,7 @@ async function updateToDo(req, res, next) {
                     { path: 'teacher', select: 'firstName lastName image email' },
                     { 
                         path: 'submission', 
+                        match: { student: userId },
                         select: '_id student submitDate data file status marks maxMarks feedback reviewedAt reviewedBy',
                         populate: { path: "reviewedBy", select: "firstName lastName image email" }
                     }
@@ -150,6 +174,7 @@ async function updateToDo(req, res, next) {
                     { path: 'teacher', select: 'firstName lastName image email' },
                     { 
                         path: 'submission', 
+                        match: { student: userId },
                         select: '_id student submitDate data file status marks maxMarks feedback reviewedAt reviewedBy',
                         populate: { path: "reviewedBy", select: "firstName lastName image email" }
                     }
@@ -162,21 +187,23 @@ async function updateToDo(req, res, next) {
                     { path: 'teacher', select: 'firstName lastName image email' },
                     { 
                         path: 'submission', 
+                        match: { student: userId },
                         select: '_id student submitDate data file status marks maxMarks feedback reviewedAt reviewedBy',
                         populate: { path: "reviewedBy", select: "firstName lastName image email" }
                     }
                 ]
             })
+            .lean()
             .exec();
 
         // If specific classId requested, filter the response byClass array
         let responseData = populatedToDo;
         if (claId && claId !== 'all' && populatedToDo && populatedToDo.byClass) {
             const filteredByClass = populatedToDo.byClass.filter(
-                c => c.classId && c.classId._id.toString() === claId.toString()
+                c => c.classId && (c.classId._id?.toString() === claId.toString() || c.classId.toString() === claId.toString())
             );
             responseData = {
-                ...populatedToDo.toObject(),
+                ...populatedToDo,
                 byClass: filteredByClass
             };
         }
@@ -196,28 +223,27 @@ async function updateToDo(req, res, next) {
     }
 }
 
-// Nightly cron job to refresh ToDos for all users
+// Nightly cron job to refresh ToDos for all users in chunks of 10
 cron.schedule('0 0 * * *', async () => {
     try {
-        const users = await User.find({}).select('_id email').exec();
-        for (const user of users) {
-            const req = {
-                user: {
-                    id: user._id,
-                    email: user.email
-                },
-                params: {
-                    classId: 'all'
-                },
-                query: {},
-                body: {}
-            };
-            const res = {
-                status: () => ({ json: () => { } })
-            };
-            await updateToDo(req, res, (err) => {
-                if (err) console.error("Cron updateToDo error for user:", user._id, err);
-            });
+        const users = await User.find({}).select('_id email').lean();
+        const chunkSize = 10;
+        for (let i = 0; i < users.length; i += chunkSize) {
+            const chunk = users.slice(i, i + chunkSize);
+            await Promise.all(chunk.map(async (user) => {
+                const req = {
+                    user: { id: user._id, email: user.email },
+                    params: { classId: 'all' },
+                    query: {},
+                    body: {}
+                };
+                const res = {
+                    status: () => ({ json: () => { } })
+                };
+                await updateToDo(req, res, (err) => {
+                    if (err) console.error("Cron updateToDo error for user:", user._id, err);
+                });
+            }));
         }
     } catch (err) {
         console.error("Cron schedule error in ToDo:", err);

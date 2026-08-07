@@ -1,37 +1,37 @@
 const mongoose = require("mongoose");
 
 const ClassSchema = new mongoose.Schema({
-	name: { 
+    name: {
         type: String,
-        required : true
+        required: true
     },
-	description: { 
-        type: String ,
-        required : true
+    description: {
+        type: String,
+        required: true
     },
-    subject : {
-        type : String
+    subject: {
+        type: String
     },
-    classTheme : {
-        type : String,
-        default : '#4285f4'
+    classTheme: {
+        type: String,
+        default: '#4285f4'
     },
-	createDate: {
-		type: Date,
-        default : Date.now
-	},
+    createDate: {
+        type: Date,
+        default: Date.now
+    },
     admin: {
         type: mongoose.Schema.Types.ObjectId,
-        ref : "User"
+        ref: "User"
     },
-	thumbnail: {
-		type: String,
-	},
-    entryCode : {
-        type : String
+    thumbnail: {
+        type: String,
     },
-    entryUrl : {
-        type : String
+    entryCode: {
+        type: String
+    },
+    entryUrl: {
+        type: String
     },
     isCodeActive: {
         type: Boolean,
@@ -41,11 +41,11 @@ const ClassSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
-	student: [
-		{
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "User",
-		},
+    student: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        },
     ],
     teacher: [
         {
@@ -53,25 +53,32 @@ const ClassSchema = new mongoose.Schema({
             ref: "User",
         },
     ],
-    addedAssignment : [
+    addedAssignment: [
         {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "Assignment",
-		},
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Assignment",
+        },
     ],
-    addedCategory : [
+    addedCategory: [
         {
-            type : mongoose.Schema.Types.ObjectId,
-            ref : "Category"
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Category"
         }
     ],
-    addedPost : [
+    addedPost: [
         {
-            type : mongoose.Schema.Types.ObjectId,
-            ref : "Post"
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Post"
         }
     ]
-    }
+}, { timestamps: true }
 );
+
+ClassSchema.index({ admin: 1, createDate: -1 });
+ClassSchema.index({ teacher: 1 });
+ClassSchema.index({ student: 1 });
+ClassSchema.index({ addedAssignment: 1 });
+ClassSchema.index({ addedPost: 1 });
+ClassSchema.index({ entryCode: 1, isCodeActive: 1 });
 
 module.exports = mongoose.model("Class", ClassSchema);

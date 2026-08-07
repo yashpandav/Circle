@@ -22,6 +22,8 @@ const CategorySchema = new mongoose.Schema({
 		ref: "Class",
 		required: true
 	}
-});
+}, { timestamps: true });
+
+CategorySchema.index({ classId: 1, name: 1 });
 
 module.exports = mongoose.model("Category", CategorySchema);

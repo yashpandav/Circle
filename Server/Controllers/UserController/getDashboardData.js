@@ -8,11 +8,40 @@ exports.getDashboardData = async (req, res, next) => {
     try {
         const userId = req.user.id;
 
-        // 1. Fetch user with additionalDetails
-        const user = await User.findById(userId)
-            .select('-password -token')
-            .populate('additionalDetails')
-            .lean();
+        // Wave 1: Fetch user, teaching classes, enrolled classes, teacher assignments, and user submissions concurrently
+        const [
+            user,
+            teachingClasses,
+            enrolledClasses,
+            teacherAssignments,
+            userSubmissions
+        ] = await Promise.all([
+            User.findById(userId)
+                .select('-password -token')
+                .populate('additionalDetails')
+                .lean(),
+            Class.find({
+                $or: [
+                    { admin: userId },
+                    { teacher: userId }
+                ]
+            })
+            .select('_id name description subject classTheme thumbnail entryCode student teacher addedAssignment addedPost createDate admin')
+            .populate({ path: 'admin', select: 'firstName lastName email image' })
+            .lean(),
+            Class.find({
+                student: userId
+            })
+            .select('_id name description subject classTheme thumbnail admin addedAssignment addedPost createDate')
+            .populate({ path: 'admin', select: 'firstName lastName email image' })
+            .lean(),
+            Assignment.find({
+                teacher: userId
+            }).select('_id name dueDate uploadDate submission').lean(),
+            SubmitAssignment.find({
+                student: userId
+            }).select('_id assignment submitDate').lean()
+        ]);
 
         if (!user) {
             return res.status(404).json({
@@ -20,25 +49,6 @@ exports.getDashboardData = async (req, res, next) => {
                 message: "User not found"
             });
         }
-
-        // 2. Fetch all teaching classes (created or added as teacher)
-        const teachingClasses = await Class.find({
-            $or: [
-                { admin: userId },
-                { teacher: userId }
-            ]
-        })
-        .select('_id name description subject classTheme thumbnail entryCode student teacher addedAssignment addedPost createDate admin')
-        .populate({ path: 'admin', select: 'firstName lastName email image' })
-        .lean();
-
-        // 3. Fetch all enrolled classes
-        const enrolledClasses = await Class.find({
-            student: userId
-        })
-        .select('_id name description subject classTheme thumbnail admin addedAssignment addedPost createDate')
-        .populate({ path: 'admin', select: 'firstName lastName email image' })
-        .lean();
 
         // 4. Calculate Teaching Metrics
         const allTaughtStudentIds = new Set();
@@ -50,11 +60,6 @@ exports.getDashboardData = async (req, res, next) => {
             }
         });
 
-        // Total assignments created by this teacher
-        const teacherAssignments = await Assignment.find({
-            teacher: userId
-        }).select('_id name dueDate uploadDate submission').lean();
-
         // Total submissions received across all teacher assignments
         let totalSubmissionsReceived = 0;
         teacherAssignments.forEach(a => {
@@ -63,19 +68,29 @@ exports.getDashboardData = async (req, res, next) => {
 
         // 5. Calculate Student Metrics (Enrolled)
         const enrolledAssignmentIds = enrolledClasses.flatMap(c => c.addedAssignment || []);
-        
-        const enrolledAssignments = await Assignment.find({
-            _id: { $in: enrolledAssignmentIds },
-            status: "Published"
-        })
-        .select('_id name description dueDate uploadDate acceptAfterDue teacher')
-        .populate({ path: 'teacher', select: 'firstName lastName image' })
-        .lean();
+        const allPostIds = [
+            ...teachingClasses.flatMap(c => c.addedPost || []),
+            ...enrolledClasses.flatMap(c => c.addedPost || [])
+        ];
 
-        // Find all submissions made by this user
-        const userSubmissions = await SubmitAssignment.find({
-            student: userId
-        }).select('_id assignment submitDate').lean();
+        // Wave 2: Fetch enrolled assignments and recent posts concurrently
+        const [enrolledAssignments, recentPosts] = await Promise.all([
+            Assignment.find({
+                _id: { $in: enrolledAssignmentIds },
+                status: "Published"
+            })
+            .select('_id name description dueDate uploadDate acceptAfterDue teacher')
+            .populate({ path: 'teacher', select: 'firstName lastName image' })
+            .lean(),
+            Post.find({
+                _id: { $in: allPostIds }
+            })
+            .select('_id title postBody uploadDate teacher')
+            .populate({ path: 'teacher', select: 'firstName lastName image' })
+            .sort({ uploadDate: -1 })
+            .limit(6)
+            .lean()
+        ]);
 
         const submittedAssignmentIds = new Set(userSubmissions.map(s => s.assignment ? s.assignment.toString() : ''));
 
@@ -118,21 +133,7 @@ exports.getDashboardData = async (req, res, next) => {
         // Sort upcoming deadlines by closest due date
         upcomingDeadlines.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
 
-        // 6. Recent Activity Feed (Recent Posts & Announcements in user's circles)
-        const allPostIds = [
-            ...teachingClasses.flatMap(c => c.addedPost || []),
-            ...enrolledClasses.flatMap(c => c.addedPost || [])
-        ];
-
-        const recentPosts = await Post.find({
-            _id: { $in: allPostIds }
-        })
-        .select('_id title postBody uploadDate teacher')
-        .populate({ path: 'teacher', select: 'firstName lastName image' })
-        .sort({ uploadDate: -1 })
-        .limit(6)
-        .lean();
-
+        // 6. Recent Activity Feed from Wave 2
         const recentActivity = recentPosts.map(p => ({
             _id: p._id,
             type: 'post',

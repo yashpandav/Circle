@@ -21,24 +21,30 @@ exports.getAssDetails = async (req, res, next) => {
             });
         }
 
-        const currAss = await Assignment.findById(id)
-            .populate({
-                path: "submission",
-                populate: [
-                    { path: "student", select: "firstName lastName image email" },
-                    { path: "reviewedBy", select: "firstName lastName image email" }
-                ]
-            })
-            .populate("teacher", "firstName lastName image email")
-            .populate("pendingStudent", "firstName lastName image email")
-            .populate({
-                path: "comment",
-                populate: {
-                    path: "user",
-                    select: "firstName lastName image"
-                }
-            })
-            .populate("category", "name");
+        const [currAss, parentClass] = await Promise.all([
+            Assignment.findById(id)
+                .populate({
+                    path: "submission",
+                    populate: [
+                        { path: "student", select: "firstName lastName image email" },
+                        { path: "reviewedBy", select: "firstName lastName image email" }
+                    ]
+                })
+                .populate("teacher", "firstName lastName image email")
+                .populate("pendingStudent", "firstName lastName image email")
+                .populate({
+                    path: "comment",
+                    populate: {
+                        path: "user",
+                        select: "firstName lastName image"
+                    }
+                })
+                .populate("category", "name")
+                .lean(),
+            Class.findOne({ addedAssignment: id })
+                .select('_id admin teacher student')
+                .lean()
+        ]);
 
         if (!currAss) {
             return res.status(404).json({
@@ -46,8 +52,6 @@ exports.getAssDetails = async (req, res, next) => {
                 message: "Assignment not found"
             });
         }
-
-        const parentClass = await Class.findOne({ addedAssignment: id });
         const isAuthorTeacher = currAss.teacher && (currAss.teacher._id ? currAss.teacher._id.toString() : currAss.teacher.toString()) === userId.toString();
         let isClassAdmin = false;
         let isClassTeacher = false;
